@@ -7,10 +7,10 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
  * @author cippy
- *
+ * 
  */
 public interface GlobalChatInterface extends RemoteService {
-	
+
 	String[] viewLastMessages();
 
 	/*

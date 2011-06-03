@@ -10,7 +10,5 @@ import com.google.gwt.user.client.rpc.RemoteService;
  * 
  */
 public interface TableInterface extends RemoteService {
-	
-	
 
 }

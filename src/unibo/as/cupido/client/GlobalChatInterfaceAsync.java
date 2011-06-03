@@ -7,7 +7,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * @author cippy
- *
+ * 
  */
 public interface GlobalChatInterfaceAsync {
 
