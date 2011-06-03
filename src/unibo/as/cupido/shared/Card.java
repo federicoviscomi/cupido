@@ -3,10 +3,6 @@
  */
 package unibo.as.cupido.shared;
 
-/**
- * @author cippy
- *
- */
 public class Card {
 	
 	public enum Suit{
