@@ -4,7 +4,7 @@
 package unibo.as.cupido.shared;
 
 /**
- * @author cippy
+ * @author Lorenzo Belli
  *
  */
 public class Card {
