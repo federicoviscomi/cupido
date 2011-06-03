@@ -10,5 +10,15 @@ public class CardPlayed implements Serializable {
 	
 	Card card;
 	String playerName;
+	/*
+	 * if you are playing
+	 * playerPosition = 0 is the player are you
+	 * 
+	 * if you are viewing the match
+	 * playerPosition = 0 is the player is the owner
+	 *  
+	 * the others are clockwise
+	 */
+	int playerPosition;
 
 }
