@@ -1,9 +1,9 @@
 package unibo.as.cupido.shared;
 
 /*
- * InitialGameStatus is the status of the game before the cards are dealt (may have less than 4 player)
+ * InitialTableStatus is the status of the game before the cards are dealt (may have less than 4 player)
  */
-public class InitialGameStatus {
+public class InitialTableStatus {
 
 	/*
 	 * Opponents are sorted clockwise (game is clockwise) opponents.lenght is

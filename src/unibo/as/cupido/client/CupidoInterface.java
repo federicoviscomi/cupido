@@ -5,6 +5,11 @@ package unibo.as.cupido.client;
 
 import java.io.Serializable;
 
+import unibo.as.cupido.shared.FullTableException;
+import unibo.as.cupido.shared.InitialTableStatus;
+import unibo.as.cupido.shared.NoSuchTableException;
+import unibo.as.cupido.shared.ObservedGameStatus;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
@@ -38,12 +43,11 @@ public interface CupidoInterface extends RemoteService {
 	 */
 	TableData[] getTableList();
 
-	/*
-	 * Returns the interface to manage the table
-	 */
-	void createTable();
+	InitialTableStatus createTable();
 
-	void joinTable(String server, int tableId);
+	InitialTableStatus joinTable(String server, int tableId) throws FullTableException, NoSuchTableException;
 
-	void viewTable(String server, int tableId);
+	ObservedGameStatus viewTable(String server, int tableId) throws NoSuchTableException;
+	
+	void leaveTable();
 }

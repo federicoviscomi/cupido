@@ -4,6 +4,8 @@
 package unibo.as.cupido.client;
 
 import unibo.as.cupido.client.CupidoInterface.TableData;
+import unibo.as.cupido.shared.InitialTableStatus;
+import unibo.as.cupido.shared.ObservedGameStatus;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -24,10 +26,14 @@ public interface CupidoInterfaceAsync {
 
 	void getTableList(AsyncCallback<TableData[]> callback);
 
-	void createTable(AsyncCallback<Void> callback);
+	void createTable(AsyncCallback<InitialTableStatus> callback);
 
-	void joinTable(String server, int tableId, AsyncCallback<Void> callback);
+	void joinTable(String server, int tableId,
+			AsyncCallback<InitialTableStatus> callback);
 
-	void viewTable(String server, int tableId, AsyncCallback<Void> callback);
+	void viewTable(String server, int tableId,
+			AsyncCallback<ObservedGameStatus> callback);
+
+	void leaveTable(AsyncCallback<Void> callback);
 
 }
