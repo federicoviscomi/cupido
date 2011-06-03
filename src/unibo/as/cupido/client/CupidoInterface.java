@@ -8,8 +8,8 @@ import java.io.Serializable;
 import com.google.gwt.user.client.rpc.RemoteService;
 
 /**
- * @author cippy
- * 
+ * @author Lorenzo Belli
+ *
  */
 public interface CupidoInterface extends RemoteService {
 
