@@ -7,6 +7,10 @@ import java.io.Serializable;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
+/**
+ * @author Lorenzo Belli
+ *
+ */
 public interface CupidoInterface extends RemoteService {
 
 	boolean login(String username, String password);

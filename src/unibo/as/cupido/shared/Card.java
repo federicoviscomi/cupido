@@ -3,6 +3,10 @@
  */
 package unibo.as.cupido.shared;
 
+/**
+ * @author Lorenzo Belli
+ *
+ */
 public class Card {
 	
 	public enum Suit{
