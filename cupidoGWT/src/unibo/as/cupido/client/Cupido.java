@@ -12,6 +12,8 @@ public class Cupido implements EntryPoint {
 	
 	AbsolutePanel mainPanel = null;
 	Widget currentScreen = null;
+	// This is used to check that no screen switches occur while switching screen.
+	boolean switchingScreen = false;
 
 	/// This is null when the user is not logged in.
 	String username;
@@ -40,41 +42,66 @@ public class Cupido implements EntryPoint {
 
 			@Override
 			public void displayMainMenuScreen() {
+				assert !switchingScreen;
+				switchingScreen = true;
+				
 				removeCurrentScreen();
 				currentScreen = new CupidoMainMenuScreen(screenSwitcher, username);
 				mainPanel.add(currentScreen, 0, 0);
+				
+				switchingScreen = false;
 			}
 
 			@Override
 			public void displayScoresScreen() {
+				assert !switchingScreen;
+				switchingScreen = true;
+				
 				removeCurrentScreen();
 				assert username != null;
 				mainPanel.remove(currentScreen);
 				currentScreen = new CupidoScoresScreen(screenSwitcher);
 				mainPanel.add(currentScreen, 0, 0);
+				
+				switchingScreen = false;
 			}
 
 			@Override
 			public void displayTableScreen() {
+				assert !switchingScreen;
+				switchingScreen = true;
+				
 				removeCurrentScreen();
 				assert username != null;
 				currentScreen = new CupidoTableScreen(screenSwitcher, username);
 				mainPanel.add(currentScreen, 0, 0);
+				
+				switchingScreen = false;
 			}
 
 			@Override
 			public void displayObservedTableScreen() {
+				assert !switchingScreen;
+				switchingScreen = true;
+				
 				removeCurrentScreen();
 				assert username != null;
 				currentScreen = new CupidoObservedTableScreen(screenSwitcher, username);
 				mainPanel.add(currentScreen, 0, 0);
+				
+				switchingScreen = false;
 			}
 
 			@Override
 			public void displayGeneralErrorScreen(Exception e) {
+				assert !switchingScreen;
+				switchingScreen = true;
+
 				removeCurrentScreen();
 				currentScreen = new CupidoGeneralErrorScreen(screenSwitcher, e);
-				mainPanel.add(currentScreen, 0, 0);				
+				mainPanel.add(currentScreen, 0, 0);
+				
+				switchingScreen = false;
 			}
 		};
 		
