@@ -41,7 +41,7 @@ public class Cupido implements EntryPoint {
 			@Override
 			public void displayMainMenuScreen() {
 				removeCurrentScreen();
-				currentScreen = new CupidoMainMenuScreen(screenSwitcher);
+				currentScreen = new CupidoMainMenuScreen(screenSwitcher, username);
 				mainPanel.add(currentScreen, 0, 0);
 			}
 

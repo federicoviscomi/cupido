@@ -7,9 +7,12 @@ import com.google.gwt.user.client.ui.Label;
 public class CupidoMainMenuScreen extends AbsolutePanel {
 	
 	/// This is null when the user is not logged in.
-	String username;
+	private String username;
+	private final ScreenSwitcherInterface screenSwitcher;
 
-	public CupidoMainMenuScreen(ScreenSwitcherInterface screenSwitcher) {
+	public CupidoMainMenuScreen(final ScreenSwitcherInterface screenSwitcher, String username) {
+		this.screenSwitcher = screenSwitcher;
+		this.username = username;
 		setHeight("700px");
 		setWidth("700px");
 		Label label = new HTML("<b>Main menu screen (TODO)</b>");
