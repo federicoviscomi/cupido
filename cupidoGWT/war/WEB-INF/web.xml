@@ -6,15 +6,17 @@
 <web-app>
   
   <!-- Servlets -->
-  <servlet>
-    <servlet-name>greetServlet</servlet-name>
-    <servlet-class>unibo.as.cupido.server.GreetingServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/cupido/greet</url-pattern>
-  </servlet-mapping>
+  <!-- 
+	  <servlet>
+	    <servlet-name>greetServlet</servlet-name>
+	    <servlet-class>unibo.as.cupido.server.GreetingServiceImpl</servlet-class>
+	  </servlet>
+	  
+	  <servlet-mapping>
+	    <servlet-name>greetServlet</servlet-name>
+	    <url-pattern>/cupido/greet</url-pattern>
+	  </servlet-mapping>
+   -->
   
   <!-- Default page to serve -->
   <welcome-file-list>
