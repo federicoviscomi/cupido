@@ -1,6 +1,7 @@
 package unibo.as.cupido.backendInterfaces;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 import unibo.as.cupido.backendInterfaces.TableManagerInterface.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
@@ -15,9 +16,17 @@ import unibo.as.cupido.backendInterfaces.common.PositionFullException;
  * 
  * 
  * @author cane
- *
+ * 
  */
 public interface TableInterface extends Remote {
+
+	/**
+	 * 
+	 * @param userName
+	 * @param position
+	 * @throws PositionFullException
+	 */
+	void addBot(String userName, int position) throws PositionFullException, RemoteException;
 
 	/**
 	 * 
@@ -26,38 +35,14 @@ public interface TableInterface extends Remote {
 	 * @throws FullTableException
 	 * @throws NoSuchTableException
 	 */
-	public InitialTableStatus joinTable(String userName, ServletNotifcationsInterface snf)
-			throws FullTableException, NoSuchTableException;
-
-	/**
-	 * 
-	 * @param userName
-	 * @return
-	 * @throws NoSuchTableException
-	 */
-	public ObservedGameStatus viewTable(String userName, ServletNotifcationsInterface snf)
-			throws NoSuchTableException;
-
-	/**
-	 * Sends a message to the table chat
-	 * 
-	 * @param message
-	 */
-	void sendMessage(String userName, String message);
+	public InitialTableStatus joinTable(String userName, ServletNotifcationsInterface snf) throws FullTableException,
+			NoSuchTableException, RemoteException;
 
 	/**
 	 * 
 	 * @param userName
 	 */
-	void leaveTable(String userName);
-
-	/**
-	 * 
-	 * @param userName
-	 * @param card
-	 * @throws IllegalMoveException
-	 */
-	void playCard(String userName, Card card) throws IllegalMoveException;
+	void leaveTable(String userName) throws RemoteException;
 
 	/**
 	 * 
@@ -66,14 +51,30 @@ public interface TableInterface extends Remote {
 	 * @throws IllegalMoveException
 	 * 
 	 */
-	void passCards(String userName, Card[] cards) throws IllegalMoveException;
+	void passCards(String userName, Card[] cards) throws IllegalMoveException, RemoteException;
 
 	/**
 	 * 
-	 * @param userName 
-	 * @param position
-	 * @throws PositionFullException
+	 * @param userName
+	 * @param card
+	 * @throws IllegalMoveException
 	 */
-	void addBot(String userName, int position) throws PositionFullException;
+	void playCard(String userName, Card card) throws IllegalMoveException, RemoteException;
+
+	/**
+	 * Sends a message to the table chat
+	 * 
+	 * @param message
+	 */
+	void sendMessage(String userName, String message) throws RemoteException;
+
+	/**
+	 * 
+	 * @param userName
+	 * @return
+	 * @throws NoSuchTableException
+	 */
+	public ObservedGameStatus viewTable(String userName, ServletNotifcationsInterface snf) throws NoSuchTableException,
+			RemoteException;
 
 }

@@ -10,12 +10,19 @@ import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PositionFullException;
 
+/**
+ * 
+ * 
+ * @author cane
+ *
+ */
 public class Table implements Runnable, TableInterface {
 
 	@Override
-	public void run() {
+	public void addBot(String userName, int position)
+			throws PositionFullException {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -27,27 +34,7 @@ public class Table implements Runnable, TableInterface {
 	}
 
 	@Override
-	public ObservedGameStatus viewTable(String userName,
-			ServletNotifcationsInterface snf) throws NoSuchTableException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void sendMessage(String userName, String message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void leaveTable(String userName) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void playCard(String userName, Card card)
-			throws IllegalMoveException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -60,10 +47,29 @@ public class Table implements Runnable, TableInterface {
 	}
 
 	@Override
-	public void addBot(String userName, int position)
-			throws PositionFullException {
+	public void playCard(String userName, Card card)
+			throws IllegalMoveException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void sendMessage(String userName, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ObservedGameStatus viewTable(String userName,
+			ServletNotifcationsInterface snf) throws NoSuchTableException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

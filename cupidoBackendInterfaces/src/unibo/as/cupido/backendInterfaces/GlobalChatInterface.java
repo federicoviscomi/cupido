@@ -1,26 +1,26 @@
 package unibo.as.cupido.backendInterfaces;
 
 import java.rmi.Remote;
-
+import java.rmi.RemoteException;
 
 /**
- *  
+ * 
  * 
  * @author cane
- *
+ * 
  */
-public interface GlobalChatInterface extends Remote{
+public interface GlobalChatInterface extends Remote {
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String[] getLastMessages() throws RemoteException;
 
 	/**
 	 * 
 	 * @param message
 	 */
-	public void sendMessage(String message);
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public String[] getLastMessages();
-	
+	public void sendMessage(String message) throws RemoteException;
+
 }
