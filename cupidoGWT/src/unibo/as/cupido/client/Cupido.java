@@ -10,6 +10,9 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class Cupido implements EntryPoint {
 	
+	static final int width = 900;
+	static final int height = 700;
+	
 	AbsolutePanel mainPanel = null;
 	Widget currentScreen = null;
 	// This is used to check that no screen switches occur while switching screen.
@@ -25,8 +28,8 @@ public class Cupido implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		mainPanel = new AbsolutePanel();
-		mainPanel.setHeight("700px");
-		mainPanel.setWidth("700px");
+		mainPanel.setHeight(height + "px");
+		mainPanel.setWidth(width + "px");
 		RootPanel.get("mainContainer").add(mainPanel);
 		
 		screenSwitcher = new ScreenSwitcherInterface() {

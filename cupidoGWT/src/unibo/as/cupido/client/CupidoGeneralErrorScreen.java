@@ -7,8 +7,8 @@ import com.google.gwt.user.client.ui.Label;
 public class CupidoGeneralErrorScreen extends AbsolutePanel {
 
 	public CupidoGeneralErrorScreen(ScreenSwitcherInterface screenSwitcher, Exception e) {
-		setHeight("700px");
-		setWidth("700px");
+		setHeight(Cupido.height + "px");
+		setWidth(Cupido.width + "700px");
 		Label label = new HTML("<b>General error screen (TODO)</b>");
 		add(label, 300, 320);
 	}

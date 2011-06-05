@@ -8,8 +8,8 @@ public class CupidoObservedTableScreen extends AbsolutePanel {
 
 	public CupidoObservedTableScreen(ScreenSwitcherInterface screenSwitcher,
 			String username) {
-		setHeight("700px");
-		setWidth("700px");
+		setHeight(Cupido.height + "px");
+		setWidth(Cupido.width + "700px");
 		Label label = new HTML("<b>Observed table screen (TODO)</b>");
 		add(label, 300, 320);
 	}
