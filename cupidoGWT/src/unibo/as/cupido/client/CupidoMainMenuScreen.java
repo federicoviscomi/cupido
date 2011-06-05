@@ -44,7 +44,7 @@ public class CupidoMainMenuScreen extends AbsolutePanel {
 		errorButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayGeneralErrorScreen(new IllegalStateException("n example error message"));
+				screenSwitcher.displayGeneralErrorScreen(new IllegalStateException("An example error message"));
 			}
 		});		
 		add(errorButton, 200, 450);
