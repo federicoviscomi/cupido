@@ -22,6 +22,14 @@ import java.io.InputStreamReader;
  * <td>start [-a global server address]</td>
  * <td>Start the server whit an optiona global server address</td>
  * </tr>
+ * <tr>
+ * <td>create -o owner</td>
+ * <td>Create a new Table with specified owner</td>
+ * </tr>
+ * <tr>
+ * <td>list</td>
+ * <td>List all the Tables</td>
+ * </tr>
  * </table>
  * 
  * 
@@ -43,6 +51,7 @@ public class LocalTableManagerCommandInterpreterUI {
 	public void execute() {
 		CmdLineParser parser = new CmdLineParser();
 		CmdLineParser.Option globalServerAddress = parser.addStringOption('a', "adrress");
+		CmdLineParser.Option tableOwnerOption = parser.addStringOption('o', "owner");
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		String nextCommandLine;
 		try {
@@ -59,9 +68,13 @@ public class LocalTableManagerCommandInterpreterUI {
 							if (command[0].equals("start")) {
 								localTableManager = new LocalTableManager(
 										(String) parser.getOptionValue(globalServerAddress));
-
 							} else if (command[0].equals("exit")) {
 								exit(0);
+							} else if (command[0].equals("create")) {
+								String owner = (String) parser.getOptionValue(tableOwnerOption);
+								localTableManager.createTable(owner, null);
+							} else if (command[0].equals("list")) {
+								// TODO
 							}
 						} else {
 							System.out.println("Syntax error");

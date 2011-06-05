@@ -5,17 +5,31 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.AccessException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.TableManagerInterface;
-import unibo.as.cupido.backendInterfaces.TableManagerInterface.ServletNotifcationsInterface;
-import unibo.as.cupido.backendInterfaces.TableManagerInterface.Table;
+import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
+import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
+import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 
 /**
  * 
@@ -44,11 +58,17 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	private int tableCount = 0;
 
-	private InetAddress myAddress;
+	private GlobalTableManagerInterface serverRemote;
 
-	private TableManagerInterface serverRemote;
+	private String serverAddress = GlobalTableManagerInterface.defaultServerAddress;
 
-	private String serverAddress = TableManagerInterface.defaultServerAddress;
+	private Map<Integer, Table> tableIds;
+
+	private Registry registry;
+
+	private String name;
+
+	private int nextId = 0;
 
 	public LocalTableManager(String serverAddress) {
 		if (serverAddress != null)
@@ -66,14 +86,30 @@ public class LocalTableManager implements LocalTableManagerInterface {
 					}
 				}
 			}
-			myAddress = InetAddress.getLocalHost();
-			Registry remoteServerRegistry = LocateRegistry.getRegistry(this.serverAddress);
-			serverRemote = (TableManagerInterface) remoteServerRegistry
-					.lookup(TableManagerInterface.globalTableManagerName);
 
-			serverRemote.notifyLocalTableManagerSturtup(myAddress);
-			System.out.println("Local table manager server started correctly at address " + myAddress
-					+ ".\nGlobal table manager server address is " + this.serverAddress);
+			Registry remoteServerRegistry = LocateRegistry.getRegistry(this.serverAddress);
+			serverRemote = (GlobalTableManagerInterface) remoteServerRegistry
+					.lookup(GlobalTableManagerInterface.globalTableManagerName);
+
+			/* non mi convince */
+			name = InetAddress.getLocalHost() + "/" + System.currentTimeMillis();
+
+			registry = LocateRegistry.getRegistry();
+			registry.bind(name, UnicastRemoteObject.exportObject(this));
+			serverRemote.notifyLocalTableManagerSturtup(name);
+
+			/* */
+			tpe = new ThreadPoolExecutor(MAX_TABLE / 2, MAX_TABLE, 10, TimeUnit.SECONDS,
+					new SynchronousQueue<Runnable>());
+			tpe.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+
+			tableIds = new HashMap<Integer, Table>();
+
+			// tableThreads = new HashMap<Long, SingleTableThread>(MAX_TABLE);
+
+			System.out.println("Local table manager server started correctly at address " + InetAddress.getLocalHost()
+					+ ".\nRMI registry name is " + name + ".\nGlobal table manager server address is "
+					+ this.serverAddress);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,26 +117,35 @@ public class LocalTableManager implements LocalTableManagerInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NotBoundException e) {
-			System.err.println("Error:" + TableManagerInterface.globalTableManagerName
+			System.err.println("Error:" + GlobalTableManagerInterface.globalTableManagerName
 					+ " is not bound to anything in the rmiregistry");
+		} catch (AlreadyBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public int createTable(String owner, ServletNotifcationsInterface snf) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public Table getTable(int tableId) {
-		// TODO Auto-generated method stub
+	public Table createTable(String owner, ServletNotifcationsInterface snf) {
+		try {
+			Table newTable = new Table(owner, 3, name, nextId++);
+			SingleTableThread tableThread = new SingleTableThread(snf, this, newTable);
+			tpe.execute(tableThread);
+			return newTable;
+		} catch (RejectedExecutionException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
 	@Override
-	public double getWorkLoad() throws RemoteException {
-		return (tableCount / MAX_TABLE) * 100;
+	public Table getTable(int tableId) {
+		return tableIds.get(tableId);
+	}
+
+	@Override
+	public int getWorkLoad() throws RemoteException {
+		return (tableIds.size() / MAX_TABLE) * 100;
 	}
 
 	/**
@@ -112,17 +157,35 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	 *            the id of the table that terminates
 	 */
 	public void notifyTableDestruction(int tableId) {
-		throw new UnsupportedOperationException();
+		tableIds.remove(tableId);
 	}
 
 	public void shutDown() {
-		// TODO Auto-generated method stub
-
+		try {
+			tpe.shutdown();
+			serverRemote.notifyLocalTableManagerShutdown(name);
+			registry.unbind(name);
+		} catch (AccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public InetAddress getAddress() {
-		return myAddress;
+	public String getAddress() {
+		try {
+			return "[address=" + InetAddress.getLocalHost() + ", registry name=" + name + "]";
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

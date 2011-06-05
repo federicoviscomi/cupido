@@ -4,8 +4,8 @@ import java.net.InetAddress;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import unibo.as.cupido.backendInterfaces.TableManagerInterface.ServletNotifcationsInterface;
-import unibo.as.cupido.backendInterfaces.TableManagerInterface.Table;
+import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
+import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 
 /**
  * 
@@ -16,10 +16,13 @@ public interface LocalTableManagerInterface extends Remote {
 
 	/**
 	 * 
+	 * This method is used by global table manager component to create a new
+	 * table
+	 * 
 	 * @param owner
 	 * @return the table id
 	 */
-	public int createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException;
+	public Table createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException;
 
 	/**
 	 * 
@@ -45,7 +48,8 @@ public interface LocalTableManagerInterface extends Remote {
 	 *             if the LocalTableManger is not alive anymore
 	 * 
 	 */
-	public double getWorkLoad() throws RemoteException;
+	public int getWorkLoad() throws RemoteException;
 
-	public InetAddress getAddress() throws RemoteException;;
+	public String getAddress() throws RemoteException;
+
 }

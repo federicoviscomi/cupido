@@ -3,7 +3,7 @@ package unibo.as.cupido.backendInterfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import unibo.as.cupido.backendInterfaces.TableManagerInterface.ServletNotifcationsInterface;
+import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.IllegalMoveException;
@@ -22,21 +22,26 @@ public interface TableInterface extends Remote {
 
 	/**
 	 * 
-	 * @param userName
+	 * 
+	 * @param botName
 	 * @param position
 	 * @throws PositionFullException
+	 * @throws FullTableException
+	 * @throws IllegalArgumentException
+	 *             if botName is null; if position is not 1, 2 or 3;
 	 */
-	void addBot(String userName, int position) throws PositionFullException, RemoteException;
+	void addBot(String botName, int position) throws PositionFullException, RemoteException, IllegalArgumentException,
+			FullTableException;
 
 	/**
 	 * 
 	 * @param userName
 	 * @return
 	 * @throws FullTableException
-	 * @throws NoSuchTableException
+	 * @throws NoSuchTableException come puo'?
 	 */
-	public InitialTableStatus joinTable(String userName, ServletNotifcationsInterface snf) throws FullTableException,
-			NoSuchTableException, RemoteException;
+	public InitialTableStatus joinTable(String playerName, ServletNotifcationsInterface snf) throws FullTableException,
+			NoSuchTableException, RemoteException, IllegalArgumentException;
 
 	/**
 	 * 
