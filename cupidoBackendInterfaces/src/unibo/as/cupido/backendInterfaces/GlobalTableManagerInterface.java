@@ -1,23 +1,31 @@
 package unibo.as.cupido.backendInterfaces;
 
-import java.net.InetAddress;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Set;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 
 /**
  * 
  * The remote interface that local tables managers and Servlets use to
  * communicate with the global table manager
  * 
+ * GTM has to poll each LTM to see if it is alive 
  * 
  * @author cane
  * 
  */
 public interface GlobalTableManagerInterface extends Remote {
 
+	/**
+	 * Implemented by the Servlet
+	 * 
+	 * @author cane
+	 *
+	 */
 	public interface ServletNotifcationsInterface {
 
 		public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint);
@@ -29,7 +37,7 @@ public interface GlobalTableManagerInterface extends Remote {
 		 * @param userName
 		 * @param message
 		 */
-		public void notifyLocalChatMessage(String userName, String message);
+		public void notifyLocalChatMessage(ChatMessage message);
 
 		public void notifyPlassedCards(Card[] cards);
 
@@ -103,6 +111,7 @@ public interface GlobalTableManagerInterface extends Remote {
 	/**
 	 * 
 	 * This method is used by the Servlet to create a new Table
+	 * implemented by the GTM
 	 * 
 	 * @param owner
 	 * @return
@@ -114,6 +123,7 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * 
 	 * This method is userd by the Servlet to get a list of all the tables
 	 * 
+	 * 
 	 * @return
 	 * @throws RemoteException
 	 */
@@ -121,44 +131,53 @@ public interface GlobalTableManagerInterface extends Remote {
 
 	/**
 	 * 
-	 * The TableManager component keeps a set of LocalTableManager. When a new
-	 * LocalTableManager wants to join this set is sends a notification to the
+	 * The TableManager component keeps a set of LocalTableManager. 
+	 * When a new LocalTableManager wants to join this set is sends a notification to the
 	 * TableManager
 	 * 
 	 * @param name
 	 * 
 	 * @param localTableManagerAddress
 	 *            is the remote object of the new LocalTableManager.
+	 * @param maxTable is the maximum number of Tables this LTM can manage          
 	 * @return
-	 * 
+	 * the LTM set
 	 * @throws RemoteException
 	 */
-	public void notifyLocalTableManagerSturtup(String name) throws RemoteException;
+	public void notifyLocalTableManagerStartup(LocalTableManagerInterface ltmi, int maxTable) throws RemoteException;
 
+		
 	/**
 	 * 
 	 * The components LocalTableManager uses this method to notify the component
-	 * TableManagerInterface when the Table terminates
+	 * GTM when the Table terminates
 	 * 
 	 * @param tableDescriptor
 	 * @throws RemoteException
 	 */
 	public void notifyTableDestruction(TableDescriptor tableDescriptor) throws RemoteException;
 
+	
 	/**
+	 * called by the LTM on the GTM
 	 * 
 	 * @param tableDescriptor
 	 * @throws RemoteException
+	 * @throws NoSuchTableException 
 	 */
-	public void notifyTableJoin(TableDescriptor tableDescriptor) throws RemoteException;
+	public void notifyTableJoin(TableDescriptor tableDescriptor) throws RemoteException, NoSuchTableException;
 
 	/**
 	 * This method is used by a local table manager to notify the global table
-	 * manager.
+	 * manager. 
 	 * 
-	 * Posso eliminarlo?
+	 * GTM removes LTM from the set
+	 * 
+	 * 
 	 * 
 	 * @param name
 	 */
 	public void notifyLocalTableManagerShutdown(String name) throws RemoteException;
+
+	void notifyLocalTableManagerStartup(String localServerName) throws RemoteException;
 }

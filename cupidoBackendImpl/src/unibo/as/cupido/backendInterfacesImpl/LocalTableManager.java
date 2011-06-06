@@ -16,13 +16,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -96,7 +91,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 			registry = LocateRegistry.getRegistry();
 			registry.bind(name, UnicastRemoteObject.exportObject(this));
-			serverRemote.notifyLocalTableManagerSturtup(name);
+			serverRemote.notifyLocalTableManagerStartup(name);
 
 			/* */
 			tpe = new ThreadPoolExecutor(MAX_TABLE / 2, MAX_TABLE, 10, TimeUnit.SECONDS,
@@ -177,7 +172,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 		}
 	}
 
-	@Override
+
 	public String getAddress() {
 		try {
 			return "[address=" + InetAddress.getLocalHost() + ", registry name=" + name + "]";

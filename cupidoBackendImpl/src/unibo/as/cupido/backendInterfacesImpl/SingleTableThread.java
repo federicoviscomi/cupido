@@ -1,17 +1,17 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.TableDescriptor;
 import unibo.as.cupido.backendInterfaces.TableInterface;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.IllegalMoveException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PositionFullException;
+import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus.PlayerStatus;
 
 /**
  * 
@@ -30,25 +30,42 @@ public class SingleTableThread implements TableInterface, Runnable {
 	private static final int UP = 2;
 	private static final int RIGHT = 3;
 
-	private String[] playersName;
-	private int[] playersScore;
-	private boolean[] isBot;
+	private String[] playersName = new String[4];
+	private int[] playersScore = new int[4];
+	private boolean[] isBot = new boolean[4];
 	private int playersCount = 1;
+	private Card[][] cards = new Card[4][13];
+	private Card[] playedCard = new Card[4];
 
 	public SingleTableThread(ServletNotifcationsInterface snf, LocalTableManager localTableManager, Table table) {
 		this.snf = snf;
 		this.localTableManager = localTableManager;
-		playersName = new String[4];
-		isBot = new boolean[4];
-		playersScore = new int[4];
 
 		java.util.Arrays.fill(playersScore, 0);
 		isBot[OWNER] = false;
 		playersName[OWNER] = table.owner;
+
+		daiCarte();
+	}
+
+	public static void main(String[] args) {
+		Card[][] c = new Card[4][12];
+		Card a = new Card();
+	}
+
+	private void daiCarte() {
+		Card[] mazzo = new Card[52];
+		// for(int i = 0;)
+
+		for (int i = 0; i < 4; i++) {
+			System.out.print("\n " + i + ": ");
+			for (int j = 0; j < 13; j++)
+				System.out.print(cards[i][j] + " ");
+		}
 	}
 
 	@Override
-	public void addBot(String botName, int position) throws PositionFullException {
+	public void addBot(String botName, int position) throws PositionFullException, FullTableException {
 		if (playersCount > 4) {
 			throw new FullTableException();
 		}
@@ -66,9 +83,16 @@ public class SingleTableThread implements TableInterface, Runnable {
 		playersCount++;
 	}
 
+	public class E extends Exception{
+		
+	}
+	
 	@Override
 	public InitialTableStatus joinTable(String playerName, ServletNotifcationsInterface snf) throws FullTableException,
 			NoSuchTableException {
+		
+		
+		
 		if (playersCount > 4) {
 			throw new FullTableException();
 		}
@@ -106,6 +130,7 @@ public class SingleTableThread implements TableInterface, Runnable {
 		for (int i = 0; i < 4; i++)
 			whoIsBot[i] = whoIsBot[(position + i) % 4];
 
+		
 		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
 	}
 
@@ -121,7 +146,6 @@ public class SingleTableThread implements TableInterface, Runnable {
 			throw new IllegalArgumentException("player not found");
 		playersCount--;
 		playersName[position] = null;
-		playersScore[position] = 0; // non e' necessario
 	}
 
 	@Override
@@ -142,16 +166,16 @@ public class SingleTableThread implements TableInterface, Runnable {
 	}
 
 	@Override
-	public void sendMessage(String userName, String message) {
-		// TODO Auto-generated method stub
-
+	public void sendMessage(ChatMessage message) {
+		snf.notifyLocalChatMessage(message);
 	}
 
 	@Override
 	public ObservedGameStatus viewTable(String userName, ServletNotifcationsInterface snf) throws NoSuchTableException {
-		// TODO Auto-generated method stub
-		ObservedGameStatus ogs = new ObservedGameStatus();
-		return ogs;
+		PlayerStatus[] players = new PlayerStatus[4];
+		for (int i = 0; i < 4; i++)
+			players[i] = new PlayerStatus(playersName[i], playersScore[i], playedCard[i], 0, isBot[i]);
+		return new ObservedGameStatus(players);
 	}
 
 }

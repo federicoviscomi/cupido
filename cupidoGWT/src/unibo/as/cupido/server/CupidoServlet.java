@@ -1,6 +1,7 @@
 package unibo.as.cupido.server;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
@@ -21,7 +22,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public String[] viewLastMessages() {
+	public ChatMessage[] viewLastMessages() {
 		// TODO Auto-generated method stub
 		return null;
 	}

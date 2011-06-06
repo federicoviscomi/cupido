@@ -9,27 +9,39 @@ package unibo.as.cupido.backendInterfaces.common;
  */
 public class ObservedGameStatus {
 
-	class PlayerStatus {
-		String name;
+	public ObservedGameStatus(PlayerStatus[] players) {
+		this.players = players;
+	}
+
+	public static class PlayerStatus {
+		public PlayerStatus(String name, int point, Card playedCard, int numOfCardsInHand, boolean isBot) {
+			this.name = name;
+			this.point = point;
+			this.playedCard = playedCard;
+			this.numOfCardsInHand = numOfCardsInHand;
+			this.isBot = isBot;
+		}
+
+		public String name;
 
 		/*
 		 * total player points
 		 */
-		int point;
+		public int point;
 
 		/*
 		 * Card == null means player has not played a card
 		 */
-		Card playedCard;
+		public Card playedCard;
 
-		int numOfCardsInHand;
+		public int numOfCardsInHand;
 
-		boolean isBot;
+		public boolean isBot;
 	}
 
 	/*
 	 * players are ordered clockwise
 	 */
-	PlayerStatus[] players;
+	public PlayerStatus[] players;
 
 }

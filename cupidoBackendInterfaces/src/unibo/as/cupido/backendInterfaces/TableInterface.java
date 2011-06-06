@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.IllegalMoveException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
@@ -13,7 +14,12 @@ import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PositionFullException;
 
 /**
+ *
+ * Used by the Servlet
  * 
+ * implemented by the Table
+ * 
+ * Ther is no polling on the local table chat. 
  * 
  * @author cane
  * 
@@ -22,6 +28,7 @@ public interface TableInterface extends Remote {
 
 	/**
 	 * 
+	 * the Table has to notify the GTM
 	 * 
 	 * @param botName
 	 * @param position
@@ -35,10 +42,11 @@ public interface TableInterface extends Remote {
 
 	/**
 	 * 
+	 * 
 	 * @param userName
 	 * @return
 	 * @throws FullTableException
-	 * @throws NoSuchTableException come puo'?
+	 * @throws NoSuchTableException 
 	 */
 	public InitialTableStatus joinTable(String playerName, ServletNotifcationsInterface snf) throws FullTableException,
 			NoSuchTableException, RemoteException, IllegalArgumentException;
@@ -71,9 +79,11 @@ public interface TableInterface extends Remote {
 	 * 
 	 * @param message
 	 */
-	void sendMessage(String userName, String message) throws RemoteException;
+	void sendMessage(ChatMessage message) throws RemoteException;
 
 	/**
+	 *
+	 * 
 	 * 
 	 * @param userName
 	 * @return

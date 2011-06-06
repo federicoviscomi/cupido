@@ -1,6 +1,5 @@
 package unibo.as.cupido.backendInterfaces;
 
-import java.net.InetAddress;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -26,6 +25,7 @@ public interface LocalTableManagerInterface extends Remote {
 
 	/**
 	 * 
+	 * Called by the Servlet
 	 * Returns the description of the table with id tableId
 	 * 
 	 * @param tableId
@@ -50,6 +50,5 @@ public interface LocalTableManagerInterface extends Remote {
 	 */
 	public int getWorkLoad() throws RemoteException;
 
-	public String getAddress() throws RemoteException;
 
 }

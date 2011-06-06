@@ -6,11 +6,7 @@ import jargs.gnu.CmdLineParser.Option;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.util.Collection;
 import java.util.Set;
-
-import javax.management.openmbean.OpenDataException;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
@@ -81,7 +77,7 @@ public class GlobalTableManagerCommandInterpreterUI {
 											.getAllLocalServer();
 									System.out.format("\n list af all local server follows:");
 									for (LocalTableManagerInterface localServer : allLocalServer) {
-										System.out.format("\n %25s", localServer.getAddress());
+										System.out.format("\n %25s", localServer);
 									}
 								}
 								if (parser.getOptionValue(listTableOption) != null) {

@@ -5,12 +5,10 @@ import java.net.UnknownHostException;
 import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -140,7 +138,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public void notifyLocalTableManagerSturtup(String localServerName) throws RemoteException {
+	public void notifyLocalTableManagerStartup(String localServerName) throws RemoteException {
 		try {
 			localTablesManagers.add((LocalTableManagerInterface) registry.lookup(localServerName));
 			System.out.println(" local table manager added: " + localServerName);
@@ -156,7 +154,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public void notifyTableJoin(TableDescriptor tableDescriptor) throws RemoteException {
+	public void notifyTableJoin(TableDescriptor tableDescriptor) throws RemoteException, NoSuchTableException {
 		if (tables.get(new Table(null, 0, tableDescriptor)) == null) {
 			throw new NoSuchTableException();
 		}
@@ -181,5 +179,11 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void notifyLocalTableManagerStartup(LocalTableManagerInterface ltmi, int maxTable) throws RemoteException {
+		// TODO Auto-generated method stub
+
 	}
 }

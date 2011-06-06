@@ -15,7 +15,10 @@ public class Card {
 
 	public Suit suit;
 	/*
-	 * Cards value range is [1-13]
+	 * 
+	 * Cards value range is [2-14]
+	 * 14 e' l'asso
+	 * 
 	 */
 	public int value;
 }
