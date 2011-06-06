@@ -1,9 +1,5 @@
 package unibo.as.cupido.client;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
