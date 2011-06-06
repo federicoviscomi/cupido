@@ -11,7 +11,7 @@ public class CardWidget extends Image {
 
 	// Constructs a CardWidget that displays the back of a card.
 	public CardWidget() {
-		super("card_back.png");
+		super(constructCardName(null));
 		card = null;
 	}
 	
@@ -25,20 +25,18 @@ public class CardWidget extends Image {
 	}
 	
 	private static String constructCardName(Card card) {
+		final String path_prefix = "classic_cards/";
 		if (card == null)
-			return "back.png";
+			return path_prefix + "back_blue.png";
 		Suit suit = card.suit;
 		int value = card.value;
 		String result = "";
 		assert value >= 1;
 		assert value <= 13;
-		if (value < 10)
-			result = "0" + value;
+		if (value <= 10)
+			result = "" + value;
 		else {
 			switch (value) {
-			case 10:
-				result = "10";
-				break;
 			case 11:
 				result = "jack";
 				break;
@@ -50,7 +48,7 @@ public class CardWidget extends Image {
 				break;
 			}
 		}
-		result += "_of_";
+		result += "_";
 		switch (suit) {
 		case CLUBS:
 			result += "clubs";
@@ -65,7 +63,7 @@ public class CardWidget extends Image {
 			result += "spades";
 			break;
 		}
-		result += ".png";
+		result = path_prefix + result + ".png";
 		return result;
 	}
 }
