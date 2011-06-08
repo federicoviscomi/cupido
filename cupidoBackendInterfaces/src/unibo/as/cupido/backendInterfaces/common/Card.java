@@ -16,9 +16,12 @@ public class Card {
 	public Suit suit;
 	/*
 	 * 
-	 * Cards value range is [2-14]
-	 * 14 e' l'asso
-	 * 
+	 * Cards value range is [1-13]
 	 */
 	public int value;
+
+	@Override
+	public String toString() {
+		return String.format("[%8.8s %2.2s]", suit, value);
+	}
 }

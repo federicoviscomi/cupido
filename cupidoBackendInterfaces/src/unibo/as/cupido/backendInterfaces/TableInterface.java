@@ -1,6 +1,7 @@
 package unibo.as.cupido.backendInterfaces;
 
 import java.rmi.Remote;
+
 import java.rmi.RemoteException;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
@@ -11,15 +12,16 @@ import unibo.as.cupido.backendInterfaces.common.IllegalMoveException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
+import unibo.as.cupido.backendInterfaces.common.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.common.PositionFullException;
 
 /**
- *
+ * 
  * Used by the Servlet
  * 
  * implemented by the Table
  * 
- * Ther is no polling on the local table chat. 
+ * Ther is no polling on the local table chat.
  * 
  * @author cane
  * 
@@ -46,7 +48,7 @@ public interface TableInterface extends Remote {
 	 * @param userName
 	 * @return
 	 * @throws FullTableException
-	 * @throws NoSuchTableException 
+	 * @throws NoSuchTableException
 	 */
 	public InitialTableStatus joinTable(String playerName, ServletNotifcationsInterface snf) throws FullTableException,
 			NoSuchTableException, RemoteException, IllegalArgumentException;
@@ -54,8 +56,9 @@ public interface TableInterface extends Remote {
 	/**
 	 * 
 	 * @param userName
+	 * @throws PlayerNotFoundException
 	 */
-	void leaveTable(String userName) throws RemoteException;
+	void leaveTable(String userName) throws RemoteException, PlayerNotFoundException;
 
 	/**
 	 * 
@@ -82,7 +85,7 @@ public interface TableInterface extends Remote {
 	void sendMessage(ChatMessage message) throws RemoteException;
 
 	/**
-	 *
+	 * 
 	 * 
 	 * 
 	 * @param userName

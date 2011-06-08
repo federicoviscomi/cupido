@@ -9,14 +9,15 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
-import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
+import java.util.Collection;
+
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
+import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
+import unibo.as.cupido.backendInterfaces.TableInterface;
+import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
+import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfacesImpl.LTMSwarm.Triple;
 
 /**
  * 
@@ -29,6 +30,7 @@ import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
  * LocalTableManagers</li>
  * </ul>
  * 
+ * 
  * @author cane
  * 
  */
@@ -38,42 +40,22 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 		new GlobalTableManagerCommandInterpreterUI().execute();
 	}
 
-	/** Stores association between Table and local server RMI name */
-	private Map<Table, String> tables;
+	private AllTables allTables;
 
-	/**
-	 * Stores a queue of local tables managers ordered by their last known
-	 * workload
-	 */
-	private PriorityQueue<LocalTableManagerInterface> localTablesManagers;
+	private LTMSwarm ltmSwarm;
 
 	private Registry registry;
 
-	public GlobalTableManager() {
+	public GlobalTableManager() throws RemoteException {
 		try {
-			tables = new HashMap<GlobalTableManagerInterface.Table, String>();
-			localTablesManagers = new PriorityQueue<LocalTableManagerInterface>(1000,
-					new Comparator<LocalTableManagerInterface>() {
-						public int compare(LocalTableManagerInterface a, LocalTableManagerInterface b) {
-							int workLoadA;
-							try {
-								workLoadA = a.getWorkLoad();
-							} catch (RemoteException e) {
-								workLoadA = 100;
-							}
-							int workLoadB;
-							try {
-								workLoadB = b.getWorkLoad();
-							} catch (RemoteException e) {
-								workLoadB = 100;
-							}
-							return workLoadB - workLoadA;
-						}
-					});
-			registry = LocateRegistry.getRegistry();
+			allTables = new AllTables();
+			ltmSwarm = new LTMSwarm();
+			registry = LocateRegistry.createRegistry(1099);
+			// registry = LocateRegistry.getRegistry();
 			registry.bind(GlobalTableManagerInterface.globalTableManagerName, UnicastRemoteObject.exportObject(this));
-			System.out
-					.println("Global table manager server started correctly at address " + InetAddress.getLocalHost());
+			System.out.println("Global table manager server started correctly at address " + InetAddress.getLocalHost()
+					+ "\n Current thread is " + Thread.currentThread());
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			System.exit(-1);
@@ -88,102 +70,92 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public TableDescriptor createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException {
+	public TableDescriptor createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException,
+			AllLTMBusyException {
 		try {
-			/*
-			 * choose a local table manager according to some load balancing
-			 * policy
-			 */
-			LocalTableManagerInterface choosedTableManager = localTablesManagers.remove();
+			/* chose an LTM according to some load balancing policy */
+			LocalTableManagerInterface chosenLTM = ltmSwarm.chooseLTM();
 
-			/* create table in the choosTableed local table manager */
-			Table table = choosedTableManager.createTable(owner, snf);
+			/* create table in the chosen local table manager */
+			TableInterface tableInterface = chosenLTM.createTable(owner, snf);
+			Table table = new Table(owner, 3, new TableDescriptor(tableInterface.toString(), 0));
 
-			tables.put(table, table.tableDescriptor.server);
-
-			/* updates local table manager workload */
-			localTablesManagers.add(choosedTableManager);
-
+			/* store created table */
+			allTables.addTable(table, chosenLTM);
+			System.out.println("Current thread is " + Thread.currentThread());
 			return table.tableDescriptor;
 		} catch (RemoteException e) {
-			//
+			e.printStackTrace();
+			System.exit(-1);
 		}
 		return null;
 	}
 
-	public LocalTableManagerInterface[] getAllLocalServer() {
-		LocalTableManagerInterface[] allLocalServers = new LocalTableManagerInterface[localTablesManagers.size()];
-		return localTablesManagers.toArray(allLocalServers);
+	public Triple[] getAllLTM() {
+		System.out.println("Current thread is " + Thread.currentThread());
+		return ltmSwarm.getAllLTM();
 	}
 
-	public Set<Table> getTableList() throws RemoteException {
-		return tables.keySet();
-	}
-
-	@Override
-	public void notifyLocalTableManagerShutdown(String name) {
-		// TODO Auto-generated method stub
-		try {
-			localTablesManagers.remove((LocalTableManagerInterface) registry.lookup(name));
-		} catch (AccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public Collection<Pair<Table, LocalTableManagerInterface>> getTableList() throws RemoteException {
+		System.out.println("Current thread is " + Thread.currentThread());
+		return allTables.getAllTables();
 	}
 
 	@Override
-	public void notifyLocalTableManagerStartup(String localServerName) throws RemoteException {
-		try {
-			localTablesManagers.add((LocalTableManagerInterface) registry.lookup(localServerName));
-			System.out.println(" local table manager added: " + localServerName);
-		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void notifyTableDestruction(TableDescriptor tableDescriptor) throws RemoteException {
-		tables.remove(tableDescriptor);
-	}
-
-	@Override
-	public void notifyTableJoin(TableDescriptor tableDescriptor) throws RemoteException, NoSuchTableException {
-		if (tables.get(new Table(null, 0, tableDescriptor)) == null) {
-			throw new NoSuchTableException();
-		}
-		for (Table table : tables.keySet()) {
-			if (table.tableDescriptor.equals(tableDescriptor)) {
-				table.freePosition--;
-				return;
-			}
-		}
-	}
-
-	public void shutDown() {
-		try {
-			registry.unbind(globalTableManagerName);
-		} catch (AccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void notifyLocalTableManagerShutdown(LocalTableManagerInterface ltm) {
+		System.out.println("Current thread is " + Thread.currentThread());
+		ltmSwarm.remove(ltm);
 	}
 
 	@Override
 	public void notifyLocalTableManagerStartup(LocalTableManagerInterface ltmi, int maxTable) throws RemoteException {
-		// TODO Auto-generated method stub
+		System.out.println("Current thread is " + Thread.currentThread());
+		ltmSwarm.addLTM(ltmi, maxTable);
+	}
 
+	@Override
+	public void notifyTableDestruction(TableDescriptor tableDescriptor, LocalTableManagerInterface ltm)
+			throws RemoteException {
+		System.out.println("Current thread is " + Thread.currentThread());
+		allTables.removeTable(tableDescriptor);
+		ltmSwarm.decreaseTableCount(ltm);
+	}
+
+	@Override
+	public void notifyTableJoin(TableDescriptor tableDescriptor) throws RemoteException, NoSuchTableException {
+		System.out.println("Current thread is " + Thread.currentThread());
+		allTables.decreaseFreePosition(tableDescriptor);
+	}
+
+	@Override
+	public char[] ping() throws RemoteException {
+		try {
+			System.out.println("Current thread is " + Thread.currentThread());
+			Thread.sleep(500);
+			return "pong".toCharArray();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void shutDown() {
+		try {
+			System.out.println("Current thread is " + Thread.currentThread());
+			registry.unbind(globalTableManagerName);
+			for (LocalTableManagerInterface ltmi : ltmSwarm) {
+				ltmi.notifyGTMShutDown();
+			}
+		} catch (AccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -1,5 +1,16 @@
 package unibo.as.cupido.server;
 
+import java.net.InetAddress;
+
+import java.rmi.Remote;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+
+import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
+import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
+import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
@@ -13,13 +24,19 @@ import unibo.as.cupido.client.TableInterface;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class CupidoServlet extends RemoteServiceServlet implements
-		CupidoInterface, GlobalChatInterface, TableInterface {
+public class CupidoServlet extends RemoteServiceServlet implements CupidoInterface, GlobalChatInterface, TableInterface {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	
+	
+	public CupidoServlet() {
+		GlobalTableManagerInterface.ServletNotifcationsInterface a;
+		
+	}
 
 	@Override
 	public ChatMessage[] viewLastMessages() {
@@ -70,15 +87,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public InitialTableStatus joinTable(String server, int tableId)
-			throws FullTableException, NoSuchTableException {
+	public InitialTableStatus joinTable(String server, int tableId) throws FullTableException, NoSuchTableException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ObservedGameStatus viewTable(String server, int tableId)
-			throws NoSuchTableException {
+	public ObservedGameStatus viewTable(String server, int tableId) throws NoSuchTableException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -66,8 +66,7 @@ public class LocalTableManagerCommandInterpreterUI {
 						String[] command = parser.getRemainingArgs();
 						if (command.length == 1) {
 							if (command[0].equals("start")) {
-								localTableManager = new LocalTableManager(
-										(String) parser.getOptionValue(globalServerAddress));
+								localTableManager = new LocalTableManager();
 							} else if (command[0].equals("exit")) {
 								exit(0);
 							} else if (command[0].equals("create")) {

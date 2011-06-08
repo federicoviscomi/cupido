@@ -6,10 +6,13 @@ import jargs.gnu.CmdLineParser.Option;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.Set;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
+import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfacesImpl.LTMSwarm.Triple;
 
 /**
  * 
@@ -72,31 +75,32 @@ public class GlobalTableManagerCommandInterpreterUI {
 							} else if (command[0].equals("exit")) {
 								exit(0);
 							} else if (command[0].equals("list")) {
-								if (parser.getOptionValue(listLocalManagersOtion) != null) {
-									LocalTableManagerInterface[] allLocalServer = globalTableManager
-											.getAllLocalServer();
+								boolean listLTM = (parser.getOptionValue(listLocalManagersOtion) == null ? false : true);
+								boolean listTables = (parser.getOptionValue(listTableOption) == null ? false : true);
+								if (listLTM) {
+									Triple[] allLocalServer = globalTableManager.getAllLTM();
 									System.out.format("\n list af all local server follows:");
-									for (LocalTableManagerInterface localServer : allLocalServer) {
+									for (Triple localServer : allLocalServer) {
 										System.out.format("\n %25s", localServer);
 									}
 								}
-								if (parser.getOptionValue(listTableOption) != null) {
-									Set<Table> tableList = globalTableManager.getTableList();
+								if (listTables) {
+									Collection<Pair<Table, LocalTableManagerInterface>> tableList = globalTableManager
+											.getTableList();
 									System.out.format("\n list af all tables follows:");
-									for (Table table : tableList) {
+									for (Pair<Table, LocalTableManagerInterface> table : tableList) {
 										System.out.format("\n %25s", table);
 									}
 								}
-								if (parser.getOptionValue(listTableOption) == null
-										&& parser.getOptionValue(listLocalManagersOtion) == null) {
-									System.out.println("nothing to list?");
+								if (!listLTM && !listTables) {
+									System.out.println(" nothing to list?");
 								}
 							}
 						} else {
-							System.out.println("Syntax error");
+							System.err.println("Syntax error");
 						}
 					} catch (CmdLineParser.OptionException e) {
-						e.printStackTrace();
+						System.err.println(e.getLocalizedMessage());
 					}
 				}
 			}

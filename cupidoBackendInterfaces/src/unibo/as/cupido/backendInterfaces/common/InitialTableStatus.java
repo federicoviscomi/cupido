@@ -6,12 +6,6 @@ package unibo.as.cupido.backendInterfaces.common;
  */
 public class InitialTableStatus {
 
-	public InitialTableStatus(String[] opponents, int[] playerPoints, boolean[] whoIsBot) {
-		this.opponents = opponents;
-		this.playerPoints = playerPoints;
-		this.whoIsBot = whoIsBot;
-	}
-
 	/**
 	 * Opponents are sorted clockwise (game is clockwise) opponents.lenght is
 	 * always 3 opponents[i]==null means there is no i-th player opponents[0] is
@@ -33,4 +27,10 @@ public class InitialTableStatus {
 	 * 
 	 */
 	public boolean[] whoIsBot;
+
+	public InitialTableStatus(String[] opponents, int[] playerPoints, boolean[] whoIsBot) {
+		this.opponents = opponents;
+		this.playerPoints = playerPoints;
+		this.whoIsBot = whoIsBot;
+	}
 }

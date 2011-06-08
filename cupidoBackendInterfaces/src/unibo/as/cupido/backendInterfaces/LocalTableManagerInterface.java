@@ -1,5 +1,6 @@
 package unibo.as.cupido.backendInterfaces;
 
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -19,36 +20,21 @@ public interface LocalTableManagerInterface extends Remote {
 	 * table
 	 * 
 	 * @param owner
-	 * @return the table id
+	 * @return 
 	 */
-	public Table createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException;
+	public TableInterface createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException;
 
-	/**
+
+	/***
 	 * 
-	 * Called by the Servlet
-	 * Returns the description of the table with id tableId
+	 * The Servlet uses this method to get the remote reference to the component
+	 * who manages the table tableId
 	 * 
-	 * @param tableId
 	 * 
 	 * @return
 	 */
-	public Table getTable(int tableId) throws RemoteException;
+	public TableInterface getTable(int tableId) throws RemoteException;
 
-	/**
-	 * The component TableManager uses this method in order to:
-	 * <ul>
-	 * <li>know if a LocalTableManager component is alive</li>
-	 * <li>ask a LocalTableManager how much of its resources it is using</li>
-	 * </ul>
-	 * 
-	 * 
-	 * @return is the LocalTableManager component is alive returns the
-	 *         percentage of its resources it is using
-	 * @throws RemoteException
-	 *             if the LocalTableManger is not alive anymore
-	 * 
-	 */
-	public int getWorkLoad() throws RemoteException;
-
+	public void notifyGTMShutDown() throws RemoteException;
 
 }
