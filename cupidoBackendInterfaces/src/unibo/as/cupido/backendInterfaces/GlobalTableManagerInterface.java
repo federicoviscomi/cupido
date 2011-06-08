@@ -35,6 +35,11 @@ public interface GlobalTableManagerInterface extends Remote {
 
 		public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint);
 
+		/**
+		 * A che serve l'argomento?
+		 * 
+		 * @param cards
+		 */
 		public void notifyGameStarted(Card[] cards);
 
 		/**
@@ -48,6 +53,14 @@ public interface GlobalTableManagerInterface extends Remote {
 
 		public void notifyPlayedCard(Card card, int playerPosition);
 
+		/**
+		 * Perche' la servlet dovrebbe sapere se il giocatore e' un bot? 
+		 * 
+		 * @param name
+		 * @param isBot
+		 * @param point
+		 * @param position
+		 */
 		public void notifyPlayerJoined(String name, boolean isBot, int point, int position);
 
 		public void notifyPlayerLeft(String name);

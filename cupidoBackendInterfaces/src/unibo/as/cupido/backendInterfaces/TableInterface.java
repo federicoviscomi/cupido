@@ -32,6 +32,7 @@ public interface TableInterface extends Remote {
 	 * 
 	 * the Table has to notify the GTM
 	 * 
+	 * 
 	 * @param botName
 	 * @param position
 	 * @throws PositionFullException
@@ -54,6 +55,9 @@ public interface TableInterface extends Remote {
 			NoSuchTableException, RemoteException, IllegalArgumentException;
 
 	/**
+	 * Can a bot leave the table? Cosa succede se un utente o un bot lasciano il
+	 * tavolo mentre si stanno scambiando le carte? e mentre la partita e'
+	 * iniziata?
 	 * 
 	 * @param userName
 	 * @throws PlayerNotFoundException
@@ -61,13 +65,22 @@ public interface TableInterface extends Remote {
 	void leaveTable(String userName) throws RemoteException, PlayerNotFoundException;
 
 	/**
+	 * The user <code>userName</code> passes cards <code>cards</code> to the
+	 * player next to him.
 	 * 
 	 * @param cards
-	 *            cards.length must be 3
-	 * @throws IllegalMoveException
-	 * 
+	 *            the cards passed
+	 * @throws IllegalArgumentException
+	 *             <ul>
+	 *             <li>if some argument is <code>null</code></li>
+	 *             <li>if <code>cards</code> length is not 3</li>
+	 *             <li>if the user <code>userName</code> does not own the cards
+	 *             he wants to pass</li>
+	 *             <li>if the user <code>userName</code> does not exists</li>
+	 *             </ul>
+	 * @throws RemoteException
 	 */
-	void passCards(String userName, Card[] cards) throws IllegalMoveException, RemoteException;
+	void passCards(String userName, Card[] cards) throws IllegalArgumentException, RemoteException;
 
 	/**
 	 * 

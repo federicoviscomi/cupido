@@ -112,7 +112,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 		try {
 			System.out.println("Current thread is " + Thread.currentThread());
 			Table newTable = new Table(owner, 3, null, nextId++);
-			return (TableInterface) UnicastRemoteObject.exportObject(new SingleTableManager(snf, this, newTable));
+			return (TableInterface) UnicastRemoteObject.exportObject(new SingleTableManager(snf, newTable, gtmRemote));
 		} catch (RejectedExecutionException e) {
 			e.printStackTrace();
 		}

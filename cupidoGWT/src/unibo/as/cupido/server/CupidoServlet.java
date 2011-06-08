@@ -35,7 +35,7 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 	
 	public CupidoServlet() {
 		GlobalTableManagerInterface.ServletNotifcationsInterface a;
-		
+		// UnicastRemoteObject a;
 	}
 
 	@Override
