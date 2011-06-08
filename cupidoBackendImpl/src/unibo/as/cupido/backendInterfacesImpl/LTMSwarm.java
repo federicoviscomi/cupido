@@ -5,7 +5,6 @@ import java.util.PriorityQueue;
 
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
-import unibo.as.cupido.backendInterfacesImpl.LTMSwarm.Triple;
 
 public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 

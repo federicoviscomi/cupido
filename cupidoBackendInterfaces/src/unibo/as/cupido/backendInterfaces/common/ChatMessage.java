@@ -1,6 +1,8 @@
 package unibo.as.cupido.backendInterfaces.common;
 
-public class ChatMessage {
+import java.io.Serializable;
+
+public class ChatMessage implements Serializable {
 	
 	public String userName;
 	

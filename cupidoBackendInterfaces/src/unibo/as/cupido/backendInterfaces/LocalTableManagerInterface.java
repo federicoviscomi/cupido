@@ -5,7 +5,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 
 /**
  * 

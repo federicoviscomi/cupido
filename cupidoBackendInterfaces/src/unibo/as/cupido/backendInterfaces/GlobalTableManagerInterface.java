@@ -2,11 +2,7 @@ package unibo.as.cupido.backendInterfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteStub;
 import java.util.Collection;
-import java.util.Set;
-
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.TableDescriptor;
 import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;

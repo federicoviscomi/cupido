@@ -1,6 +1,5 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
-import java.nio.channels.IllegalSelectorException;
 import java.rmi.RemoteException;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;

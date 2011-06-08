@@ -3,13 +3,13 @@
  */
 package unibo.as.cupido.backendInterfaces.common;
 
-import unibo.as.cupido.backendInterfaces.common.Card.Suit;
+import java.io.Serializable;
 
 /**
  * @author Lorenzo Belli
  * 
  */
-public class Card {
+public class Card implements Serializable {
 
 	public enum Suit {
 		DIAMONDS, SPADES, HEARTS, CLUBS
@@ -33,6 +33,21 @@ public class Card {
 
 	@Override
 	public String toString() {
-		return String.format("[%8.8s %2.2s]", suit, value);
+		String stringSuit = "";
+		switch (suit) {
+		case CLUBS:
+			stringSuit = "CLUBS";
+			break;
+		case DIAMONDS:
+			stringSuit = "DIAMONDS";
+			break;
+		case HEARTS:
+			stringSuit = "HEARTS";
+			break;
+		case SPADES:
+			stringSuit = "SPADES";
+			break;
+		}
+		return "[" + stringSuit + " " + value + "]";
 	}
 }

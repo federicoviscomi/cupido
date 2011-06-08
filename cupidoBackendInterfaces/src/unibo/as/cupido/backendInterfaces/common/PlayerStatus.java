@@ -1,6 +1,8 @@
 package unibo.as.cupido.backendInterfaces.common;
 
-public class PlayerStatus {
+import java.io.Serializable;
+
+public class PlayerStatus implements Serializable {
 	public String name;
 
 	/*
@@ -16,6 +18,9 @@ public class PlayerStatus {
 	public int numOfCardsInHand;
 
 	public boolean isBot;
+	
+	public PlayerStatus() {
+	}
 
 	public PlayerStatus(String name, int point, Card playedCard, int numOfCardsInHand, boolean isBot) {
 		this.name = name;

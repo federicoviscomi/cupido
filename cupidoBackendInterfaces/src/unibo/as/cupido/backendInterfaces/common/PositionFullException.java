@@ -1,6 +1,8 @@
 package unibo.as.cupido.backendInterfaces.common;
 
-public class PositionFullException extends Exception {
+import java.io.Serializable;
+
+public class PositionFullException extends Exception implements Serializable {
 
 	/**
 	 * 
