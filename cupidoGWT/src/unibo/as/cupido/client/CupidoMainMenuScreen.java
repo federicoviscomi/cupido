@@ -12,14 +12,14 @@ public class CupidoMainMenuScreen extends AbsolutePanel {
 	
 	/// This is null when the user is not logged in.
 	private String username;
-	private final ScreenSwitcherInterface screenSwitcher;
+	private final ScreenSwitcher screenSwitcher;
 
 	/**
 	 *  The width of the chat sidebar.
 	 */
 	public static final int chatWidth = 300;
 
-	public CupidoMainMenuScreen(final ScreenSwitcherInterface screenSwitcher, String username) {
+	public CupidoMainMenuScreen(final ScreenSwitcher screenSwitcher, String username) {
 		this.screenSwitcher = screenSwitcher;
 		this.username = username;
 		setHeight(Cupido.height + "px");

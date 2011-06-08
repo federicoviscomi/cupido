@@ -1,6 +1,6 @@
 package unibo.as.cupido.client;
 
-public interface ScreenSwitcherInterface {
+public interface ScreenSwitcher {
 	
 	/**
 	 * Shows the main menu screen instead of the current one.
@@ -27,4 +27,9 @@ public interface ScreenSwitcherInterface {
 	 * @param e the exception that generated the error.
 	 */
 	public void displayGeneralErrorScreen(Exception e);
+
+	/**
+	 * Shows the loading screen instead of the current one.
+	 */
+	public void displayLoadingScreen();
 }

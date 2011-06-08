@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.Label;
 
 public class CupidoObservedTableScreen extends AbsolutePanel {
 
-	public CupidoObservedTableScreen(ScreenSwitcherInterface screenSwitcher,
+	public CupidoObservedTableScreen(ScreenSwitcher screenSwitcher,
 			String username) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "700px");

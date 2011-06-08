@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.Label;
 
 public class CupidoScoresScreen extends AbsolutePanel {
 
-	public CupidoScoresScreen(ScreenSwitcherInterface screenSwitcher) {
+	public CupidoScoresScreen(ScreenSwitcher screenSwitcher) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 		Label label = new HTML("<b>Scores scteen (TODO)</b>");

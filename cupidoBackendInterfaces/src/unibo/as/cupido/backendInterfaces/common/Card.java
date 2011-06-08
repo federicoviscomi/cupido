@@ -3,11 +3,13 @@
  */
 package unibo.as.cupido.backendInterfaces.common;
 
+import java.io.Serializable;
+
 /**
  * @author Lorenzo Belli
  * 
  */
-public class Card {
+public class Card implements Serializable {
 
 	public enum Suit {
 		DIAMONDS, SPADES, HEARTS, CLUBS

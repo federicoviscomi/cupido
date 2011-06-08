@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 
 public class CupidoGeneralErrorScreen extends AbsolutePanel {
 
-	public CupidoGeneralErrorScreen(ScreenSwitcherInterface screenSwitcher, Exception e) {
+	public CupidoGeneralErrorScreen(ScreenSwitcher screenSwitcher, Exception e) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 		

@@ -1,9 +1,13 @@
 package unibo.as.cupido.backendInterfaces.common;
 
+import java.io.Serializable;
+
 /*
  * InitialTableStatus is the status of the game before the cards are dealt (may have less than 4 player)
  */
-public class InitialTableStatus {
+public class InitialTableStatus implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/*
 	 * Opponents are sorted clockwise (game is clockwise) opponents.lenght is

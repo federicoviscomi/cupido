@@ -1,5 +1,9 @@
 package unibo.as.cupido.server;
 
+import javax.servlet.http.HttpSession;
+
+import net.zschech.gwt.comet.server.CometServlet;
+import net.zschech.gwt.comet.server.CometSession;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
@@ -7,13 +11,10 @@ import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PositionFullException;
 import unibo.as.cupido.client.CupidoInterface;
-import unibo.as.cupido.client.GlobalChatInterface;
-import unibo.as.cupido.client.TableInterface;
-
+import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class CupidoServlet extends RemoteServiceServlet implements
-		CupidoInterface, GlobalChatInterface, TableInterface {
+public class CupidoServlet extends RemoteServiceServlet implements CupidoInterface {
 
 	/**
 	 * 
@@ -27,9 +28,26 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void sendMessage(String message) {
+	public void sendGlobalChatMessage(String message) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void sendLocalChatMessage(String message) {
+		
+		// FIXME: This implementation does *not* really work, it is only meant
+		// for debugging purposes.
+		// It only displays the user's own messages.
+		
+        CometSession cometSession = (CometSession) getServletContext().getAttribute("cometSession");
+        String username = (String) getServletContext().getAttribute("username");
+
+        System.out.println("Servlet: Sending back the message to the client.");
+        NewLocalChatMessage x = new NewLocalChatMessage();
+        x.message = message;
+        x.user = username;
+    	cometSession.enqueue(x);
 	}
 
 	@Override
@@ -106,4 +124,22 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	}
 
+	@Override
+	public void openCometConnection() {
+		
+        System.out.println("Servlet: Opening a Comet connession...");
+
+        // Get or create the HTTP session for the browser
+        HttpSession httpSession = getThreadLocalRequest().getSession();
+
+        // Get or create the Comet session for the browser
+        CometSession cometSession = CometServlet.getCometSession(httpSession);
+        
+        getServletContext().setAttribute("cometSession", cometSession);
+		
+		// FIXME: Use the correct username.
+        getServletContext().setAttribute("username", "pippo");
+
+        System.out.println("Servlet: Comet connession opened.");
+	}
 }

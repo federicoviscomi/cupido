@@ -1,6 +1,8 @@
 package unibo.as.cupido.backendInterfaces.common;
 
-public class FullTableException extends Exception {
+import java.io.Serializable;
+
+public class FullTableException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

@@ -1,9 +1,17 @@
 package unibo.as.cupido.client;
 
+import net.zschech.gwt.comet.client.CometSerializer;
+import net.zschech.gwt.comet.client.SerialTypes;
+import unibo.as.cupido.shared.cometNotification.CardPassed;
+import unibo.as.cupido.shared.cometNotification.CardPlayed;
+import unibo.as.cupido.shared.cometNotification.GameEnded;
+import unibo.as.cupido.shared.cometNotification.GameStarted;
+import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
+import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
+import unibo.as.cupido.shared.cometNotification.PlayerLeft;
+
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -12,102 +20,19 @@ public class Cupido implements EntryPoint {
 	
 	static final int width = 900;
 	static final int height = 700;
-	
-	AbsolutePanel mainPanel = null;
-	Widget currentScreen = null;
-	// This is used to check that no screen switches occur while switching screen.
-	boolean switchingScreen = false;
-
-	/// This is null when the user is not logged in.
-	String username;
-	
-	ScreenSwitcherInterface screenSwitcher = null;
-	
+		
+    @SerialTypes( { CardPassed.class, CardPlayed.class, GameEnded.class, GameStarted.class,
+        NewLocalChatMessage.class, NewPlayerJoined.class, PlayerLeft.class })
+    public static abstract class CupidoCometSerializer extends CometSerializer {
+    }
+    
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		mainPanel = new AbsolutePanel();
-		mainPanel.setHeight(height + "px");
-		mainPanel.setWidth(width + "px");
-		RootPanel.get("mainContainer").add(mainPanel);
-		
-		screenSwitcher = new ScreenSwitcherInterface() {
-			
-			public void removeCurrentScreen() {
-				if (currentScreen == null)
-					return;
-				if (currentScreen instanceof CupidoMainMenuScreen)
-					// Update the `username' field on login and logout.
-					username = ((CupidoMainMenuScreen) currentScreen).getUsername();
-				mainPanel.remove(currentScreen);
-			}
+		ScreenSwitcherImpl screenSwitcher = new ScreenSwitcherImpl();
+		RootPanel.get("mainContainer").add(screenSwitcher);
 
-			@Override
-			public void displayMainMenuScreen() {
-				assert !switchingScreen;
-				switchingScreen = true;
-				
-				removeCurrentScreen();
-				currentScreen = new CupidoMainMenuScreen(screenSwitcher, username);
-				mainPanel.add(currentScreen, 0, 0);
-				
-				switchingScreen = false;
-			}
-
-			@Override
-			public void displayScoresScreen() {
-				assert !switchingScreen;
-				switchingScreen = true;
-				
-				removeCurrentScreen();
-				assert username != null;
-				mainPanel.remove(currentScreen);
-				currentScreen = new CupidoScoresScreen(screenSwitcher);
-				mainPanel.add(currentScreen, 0, 0);
-				
-				switchingScreen = false;
-			}
-
-			@Override
-			public void displayTableScreen() {
-				assert !switchingScreen;
-				switchingScreen = true;
-				
-				removeCurrentScreen();
-				assert username != null;
-				currentScreen = new CupidoTableScreen(screenSwitcher, username);
-				mainPanel.add(currentScreen, 0, 0);
-				
-				switchingScreen = false;
-			}
-
-			@Override
-			public void displayObservedTableScreen() {
-				assert !switchingScreen;
-				switchingScreen = true;
-				
-				removeCurrentScreen();
-				assert username != null;
-				currentScreen = new CupidoObservedTableScreen(screenSwitcher, username);
-				mainPanel.add(currentScreen, 0, 0);
-				
-				switchingScreen = false;
-			}
-
-			@Override
-			public void displayGeneralErrorScreen(Exception e) {
-				assert !switchingScreen;
-				switchingScreen = true;
-
-				removeCurrentScreen();
-				currentScreen = new CupidoGeneralErrorScreen(screenSwitcher, e);
-				mainPanel.add(currentScreen, 0, 0);
-				
-				switchingScreen = false;
-			}
-		};
-		
-		screenSwitcher.displayMainMenuScreen();
+		screenSwitcher.displayLoadingScreen();
 	}
 }

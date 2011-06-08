@@ -21,10 +21,17 @@ public class LocalChatWidget extends AbsolutePanel {
 	private TextBox messageField;
 	private PushButton sendButton;
 	private String username;
+	
+	private MessageSender messageSender;
+	
+	public interface MessageSender {
+		public void sendMessage(String message);
+	}
 
-	LocalChatWidget(final String username) {
+	LocalChatWidget(final String username, MessageSender messageSender) {
 
 		this.username = username;
+		this.messageSender = messageSender;
 		
 		int bottomRowHeight = 30;
 
@@ -72,20 +79,30 @@ public class LocalChatWidget extends AbsolutePanel {
 		// Rewrite this method when the servlet is ready.
 		if (messageField.getText().equals(""))
 			return;
+		
+		String message = messageField.getText();
+		
+		messageSender.sendMessage(message);
 
+		// TODO: Check if this should be called or not.
+		// displayMessage(username, message);
+
+		messageField.setText("");
+		messageField.setFocus(true);
+	}
+	
+	public void displayMessage(String username, String message) {
+		
 		String messages = messageList.getHTML();
 		
 		SafeHtmlBuilder x = new SafeHtmlBuilder();
 		x.appendHtmlConstant("<p><b>");
 		x.appendEscaped(username);
 		x.appendHtmlConstant("</b>: ");
-		x.appendEscaped(messageField.getText());
+		x.appendEscaped(message);
 		x.appendHtmlConstant("</p>");
 		messages = messages + x.toSafeHtml().asString();
 		messageList.setHTML(messages);
 		messagesPanel.scrollToBottom();
-
-		messageField.setText("");
-		messageField.setFocus(true);
 	}
 }

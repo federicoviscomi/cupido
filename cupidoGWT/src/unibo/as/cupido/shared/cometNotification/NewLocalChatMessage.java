@@ -5,8 +5,11 @@ import java.io.Serializable;
 public class NewLocalChatMessage implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	public NewLocalChatMessage() {
+		
+	}
 
-	String user;
-	String message;
-
+	public String user;
+	public String message;
 }

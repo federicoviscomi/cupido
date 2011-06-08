@@ -1,5 +1,7 @@
 package unibo.as.cupido.backendInterfaces.common;
 
+import java.io.Serializable;
+
 /**
  * 
  * Contains the information that an observer needs when he joins a table
@@ -7,9 +9,10 @@ package unibo.as.cupido.backendInterfaces.common;
  * @author cane
  * 
  */
-public class ObservedGameStatus {
+public class ObservedGameStatus implements Serializable {
 
-	class PlayerStatus {
+	static class PlayerStatus implements Serializable {
+		
 		String name;
 
 		/*
