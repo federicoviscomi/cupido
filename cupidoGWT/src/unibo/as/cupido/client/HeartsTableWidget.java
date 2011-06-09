@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
+import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
@@ -21,34 +23,48 @@ public class HeartsTableWidget extends AbsolutePanel {
 		// FIXME: Initialize the widget with the correct values.
 		// These values are only meant for debugging purposes.
 		
-		CardsGameWidget.PlayersCards playersCards = new CardsGameWidget.PlayersCards();
+		ObservedGameStatus observedGameStatus = new ObservedGameStatus();
 		
-		playersCards.hands = new ArrayList<List<Card>>();
-		for (int i = 0; i < 4; i++)
-			playersCards.hands.add(new ArrayList<Card>());
-		playersCards.dealt = new ArrayList<List<Card>>();
-		for (int i = 0; i < 4; i++)
-			playersCards.dealt.add(new ArrayList<Card>());
+		observedGameStatus.ogs = new PlayerStatus[4];
 		
-		for (int j = 0; j < 13; j++)
-			playersCards.hands.get(0).add(new Card(j + 1, Card.Suit.HEARTS));
-		for (int j = 0; j < 13; j++)
-			playersCards.hands.get(1).add(null);
-		for (int j = 0; j < 13; j++)
-			playersCards.hands.get(2).add(null);
-		for (int j = 0; j < 13; j++)
-			playersCards.hands.get(3).add(null);
+		// Bottom player
+		observedGameStatus.ogs[0] = new PlayerStatus();
+		observedGameStatus.ogs[0].isBot = false;
+		observedGameStatus.ogs[0].name = "bottom player name";
+		observedGameStatus.ogs[0].numOfCardsInHand = 13;
+		observedGameStatus.ogs[0].playedCard = new Card(11, Card.Suit.SPADES);
+		observedGameStatus.ogs[0].score = 1234;
 		
-		for (int j = 0; j < 3; j++)
-			playersCards.dealt.get(0).add(new Card(j + 1, Card.Suit.HEARTS));
-		for (int j = 0; j < 1; j++)
-			playersCards.dealt.get(1).add(new Card(j + 1, Card.Suit.SPADES));
-		for (int j = 0; j < 1; j++)
-			playersCards.dealt.get(2).add(new Card(j + 1, Card.Suit.DIAMONDS));
-		for (int j = 0; j < 1; j++)
-			playersCards.dealt.get(3).add(new Card(j + 1, Card.Suit.CLUBS));
+		// Left player
+		observedGameStatus.ogs[1] = new PlayerStatus();
+		observedGameStatus.ogs[1].isBot = false;
+		observedGameStatus.ogs[1].name = "left player name";
+		observedGameStatus.ogs[1].numOfCardsInHand = 13;
+		observedGameStatus.ogs[1].playedCard = new Card(11, Card.Suit.HEARTS);
+		observedGameStatus.ogs[1].score = 1234;
 		
-		CardsGameWidget x = new CardsGameWidget(tableSize, playersCards);
-		add(x, 0, 0);
+		// Top player
+		observedGameStatus.ogs[2] = new PlayerStatus();
+		observedGameStatus.ogs[2].isBot = true;
+		observedGameStatus.ogs[2].name = null;
+		observedGameStatus.ogs[2].numOfCardsInHand = 5;
+		observedGameStatus.ogs[2].playedCard = new Card(1, Card.Suit.HEARTS);
+		observedGameStatus.ogs[2].score = 1234;
+		
+		// Right player
+		observedGameStatus.ogs[3] = new PlayerStatus();
+		observedGameStatus.ogs[3].isBot = false;
+		observedGameStatus.ogs[3].name = "right player name";
+		observedGameStatus.ogs[3].numOfCardsInHand = 13;
+		observedGameStatus.ogs[3].playedCard = null;
+		observedGameStatus.ogs[3].score = 1234;
+		
+		Card[] bottomPlayerCards = new Card[13];
+				
+		for (int i = 0; i < 13; i++)
+			bottomPlayerCards[i] = new Card(i + 1, Card.Suit.CLUBS);
+		
+		CardsGameWidget x = new CardsGameWidget(tableSize, observedGameStatus, bottomPlayerCards);
+		add(x, 0, 0);		
 	}
 }

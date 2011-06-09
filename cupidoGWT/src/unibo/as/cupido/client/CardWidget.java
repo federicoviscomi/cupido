@@ -75,12 +75,16 @@ public class CardWidget extends Image {
 	}
 	
 	public void setCard(Card newCard) {
-		this.card = newCard;
+		if (card == newCard)
+			return;
 		setUrl(constructCardName(card, rotation));
+		this.card = newCard;
 	}
 	
-	public void setRotation(int rotation) {
-		this.rotation = rotation;
+	public void setRotation(int newRotation) {
+		if (rotation == newRotation)
+			return;
+		this.rotation = newRotation;
 		setUrl(constructCardName(card, rotation));
 	}
 	

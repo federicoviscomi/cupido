@@ -1,25 +1,44 @@
 package unibo.as.cupido.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.HashMap;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
+import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
+
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class CardsGameWidget extends AbsolutePanel {
 	
-	private PlayersCards cards;
+	/**
+	 * The positions of the cards on the table.
+	 */
+	private Map<CardWidget,Position> cardPositions;
 	
 	/**
-	 * The positions of the cards (both hands' cards and dealt cards) on the table.
+	 * The roles of the cards on the table.
 	 */
-	private CardPositions cardPositions;
+	private Map<CardWidget,CardRole> cardRoles;
 	
 	/**
-	 * The widgets displaying the cards (both hands' cards and dealt cards) on the table.
+	 * The widgets displaying the cards on the table.
+	 * The relative order of values is not meaningful.
 	 */
-	private CardWidgets cardWidgets;
+	private List<CardWidget> cardWidgets;
+	
+	/**
+	 * Informations about the players. The first element refers to the bottom player, and
+	 * the other elements are sorted clockwise.
+	 */
+	private List<PlayerData> players;
 
 	/**
 	 * The size of the table (width and height) in pixels.
@@ -31,7 +50,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * 
 	 * @author marco
 	 */
-	static class Position {
+	private static class Position {
 		
 		public Position() {
 		}
@@ -67,81 +86,123 @@ public class CardsGameWidget extends AbsolutePanel {
 		public int rotation;
 	}
 	
-	static class CardPositions {
-		public List<List<Position>> hands;
-		public List<List<Position>> dealt;
-	}
-	
-	static class CardWidgets {
-		public List<List<CardWidget>> hands;
-		public List<List<CardWidget>> dealt;
-	}
-	
-	static class PlayersCards {
-		/**
-		 * 	The players' hands. hands[0] is the hand of the bottom player, and the other players
-		 *  follow in clockwise order.
-		 *  
-		 *  A `null' means a covered card.
-		 */
-		List<List<Card>> hands;
+	public static class CardRole {
+		@Override
+		public int hashCode() {
+			assert player >= 0;
+			assert player < 4;
+			switch (state) {
+			case HAND:
+				return player;
+			case DEALT:
+				return player + 4;
+			}
+			throw new IllegalStateException();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj != null && obj instanceof CardRole) {
+				CardRole x = (CardRole) obj;
+				return (player == x.player && state == x.state);
+			} else
+				return false;
+		}
+
+		public enum State {
+			HAND, DEALT
+		}
 		
 		/**
-		 * 	The cards dealt by each player in the current trick.
-		 *  dealt[0] are the cards dealt by the bottom player, and the other players' cards
-		 *  follow in clockwise order.
-		 *  
-		 *  A `null' means a covered card.
+		 * The state of the card (see the State enum).
 		 */
-		List<List<Card>> dealt;
+		public State state;
+		
+		/**
+		 * The player to whom the card belongs.
+		 */
+		public int player;
+		
+		public CardRole() {
+			
+		}
+
+		public CardRole(State state, int player) {
+			this.state = state;
+			this.player = player;
+		}
+	}
+	
+	private class PlayerData {
+		public String name;
+		public boolean isBot;
+		public int score;
 	}
 	
 	/**
 	 * 
 	 * @param tableSize The width and height of this widget.
-	 * @param playersCards
-	 *     The players' cards. playersCards[0] are the cards of the bottom player, and the other players
-	 *     follow in clockwise order. A `null' element means a covered card.
+	 * @param gameStatus The game status, except the cards of the bottom player (if they are shown).
+	 * @param bottomPlayerCards The cards of the bottom player. If this is null, the cards are covered,
+	 *                          and their number is extracted from gameStatus.
 	 */
-	public CardsGameWidget(int tableSize, PlayersCards cards) {
+	public CardsGameWidget(int tableSize, ObservedGameStatus gameStatus, Card[] bottomPlayerCards) {
 		
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 		DOM.setStyleAttribute(getElement(), "background", "green");
 		
 		this.tableSize = tableSize;
-		this.cards = cards;
 		
-		cardPositions = computePositions(cards, tableSize);
+		cardWidgets = new ArrayList<CardWidget>();		
+		cardRoles = new HashMap<CardWidget,CardRole>();
 		
-		cardWidgets = new CardWidgets();
-		cardWidgets.hands = new ArrayList<List<CardWidget>>();
-		cardWidgets.hands.add(new ArrayList<CardWidget>());
-		cardWidgets.hands.add(new ArrayList<CardWidget>());
-		cardWidgets.hands.add(new ArrayList<CardWidget>());
-		cardWidgets.hands.add(new ArrayList<CardWidget>());
-		cardWidgets.dealt = new ArrayList<List<CardWidget>>();
-		cardWidgets.dealt.add(new ArrayList<CardWidget>());
-		cardWidgets.dealt.add(new ArrayList<CardWidget>());
-		cardWidgets.dealt.add(new ArrayList<CardWidget>());
-		cardWidgets.dealt.add(new ArrayList<CardWidget>());
-		
+		// Fill cardWidgets and cardRoles, using gameStatus and bottomPlayerCards.
 		for (int player = 0; player < 4; player++) {
-			for (int i = 0; i < cards.hands.get(player).size(); i++) {
-				CardWidget x = new CardWidget(cards.hands.get(player).get(i));
-				cardWidgets.hands.get(player).add(x);
-				add(x, 0, 0);
-				setCardPosition(x, cardPositions.hands.get(player).get(i));
+			PlayerStatus playerStatus = gameStatus.ogs[player];
+			
+			PlayerData playerData = new PlayerData();
+			playerData.isBot = playerStatus.isBot;
+			playerData.name = playerStatus.name;
+			playerData.score = playerStatus.score;
+			
+			if (player == 0 && bottomPlayerCards != null) {
+				for (Card card: bottomPlayerCards) {
+					// Set the correct rotation right away, to avoid loading the not-rotated
+					// image first.
+					CardWidget cardWidget = new CardWidget(card, 0);
+					cardWidgets.add(cardWidget);
+					cardRoles.put(cardWidget, new CardRole(CardRole.State.HAND, player));
+					add(cardWidget, 0, 0);
+				}
+			} else {
+				for (int i = 0; i < playerStatus.numOfCardsInHand; i++) {
+					// Set the correct rotation right away, to avoid loading the not-rotated
+					// image first.
+					CardWidget cardWidget = new CardWidget(null, 90 * player);
+					cardWidgets.add(cardWidget);
+					cardRoles.put(cardWidget, new CardRole(CardRole.State.HAND, player));
+					add(cardWidget, 0, 0);
+				}
 			}
-			for (int i = 0; i < cards.dealt.get(player).size(); i++) {
-				CardWidget x = new CardWidget(cards.dealt.get(player).get(i));
-				cardWidgets.dealt.get(player).add(x);
-				add(x, 0, 0);
-				setCardPosition(x, cardPositions.dealt.get(player).get(i));
+			
+			if (playerStatus.playedCard != null) {
+				// Set the correct rotation right away, to avoid loading the not-rotated
+				// image first.
+				CardWidget cardWidget = new CardWidget(playerStatus.playedCard, 90 * player);
+				cardWidgets.add(cardWidget);
+				cardRoles.put(cardWidget, new CardRole(CardRole.State.DEALT, player));
+				add(cardWidget, 0, 0);
 			}
 		}
+		
+		cardPositions = computePositions(cardWidgets, cardRoles, tableSize);
+		
+		// Lay out the widgets according to cardPositions.
+		for (CardWidget x : cardWidgets)
+			setCardPosition(x, cardPositions.get(x));
 	}
-
+	
 	private void setCardPosition(CardWidget x, Position position) {
 		int rotation = position.rotation;
 		x.setRotation(rotation);
@@ -163,7 +224,20 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * @param offset
 	 * @return
 	 */
-	private static List<Position> computePositionsHelper(List<Card> cards, int offset, int tableSize) {
+	private static List<Position> computePositionsHelper(List<CardWidget> cards, CardRole.State state, int tableSize) {
+		int offset;
+		
+		switch (state) {
+		case DEALT:
+			offset = 260;
+			break;
+		case HAND:
+			offset = 70;
+			break;
+		default:
+			throw new IllegalStateException();
+		}
+		
 		List<Position> positions = new ArrayList<Position>();
 		
 		int maxCenterDistance;
@@ -178,32 +252,97 @@ public class CardsGameWidget extends AbsolutePanel {
 		
 		return positions;
 	}
-
-	private static CardPositions computePositions(PlayersCards cards, int tableSize) {
+	
+	private static void sortCardWidgets(List<CardWidget> list) {
 		
-		final int handsOffset = 70;
-		final int dealtOffset = 260;
-		
-		CardPositions cardPositions = new CardPositions();
-		cardPositions.hands = new ArrayList<List<Position>>();
-		cardPositions.dealt = new ArrayList<List<Position>>();
-		
-		for (int player = 0; player < 4; player++) {
-			List<Position> handPosition = computePositionsHelper(cards.hands.get(player),
-                    handsOffset, tableSize);
-			List<Position> dealtPosition = computePositionsHelper(cards.dealt.get(player),
-					dealtOffset, tableSize);
-			for (int i = 0; i < player; i++) {
-				rotatePositions(handPosition, tableSize);
-				rotatePositions(dealtPosition, tableSize);
+		Collections.sort(list, new Comparator<CardWidget>() {
+			private int compareSuit(Card.Suit x, Card.Suit y) {
+				// HEARTS < SPADES < DIAMONDS < CLUBS
+				if (x == y)
+					return 0;
+				if (x == Card.Suit.HEARTS)
+					return -1;
+				if (y == Card.Suit.HEARTS)
+					return 1;
+				if (x == Card.Suit.SPADES)
+					return -1;
+				if (y == Card.Suit.SPADES)
+					return 1;
+				if (x == Card.Suit.DIAMONDS)
+					return -1;
+				if (y == Card.Suit.DIAMONDS)
+					return 1;
+				throw new IllegalStateException();
 			}
-			cardPositions.hands.add(handPosition);
-			cardPositions.dealt.add(dealtPosition);
+			
+			@Override
+			public int compare(CardWidget widget1, CardWidget widget2) {
+				
+				Card x = widget1.getCard();
+				Card y = widget2.getCard();
+				
+				if (x == null) {
+					if (y == null)
+						return 0;
+					else
+						return -1;
+				}
+				
+				if (y == null)
+					return 1;
+				
+				int suitResult = compareSuit(x.suit, y.suit);
+				
+				if (suitResult != 0)
+					return suitResult;
+				
+				if (x.value == y.value)
+					return 0;
+				
+				// The ace is displayed after the king, instead of before the 2.
+				if (x.value == 1)
+					return 1;
+				
+				if (x.value < y.value)
+					return -1;
+				else
+					return 1;
+			}
+		});
+	}
+
+	private static Map<CardWidget,Position> computePositions(List<CardWidget> cards,
+			Map<CardWidget,CardRole> cardRoles, int tableSize) {
+				
+		// 1. Calculate the list of card widgets for each role.
+		
+		Map<CardRole,List<CardWidget>> widgetByRole = new HashMap<CardRole,List<CardWidget>>();
+		
+		for (CardWidget cardWidget : cards) {
+			CardRole role = cardRoles.get(cardWidget);
+			if (!widgetByRole.containsKey(role))
+				widgetByRole.put(role, new ArrayList<CardWidget>());
+			
+			widgetByRole.get(role).add(cardWidget);
 		}
 		
-		for (int player = 0; player < 4; player++) {
-			assert cards.hands.get(player).size() == cardPositions.hands.get(player).size();
-			assert cards.dealt.get(player).size() == cardPositions.dealt.get(player).size();
+		// 2. Sort the list of card widget for each role
+		
+		for (List<CardWidget> x : widgetByRole.values())
+			sortCardWidgets(x);
+		
+		// 3. Actually calculate the positions.
+		
+		Map<CardWidget,Position> cardPositions = new HashMap<CardWidget,Position>();
+		
+		for (CardRole role : widgetByRole.keySet()) {
+			List<CardWidget> widgets = widgetByRole.get(role);
+			List<Position> positions = computePositionsHelper(widgets, role.state, tableSize);
+			for (int i = 0; i < role.player; i++)
+				rotatePositions(positions, tableSize);
+			assert widgets.size() == positions.size();
+			for (int i = 0; i < positions.size(); i++)
+				cardPositions.put(widgets.get(i), positions.get(i));
 		}
 		
 		return cardPositions;
@@ -222,5 +361,4 @@ public class CardsGameWidget extends AbsolutePanel {
 			position.y = y;
 		}
 	}
-
 }
