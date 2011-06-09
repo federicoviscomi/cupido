@@ -1,9 +1,17 @@
 package unibo.as.cupido.backendInterfaces.common;
 
-public class Pair<T1, T2> {
+import java.io.Serializable;
+
+public class Pair<T1, T2> implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+
 	public T1 first;
 
 	public T2 second;
+	
+	public Pair() {
+	}
 
 	public Pair(T1 first, T2 second) {
 		this.first = first;
