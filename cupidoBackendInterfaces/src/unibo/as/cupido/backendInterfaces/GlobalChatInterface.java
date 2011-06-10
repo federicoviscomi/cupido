@@ -7,9 +7,8 @@ import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 
 /**
  * 
- * used by the Servlet
- * implemented by the global chat component
- * the Servlet polls the global chat 
+ * used by the Servlet implemented by the global chat component the Servlet
+ * polls the global chat
  * 
  * @author
  * 
@@ -22,7 +21,7 @@ public interface GlobalChatInterface extends Remote {
 	 * 
 	 * 
 	 * 
-	 * @return the last MESSAGE_NUMBER messages 
+	 * @return the last MESSAGE_NUMBER messages
 	 */
 	public ChatMessage[] getLastMessages() throws RemoteException;
 

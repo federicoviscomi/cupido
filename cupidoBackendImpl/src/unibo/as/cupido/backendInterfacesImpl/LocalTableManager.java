@@ -1,6 +1,5 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -113,7 +112,6 @@ public class LocalTableManager implements LocalTableManagerInterface {
 		return null;
 	}
 
-	
 	@Override
 	public TableInterface getTable(int tableId) {
 		// TODO Auto-generated method stub

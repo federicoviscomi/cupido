@@ -1,6 +1,5 @@
 package unibo.as.cupido.backendInterfaces;
 
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -19,10 +18,9 @@ public interface LocalTableManagerInterface extends Remote {
 	 * table
 	 * 
 	 * @param owner
-	 * @return 
+	 * @return
 	 */
 	public TableInterface createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException;
-
 
 	/***
 	 * 

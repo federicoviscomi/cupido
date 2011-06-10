@@ -15,8 +15,15 @@ public class ToNotify {
 		snfList = new HashMap<String, ServletNotifcationsInterface>(4);
 	}
 
+	public void notifyBotJoined(String botName, int position) {
+		for (ServletNotifcationsInterface snfs : snfList.values()) {
+			// System.out.println(snfs);
+			snfs.notifyPlayerJoined(botName, true, 0, position);
+		}
+	}
+
 	public void notifyCardPassed(Card[] cards, String name) {
-		snfList.get(name).notifyPlassedCards(cards);
+		snfList.get(name).notifyPassedCards(cards);
 	}
 
 	public void notifyCardPlayed(String userName, Card card, int playerPosition) {
@@ -26,24 +33,17 @@ public class ToNotify {
 		}
 	}
 
-	public void notifyMessageSent(ChatMessage message) {
-		for (Entry<String, ServletNotifcationsInterface> snf : snfList.entrySet()) {
-			if (!snf.getKey().equals(message.userName))
-				snf.getValue().notifyLocalChatMessage(message);
-		}
-	}
-
-	public void remove(String playerName) {
-		snfList.remove(playerName);
-		for (ServletNotifcationsInterface snf : snfList.values()) {
-			snf.notifyPlayerLeft(playerName);
-		}
-	}
-
 	public void notifyGameStarted(String userName) {
 		for (Entry<String, ServletNotifcationsInterface> snf : snfList.entrySet()) {
 			if (!snf.getKey().equals(userName))
 				snf.getValue().notifyGameStarted(null);
+		}
+	}
+
+	public void notifyMessageSent(ChatMessage message) {
+		for (Entry<String, ServletNotifcationsInterface> snf : snfList.entrySet()) {
+			if (!snf.getKey().equals(message.userName))
+				snf.getValue().notifyLocalChatMessage(message);
 		}
 	}
 
@@ -56,10 +56,10 @@ public class ToNotify {
 		snfList.put(name, snf);
 	}
 
-	public void notifyBotJoined(String botName, int position) {
-		for (ServletNotifcationsInterface snfs : snfList.values()) {
-			// System.out.println(snfs);
-			snfs.notifyPlayerJoined(botName, true, 0, position);
+	public void remove(String playerName) {
+		snfList.remove(playerName);
+		for (ServletNotifcationsInterface snf : snfList.values()) {
+			snf.notifyPlayerLeft(playerName);
 		}
 	}
 

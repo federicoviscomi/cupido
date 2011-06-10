@@ -21,7 +21,7 @@ public class AllTables {
 	}
 
 	public void decreaseFreePosition(TableDescriptor tableDescriptor) {
-		allTables.get(tableDescriptor).first.freePosition--;		
+		allTables.get(tableDescriptor).first.freePosition--;
 	}
 
 	public Collection<Pair<Table, LocalTableManagerInterface>> getAllTables() {

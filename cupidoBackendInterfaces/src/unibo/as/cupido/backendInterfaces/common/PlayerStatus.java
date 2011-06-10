@@ -18,7 +18,7 @@ public class PlayerStatus implements Serializable {
 	public int numOfCardsInHand;
 
 	public boolean isBot;
-	
+
 	public PlayerStatus() {
 	}
 

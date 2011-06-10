@@ -50,20 +50,19 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 		try {
 			allTables = new AllTables();
 			ltmSwarm = new LTMSwarm();
-			registry = LocateRegistry.createRegistry(1099);
-			// registry = LocateRegistry.getRegistry();
+			System.setSecurityManager(new SecurityManager());
+			// registry = LocateRegistry.createRegistry(1099);
+			registry = LocateRegistry.getRegistry();
 			registry.bind(GlobalTableManagerInterface.globalTableManagerName, UnicastRemoteObject.exportObject(this));
 			System.out.println("Global table manager server started correctly at address " + InetAddress.getLocalHost()
 					+ "\n Current thread is " + Thread.currentThread());
-
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			System.exit(-1);
-		} catch (AlreadyBoundException e) {
+		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.exit(-1);
-		} catch (UnknownHostException e) {
+		} catch (AlreadyBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -27,7 +27,7 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * @author cane
 	 * 
 	 */
-	public  interface ServletNotifcationsInterface extends Remote {
+	public interface ServletNotifcationsInterface extends Remote {
 
 		public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint);
 
@@ -45,12 +45,12 @@ public interface GlobalTableManagerInterface extends Remote {
 		 */
 		public void notifyLocalChatMessage(ChatMessage message);
 
-		public void notifyPlassedCards(Card[] cards);
+		public void notifyPassedCards(Card[] cards);
 
 		public void notifyPlayedCard(Card card, int playerPosition);
 
 		/**
-		 * Perche' la servlet dovrebbe sapere se il giocatore e' un bot? 
+		 * Perche' la servlet dovrebbe sapere se il giocatore e' un bot?
 		 * 
 		 * @param name
 		 * @param isBot

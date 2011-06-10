@@ -1,17 +1,17 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.Random;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.Card.Suit;
 
-public class CardsManager {
+public class CardsManager3 {
 
-	ArrayList<Card>[] cards;
+	Card[] cards;
 	private Card[][] allPassedCards;
+	private int passed;
 	Card[] cardPlayed;
 	private int playedCardsCount;
 
@@ -36,19 +36,17 @@ public class CardsManager {
 		}
 	};
 	private static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
+	private static final Card donnaDiPicche = new Card(12, Card.Suit.SPADES);
 
-	@SuppressWarnings("unchecked")
-	public CardsManager() {
-		cards = new ArrayList[4];
-		for (int i = 0; i < 4; i++)
-			cards[i] = new ArrayList<Card>(13);
+	public CardsManager3() {
+		cards = new Card[52];
 		allPassedCards = new Card[4][];
 		daiCarte();
 		playingFirst = whoHasTwoOfClubs();
 	}
 
 	public boolean allPlayerPassedCards() {
-		return Arrays.asList(allPassedCards).contains(null);
+		return passed == 4;
 	}
 
 	public boolean allPlayerPlayedCards() {
@@ -56,28 +54,21 @@ public class CardsManager {
 	}
 
 	private void daiCarte() {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 13; j++) {
-				Card card = new Card();
-				card.suit = Card.Suit.values()[i];
-				card.value = j + 1;
-				cards[i].add(card);
-			}
-		}
-	
-		Random random = new Random(System.currentTimeMillis());
-		for (int i = 0; i < 26; i++) {
-			int randPlayer1 = random.nextInt(4);
-			int randPlayer2 = random.nextInt(4);
-			int randCard1 = random.nextInt(13);
-			int randCard2 = random.nextInt(13);
-			Card temp = cards[randPlayer1].get(randCard1);
-			cards[randPlayer1].set(randCard1, cards[randPlayer2].get(randCard2));
-			cards[randPlayer2].set(randCard2, temp);
+		for (int i = 0, j = 0; i < 52; i++) {
+			cards[i] = new Card();
+			cards[i].suit = Card.Suit.values()[j];
+			cards[i].value = i % 13;
+			if ((i % 13) == 0)
+				j++;
 		}
 
-		for (int i = 0; i < 4; i++) {
-			Collections.sort(cards[i], cardsComparator);
+		Random random = new Random(System.currentTimeMillis());
+		for (int i = 0; i < 26; i++) {
+			int rand1 = random.nextInt(52);
+			int rand2 = random.nextInt(52);
+			Card temp = cards[rand1];
+			cards[rand1] = cards[rand2];
+			cards[rand2] = temp;
 		}
 	}
 
@@ -85,30 +76,36 @@ public class CardsManager {
 		if (card.suit.ordinal() == Card.Suit.HEARTS.ordinal()) {
 			return 1;
 		}
-		if (card.suit.ordinal() == Card.Suit.SPADES.ordinal() && card.value == 12) {
+		if (card.suit.ordinal() == Card.Suit.CLUBS.ordinal() && card.value == 12) {
 			return 13;
 		}
 		return 0;
 	}
 
 	public void passCards() {
-		for (int i = 0; i < 4; i++) {
-			cards[i].addAll(Arrays.asList(allPassedCards[(i - 1) % 4]));
+		for (int i = 0, nextCard = 0; i < 52; i++, nextCard = nextCard % 3) {
+			if (cards[i] == null)
+				cards[i] = allPassedCards[((i % 13) - 1) % 4][nextCard++];
 		}
 	}
 
 	public void playCard(int playerPosition, Card card) {
-		if (!cards[playerPosition].remove(card)) {
+		/* checks it the player owns the card */
+		int p = java.util.Arrays.binarySearch(cards, playerPosition * 13, (playerPosition) * 13, card, cardsComparator);
+		if (p < 0)
 			throw new IllegalArgumentException("User " + playerPosition + " does not own card " + card);
-		}
+		cards[p] = null;
 		cardPlayed[playerPosition] = card;
 		if (playedCardsCount == 4) {
 
 			/* decide who takes this hand cards */
-			int maxPosition = playingFirst;
+			Card[] cardPlayedCopy = java.util.Arrays.copyOf(cardPlayed, 4);
+			java.util.Arrays.sort(cardPlayedCopy, winnerComparator);
+			Card winningCard = cardPlayedCopy[4];
 			for (int i = 0; i < 4; i++) {
-				if (winnerComparator.compare(cardPlayed[i], cardPlayed[maxPosition]) > 0)
-					maxPosition = i;
+				if (cardPlayed[i].equals(winningCard)) {
+					playingFirst = i;
+				}
 			}
 
 			/* calculate this hand point */
@@ -119,30 +116,38 @@ public class CardsManager {
 		playedCardsCount = (playedCardsCount + 1) % 4;
 	}
 
-	@SuppressWarnings("boxing")
 	public void print(PlayersManager playersManager) {
 		for (int i = 0; i < 4; i++) {
 			System.out.format("\n name=%10.10s, isBot=%5.5b, cardsInHand=%2.2s, score=%3.3s, cards= ",
 					playersManager.getPlayerName(i), playersManager.isBot(i), "playersManager.numOfCardsInHand(i)",
 					playersManager.getScore(i));
-			System.out.print(java.util.Arrays.toString(cards[i].toArray()));
+			System.out.print(java.util.Arrays.toString(cards));
 		}
 	}
 
 	public void setCardPassing(int position, Card[] passedCards) throws IllegalArgumentException {
-		// cards[position].removeAll(Arrays.asList(passedCards));
-		// cards[(position + 1) % 4].addAll(Arrays.asList(passedCards));
+		/* check if the player owns the cards he wants to pass */
+		sortCards(passedCards);
 		for (int i = 0; i < 3; i++) {
-			if (!cards[position].remove(passedCards[i]))
+			int p = java.util.Arrays.binarySearch(cards, (position) * 13, (position + 1) * 13, passedCards[i],
+					cardsComparator);
+			if (p < 0)
 				throw new IllegalArgumentException();
+			cards[p] = null;
 		}
-		allPassedCards[position] = passedCards;
+		this.allPassedCards[position] = passedCards;
+		passed++;
+	}
+
+	private void sortCards(Card[] cards) {
+		java.util.Arrays.sort(cards, cardsComparator);
 	}
 
 	private int whoHasTwoOfClubs() {
 		for (int i = 0; i < 4; i++) {
-			if (cards[i].contains(twoOfClubs))
+			if (java.util.Arrays.binarySearch(cards, i * 13, (i + 1) * 13, twoOfClubs, cardsComparator) >= 0) {
 				return i;
+			}
 		}
 		return -1;
 	}

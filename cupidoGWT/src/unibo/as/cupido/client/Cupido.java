@@ -17,15 +17,15 @@ import com.google.gwt.user.client.ui.RootPanel;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Cupido implements EntryPoint {
-	
+
 	static final int width = 900;
 	static final int height = 700;
-		
-    @SerialTypes( { CardPassed.class, CardPlayed.class, GameEnded.class, GameStarted.class,
-        NewLocalChatMessage.class, NewPlayerJoined.class, PlayerLeft.class })
-    public static abstract class CupidoCometSerializer extends CometSerializer {
-    }
-    
+
+	@SerialTypes({ CardPassed.class, CardPlayed.class, GameEnded.class, GameStarted.class, NewLocalChatMessage.class,
+			NewPlayerJoined.class, PlayerLeft.class })
+	public static abstract class CupidoCometSerializer extends CometSerializer {
+	}
+
 	/**
 	 * This is the entry point method.
 	 */

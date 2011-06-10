@@ -1,10 +1,23 @@
 package unibo.as.cupido.server;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
+import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
+
 import javax.servlet.http.HttpSession;
 
+import net.sourceforge.htmlunit.corejs.javascript.tools.shell.Global;
 import net.zschech.gwt.comet.server.CometServlet;
 import net.zschech.gwt.comet.server.CometSession;
+import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
@@ -23,11 +36,87 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 	 */
 	private static final long serialVersionUID = 1L;
 
-	
-	
+	ServletNotifcationsInterface sni = new ServletNotifcationsInterface() {
+
+		@Override
+		public void notifyPlayerLeft(String name) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyPlayerJoined(String name, boolean isBot, int point, int position) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyPlayedCard(Card card, int playerPosition) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyPassedCards(Card[] cards) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyLocalChatMessage(ChatMessage message) {
+			System.out.println("Servlet: received a notification from the backend. Sending it to the client...");
+			// cometSession.enqueue(message);
+		}
+
+		@Override
+		public void notifyGameStarted(Card[] cards) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
+			// TODO Auto-generated method stub
+
+		}
+	};
+
+	private CometSession cometSession;
+
 	public CupidoServlet() {
-		GlobalTableManagerInterface.ServletNotifcationsInterface a;
-		// UnicastRemoteObject a;
+
+		// System.setSecurityManager(new java.rmi.RMISecurityManager());
+		// System.setSecurityManager(new SecurityManager());
+
+		try {
+			Registry registry = LocateRegistry.getRegistry();
+			GlobalTableManagerInterface backend = (GlobalTableManagerInterface) Naming.lookup("rmi://localhost/"
+					+ GlobalTableManagerInterface.globalTableManagerName);
+			System.out.println(backend.ping());
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// System.out.println(this + "Registry found :" + registry);
+		// GlobalTableManagerInterface gtm = (GlobalTableManagerInterface)
+		// registry.lookup(GlobalTableManagerInterface.globalTableManagerName);
+		// System.out.println(this + "Located GTM: " +
+		// registry.lookup(GlobalTableManagerInterface.globalTableManagerName));
+		// System.out.println("Servlet: calling backend.foo()...");
+		// sbackend.createTable("Cane", sni);
+		// HttpSession httpSession = getThreadLocalRequest().getSession();
+		// Get or create the Comet session for the browser
+		// cometSession = CometServlet.getCometSession(httpSession);
+		// UnicastRemoteObject.exportObject(sni);
+		// System.out.println(backend.createTable("cane", sni));
+
 	}
 
 	@Override
@@ -44,19 +133,20 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 
 	@Override
 	public void sendLocalChatMessage(String message) {
-		
+
 		// FIXME: This implementation does *not* really work, it is only meant
 		// for debugging purposes.
 		// It only displays the user's own messages.
-		
-        CometSession cometSession = (CometSession) getServletContext().getAttribute("cometSession");
-        String username = (String) getServletContext().getAttribute("username");
 
-        System.out.println("Servlet: Sending back the message to the client.");
-        NewLocalChatMessage x = new NewLocalChatMessage();
-        x.message = message;
-        x.user = username;
-    	cometSession.enqueue(x);
+		CometSession cometSession = (CometSession) getServletContext().getAttribute("cometSession");
+		String username = (String) getServletContext().getAttribute("username");
+
+		System.out.println("Servlet: Sending back the message to the client.");
+		NewLocalChatMessage x = new NewLocalChatMessage();
+		x.message = message;
+		
+		x.user = username;
+		cometSession.enqueue(x);
 	}
 
 	@Override
@@ -133,20 +223,21 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 
 	@Override
 	public void openCometConnection() {
-		
-        System.out.println("Servlet: Opening a Comet connession...");
 
-        // Get or create the HTTP session for the browser
-        HttpSession httpSession = getThreadLocalRequest().getSession();
+		System.out.println("Servlet: Opening a Comet connession...");
 
-        // Get or create the Comet session for the browser
-        CometSession cometSession = CometServlet.getCometSession(httpSession);
-        
-        getServletContext().setAttribute("cometSession", cometSession);
-		
+		// Get or create the HTTP session for the browser
+		HttpSession httpSession = getThreadLocalRequest().getSession();
+
+		// Get or create the Comet session for the browser
+		CometSession cometSession = CometServlet.getCometSession(httpSession);
+
+		getServletContext().setAttribute("cometSession", cometSession);
+
 		// FIXME: Use the correct username.
-        getServletContext().setAttribute("username", "pippo");
+		getServletContext().setAttribute("username", "pippo");
 
-        System.out.println("Servlet: Comet connession opened.");
+		System.out.println("Servlet: Comet connession opened.");
 	}
+
 }

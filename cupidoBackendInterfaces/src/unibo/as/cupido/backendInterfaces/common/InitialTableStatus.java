@@ -1,6 +1,5 @@
 package unibo.as.cupido.backendInterfaces.common;
 
-
 import java.io.Serializable;
 
 /**
@@ -32,7 +31,7 @@ public class InitialTableStatus implements Serializable {
 	 * 
 	 */
 	public boolean[] whoIsBot;
-	
+
 	public InitialTableStatus() {
 	}
 
