@@ -5,7 +5,6 @@ import unibo.as.cupido.backendInterfaces.common.Card.Suit;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 
 public class CardWidget extends Image {
@@ -75,10 +74,12 @@ public class CardWidget extends Image {
 	}
 	
 	public void setCard(Card newCard) {
-		if (card == newCard)
+		if (card == null && newCard == null)
 			return;
-		setUrl(constructCardName(card, rotation));
+		if (card != null && newCard != null && card.suit == newCard.suit && card.value == newCard.value)
+			return;
 		this.card = newCard;
+		setUrl(constructCardName(card, rotation));
 	}
 	
 	public void setRotation(int newRotation) {
