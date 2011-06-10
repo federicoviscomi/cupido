@@ -11,6 +11,8 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -182,8 +184,22 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 	
 	public interface GameEventListener {
+		/**
+		 * This is called before starting an animation.
+		 */
 		public void onAnimationStart();
+		
+		/**
+		 * This is called when an animation finishes.
+		 */
 		public void onAnimationEnd();
+		
+		/**
+		 * This is called when the user clicks on a card.
+		 * @player: the player to whom the card belongs
+		 * @card: the card that was clicked, or `null' if a covered card was clicked.
+		 */
+		public void onCardClicked(int player, Card card, CardRole.State state);
 	}
 	
 	/**
@@ -271,6 +287,19 @@ public class CardsGameWidget extends AbsolutePanel {
 		movableWidgets.playerNames.get(1).setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		movableWidgets.playerNames.get(2).setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		movableWidgets.playerNames.get(3).setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+		
+		// Bind the card widgets to the listener.
+		{
+			final CardsGameWidget cardsGameWidget = this;
+			for (final CardWidget cardWidget : movableWidgets.cards)
+				cardWidget.addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						CardRole role = cardsGameWidget.cardRoles.get(cardWidget);
+						cardsGameWidget.listener.onCardClicked(role.player, cardWidget.getCard(), role.state);
+					}
+				});
+		}
 		
 		tableLayout = computePositions(movableWidgets, cardRoles, tableSize);
 		

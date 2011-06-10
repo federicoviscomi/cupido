@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class HeartsTableWidget extends AbsolutePanel {
 	
 	private ScreenSwitcher screenSwitcher;
+	private CardsGameWidget cardsGameWidget;
 	
 	/**
 	 * 
@@ -88,7 +89,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		});
 		controllerPanel.add(exitButton);
 		
-		final CardsGameWidget x = new CardsGameWidget(tableSize, observedGameStatus, bottomPlayerCards,
+		cardsGameWidget = new CardsGameWidget(tableSize, observedGameStatus, bottomPlayerCards,
 				                                      controllerPanel, new CardsGameWidget.GameEventListener() {			
 			@Override
 			public void onAnimationStart() {
@@ -98,22 +99,17 @@ public class HeartsTableWidget extends AbsolutePanel {
 			@Override
 			public void onAnimationEnd() {
 				exitButton.setEnabled(true);
-			}});
-		add(x, 0, 0);
-		
-		System.out.println("Dealing the first card");
-		x.dealCard(3, new Card(11, Suit.CLUBS), new GWTAnimation.AnimationCompletedListener() {
-			
+			}
 			@Override
-			public void onComplete() {
-				System.out.println("Dealing the second card");
-				x.dealCard(3, new Card(12, Suit.SPADES), new GWTAnimation.AnimationCompletedListener() {
-					
-					@Override
-					public void onComplete() {
-					}
-				});
+			public void onCardClicked(int player, Card card, CardsGameWidget.CardRole.State state) {
+				if (card != null && state == CardsGameWidget.CardRole.State.HAND)
+					cardsGameWidget.dealCard(player, card, new GWTAnimation.AnimationCompletedListener() {
+						@Override
+						public void onComplete() {
+						}
+					});
 			}
 		});
+		add(cardsGameWidget, 0, 0);
 	}
 }
