@@ -7,26 +7,10 @@ import java.util.Comparator;
 import java.util.Random;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.IllegalMoveException;
+import unibo.as.cupido.backendInterfacesImpl.SingleTableManager.GameStatus;
 
 public class CardsManager {
-
-	ArrayList<Card>[] cards;
-	private Card[][] allPassedCards;
-	Card[] cardPlayed;
-	private int playedCardsCount;
-
-	/* the player who starts the hand */
-	int playingFirst;
-	private Comparator<Card> winnerComparator = new Comparator<Card>() {
-		@Override
-		public int compare(Card o1, Card o2) {
-			int firstSuit = cardPlayed[playingFirst].suit.ordinal();
-			int value1 = (o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14 : o1.value);
-			int value2 = (o2.suit.ordinal() == firstSuit ? 1 : 0) * (o2.value == 1 ? 14 : o2.value);
-			return value1 - value2;
-		}
-	};
-	private int currentHandPoints;
 
 	private static final Comparator<Card> cardsComparator = new Comparator<Card>() {
 		@Override
@@ -35,16 +19,44 @@ public class CardsManager {
 					- (o2.suit.ordinal() * 13 + (o2.value == 1 ? 14 : o2.value));
 		}
 	};
+	
 	private static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
+	private Card[][] allPassedCards;
+	Card[] cardPlayed;
+	ArrayList<Card>[] cards;
+	private int currentTurnPoints;
+	private int playedCardsCount;
+	int playingFirst;
+	int turn;
+	boolean brokenHearted;
+	private final Comparator<Card> winnerComparator = new Comparator<Card>() {
+		@Override
+		public int compare(Card o1, Card o2) {
+			int firstSuit = cardPlayed[playingFirst].suit.ordinal();
+			return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14 : o1.value))
+					- ((o2.suit.ordinal() == firstSuit ? 1 : 0) * (o2.value == 1 ? 14 : o2.value));
+		}
+	};
 
 	@SuppressWarnings("unchecked")
 	public CardsManager() {
+		dealCards();
+		allPassedCards = new Card[4][];
+		playingFirst = whoHasTwoOfClubs();
+	}
+
+	private void dealCards() {
 		cards = new ArrayList[4];
 		for (int i = 0; i < 4; i++)
 			cards[i] = new ArrayList<Card>(13);
-		allPassedCards = new Card[4][];
-		daiCarte();
-		playingFirst = whoHasTwoOfClubs();
+		Card[] mazzo = new Card[52];
+		for (int i = 0; i < 52; i++) {
+			mazzo[i] = new Card(i % 13 + 1, Card.Suit.values()[i % 4]);
+		}
+		Collections.shuffle(Arrays.asList(mazzo), new Random(System.currentTimeMillis()));
+		for (int i = 0; i < 52; i++) {
+			cards[i % 4].add(mazzo[i]);
+		}		
 	}
 
 	public boolean allPlayerPassedCards() {
@@ -55,40 +67,24 @@ public class CardsManager {
 		return playedCardsCount == 4;
 	}
 
-	private void daiCarte() {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 13; j++) {
-				Card card = new Card();
-				card.suit = Card.Suit.values()[i];
-				card.value = j + 1;
-				cards[i].add(card);
-			}
-		}
-	
-		Random random = new Random(System.currentTimeMillis());
-		for (int i = 0; i < 26; i++) {
-			int randPlayer1 = random.nextInt(4);
-			int randPlayer2 = random.nextInt(4);
-			int randCard1 = random.nextInt(13);
-			int randCard2 = random.nextInt(13);
-			Card temp = cards[randPlayer1].get(randCard1);
-			cards[randPlayer1].set(randCard1, cards[randPlayer2].get(randCard2));
-			cards[randPlayer2].set(randCard2, temp);
-		}
+	public static void main(String args[]) {
+		new CardsManager().print();
+	}
 
+	private void print() {
 		for (int i = 0; i < 4; i++) {
 			Collections.sort(cards[i], cardsComparator);
+			System.out.println((cards[i]));
 		}
 	}
 
-	private int getCardPoints(Card card) {
-		if (card.suit.ordinal() == Card.Suit.HEARTS.ordinal()) {
-			return 1;
-		}
-		if (card.suit.ordinal() == Card.Suit.SPADES.ordinal() && card.value == 12) {
-			return 13;
-		}
-		return 0;
+
+	public int getPoints() {
+		return currentTurnPoints;
+	}
+
+	public int getWinner() {
+		return playingFirst;
 	}
 
 	public void passCards() {
@@ -97,26 +93,36 @@ public class CardsManager {
 		}
 	}
 
-	public void playCard(int playerPosition, Card card) {
+	public void playCard(int playerPosition, Card card) throws IllegalMoveException {
 		if (!cards[playerPosition].remove(card)) {
 			throw new IllegalArgumentException("User " + playerPosition + " does not own card " + card);
 		}
+		if (turn == 0 && playerPosition == playingFirst) {
+			if (!card.equals(twoOfClubs)) {
+				throw new IllegalMoveException("First card played has to be two of clubs");
+			}
+		}
+		if (playerPosition != playingFirst) {
+			// Collections.
+			// if (cards[playerPosition].)
+		}
 		cardPlayed[playerPosition] = card;
 		if (playedCardsCount == 4) {
-
-			/* decide who takes this hand cards */
+			/* decide who takes this hand cards and calculate this hand points */
 			int maxPosition = playingFirst;
+
 			for (int i = 0; i < 4; i++) {
 				if (winnerComparator.compare(cardPlayed[i], cardPlayed[maxPosition]) > 0)
 					maxPosition = i;
+				if (cardPlayed[i].suit.ordinal() == Card.Suit.HEARTS.ordinal()) {
+					currentTurnPoints++;
+				} else if (cardPlayed[i].suit.ordinal() == Card.Suit.SPADES.ordinal() && cardPlayed[i].value == 12) {
+					currentTurnPoints += 5;
+				}
 			}
-
-			/* calculate this hand point */
-			for (int i = 0; i < 4; i++) {
-				currentHandPoints = currentHandPoints + getCardPoints(cardPlayed[i]);
-			}
+			turn++;
 		}
-		playedCardsCount = (playedCardsCount + 1) % 4;
+		playedCardsCount = (playedCardsCount + 1) % 4 + 1;
 	}
 
 	@SuppressWarnings("boxing")
@@ -145,13 +151,5 @@ public class CardsManager {
 				return i;
 		}
 		return -1;
-	}
-
-	public int getWinner() {
-		return playingFirst;
-	}
-
-	public int getPoints() {
-		return currentHandPoints;
 	}
 }

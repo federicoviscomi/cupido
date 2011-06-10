@@ -3,9 +3,9 @@ package unibo.as.cupido.backendInterfacesImpl;
 import java.rmi.RemoteException;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.TableDescriptor;
+import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
@@ -23,11 +23,21 @@ import unibo.as.cupido.backendInterfaces.common.PositionFullException;
  * @author cane
  * 
  */
-
 public class SingleTableManager implements TableInterface {
 
-	private static enum GameStatus {
-		INIT, PASSING_CARDS, FIRST_HAND, OTHER_HANDS, ENDED
+	/**
+	 * Vi è anche un secondo modo di vincere la partita: un giocatore vince se
+	 * riesce a prendere tutte le carte di cuori e la donna di picche lasciando
+	 * gli avversari a zero punti. Regola aggiuntiva: un giocatore primo di mano
+	 * può giocare una carta di cuori solo se prima nella mano qualcuno ha
+	 * giocato una carta di cuori.
+	 * 
+	 * @author cane
+	 * 
+	 */
+
+	static enum GameStatus {
+		ENDED, FIRST_HAND, INIT, OTHER_HANDS, PASSING_CARDS
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -79,18 +89,19 @@ public class SingleTableManager implements TableInterface {
 		}
 	}
 
-	private ToNotify toNotify;
 	private CardsManager cardsManager;
-	private PlayersManager playersManager;
-	private BotManager botManager;
+
+	/* posso spostarlo in CardsManagers? */
 	private GameStatus gameStatus;
+
+	private PlayersManager playersManager;
+	private ToNotify toNotify;
 
 	public SingleTableManager(ServletNotifcationsInterface snf, Table table, GlobalTableManagerInterface gtm)
 			throws RemoteException {
 		toNotify = new ToNotify();
 		cardsManager = new CardsManager();
 		playersManager = new PlayersManager(snf, table.owner);
-		botManager = new BotManager();
 
 		System.out.println(snf + " " + table + " " + gtm);
 		playersManager = new PlayersManager(snf, table.owner);
@@ -106,11 +117,9 @@ public class SingleTableManager implements TableInterface {
 			throw new IllegalStateException();
 		}
 		playersManager.addBot(botName, position);
-		toNotify.notifyBotJoined(botName, position);
-		botManager.addBot(botName, position, this);
+		toNotify.notifyBotJoined(botName, position, new BotNotification());
 		if (playersManager.getPlayersCount() == 4) {
 			gameStatus = GameStatus.PASSING_CARDS;
-			botManager.passCards();
 		}
 	}
 
@@ -127,7 +136,6 @@ public class SingleTableManager implements TableInterface {
 		toNotify.notifyPlayerJoined(playerName, playersManager.getPlayerPosition(playerName), snf);
 		if (playersManager.getPlayersCount() == 4) {
 			gameStatus = GameStatus.PASSING_CARDS;
-			botManager.passCards();
 		}
 		return its;
 	}
@@ -157,7 +165,6 @@ public class SingleTableManager implements TableInterface {
 			gameStatus = GameStatus.FIRST_HAND;
 			cardsManager.passCards();
 			toNotify.notifyGameStarted(userName);
-			botManager.startsGame();
 		}
 	}
 
@@ -170,7 +177,6 @@ public class SingleTableManager implements TableInterface {
 		int position = playersManager.getPlayerPosition(userName);
 		cardsManager.playCard(position, card);
 		toNotify.notifyCardPlayed(userName, card, position);
-		botManager.cardPlayed();
 		if (cardsManager.allPlayerPlayedCards()) {
 			if (gameStatus.ordinal() == GameStatus.FIRST_HAND.ordinal()) {
 				int winner = cardsManager.getWinner();

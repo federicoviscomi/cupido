@@ -38,9 +38,9 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 		}
 
 		public LocalTableManagerInterface ltmi;
-		public int tableCount;
-
 		public int maximumTable;
+
+		public int tableCount;
 
 		public Triple(LocalTableManagerInterface ltmi, int tableCount, int maximumTable) {
 			this.ltmi = ltmi;

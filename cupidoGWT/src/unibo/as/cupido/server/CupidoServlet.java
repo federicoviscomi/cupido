@@ -10,7 +10,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
+import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
 
 import javax.servlet.http.HttpSession;
 
@@ -85,38 +85,6 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 
 	public CupidoServlet() {
 
-		// System.setSecurityManager(new java.rmi.RMISecurityManager());
-		// System.setSecurityManager(new SecurityManager());
-
-		try {
-			Registry registry = LocateRegistry.getRegistry();
-			GlobalTableManagerInterface backend = (GlobalTableManagerInterface) Naming.lookup("rmi://localhost/"
-					+ GlobalTableManagerInterface.globalTableManagerName);
-			System.out.println(backend.ping());
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// System.out.println(this + "Registry found :" + registry);
-		// GlobalTableManagerInterface gtm = (GlobalTableManagerInterface)
-		// registry.lookup(GlobalTableManagerInterface.globalTableManagerName);
-		// System.out.println(this + "Located GTM: " +
-		// registry.lookup(GlobalTableManagerInterface.globalTableManagerName));
-		// System.out.println("Servlet: calling backend.foo()...");
-		// sbackend.createTable("Cane", sni);
-		// HttpSession httpSession = getThreadLocalRequest().getSession();
-		// Get or create the Comet session for the browser
-		// cometSession = CometServlet.getCometSession(httpSession);
-		// UnicastRemoteObject.exportObject(sni);
-		// System.out.println(backend.createTable("cane", sni));
-
 	}
 
 	@Override
@@ -144,7 +112,7 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 		System.out.println("Servlet: Sending back the message to the client.");
 		NewLocalChatMessage x = new NewLocalChatMessage();
 		x.message = message;
-		
+
 		x.user = username;
 		cometSession.enqueue(x);
 	}

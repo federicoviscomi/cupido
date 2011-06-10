@@ -1,5 +1,6 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -17,8 +18,8 @@ import java.util.StringTokenizer;
 import java.util.concurrent.RejectedExecutionException;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
+import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 
 /**
@@ -32,6 +33,8 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	private static final String LOCALTABLEMANAGER_CONFIGURATION_FILE = "localTableManager.config";
 
+	private GlobalTableManagerInterface gtmRemote;
+
 	/**
 	 * The maximum number of table a LocalTableManager can handle. This number
 	 * is stored in the configuration file
@@ -44,11 +47,9 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	 */
 	private int MAX_TABLE;
 
-	private GlobalTableManagerInterface gtmRemote;
+	private int nextId = 0;
 
 	private Map<Integer, Table> tableIds;
-
-	private int nextId = 0;
 
 	public LocalTableManager() throws RemoteException {
 

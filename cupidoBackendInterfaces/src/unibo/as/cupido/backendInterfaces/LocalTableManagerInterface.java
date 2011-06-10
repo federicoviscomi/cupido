@@ -3,8 +3,6 @@ package unibo.as.cupido.backendInterfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
-
 /**
  * 
  * @author cane

@@ -1,10 +1,10 @@
 package unibo.as.cupido.backendInterfaces;
 
+
 import java.rmi.Remote;
 
 import java.rmi.RemoteException;
 
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;

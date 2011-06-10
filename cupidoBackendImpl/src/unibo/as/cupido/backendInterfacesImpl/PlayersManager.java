@@ -1,37 +1,31 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
-import java.util.ArrayList;
-import java.util.SortedSet;
-
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
-import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 import unibo.as.cupido.backendInterfaces.common.PositionFullException;
 
 public class PlayersManager {
 
-	private static enum Positions {
-		OWNER, LEFT, UP, RIGHT
-	}
-
-	private int playersCount;
-	PlayerInfo[] players;
-	private int whoPlaysNext;
-
 	static class PlayerInfo {
+		boolean isBot;
+
+		String name;
+		int score;
 		public PlayerInfo(String name, int score, boolean isBot) {
 			this.name = name;
 			this.score = score;
 			this.isBot = isBot;
 		}
-
-		String name;
-		int score;
-		boolean isBot;
 	}
+
+	private static enum Positions {
+		LEFT, OWNER, RIGHT, UP
+	}
+	PlayerInfo[] players;
+	private int playersCount;
+
+	private int whoPlaysNext;
 
 	public PlayersManager(ServletNotifcationsInterface snf, String owner) {
 		playersCount = 0;
@@ -100,6 +94,10 @@ public class PlayersManager {
 		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
 	}
 
+	public void addPoint(int winner, int points) {
+		players[winner].score += points;
+	}
+
 	public String getPlayerName(int i) {
 		return players[i].name;
 	}
@@ -129,10 +127,6 @@ public class PlayersManager {
 			throw new IllegalArgumentException("player not found");
 		playersCount--;
 		players[position].name = null;
-	}
-
-	public void addPoint(int winner, int points) {
-		players[winner].score += points;
 	}
 
 }
