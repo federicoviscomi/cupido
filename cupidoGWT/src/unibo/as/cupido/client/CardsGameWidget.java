@@ -10,9 +10,11 @@ import java.util.Map.Entry;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
+import unibo.as.cupido.client.CardsGameWidget.ControllingPanel;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class CardsGameWidget extends AbsolutePanel {
 	
@@ -48,6 +50,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * the table must be insensitive to commands.
 	 */
 	private boolean runningAnimation = false;
+
+	private ControllingPanel controllingPanel;
 
 	/**
 	 * This class models the position of a card on the table.
@@ -143,20 +147,41 @@ public class CardsGameWidget extends AbsolutePanel {
 		public int score;
 	}
 	
+	public interface ControllingPanel {
+		/**
+		 * Enables or disables the controls in the panel.
+		 * The panel will be disabled during animations.
+		 */
+		public void setEnabled(boolean enabled);
+		
+		/**
+		 * @return The widget that represents the controlling panel.
+		 */
+		public Widget getWidget();
+	}
+	
 	/**
 	 * 
 	 * @param tableSize The width and height of this widget.
 	 * @param gameStatus The game status, except the cards of the bottom player (if they are shown).
 	 * @param bottomPlayerCards The cards of the bottom player. If this is null, the cards are covered,
 	 *                          and their number is extracted from gameStatus.
+     * @param cornerWidget An arbitrary 200x200 pixel widget placed in the bottom-right corner.
 	 */
-	public CardsGameWidget(int tableSize, ObservedGameStatus gameStatus, Card[] bottomPlayerCards) {
+	public CardsGameWidget(int tableSize, ObservedGameStatus gameStatus, Card[] bottomPlayerCards,
+                           ControllingPanel controllingPanel) {
 		
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 		DOM.setStyleAttribute(getElement(), "background", "green");
 		
 		this.tableSize = tableSize;
+		this.controllingPanel = controllingPanel;
+		
+		Widget cornerWidget = controllingPanel.getWidget();
+		cornerWidget.setWidth("200px");
+		cornerWidget.setHeight("200px");
+		add(cornerWidget, tableSize - 200, tableSize - 200);
 		
 		cardWidgets = new ArrayList<CardWidget>();		
 		cardRoles = new HashMap<CardWidget,CardRole>();
@@ -257,6 +282,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			public void onStart() {
 				assert !runningAnimation;
 				runningAnimation = true;
+				controllingPanel.setEnabled(false);
 			}
 			@Override
 			public void onComplete() {
@@ -264,6 +290,7 @@ public class CardsGameWidget extends AbsolutePanel {
 				runningAnimation = false;
 				cardRoles = newCardRoles;
 				cardPositions = newCardPositions;
+				controllingPanel.setEnabled(true);
 			}
 		};
 		return animation;

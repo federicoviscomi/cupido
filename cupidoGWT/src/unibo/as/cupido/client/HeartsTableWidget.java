@@ -5,18 +5,30 @@ import unibo.as.cupido.backendInterfaces.common.Card.Suit;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class HeartsTableWidget extends AbsolutePanel {
+	
+	private ScreenSwitcher screenSwitcher;
 	
 	/**
 	 * 
 	 * @param tableSize The size of the table (width and height) in pixels.
 	 * @param username
 	 */
-	HeartsTableWidget(int tableSize, String username) {
+	HeartsTableWidget(int tableSize, String username, final ScreenSwitcher screenSwitcher) {
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
+		
+		this.screenSwitcher = screenSwitcher;
 		
 		// FIXME: Initialize the widget with the correct values.
 		// These values are only meant for debugging purposes.
@@ -62,7 +74,31 @@ public class HeartsTableWidget extends AbsolutePanel {
 		for (int i = 0; i < 13; i++)
 			bottomPlayerCards[i] = new Card(i + 1, Card.Suit.CLUBS);
 		
-		final CardsGameWidget x = new CardsGameWidget(tableSize, observedGameStatus, bottomPlayerCards);
+		final VerticalPanel controllerPanel = new VerticalPanel();
+		controllerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		controllerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		
+		final PushButton exitButton = new PushButton("Esci dal gioco");
+		exitButton.setWidth("80px");
+		exitButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				screenSwitcher.displayMainMenuScreen();
+			}
+		});
+		controllerPanel.add(exitButton);
+		
+		final CardsGameWidget x = new CardsGameWidget(tableSize, observedGameStatus, bottomPlayerCards,
+				                                      new CardsGameWidget.ControllingPanel() {
+			@Override
+			public void setEnabled(boolean enabled) {
+				exitButton.setEnabled(enabled);
+			}
+			@Override
+			public Widget getWidget() {
+				return controllerPanel;
+			}			
+		});
 		add(x, 0, 0);
 		
 		System.out.println("Dealing the first card");
