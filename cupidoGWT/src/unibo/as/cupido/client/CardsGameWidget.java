@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.HashMap;
-
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
@@ -44,6 +42,12 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * The size of the table (width and height) in pixels.
 	 */
 	private int tableSize;
+
+	/**
+	 * This is true when an animation involving the table is running, and so
+	 * the table must be insensitive to commands.
+	 */
+	private boolean runningAnimation = false;
 
 	/**
 	 * This class models the position of a card on the table.
@@ -203,6 +207,124 @@ public class CardsGameWidget extends AbsolutePanel {
 			setCardPosition(x, cardPositions.get(x));
 	}
 	
+	private Map<CardWidget,CardRole> cloneCardRoles() {
+		Map<CardWidget,CardRole> result = new HashMap<CardWidget,CardRole>();
+		for (Entry<CardWidget,CardRole> e : cardRoles.entrySet()) {
+			// Clone the role. The widget does not need to be cloned.
+			CardRole role = new CardRole();
+			role.player = e.getValue().player;
+			role.state = e.getValue().state;
+			result.put(e.getKey(), role);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param newCardRoles
+	 * @param switchZAt
+	 *     Specifies when the z index should be changed. 0.0 means at the beginning of the animation
+	 *     and 1.0 means at the end of the animation. This value must not be negative or greater than 1.
+	 * @return
+	 */
+	private GWTAnimation animateMoveTo(final Map<CardWidget,CardRole> newCardRoles, final double switchZAt) {
+		assert switchZAt >= 0;
+		assert switchZAt <= 1;
+		final Map<CardWidget,Position> newCardPositions = computePositions(cardWidgets, newCardRoles, tableSize);
+		
+		// A card move takes 2000 milliseconds.
+		final int duration = 2000;
+		GWTAnimation animation = new SimpleAnimation(duration) {
+			@Override
+			public void onUpdate(double progress) {
+				for (CardWidget widget : cardWidgets) {
+					Position position = new Position();
+					Position startPosition = cardPositions.get(widget);
+					Position endPosition = newCardPositions.get(widget);
+					// Compute position = startPosition + (endPosition - startPosition) * progress
+					assert startPosition.rotation == endPosition.rotation;
+					position.rotation = startPosition.rotation;
+					if (progress < switchZAt)
+						position.z = startPosition.z;
+					else
+						position.z = endPosition.z;
+					position.x = (int) (startPosition.x + (endPosition.x - startPosition.x) * progress);
+					position.y = (int) (startPosition.y + (endPosition.y - startPosition.y) * progress);
+					setCardPosition(widget, position);
+				}
+			}
+			@Override
+			public void onStart() {
+				assert !runningAnimation;
+				runningAnimation = true;
+			}
+			@Override
+			public void onComplete() {
+				assert runningAnimation;
+				runningAnimation = false;
+				cardRoles = newCardRoles;
+				cardPositions = newCardPositions;
+			}
+		};
+		return animation;
+	}
+	
+	/**
+	 * The player `player' deals the card `card'.
+	 * If the player hasn't got that card in its hand, but it has at least one covered card,
+	 * that card is uncovered as the specified card and then dealt.
+	 * It is an error if the player hasn't got neither the specified card nor a covered card.
+	 */
+	public void dealCard(int player, Card card, GWTAnimation.AnimationCompletedListener listener) {
+		
+		assert card != null;
+		
+		if (runningAnimation)
+			return;
+		
+		CardWidget widget = null;
+		
+		// Firstly, search for the specified card.
+		
+		for (CardWidget candidateWidget : cardWidgets) {
+			Card candidateCard = candidateWidget.getCard();
+			if (candidateCard != null && card.value == candidateCard.value && card.suit == candidateCard.suit) {
+				CardRole role = cardRoles.get(candidateWidget);
+				if (role.player == player && role.state == CardRole.State.HAND) {
+					// Found a match
+					widget = candidateWidget;
+					break;
+				}
+			}
+		}
+		
+		// Otherwise, search for a covered card.
+		
+		if (widget == null) {
+			for (CardWidget candidateWidget : cardWidgets) {
+				if (candidateWidget.getCard() == null) {
+					CardRole role = cardRoles.get(candidateWidget);
+					if (role.player == player && role.state == CardRole.State.HAND) {
+						// Found a match. Keep the widget with higher z index.
+						if (widget == null || cardPositions.get(widget).z < cardPositions.get(candidateWidget).z)
+							widget = candidateWidget;
+					}
+				}
+			}
+		
+			// If no match has been found, the precondition for this method was violated.
+			assert widget != null;
+			
+			widget.setCard(card);
+		}
+		
+		Map<CardWidget,CardRole> newCardRoles = cloneCardRoles();
+		newCardRoles.get(widget).state = CardRole.State.DEALT;
+		
+		GWTAnimation animation = animateMoveTo(newCardRoles, 1.0);
+		animation.run(listener);
+	}
+	
 	private void setCardPosition(CardWidget x, Position position) {
 		int rotation = position.rotation;
 		x.setRotation(rotation);
@@ -219,6 +341,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	/**
 	 * Computes the positions of a set of cards as if they belong to the bottom player,
 	 * centered horizontally and with the center `offset' pixels above the bottom edge.
+	 * The z values are *not* computed.
 	 * 
 	 * @param cards
 	 * @param offset
@@ -248,7 +371,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		
 		for (int i = 0; i < cards.size(); i++)
 			positions.add(new Position(tableSize/2 - maxCenterDistance/2 + i * CardWidget.borderWidth,
-					      tableSize - offset, i, 0));
+					      tableSize - offset, 0, 0));
 		
 		return positions;
 	}
@@ -331,7 +454,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		for (List<CardWidget> x : widgetByRole.values())
 			sortCardWidgets(x);
 		
-		// 3. Actually calculate the positions.
+		// 3. Calculate the positions (except the z fields).
 		
 		Map<CardWidget,Position> cardPositions = new HashMap<CardWidget,Position>();
 		
@@ -343,6 +466,30 @@ public class CardsGameWidget extends AbsolutePanel {
 			assert widgets.size() == positions.size();
 			for (int i = 0; i < positions.size(); i++)
 				cardPositions.put(widgets.get(i), positions.get(i));
+		}
+		
+		// 4. Calculate the list of card widgets for each player.
+		
+		List<List<CardWidget>> widgetByPlayer = new ArrayList<List<CardWidget>>();
+		for (int player = 0; player < 4; player++)
+			widgetByPlayer.add(new ArrayList<CardWidget>());
+		
+		for (CardWidget cardWidget : cards) {
+			CardRole role = cardRoles.get(cardWidget);
+			widgetByPlayer.get(role.player).add(cardWidget);
+		}
+		
+		// 5. Sort the list of card widget for each player.
+		
+		for (List<CardWidget> x : widgetByPlayer)
+			sortCardWidgets(x);
+		
+		// 6. Compute the z values based on widgetByPlayer.
+		
+		for (int player = 0; player < 4; player++) {
+			List<CardWidget> list = widgetByPlayer.get(player);
+			for (int i = 0; i < list.size(); i++)
+				cardPositions.get(list.get(i)).z = i;
 		}
 		
 		return cardPositions;

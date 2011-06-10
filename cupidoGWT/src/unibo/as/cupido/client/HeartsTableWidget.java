@@ -1,9 +1,7 @@
 package unibo.as.cupido.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.Card.Suit;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 
@@ -64,7 +62,22 @@ public class HeartsTableWidget extends AbsolutePanel {
 		for (int i = 0; i < 13; i++)
 			bottomPlayerCards[i] = new Card(i + 1, Card.Suit.CLUBS);
 		
-		CardsGameWidget x = new CardsGameWidget(tableSize, observedGameStatus, bottomPlayerCards);
-		add(x, 0, 0);		
+		final CardsGameWidget x = new CardsGameWidget(tableSize, observedGameStatus, bottomPlayerCards);
+		add(x, 0, 0);
+		
+		System.out.println("Dealing the first card");
+		x.dealCard(3, new Card(11, Suit.CLUBS), new GWTAnimation.AnimationCompletedListener() {
+			
+			@Override
+			public void onComplete() {
+				System.out.println("Dealing the second card");
+				x.dealCard(3, new Card(12, Suit.SPADES), new GWTAnimation.AnimationCompletedListener() {
+					
+					@Override
+					public void onComplete() {
+					}
+				});
+			}
+		});
 	}
 }
