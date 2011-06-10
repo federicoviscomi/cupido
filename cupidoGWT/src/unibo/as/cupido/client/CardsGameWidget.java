@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
-import unibo.as.cupido.client.CardsGameWidget.ControllingPanel;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -58,7 +57,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 */
 	private boolean runningAnimation = false;
 
-	private ControllingPanel controllingPanel;
+	private GameEventListener listener;
 
 	/**
 	 * This class models the position of a widget on the table.
@@ -182,17 +181,9 @@ public class CardsGameWidget extends AbsolutePanel {
 		public int score;
 	}
 	
-	public interface ControllingPanel {
-		/**
-		 * Enables or disables the controls in the panel.
-		 * The panel will be disabled during animations.
-		 */
-		public void setEnabled(boolean enabled);
-		
-		/**
-		 * @return The widget that represents the controlling panel.
-		 */
-		public Widget getWidget();
+	public interface GameEventListener {
+		public void onAnimationStart();
+		public void onAnimationEnd();
 	}
 	
 	/**
@@ -204,16 +195,15 @@ public class CardsGameWidget extends AbsolutePanel {
      * @param cornerWidget An arbitrary 200x200 pixel widget placed in the bottom-right corner.
 	 */
 	public CardsGameWidget(int tableSize, ObservedGameStatus gameStatus, Card[] bottomPlayerCards,
-                           ControllingPanel controllingPanel) {
+                           Widget cornerWidget, GameEventListener listener) {
 		
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 		DOM.setStyleAttribute(getElement(), "background", "green");
 		
 		this.tableSize = tableSize;
-		this.controllingPanel = controllingPanel;
+		this.listener = listener;
 		
-		Widget cornerWidget = controllingPanel.getWidget();
 		cornerWidget.setWidth("200px");
 		cornerWidget.setHeight("200px");
 		add(cornerWidget, tableSize - 200, tableSize - 200);
@@ -348,7 +338,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			public void onStart() {
 				assert !runningAnimation;
 				runningAnimation = true;
-				controllingPanel.setEnabled(false);
+				listener.onAnimationStart();
 			}
 			@Override
 			public void onComplete() {
@@ -356,7 +346,7 @@ public class CardsGameWidget extends AbsolutePanel {
 				runningAnimation = false;
 				cardRoles = newCardRoles;
 				tableLayout = newTableLayout;
-				controllingPanel.setEnabled(true);
+				listener.onAnimationEnd();
 			}
 		};
 		return animation;

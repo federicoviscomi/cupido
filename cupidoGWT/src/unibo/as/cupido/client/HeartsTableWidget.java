@@ -89,16 +89,16 @@ public class HeartsTableWidget extends AbsolutePanel {
 		controllerPanel.add(exitButton);
 		
 		final CardsGameWidget x = new CardsGameWidget(tableSize, observedGameStatus, bottomPlayerCards,
-				                                      new CardsGameWidget.ControllingPanel() {
+				                                      controllerPanel, new CardsGameWidget.GameEventListener() {			
 			@Override
-			public void setEnabled(boolean enabled) {
-				exitButton.setEnabled(enabled);
+			public void onAnimationStart() {
+				exitButton.setEnabled(false);
+				
 			}
 			@Override
-			public Widget getWidget() {
-				return controllerPanel;
-			}			
-		});
+			public void onAnimationEnd() {
+				exitButton.setEnabled(true);
+			}});
 		add(x, 0, 0);
 		
 		System.out.println("Dealing the first card");
