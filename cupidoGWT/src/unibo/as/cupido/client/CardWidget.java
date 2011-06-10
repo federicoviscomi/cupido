@@ -25,7 +25,7 @@ public class CardWidget extends Image {
 	/**
 	 * The width of the cards' border (before rotation).
 	 */
-	public static final int borderWidth = 12;
+	public static final int borderWidth = 13;
 
 	/**
 	 *  Constructs a CardWidget that displays the back of a card.
