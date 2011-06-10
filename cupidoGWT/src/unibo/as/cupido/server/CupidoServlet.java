@@ -14,16 +14,16 @@ import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PositionFullException;
 import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class CupidoServlet extends RemoteServiceServlet implements CupidoInterface {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	
+	public interface SessionClosedListener {
+		public void onSessionClosed();
+	}
 	
 	public CupidoServlet() {
 		GlobalTableManagerInterface.ServletNotifcationsInterface a;
@@ -138,6 +138,13 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 
         // Get or create the HTTP session for the browser
         HttpSession httpSession = getThreadLocalRequest().getSession();
+        
+        httpSession.setAttribute("sessionClosedListener", new SessionClosedListener() {
+			@Override
+			public void onSessionClosed() {
+				System.out.println("Servlet: onSessionClosed() was called.");					
+			}
+        });
 
         // Get or create the Comet session for the browser
         CometSession cometSession = CometServlet.getCometSession(httpSession);
