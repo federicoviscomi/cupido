@@ -56,11 +56,11 @@ public class SingleTableManager implements TableInterface {
 	private GameStatus gameStatus;
 
 	private PlayersManager playersManager;
-	private ToNotify toNotify;
+	private ToBeNotifyed toNotify;
 
 	public SingleTableManager(ServletNotifcationsInterface snf, Table table, GlobalTableManagerInterface gtm)
 			throws RemoteException {
-		toNotify = new ToNotify();
+		toNotify = new ToBeNotifyed();
 		cardsManager = new CardsManager();
 		playersManager = new PlayersManager(table.owner, false);
 
@@ -81,10 +81,13 @@ public class SingleTableManager implements TableInterface {
 			playersManager.addBot(botName, position);
 			// toNotify.notifyBotJoined(botName, position, new
 			// DummyLoggerBotNotification(botName));
-			toNotify.notifyBotJoined(botName, position, (BotNotificationInterface) UnicastRemoteObject
-					.exportObject(new BotNotification(playersManager.getTableStatus(position))));
+
+			toNotify.notifyBotJoined(botName, position, position, (BotNotificationInterface) UnicastRemoteObject
+					.exportObject(new BotNotification(playersManager.players.clone(), position)));
+
 			if (playersManager.getPlayersCount() == 4) {
 				gameStatus = GameStatus.PASSING_CARDS;
+				botPassCard();
 			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -105,8 +108,18 @@ public class SingleTableManager implements TableInterface {
 		toNotify.notifyPlayerJoined(playerName, playersManager.getPlayerPosition(playerName), snf);
 		if (playersManager.getPlayersCount() == 4) {
 			gameStatus = GameStatus.PASSING_CARDS;
+			botPassCard();
 		}
 		return its;
+	}
+
+	private void botPassCard() {
+		// TODO Auto-generated method stub
+		if (cardsManager.allPlayerPassedCards()) {
+			gameStatus = GameStatus.FIRST_HAND;
+			cardsManager.passCards();
+			toNotify.notifyGameStarted(null, null);
+		}
 	}
 
 	@Override
@@ -133,7 +146,7 @@ public class SingleTableManager implements TableInterface {
 		if (cardsManager.allPlayerPassedCards()) {
 			gameStatus = GameStatus.FIRST_HAND;
 			cardsManager.passCards();
-			toNotify.notifyGameStarted(userName);
+			toNotify.notifyGameStarted(userName, passedCards);
 		}
 	}
 
@@ -153,8 +166,8 @@ public class SingleTableManager implements TableInterface {
 				playersManager.addPoint(winner, points);
 				gameStatus = GameStatus.OTHER_HANDS;
 			}
-			if (cardsManager.gameEnded()){
-				// FIXME 
+			if (cardsManager.gameEnded()) {
+				// FIXME
 				toNotify.notifyGameEnded(playersManager.getAllPoints(), playersManager.getAllPoints());
 			}
 		}

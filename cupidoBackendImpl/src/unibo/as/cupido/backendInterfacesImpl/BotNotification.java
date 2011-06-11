@@ -1,20 +1,22 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
 import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
+import java.util.Collections;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
+import unibo.as.cupido.backendInterfacesImpl.PlayersManager.PlayerInfo;
 
 public class BotNotification implements Remote, BotNotificationInterface {
 
-	private final InitialTableStatus igs;
+	private Card[] cards;
+	private final PlayerInfo[] playersInfo;
+	private final int position;
 
-	public BotNotification(InitialTableStatus igs) {
-		this.igs = igs;
+	public BotNotification(PlayerInfo[] playersInfo, int position) {
+		this.playersInfo = playersInfo;
+		this.position = position;
 	}
 
 	@Override
@@ -22,13 +24,17 @@ public class BotNotification implements Remote, BotNotificationInterface {
 		System.out.println("\n" + Thread.currentThread() + " "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName() + "(" + Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
-		
+
 	}
 
 	@Override
 	public void notifyGameStarted(Card[] cards) {
+		this.cards = cards;
 		System.out.println("\n" + Thread.currentThread() + " "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName() + "(" + Arrays.toString(cards) + ")");
+		for (Card card : cards){
+			
+		}
 	}
 
 	@Override

@@ -24,6 +24,10 @@ public class PlayersManager {
 		public String toString() {
 			return "[is bot=" + isBot + ", name=" + name + ", score=" + score + "]";
 		}
+		
+		public Object clone(){
+			return new PlayerInfo(name, score, isBot);
+		}
 	}
 
 	private static enum Positions {
