@@ -1,55 +1,64 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
-
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 
-import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 
-public class BotNotification implements ServletNotifcationsInterface {
+public class BotNotification implements Remote, BotNotificationInterface {
 
-	
-	
-	@Override
-	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) throws RemoteException {
-		// TODO Auto-generated method stub
+	private final InitialTableStatus igs;
 
+	public BotNotification(InitialTableStatus igs) {
+		this.igs = igs;
 	}
 
 	@Override
-	public void notifyGameStarted(Card[] cards) throws RemoteException {
-		// TODO Auto-generated method stub
-
+	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
+		System.out.println("\n" + Thread.currentThread() + " "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName() + "(" + Arrays.toString(matchPoints) + ", "
+				+ Arrays.toString(playersTotalPoint) + ")");
+		
 	}
 
 	@Override
-	public void notifyLocalChatMessage(ChatMessage message) throws RemoteException {
-		// TODO Auto-generated method stub
-
+	public void notifyGameStarted(Card[] cards) {
+		System.out.println("\n" + Thread.currentThread() + " "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName() + "(" + Arrays.toString(cards) + ")");
 	}
 
 	@Override
-	public void notifyPassedCards(Card[] cards) throws RemoteException {
-		// TODO Auto-generated method stub
-
+	public void notifyLocalChatMessage(ChatMessage message) {
+		System.out.println("\n" + Thread.currentThread() + " "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName() + "(" + message + ")");
 	}
 
 	@Override
-	public void notifyPlayedCard(Card card, int playerPosition) throws RemoteException {
-		// TODO Auto-generated method stub
-
+	public void notifyPassedCards(Card[] cards) {
+		System.out.println("\n" + Thread.currentThread() + " "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName() + "(" + Arrays.toString(cards) + ")");
 	}
 
 	@Override
-	public void notifyPlayerJoined(String name, boolean isBot, int point, int position) throws RemoteException {
-		// TODO Auto-generated method stub
-
+	public void notifyPlayedCard(Card card, int playerPosition) {
+		System.out.println("\n" + Thread.currentThread() + " "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName() + "(" + card + ", " + playerPosition + ")");
 	}
 
 	@Override
-	public void notifyPlayerLeft(String name) throws RemoteException {
-		// TODO Auto-generated method stub
+	public void notifyPlayerJoined(String name, boolean isBot, int point, int position) {
+		System.out.println("\n" + Thread.currentThread() + " "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName() + "(" + name + ", " + isBot + "," + point
+				+ "," + position + ")");
+	}
 
+	@Override
+	public void notifyPlayerLeft(String name) {
+		System.out.println("\n" + Thread.currentThread() + " "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName() + "(" + name + ")");
 	}
 }

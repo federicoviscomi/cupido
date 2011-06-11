@@ -1,5 +1,7 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
+import java.util.Arrays;
+
 import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
@@ -9,32 +11,40 @@ public class PlayersManager {
 
 	static class PlayerInfo {
 		boolean isBot;
-
 		String name;
 		int score;
+
 		public PlayerInfo(String name, int score, boolean isBot) {
 			this.name = name;
 			this.score = score;
 			this.isBot = isBot;
 		}
+
+		@Override
+		public String toString() {
+			return "[is bot=" + isBot + ", name=" + name + ", score=" + score + "]";
+		}
 	}
 
 	private static enum Positions {
-		LEFT, OWNER, RIGHT, UP
+		OWNER, LEFT, RIGHT, UP
 	}
+
 	PlayerInfo[] players;
 	private int playersCount;
 
 	private int whoPlaysNext;
 
-	public PlayersManager(ServletNotifcationsInterface snf, String owner) {
+	public PlayersManager(String owner, boolean isBot) {
 		playersCount = 0;
 		players = new PlayerInfo[4];
 		for (int i = 0; i < 4; i++)
 			players[i] = new PlayerInfo(null, 0, false);
 		players[Positions.OWNER.ordinal()].name = owner;
+		players[Positions.OWNER.ordinal()].isBot = isBot;
 	}
 
+	
 	public void addBot(String botName, int position) throws FullTableException, IllegalArgumentException,
 			PositionFullException {
 		if (playersCount > 4) {
@@ -62,36 +72,9 @@ public class PlayersManager {
 		int position = 1;
 		while (players[position].name != null)
 			position++;
-
 		players[position].name = playerName;
-
-		/**
-		 * Opponents are sorted clockwise (game is clockwise) opponents.lenght
-		 * is always 3 opponents[i]==null means there is no i-th player
-		 * opponents[0] is the player at your left, and so on...
-		 */
-		String[] opponents = new String[3];
-		for (int i = 0; i < 3; i++)
-			opponents[i] = players[(position + i + 1) % 4].name;
-
-		/**
-		 * (global) points of all the player playerPoints[0] are you,
-		 * playerPoints[1] is the player at your left, and so on
-		 */
-		int[] playerPoints = new int[4];
-		for (int i = 0; i < 4; i++)
-			playerPoints[i] = players[(position + i) % 4].score;
-
-		/**
-		 * if opponents[i]==null then whoIsBot[i] has no meaning. if
-		 * opponents[i]!= null then whoIsBot[i] is true if the player i is a
-		 * bot, otherwise is false
-		 */
-		boolean[] whoIsBot = new boolean[4];
-		for (int i = 0; i < 4; i++)
-			whoIsBot[i] = whoIsBot[(position + i) % 4];
-
-		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
+		
+		return getTableStatus(position); 
 	}
 
 	public void addPoint(int winner, int points) {
@@ -127,6 +110,43 @@ public class PlayersManager {
 			throw new IllegalArgumentException("player not found");
 		playersCount--;
 		players[position].name = null;
+	}
+
+
+	public InitialTableStatus getTableStatus(int position) {
+		/**
+		 * Opponents are sorted clockwise (game is clockwise) opponents.lenght
+		 * is always 3 opponents[i]==null means there is no i-th player
+		 * opponents[0] is the player at your left, and so on...
+		 */
+		String[] opponents = new String[3];
+		for (int i = 0; i < 3; i++)
+			opponents[i] = players[(position + i + 1) % 4].name;
+
+		/**
+		 * (global) points of all the player playerPoints[0] are you,
+		 * playerPoints[1] is the player at your left, and so on
+		 */
+		int[] playerPoints = new int[4];
+		for (int i = 0; i < 4; i++)
+			playerPoints[i] = players[(position + i) % 4].score;
+
+		/**
+		 * if opponents[i]==null then whoIsBot[i] has no meaning. if
+		 * opponents[i]!= null then whoIsBot[i] is true if the player i is a
+		 * bot, otherwise is false
+		 */
+		boolean[] whoIsBot = new boolean[4];
+		for (int i = 0; i < 4; i++)
+			whoIsBot[i] = whoIsBot[(position + i) % 4];
+
+		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
+	}
+
+
+	public int[] getAllPoints() {
+		int[] points = new int[4];
+		return points;
 	}
 
 }

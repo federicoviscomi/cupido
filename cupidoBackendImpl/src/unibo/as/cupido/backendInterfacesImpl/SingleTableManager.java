@@ -1,6 +1,8 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
@@ -25,17 +27,6 @@ import unibo.as.cupido.backendInterfaces.common.PositionFullException;
  */
 public class SingleTableManager implements TableInterface {
 
-	/**
-	 * Vi è anche un secondo modo di vincere la partita: un giocatore vince se
-	 * riesce a prendere tutte le carte di cuori e la donna di picche lasciando
-	 * gli avversari a zero punti. Regola aggiuntiva: un giocatore primo di mano
-	 * può giocare una carta di cuori solo se prima nella mano qualcuno ha
-	 * giocato una carta di cuori.
-	 * 
-	 * @author cane
-	 * 
-	 */
-
 	static enum GameStatus {
 		ENDED, FIRST_HAND, INIT, OTHER_HANDS, PASSING_CARDS
 	}
@@ -43,36 +34,7 @@ public class SingleTableManager implements TableInterface {
 	public static void main(String[] args) throws Exception {
 		try {
 			// TODO implement the following class
-			ServletNotifcationsInterface sni = new ServletNotifcationsInterface() {
-				@Override
-				public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-				}
-
-				@Override
-				public void notifyGameStarted(Card[] cards) {
-				}
-
-				@Override
-				public void notifyLocalChatMessage(ChatMessage message) {
-				}
-
-				@Override
-				public void notifyPassedCards(Card[] cards) {
-				}
-
-				@Override
-				public void notifyPlayedCard(Card card, int playerPosition) {
-				}
-
-				@Override
-				public void notifyPlayerJoined(String name, boolean isBot, int point, int position) {
-				}
-
-				@Override
-				public void notifyPlayerLeft(String name) {
-				}
-			};
-
+			ServletNotifcationsInterface sni = new DummyLoggerServletNotifyer();
 			SingleTableManager stm = new SingleTableManager(sni, new Table("Owner", 0, new TableDescriptor(
 					"servercane", 34453)), null);
 			stm.printGameStatus();
@@ -82,7 +44,6 @@ public class SingleTableManager implements TableInterface {
 			stm.printGameStatus();
 			stm.joinTable("Gatto", sni);
 			stm.printGameStatus();
-
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -101,10 +62,10 @@ public class SingleTableManager implements TableInterface {
 			throws RemoteException {
 		toNotify = new ToNotify();
 		cardsManager = new CardsManager();
-		playersManager = new PlayersManager(snf, table.owner);
+		playersManager = new PlayersManager(table.owner, false);
 
 		System.out.println(snf + " " + table + " " + gtm);
-		playersManager = new PlayersManager(snf, table.owner);
+
 		// toNotify = new ToNotify();
 		toNotify.notifyPlayerJoined(table.owner, 0, snf);
 		// cardsManager = new CardsManager();
@@ -116,10 +77,18 @@ public class SingleTableManager implements TableInterface {
 		if (gameStatus.ordinal() != GameStatus.INIT.ordinal()) {
 			throw new IllegalStateException();
 		}
-		playersManager.addBot(botName, position);
-		toNotify.notifyBotJoined(botName, position, new BotNotification());
-		if (playersManager.getPlayersCount() == 4) {
-			gameStatus = GameStatus.PASSING_CARDS;
+		try {
+			playersManager.addBot(botName, position);
+			// toNotify.notifyBotJoined(botName, position, new
+			// DummyLoggerBotNotification(botName));
+			toNotify.notifyBotJoined(botName, position, (BotNotificationInterface) UnicastRemoteObject
+					.exportObject(new BotNotification(playersManager.getTableStatus(position))));
+			if (playersManager.getPlayersCount() == 4) {
+				gameStatus = GameStatus.PASSING_CARDS;
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -183,6 +152,10 @@ public class SingleTableManager implements TableInterface {
 				int points = cardsManager.getPoints();
 				playersManager.addPoint(winner, points);
 				gameStatus = GameStatus.OTHER_HANDS;
+			}
+			if (cardsManager.gameEnded()){
+				// FIXME 
+				toNotify.notifyGameEnded(playersManager.getAllPoints(), playersManager.getAllPoints());
 			}
 		}
 	}
