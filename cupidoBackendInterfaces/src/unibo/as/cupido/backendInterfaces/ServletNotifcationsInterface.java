@@ -14,6 +14,13 @@ import unibo.as.cupido.backendInterfaces.common.ChatMessage;
  */
 public interface ServletNotifcationsInterface extends Remote {
 
+	/**
+	 * Non capisco a che servono gli argomenti
+	 * 
+	 * @param matchPoints
+	 * @param playersTotalPoint
+	 * @throws RemoteException
+	 */
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) throws RemoteException;
 
 	/**
