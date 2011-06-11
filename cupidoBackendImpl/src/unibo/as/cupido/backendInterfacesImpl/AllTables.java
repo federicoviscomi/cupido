@@ -1,5 +1,6 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class AllTables {
 	}
 
 	public void decreaseFreePosition(TableDescriptor tableDescriptor) {
-		allTables.get(tableDescriptor).first.freePosition--;		
+		allTables.get(tableDescriptor).first.freePosition--;
 	}
 
 	public Collection<Pair<Table, LocalTableManagerInterface>> getAllTables() {

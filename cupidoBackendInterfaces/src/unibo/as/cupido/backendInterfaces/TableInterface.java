@@ -1,10 +1,10 @@
 package unibo.as.cupido.backendInterfaces;
 
+
 import java.rmi.Remote;
 
 import java.rmi.RemoteException;
 
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
@@ -57,7 +57,7 @@ public interface TableInterface extends Remote {
 	/**
 	 * Can a bot leave the table? Cosa succede se un utente o un bot lasciano il
 	 * tavolo mentre si stanno scambiando le carte? e mentre la partita e'
-	 * iniziata?
+	 * iniziata? Viene usata anche per notificare che un osservatore lascia il tavolo?
 	 * 
 	 * @param userName
 	 * @throws PlayerNotFoundException

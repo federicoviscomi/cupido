@@ -1,10 +1,23 @@
 package unibo.as.cupido.server;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
+import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
+
 import javax.servlet.http.HttpSession;
 
+import net.sourceforge.htmlunit.corejs.javascript.tools.shell.Global;
 import net.zschech.gwt.comet.server.CometServlet;
 import net.zschech.gwt.comet.server.CometSession;
+import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
@@ -23,11 +36,55 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 	 */
 	private static final long serialVersionUID = 1L;
 
+	ServletNotifcationsInterface sni = new ServletNotifcationsInterface() {
+
+		@Override
+		public void notifyPlayerLeft(String name) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyPlayerJoined(String name, boolean isBot, int point, int position) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyPlayedCard(Card card, int playerPosition) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyPassedCards(Card[] cards) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyLocalChatMessage(ChatMessage message) {
+			System.out.println("Servlet: received a notification from the backend. Sending it to the client...");
+			// cometSession.enqueue(message);
+		}
+
+		@Override
+		public void notifyGameStarted(Card[] cards) {
+			// TODO Auto-generated method stub
 	
+		}
+
+		@Override
+		public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
+			// TODO Auto-generated method stub
+
+		}
+	};
+
+	private CometSession cometSession;
 	
 	public CupidoServlet() {
-		GlobalTableManagerInterface.ServletNotifcationsInterface a;
-		// UnicastRemoteObject a;
+
 	}
 
 	@Override
@@ -55,6 +112,7 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
         System.out.println("Servlet: Sending back the message to the client.");
         NewLocalChatMessage x = new NewLocalChatMessage();
         x.message = message;
+
         x.user = username;
     	cometSession.enqueue(x);
 	}
@@ -149,4 +207,5 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 
         System.out.println("Servlet: Comet connession opened.");
 	}
+
 }

@@ -21,8 +21,8 @@ public class Cupido implements EntryPoint {
 	static final int width = 900;
 	static final int height = 700;
 		
-    @SerialTypes( { CardPassed.class, CardPlayed.class, GameEnded.class, GameStarted.class,
-        NewLocalChatMessage.class, NewPlayerJoined.class, PlayerLeft.class })
+	@SerialTypes({ CardPassed.class, CardPlayed.class, GameEnded.class, GameStarted.class, NewLocalChatMessage.class,
+			NewPlayerJoined.class, PlayerLeft.class })
     public static abstract class CupidoCometSerializer extends CometSerializer {
     }
     

@@ -1,32 +1,38 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.ServletNotifcationsInterface;
-import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 import unibo.as.cupido.backendInterfaces.common.PositionFullException;
 
 public class PlayersManager {
 
-	private static enum Positions {
-		OWNER, LEFT, UP, RIGHT
+	static class PlayerInfo {
+		boolean isBot;
+
+		String name;
+		int score;
+		public PlayerInfo(String name, int score, boolean isBot) {
+			this.name = name;
+			this.score = score;
+			this.isBot = isBot;
+		}
 	}
 
+	private static enum Positions {
+		LEFT, OWNER, RIGHT, UP
+	}
+	PlayerInfo[] players;
 	private int playersCount;
-	private PlayerStatus[] players;
+
+	private int whoPlaysNext;
 
 	public PlayersManager(ServletNotifcationsInterface snf, String owner) {
 		playersCount = 0;
-		players = new PlayerStatus[4];
+		players = new PlayerInfo[4];
 		for (int i = 0; i < 4; i++)
-			players[i] = new PlayerStatus(null, 0, null, 0, false);
+			players[i] = new PlayerInfo(null, 0, false);
 		players[Positions.OWNER.ordinal()].name = owner;
-	}
-
-	public int getPlayersCount() {
-		return playersCount;
 	}
 
 	public void addBot(String botName, int position) throws FullTableException, IllegalArgumentException,
@@ -47,22 +53,6 @@ public class PlayersManager {
 		players[position].name = botName;
 		playersCount++;
 
-	}
-
-	public String getPlayerName(int i) {
-		return players[i].name;
-	}
-
-	public int getScore(int i) {
-		return players[i].score;
-	}
-
-	public int numOfCardsInHand(int i) {
-		return players[i].numOfCardsInHand;
-	}
-
-	public boolean isBot(int i) {
-		return players[i].isBot;
 	}
 
 	public InitialTableStatus addPlayer(String playerName) throws FullTableException {
@@ -104,12 +94,12 @@ public class PlayersManager {
 		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
 	}
 
-	public void removePlayer(String playerName) {
-		int position = getPlayerPosition(playerName);
-		if (position == -1)
-			throw new IllegalArgumentException("player not found");
-		playersCount--;
-		players[position].name = null;
+	public void addPoint(int winner, int points) {
+		players[winner].score += points;
+	}
+
+	public String getPlayerName(int i) {
+		return players[i].name;
 	}
 
 	int getPlayerPosition(String playerName) {
@@ -119,12 +109,24 @@ public class PlayersManager {
 		return -1;
 	}
 
-	public ObservedGameStatus getObservedGameStatus() {
-		return new ObservedGameStatus(players);
+	public int getPlayersCount() {
+		return playersCount;
 	}
 
-	public void playCard(int position, Card card) {
-		players[position].playedCard = card;
+	public int getScore(int i) {
+		return players[i].score;
+	}
+
+	public boolean isBot(int i) {
+		return players[i].isBot;
+	}
+
+	public void removePlayer(String playerName) {
+		int position = getPlayerPosition(playerName);
+		if (position == -1)
+			throw new IllegalArgumentException("player not found");
+		playersCount--;
+		players[position].name = null;
 	}
 
 }
