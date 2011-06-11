@@ -35,42 +35,6 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 		}
 	}
 
-	/**
-	 * a non mental sick implementor should write equals and compareTo methods
-	 * consistent to each other
-	 */
-	public static class Triple implements Comparable<Triple> {
-		public LocalTableManagerInterface ltmi;
-		public int maximumTable;
-		public int tableCount;
-
-		public Triple(LocalTableManagerInterface ltmi, int tableCount, int maximumTable) {
-			this.ltmi = ltmi;
-			this.tableCount = tableCount;
-			this.maximumTable = maximumTable;
-		}
-
-		@Override
-		public int compareTo(Triple o) {
-			return (o.tableCount / o.maximumTable) - (this.tableCount / this.maximumTable);
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			return this.ltmi == ((Triple) o).ltmi;
-		}
-
-		public String toString() {
-			return "[" + ltmi + ", " + tableCount + ", " + maximumTable + "]";
-		}
-
-		public static Triple getDefault(LocalTableManagerInterface ltmi) {
-			return new Triple(ltmi, 0, 0);
-		}
-	}
-
-	ArrayList<Triple> swarm;
-
 	private static class LTMPollingThread extends Thread {
 		private final LTMSwarm ltmSwarm;
 
@@ -104,6 +68,43 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 			}
 		}
 	}
+
+	/**
+	 * a non mental sick implementor should write equals and compareTo methods
+	 * consistent to each other
+	 */
+	public static class Triple implements Comparable<Triple> {
+		public static Triple getDefault(LocalTableManagerInterface ltmi) {
+			return new Triple(ltmi, 0, 0);
+		}
+
+		public LocalTableManagerInterface ltmi;
+		public int maximumTable;
+
+		public int tableCount;
+
+		public Triple(LocalTableManagerInterface ltmi, int tableCount, int maximumTable) {
+			this.ltmi = ltmi;
+			this.tableCount = tableCount;
+			this.maximumTable = maximumTable;
+		}
+
+		@Override
+		public int compareTo(Triple o) {
+			return (o.tableCount / o.maximumTable) - (this.tableCount / this.maximumTable);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return this.ltmi == ((Triple) o).ltmi;
+		}
+
+		public String toString() {
+			return "[" + ltmi + ", " + tableCount + ", " + maximumTable + "]";
+		}
+	}
+
+	ArrayList<Triple> swarm;
 
 	public LTMSwarm() {
 		swarm = new ArrayList<LTMSwarm.Triple>();

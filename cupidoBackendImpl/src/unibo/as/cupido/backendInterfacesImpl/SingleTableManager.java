@@ -91,6 +91,15 @@ public class SingleTableManager implements TableInterface {
 		}
 	}
 
+	private void botPassCard() {
+		// TODO
+		if (cardsManager.allPlayerPassedCards()) {
+			gameStatus = GameStatus.STARTED;
+			cardsManager.passCards();
+			toNotify.notifyGameStarted(null, null);
+		}
+	}
+
 	private void botPlayCard() {
 		// TODO Auto-generated method stub
 
@@ -112,15 +121,6 @@ public class SingleTableManager implements TableInterface {
 			botPassCard();
 		}
 		return its;
-	}
-
-	private void botPassCard() {
-		// TODO
-		if (cardsManager.allPlayerPassedCards()) {
-			gameStatus = GameStatus.STARTED;
-			cardsManager.passCards();
-			toNotify.notifyGameStarted(null, null);
-		}
 	}
 
 	@Override

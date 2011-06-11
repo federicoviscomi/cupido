@@ -120,6 +120,11 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	}
 
 	@Override
+	public void isAlive() throws RemoteException {
+		System.out.println("Current thread is " + Thread.currentThread() + " called isAlive()");
+	}
+
+	@Override
 	public void notifyGTMShutDown() {
 		// TODO Auto-generated method stub
 		System.out.println("Current thread is " + Thread.currentThread());
@@ -149,10 +154,5 @@ public class LocalTableManager implements LocalTableManagerInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void isAlive() throws RemoteException {
-		System.out.println("Current thread is " + Thread.currentThread() + " called isAlive()");
 	}
 }

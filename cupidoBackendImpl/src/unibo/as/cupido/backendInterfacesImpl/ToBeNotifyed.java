@@ -56,6 +56,19 @@ public class ToBeNotifyed {
 		}
 	}
 
+	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
+		for (Entry<String, ServletNotifcationsInterface> snf : snfs.entrySet()) {
+			try {
+				snf.getValue().notifyGameEnded(matchPoints, playersTotalPoint);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(-1);
+			}
+		}
+		snfs = null;
+	}
+
 	public void notifyGameStarted(String userName, Card[] cards) {
 		for (Entry<String, ServletNotifcationsInterface> snf : snfs.entrySet()) {
 			try {
@@ -112,18 +125,5 @@ public class ToBeNotifyed {
 
 	public void viewerJoined(String userName, ServletNotifcationsInterface snf) {
 		snfs.put(userName, snf);
-	}
-
-	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-		for (Entry<String, ServletNotifcationsInterface> snf : snfs.entrySet()) {
-			try {
-				snf.getValue().notifyGameEnded(matchPoints, playersTotalPoint);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
-			}
-		}
-		snfs = null;
 	}
 }

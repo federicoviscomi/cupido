@@ -21,13 +21,13 @@ public class PlayersManager {
 			this.isBot = isBot;
 		}
 
+		public Object clone() {
+			return new PlayerInfo(name, score, isBot);
+		}
+
 		@Override
 		public String toString() {
 			return "[is bot=" + isBot + ", name=" + name + ", score=" + score + "]";
-		}
-
-		public Object clone() {
-			return new PlayerInfo(name, score, isBot);
 		}
 	}
 
@@ -80,6 +80,11 @@ public class PlayersManager {
 		players[winner].score += points;
 	}
 
+	public int[] getAllPoints() {
+		int[] points = new int[4];
+		return points;
+	}
+
 	public String getPlayerName(int i) {
 		return players[i].name;
 	}
@@ -97,18 +102,6 @@ public class PlayersManager {
 
 	public int getScore(int i) {
 		return players[i].score;
-	}
-
-	public boolean isBot(int i) {
-		return players[i].isBot;
-	}
-
-	public void removePlayer(String playerName) {
-		int position = getPlayerPosition(playerName);
-		if (position == -1)
-			throw new IllegalArgumentException("player not found");
-		playersCount--;
-		players[position].name = null;
 	}
 
 	public InitialTableStatus getTableStatus(int position) {
@@ -141,9 +134,16 @@ public class PlayersManager {
 		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
 	}
 
-	public int[] getAllPoints() {
-		int[] points = new int[4];
-		return points;
+	public boolean isBot(int i) {
+		return players[i].isBot;
+	}
+
+	public void removePlayer(String playerName) {
+		int position = getPlayerPosition(playerName);
+		if (position == -1)
+			throw new IllegalArgumentException("player not found");
+		playersCount--;
+		players[position].name = null;
 	}
 
 }

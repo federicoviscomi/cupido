@@ -37,6 +37,11 @@ public class CardsManager {
 	/** the two of clubs */
 	private static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
 	private static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
+
+	public static void main(String args[]) {
+		new CardsManager().print();
+	}
+
 	/** stores the cards passed by each player */
 	private Card[][] allPassedCards;
 	/** stores the cards played in the current turn */
@@ -56,6 +61,7 @@ public class CardsManager {
 	 * in the game. <code>false</code> otherwise
 	 */
 	boolean brokenHearted;
+
 	/**
 	 * compare to cards according to the order given by ths suit of first card
 	 * played
@@ -75,21 +81,6 @@ public class CardsManager {
 		playingFirst = whoHasTwoOfClubs();
 	}
 
-	/** deals card pseudo-uniformly at random */
-	private void dealCards() {
-		cards = new ArrayList[4];
-		for (int i = 0; i < 4; i++)
-			cards[i] = new ArrayList<Card>(13);
-		Card[] mazzo = new Card[52];
-		for (int i = 0; i < 52; i++) {
-			mazzo[i] = new Card(i % 13 + 1, Card.Suit.values()[i % 4]);
-		}
-		Collections.shuffle(Arrays.asList(mazzo), new Random(System.currentTimeMillis()));
-		for (int i = 0; i < 52; i++) {
-			cards[i % 4].add(mazzo[i]);
-		}
-	}
-
 	/**
 	 * @return <code>true</code> if all player chosen cards to pass;
 	 *         <code>false</code> otherwise.
@@ -107,15 +98,23 @@ public class CardsManager {
 		return playedCardsCount == 4;
 	}
 
-	public static void main(String args[]) {
-		new CardsManager().print();
+	/** deals card pseudo-uniformly at random */
+	private void dealCards() {
+		cards = new ArrayList[4];
+		for (int i = 0; i < 4; i++)
+			cards[i] = new ArrayList<Card>(13);
+		Card[] mazzo = new Card[52];
+		for (int i = 0; i < 52; i++) {
+			mazzo[i] = new Card(i % 13 + 1, Card.Suit.values()[i % 4]);
+		}
+		Collections.shuffle(Arrays.asList(mazzo), new Random(System.currentTimeMillis()));
+		for (int i = 0; i < 52; i++) {
+			cards[i % 4].add(mazzo[i]);
+		}
 	}
 
-	private void print() {
-		for (int i = 0; i < 4; i++) {
-			Collections.sort(cards[i], cardsComparator);
-			System.out.println((cards[i]));
-		}
+	public boolean gameEnded() {
+		return turn == 12;
 	}
 
 	public int getPoints() {
@@ -182,6 +181,13 @@ public class CardsManager {
 		playedCardsCount = (playedCardsCount + 1) % 4 + 1;
 	}
 
+	private void print() {
+		for (int i = 0; i < 4; i++) {
+			Collections.sort(cards[i], cardsComparator);
+			System.out.println((cards[i]));
+		}
+	}
+
 	@SuppressWarnings("boxing")
 	public void print(PlayersManager playersManager) {
 		for (int i = 0; i < 4; i++) {
@@ -222,10 +228,6 @@ public class CardsManager {
 				return i;
 		}
 		return -1;
-	}
-
-	public boolean gameEnded() {
-		return turn == 12;
 	}
 
 }
