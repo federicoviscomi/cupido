@@ -90,7 +90,8 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 							try {
 								next.ltmi.isAlive();
 							} catch (RemoteException e) {
-								e.printStackTrace();
+								System.out.println("LTM " + next.ltmi
+										+ ".isAlive() thrown RemoteException\n Removing it from swarm");
 								iterator.remove();
 							}
 						}
