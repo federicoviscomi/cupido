@@ -25,6 +25,11 @@
     <url-pattern>/cupido/comet</url-pattern>
   </servlet-mapping>
 
+  <!--  Listeners -->
+  <listener>
+	<listener-class>unibo.as.server.CupidoSessionListener</listener-class>
+  </listener>
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Cupido.html</welcome-file>

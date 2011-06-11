@@ -22,9 +22,8 @@ public class CupidoTableScreen extends AbsolutePanel {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
-		HeartsTableWidget tableWidget = new HeartsTableWidget(username);
-		tableWidget.setHeight(Cupido.height + "px");
-		tableWidget.setWidth((Cupido.width - chatWidth) + "px");
+		assert Cupido.height == Cupido.width - chatWidth;
+		HeartsTableWidget tableWidget = new HeartsTableWidget(Cupido.height, username, screenSwitcher);
 		add(tableWidget, 0, 0);
 		
 		final LocalChatWidget chatWidget = new LocalChatWidget(username, new LocalChatWidget.MessageSender() {
