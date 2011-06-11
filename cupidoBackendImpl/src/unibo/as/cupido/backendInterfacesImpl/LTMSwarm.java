@@ -1,10 +1,13 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.PriorityQueue;
 
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
+import unibo.as.cupido.backendInterfaces.common.NoSuchLTMInterfaceException;
 
 public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 
@@ -32,14 +35,13 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 		}
 	}
 
+	/**
+	 * a non mental sick implementor should write equals and compareTo methods
+	 * consistent to each other
+	 */
 	public static class Triple implements Comparable<Triple> {
-		public static Triple getDefault(LocalTableManagerInterface ltmi) {
-			return new Triple(ltmi, 0, 0);
-		}
-
 		public LocalTableManagerInterface ltmi;
 		public int maximumTable;
-
 		public int tableCount;
 
 		public Triple(LocalTableManagerInterface ltmi, int tableCount, int maximumTable) {
@@ -55,23 +57,71 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 
 		@Override
 		public boolean equals(Object o) {
-			Triple t = (Triple) o;
-			return this.ltmi.equals(t.ltmi);
+			return this.ltmi == ((Triple) o).ltmi;
 		}
 
 		public String toString() {
 			return "[" + ltmi + ", " + tableCount + ", " + maximumTable + "]";
 		}
+
+		public static Triple getDefault(LocalTableManagerInterface ltmi) {
+			return new Triple(ltmi, 0, 0);
+		}
 	}
 
-	PriorityQueue<Triple> swarm;
+	ArrayList<Triple> swarm;
+
+	private static class LTMPollingThread extends Thread {
+		private final LTMSwarm ltmSwarm;
+
+		public LTMPollingThread(LTMSwarm ltmSwarm) {
+			this.ltmSwarm = ltmSwarm;
+		}
+
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					super.sleep((long) 1e5);
+					synchronized (ltmSwarm.swarm) {
+						Iterator<Triple> iterator = ltmSwarm.swarm.iterator();
+						while (iterator.hasNext()) {
+							Triple next = iterator.next();
+							try {
+								next.ltmi.isAlive();
+							} catch (RemoteException e) {
+								e.printStackTrace();
+								iterator.remove();
+							}
+						}
+					}
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+
+			}
+		}
+	}
 
 	public LTMSwarm() {
-		swarm = new PriorityQueue<Triple>();
+		swarm = new ArrayList<LTMSwarm.Triple>();
+		new LTMPollingThread(this).start();
 	}
 
-	public void addLTM(LocalTableManagerInterface ltmi, int maxTable) {
-		swarm.add(new Triple(ltmi, 0, maxTable));
+	public void addLTM(LocalTableManagerInterface ltmi, int maximumTable) {
+		synchronized (swarm) {
+			Triple triple = new Triple(ltmi, 0, maximumTable);
+			// work with equals
+			if (swarm.contains(triple)) {
+				throw new IllegalArgumentException("duplicate local table manager");
+			}
+			// works with compareTo
+			int index = Collections.binarySearch(swarm, triple);
+			if (index < 0) {
+				swarm.add(-index - 1, triple);
+			}
+		}
 	}
 
 	/**
@@ -81,32 +131,32 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 	 * @return
 	 */
 	public LocalTableManagerInterface chooseLTM() throws AllLTMBusyException {
-		if (swarm.peek().maximumTable == swarm.peek().tableCount)
-			throw new AllLTMBusyException();
-		Triple chosen = swarm.remove();
-		chosen.tableCount++;
-		swarm.add(chosen);
-		return chosen.ltmi;
+		synchronized (swarm) {
+			if (swarm.size() == 0)
+				throw new AllLTMBusyException("There are no LTMs associated with GTM");
+			Triple triple = swarm.get(0);
+			if (triple.tableCount == triple.maximumTable) {
+				throw new AllLTMBusyException();
+			}
+			triple.tableCount++;
+			return triple.ltmi;
+		}
 	}
 
 	/**
 	 * 
-	 * L'implementazione di questo metodo fa schifo!
+	 * 
 	 * 
 	 * @param ltmi
+	 * @throws NoSuchLTMInterfaceException
 	 */
-	public void decreaseTableCount(LocalTableManagerInterface ltmi) {
-		Triple toUpdate = null;
-		Iterator<Triple> iterator = swarm.iterator();
-		while (iterator.hasNext()) {
-			Triple next = iterator.next();
-			if (next.ltmi.equals(ltmi)) {
-				toUpdate = next;
-				iterator.remove();
-			}
+	public void decreaseTableCount(LocalTableManagerInterface ltmi) throws NoSuchLTMInterfaceException {
+		synchronized (swarm) {
+			int index = swarm.indexOf(Triple.getDefault(ltmi));
+			if (index < -1)
+				throw new NoSuchLTMInterfaceException();
+			swarm.get(index).tableCount--;
 		}
-		toUpdate.tableCount--;
-		swarm.add(toUpdate);
 	}
 
 	/**
@@ -115,16 +165,21 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 	 * @return
 	 */
 	public Triple[] getAllLTM() {
-		Triple[] all = new Triple[swarm.size()];
-		return swarm.toArray(all);
+		synchronized (swarm) {
+			return swarm.toArray(new Triple[swarm.size()]);
+		}
 	}
 
 	@Override
 	public Iterator<LocalTableManagerInterface> iterator() {
-		return new It();
+		synchronized (swarm) {
+			return new It();
+		}
 	}
 
 	public void remove(LocalTableManagerInterface ltmi) {
-		swarm.remove(Triple.getDefault(ltmi));
+		synchronized (swarm) {
+			swarm.remove(Triple.getDefault(ltmi));
+		}
 	}
 }

@@ -1,6 +1,5 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

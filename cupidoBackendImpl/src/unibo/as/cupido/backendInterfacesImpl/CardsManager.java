@@ -9,7 +9,6 @@ import java.util.Random;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.IllegalMoveException;
 import unibo.as.cupido.backendInterfaces.common.Card.Suit;
-import unibo.as.cupido.backendInterfacesImpl.SingleTableManager.GameStatus;
 
 /**
  * 
@@ -136,36 +135,6 @@ public class CardsManager {
 		}
 	}
 
-	/**
-	 * The player <code>playerPosition</code> playes the card <code>card</code>
-	 * 
-	 * @param playerPosition
-	 *            the position of the player
-	 * @param card
-	 *            the card played
-	 * @throws IllegalMoveException
-	 *             if one of the following rules are not satisfied:
-	 *             <ul>
-	 *             <li>At first turn the first card played must be two of clubs</li>
-	 *             <li>If current player is not the first of current turn he
-	 *             must play a card of the same suit of the first card played in
-	 *             this turn. If he does not have such a card then he can play
-	 *             every card.</li>
-	 *             <li>If <code>card</code> suit is heart then at least one of
-	 *             the following rule must be satisfied:
-	 *             <ul>
-	 *             <li>someone played heart before</li>
-	 *             <li>current player is not first in turn and he does not own
-	 *             cards of the same suit as the first card played in current
-	 *             turn</li>
-	 *             <li>player owns only hearts card(this could happen only if
-	 *             player is first in turn)</li>
-	 *             </ul>
-	 *             </ul>
-	 * 
-	 * @throws IllegalArgumentException
-	 *             if player does not own the card or card is null
-	 */
 	public void playCard(int playerPosition, Card card) throws IllegalMoveException {
 		if (card == null || !cards[playerPosition].remove(card)) {
 			throw new IllegalArgumentException("User " + playerPosition + " does not own card " + card);

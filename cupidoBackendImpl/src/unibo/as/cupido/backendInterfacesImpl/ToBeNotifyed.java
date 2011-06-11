@@ -18,7 +18,7 @@ public class ToBeNotifyed {
 		snfs = new HashMap<String, ServletNotifcationsInterface>(4);
 	}
 
-	public void notifyBotJoined(String botName, int position, int points, BotNotificationInterface botNotification) {
+	public void notifyBotJoined(String botName, int position, int points) {
 		for (ServletNotifcationsInterface snf : snfs.values()) {
 			try {
 				snf.notifyPlayerJoined(botName, true, points, position);
@@ -28,7 +28,6 @@ public class ToBeNotifyed {
 				System.exit(-1);
 			}
 		}
-		snfs.put(botName, botNotification);
 	}
 
 	public void notifyCardPassed(Card[] cards, String name) {
@@ -112,8 +111,6 @@ public class ToBeNotifyed {
 	}
 
 	public void viewerJoined(String userName, ServletNotifcationsInterface snf) {
-		if (userName == null || snf == null)
-			throw new IllegalArgumentException();
 		snfs.put(userName, snf);
 	}
 

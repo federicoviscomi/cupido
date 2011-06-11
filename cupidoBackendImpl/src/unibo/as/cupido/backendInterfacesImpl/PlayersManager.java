@@ -3,6 +3,7 @@ package unibo.as.cupido.backendInterfacesImpl;
 import java.util.Arrays;
 
 import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
+import unibo.as.cupido.backendInterfaces.TableInterface.Positions;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.PositionFullException;
@@ -24,14 +25,10 @@ public class PlayersManager {
 		public String toString() {
 			return "[is bot=" + isBot + ", name=" + name + ", score=" + score + "]";
 		}
-		
-		public Object clone(){
+
+		public Object clone() {
 			return new PlayerInfo(name, score, isBot);
 		}
-	}
-
-	private static enum Positions {
-		OWNER, LEFT, RIGHT, UP
 	}
 
 	PlayerInfo[] players;
@@ -48,7 +45,6 @@ public class PlayersManager {
 		players[Positions.OWNER.ordinal()].isBot = isBot;
 	}
 
-	
 	public void addBot(String botName, int position) throws FullTableException, IllegalArgumentException,
 			PositionFullException {
 		if (playersCount > 4) {
@@ -66,7 +62,6 @@ public class PlayersManager {
 		players[position].isBot = true;
 		players[position].name = botName;
 		playersCount++;
-
 	}
 
 	public InitialTableStatus addPlayer(String playerName) throws FullTableException {
@@ -77,8 +72,8 @@ public class PlayersManager {
 		while (players[position].name != null)
 			position++;
 		players[position].name = playerName;
-		
-		return getTableStatus(position); 
+
+		return getTableStatus(position);
 	}
 
 	public void addPoint(int winner, int points) {
@@ -116,7 +111,6 @@ public class PlayersManager {
 		players[position].name = null;
 	}
 
-
 	public InitialTableStatus getTableStatus(int position) {
 		/**
 		 * Opponents are sorted clockwise (game is clockwise) opponents.lenght
@@ -146,7 +140,6 @@ public class PlayersManager {
 
 		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
 	}
-
 
 	public int[] getAllPoints() {
 		int[] points = new int[4];

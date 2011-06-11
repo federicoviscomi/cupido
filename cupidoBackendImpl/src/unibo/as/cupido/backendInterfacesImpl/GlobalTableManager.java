@@ -16,19 +16,27 @@ import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
+import unibo.as.cupido.backendInterfaces.common.NoSuchLTMInterfaceException;
 import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.common.Pair;
 import unibo.as.cupido.backendInterfacesImpl.LTMSwarm.Triple;
 
 /**
  * 
- * TableManager has various tasks:
+ * GTM(global table manager) has various tasks:
  * <ul>
- * <li>manage a set of LocalTableManager. This includes adding/removing a
- * LocalTableManages to the set and checking for consistency of the set</li>
- * <li>dispatch the Servlet request to the right LocalTableManager i.e. choose
- * an alive LocalTableManager and balance the work load between the
- * LocalTableManagers</li>
+ * <li>Manage a set of LTM(local table manager). This includes:
+ * <ul>
+ * <li>
+ * adding/removing a LocalTableManages to the set</li>
+ * <li>checking for consistency of the set, i.e. polling the LTM in the set
+ * </ul>
+ * </li>
+ * <li>Dispatch the Servlet request to the right LTM i.e.:
+ * <ul>
+ * <li>choose an alive LTM</li>
+ * <li>balance the work load between the LocalTableManagers</li>
+ * </ul>
  * </ul>
  * 
  * 
@@ -43,6 +51,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 	private AllTables allTables;
 
+	/** manage a swarm of LTM */
 	private LTMSwarm ltmSwarm;
 
 	private Registry registry;
@@ -115,7 +124,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 	@Override
 	public void notifyTableDestruction(TableDescriptor tableDescriptor, LocalTableManagerInterface ltm)
-			throws RemoteException {
+			throws RemoteException, NoSuchLTMInterfaceException {
 		System.out.println("Current thread is " + Thread.currentThread());
 		allTables.removeTable(tableDescriptor);
 		ltmSwarm.decreaseTableCount(ltm);
