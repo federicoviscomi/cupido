@@ -33,6 +33,21 @@ public class Card implements Serializable {
 
 	@Override
 	public String toString() {
-		return "[" + suit + " " + value + "]";
+		String stringSuit = "";
+		switch (suit) {
+		case CLUBS:
+			stringSuit = "CLUBS";
+			break;
+		case DIAMONDS:
+			stringSuit = "DIAMONDS";
+			break;
+		case HEARTS:
+			stringSuit = "HEARTS";
+			break;
+		case SPADES:
+			stringSuit = "SPADES";
+			break;
+		}
+		return "[" + stringSuit + " " + value + "]";
 	}
 }
