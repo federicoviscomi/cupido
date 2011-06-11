@@ -22,13 +22,13 @@ public class Card implements Serializable {
 	 */
 	public int value;
 
-	public Card() {
-		//
-	}
-
 	public Card(int value, Suit suit) {
 		this.value = value;
 		this.suit = suit;
+	}
+
+	public Card() {
+		//
 	}
 
 	@Override

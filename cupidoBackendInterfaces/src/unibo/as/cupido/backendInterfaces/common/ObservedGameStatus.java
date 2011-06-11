@@ -11,9 +11,9 @@ import java.io.Serializable;
  */
 public class ObservedGameStatus implements Serializable {
 	public PlayerStatus[] ogs;
-
+	
 	public ObservedGameStatus() {
-
+		
 	}
 
 	public ObservedGameStatus(PlayerStatus[] players) {
