@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl;
+package unibo.as.cupido.backendInterfacesImpl.ltm;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -18,7 +18,8 @@ import java.util.concurrent.RejectedExecutionException;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
-import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
+import unibo.as.cupido.backendInterfacesImpl.table.SingleTableManager;
+import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 
 /**
@@ -101,7 +102,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	}
 
 	@Override
-	public TableInterface createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException {
+	public TableInterface createTable(String owner, ServletNotificationsInterface snf) throws RemoteException {
 		try {
 			System.out.println("Current thread is " + Thread.currentThread());
 			Table newTable = new Table(owner, 3, null, nextId++);
