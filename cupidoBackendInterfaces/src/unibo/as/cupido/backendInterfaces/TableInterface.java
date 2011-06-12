@@ -9,7 +9,7 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.exception.DuplicatePlayerNameException;
+import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
@@ -104,14 +104,14 @@ public interface TableInterface extends Remote {
 	 *             if game status is not {@link GameStatus}.INIT
 	 * @throws IllegalArgumentException
 	 *             if an argument is null
-	 * @throws DuplicatePlayerNameException
+	 * @throws DuplicateUserNameException
 	 *             if a player name <code>userName</code> is already playing or
 	 *             viewing the table
 	 */
 	public InitialTableStatus joinTable(String userName,
 			ServletNotificationsInterface snf) throws FullTableException,
 			NoSuchTableException, RemoteException, IllegalArgumentException,
-			IllegalStateException, DuplicatePlayerNameException;
+			IllegalStateException, DuplicateUserNameException;
 
 	/**
 	 * Called by a player to leave a table. If a player leaves a table when game
