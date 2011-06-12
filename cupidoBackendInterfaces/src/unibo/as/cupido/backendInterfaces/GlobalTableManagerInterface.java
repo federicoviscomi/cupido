@@ -93,7 +93,7 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * @throws RemoteException
 	 * @throws AllLTMBusyException
 	 */
-	public TableDescriptor createTable(String owner, ServletNotificationsInterface snf) throws RemoteException,
+	public TableDescriptor createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException,
 			AllLTMBusyException;
 
 	/**
