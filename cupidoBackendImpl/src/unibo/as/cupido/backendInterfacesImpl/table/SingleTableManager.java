@@ -55,9 +55,11 @@ public class SingleTableManager implements TableInterface {
 	private PlayersManager playersManager;
 	private ToBeNotifyed toNotify;
 	private BotManager botManager;
+	private final Table table;
 
 	public SingleTableManager(ServletNotificationsInterface snf, Table table,
 			GlobalTableManagerInterface gtm) throws RemoteException {
+		this.table = table;
 		toNotify = new ToBeNotifyed();
 		cardsManager = new CardsManager();
 		playersManager = new PlayersManager(table.owner, false);
@@ -266,5 +268,10 @@ public class SingleTableManager implements TableInterface {
 					cardsManager.cardPlayed[i], cardsManager.cards[i].size(),
 					playersManager.players[i].isBot);
 		return ogs;
+	}
+
+	@Override
+	public Table getTable() throws RemoteException {
+		return table;
 	}
 }

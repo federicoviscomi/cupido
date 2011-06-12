@@ -87,11 +87,9 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 			/* create table in the chosen local table manager */
 			TableInterface tableInterface = chosenLTM.createTable(owner, snf);
-			Table table = new Table(owner, 3, new TableDescriptor(
-					tableInterface.toString(), 0));
-
+			
 			/* store created table */
-			allTables.addTable(table, chosenLTM);
+			allTables.addTable(tableInterface.getTable(), chosenLTM);
 			System.out.println("Current thread is " + Thread.currentThread());
 			return tableInterface;
 		} catch (RemoteException e) {
@@ -106,6 +104,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 		return ltmSwarm.getAllLTM();
 	}
 
+	@Override
 	public Collection<Pair<Table, LocalTableManagerInterface>> getTableList()
 			throws RemoteException {
 		System.out.println("Current thread is " + Thread.currentThread());
