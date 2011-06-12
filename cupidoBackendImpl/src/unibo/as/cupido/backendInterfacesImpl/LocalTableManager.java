@@ -1,6 +1,5 @@
 package unibo.as.cupido.backendInterfacesImpl;
 
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -121,6 +120,11 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	}
 
 	@Override
+	public void isAlive() throws RemoteException {
+		System.out.println("Current thread is " + Thread.currentThread() + " called isAlive()");
+	}
+
+	@Override
 	public void notifyGTMShutDown() {
 		// TODO Auto-generated method stub
 		System.out.println("Current thread is " + Thread.currentThread());
@@ -151,5 +155,4 @@ public class LocalTableManager implements LocalTableManagerInterface {
 			e.printStackTrace();
 		}
 	}
-
 }

@@ -8,10 +8,24 @@ import java.util.Random;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.IllegalMoveException;
-import unibo.as.cupido.backendInterfacesImpl.SingleTableManager.GameStatus;
+import unibo.as.cupido.backendInterfaces.common.Card.Suit;
+
+/**
+ * 
+ * ELIMINARE?? ?? ?? Vi è anche un secondo modo di vincere la partita: un
+ * giocatore vince se riesce a prendere tutte le carte di cuori e la donna di
+ * picche lasciando gli avversari a zero punti.
+ * 
+ * 
+ * @author cane
+ * 
+ */
 
 public class CardsManager {
 
+	/**
+	 * Compare two cards just for showing them in a user friendly order
+	 */
 	private static final Comparator<Card> cardsComparator = new Comparator<Card>() {
 		@Override
 		public int compare(Card o1, Card o2) {
@@ -19,32 +33,72 @@ public class CardsManager {
 					- (o2.suit.ordinal() * 13 + (o2.value == 1 ? 14 : o2.value));
 		}
 	};
-	
+
+	/** the two of clubs */
 	private static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
+	private static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
+
+	public static void main(String args[]) {
+		new CardsManager().print();
+	}
+
+	/** stores the cards passed by each player */
 	private Card[][] allPassedCards;
+	/** stores the cards played in the current turn */
 	Card[] cardPlayed;
+	/** stores the cards owned by each player */
 	ArrayList<Card>[] cards;
+	/** the total points of the cards played in the current turn */
 	private int currentTurnPoints;
+	/** counts the number of card played in the current turn */
 	private int playedCardsCount;
-	int playingFirst;
+	/** position of player who plays first in the current turn*/
+	int firstPlaying;
+	/** the number of turn made in this hand */
 	int turn;
+	/**
+	 * <code>true</code> if some player correctly played an hearts at some point
+	 * in the game. <code>false</code> otherwise
+	 */
 	boolean brokenHearted;
+
+	/**
+	 * compare to cards according to the order given by ths suit of first card
+	 * played
+	 */
 	private final Comparator<Card> winnerComparator = new Comparator<Card>() {
 		@Override
 		public int compare(Card o1, Card o2) {
-			int firstSuit = cardPlayed[playingFirst].suit.ordinal();
+			int firstSuit = cardPlayed[firstPlaying].suit.ordinal();
 			return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14 : o1.value))
 					- ((o2.suit.ordinal() == firstSuit ? 1 : 0) * (o2.value == 1 ? 14 : o2.value));
 		}
 	};
 
-	@SuppressWarnings("unchecked")
 	public CardsManager() {
 		dealCards();
 		allPassedCards = new Card[4][];
-		playingFirst = whoHasTwoOfClubs();
+		firstPlaying = whoHasTwoOfClubs();
 	}
 
+	/**
+	 * @return <code>true</code> if all player chosen cards to pass;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean allPlayerPassedCards() {
+		return Arrays.asList(allPassedCards).contains(null);
+	}
+
+	/**
+	 * 
+	 * @return <code>true</code> if all player played a card in current turn;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean allPlayerPlayedCards() {
+		return playedCardsCount == 4;
+	}
+
+	/** deals card pseudo-uniformly at random */
 	private void dealCards() {
 		cards = new ArrayList[4];
 		for (int i = 0; i < 4; i++)
@@ -56,37 +110,24 @@ public class CardsManager {
 		Collections.shuffle(Arrays.asList(mazzo), new Random(System.currentTimeMillis()));
 		for (int i = 0; i < 52; i++) {
 			cards[i % 4].add(mazzo[i]);
-		}		
-	}
-
-	public boolean allPlayerPassedCards() {
-		return Arrays.asList(allPassedCards).contains(null);
-	}
-
-	public boolean allPlayerPlayedCards() {
-		return playedCardsCount == 4;
-	}
-
-	public static void main(String args[]) {
-		new CardsManager().print();
-	}
-
-	private void print() {
-		for (int i = 0; i < 4; i++) {
-			Collections.sort(cards[i], cardsComparator);
-			System.out.println((cards[i]));
 		}
 	}
 
+	public boolean gameEnded() {
+		return turn == 12;
+	}
 
 	public int getPoints() {
 		return currentTurnPoints;
 	}
 
 	public int getWinner() {
-		return playingFirst;
+		return firstPlaying;
 	}
 
+	/**
+	 * 
+	 */
 	public void passCards() {
 		for (int i = 0; i < 4; i++) {
 			cards[i].addAll(Arrays.asList(allPassedCards[(i - 1) % 4]));
@@ -94,23 +135,38 @@ public class CardsManager {
 	}
 
 	public void playCard(int playerPosition, Card card) throws IllegalMoveException {
-		if (!cards[playerPosition].remove(card)) {
+		if (card == null || !cards[playerPosition].remove(card)) {
 			throw new IllegalArgumentException("User " + playerPosition + " does not own card " + card);
 		}
-		if (turn == 0 && playerPosition == playingFirst) {
+		if (turn == 0 && playedCardsCount == 0) {
 			if (!card.equals(twoOfClubs)) {
-				throw new IllegalMoveException("First card played has to be two of clubs");
+				throw new IllegalMoveException("First turn card played has to be two of clubs");
 			}
 		}
-		if (playerPosition != playingFirst) {
-			// Collections.
-			// if (cards[playerPosition].)
+		if (playerPosition != firstPlaying && !card.suit.equals(cardPlayed[firstPlaying].suit)) {
+			for (Card currentPlayerCard : cards[playerPosition]) {
+				if (currentPlayerCard.suit.equals(cardPlayed[firstPlaying].suit)) {
+					throw new IllegalMoveException("The player " + playerPosition + " must play a card of suit "
+							+ cardPlayed[firstPlaying].suit);
+				}
+			}
+		}
+		if (!brokenHearted) {
+			if (card.suit.equals(Card.Suit.HEARTS)) {
+				if (playerPosition == firstPlaying) {
+					for (Card currentPlayerCard : cards[firstPlaying]) {
+						if (!currentPlayerCard.suit.equals(Suit.HEARTS)) {
+							throw new IllegalMoveException("Cannot play heart rigth now");
+						}
+					}
+				}
+				brokenHearted = true;
+			}
 		}
 		cardPlayed[playerPosition] = card;
 		if (playedCardsCount == 4) {
 			/* decide who takes this hand cards and calculate this hand points */
-			int maxPosition = playingFirst;
-
+			int maxPosition = firstPlaying;
 			for (int i = 0; i < 4; i++) {
 				if (winnerComparator.compare(cardPlayed[i], cardPlayed[maxPosition]) > 0)
 					maxPosition = i;
@@ -125,6 +181,13 @@ public class CardsManager {
 		playedCardsCount = (playedCardsCount + 1) % 4 + 1;
 	}
 
+	private void print() {
+		for (int i = 0; i < 4; i++) {
+			Collections.sort(cards[i], cardsComparator);
+			System.out.println((cards[i]));
+		}
+	}
+
 	@SuppressWarnings("boxing")
 	public void print(PlayersManager playersManager) {
 		for (int i = 0; i < 4; i++) {
@@ -135,9 +198,20 @@ public class CardsManager {
 		}
 	}
 
+	/**
+	 * Stores the card that player whit given position wants to pass. This
+	 * method does not actually move the cards to the next player because every
+	 * player must pass cards in the same time. The card passing is accomplished
+	 * by {@link this.passCards()}
+	 * 
+	 * @param position
+	 *            the position of the player who passes cards
+	 * @param passedCards
+	 *            the cards passerd by the player
+	 * @throws IllegalArgumentException
+	 *             if player does not own the card he wants to pass
+	 */
 	public void setCardPassing(int position, Card[] passedCards) throws IllegalArgumentException {
-		// cards[position].removeAll(Arrays.asList(passedCards));
-		// cards[(position + 1) % 4].addAll(Arrays.asList(passedCards));
 		for (int i = 0; i < 3; i++) {
 			if (!cards[position].remove(passedCards[i]))
 				throw new IllegalArgumentException();
@@ -145,6 +219,9 @@ public class CardsManager {
 		allPassedCards[position] = passedCards;
 	}
 
+	/**
+	 * @return the position of the player who owns the two of clubs
+	 */
 	private int whoHasTwoOfClubs() {
 		for (int i = 0; i < 4; i++) {
 			if (cards[i].contains(twoOfClubs))
@@ -152,4 +229,5 @@ public class CardsManager {
 		}
 		return -1;
 	}
+
 }

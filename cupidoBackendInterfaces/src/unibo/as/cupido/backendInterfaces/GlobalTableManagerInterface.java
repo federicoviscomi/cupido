@@ -6,6 +6,7 @@ import java.util.Collection;
 import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.backendInterfaces.common.NoSuchLTMInterfaceException;
 import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.common.Pair;
 
@@ -14,13 +15,10 @@ import unibo.as.cupido.backendInterfaces.common.Pair;
  * The remote interface that local tables managers and Servlets use to
  * communicate with the global table manager
  * 
- * GTM has to poll each LTM to see if it is alive
- * 
  * @author cane
  * 
  */
 public interface GlobalTableManagerInterface extends Remote {
-
 
 	/**
 	 * 
@@ -143,9 +141,11 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * 
 	 * @param tableDescriptor
 	 * @throws RemoteException
+	 * @throws NoSuchLTMInterfaceException
+	 *  
 	 */
 	public void notifyTableDestruction(TableDescriptor tableDescriptor, LocalTableManagerInterface ltm)
-			throws RemoteException;
+			throws RemoteException, NoSuchLTMInterfaceException;
 
 	/**
 	 * called by the LTM on the GTM
