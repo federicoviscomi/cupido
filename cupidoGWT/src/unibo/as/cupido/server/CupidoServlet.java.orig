@@ -10,7 +10,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.TableDescriptor;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 
 import javax.servlet.http.HttpSession;
@@ -148,31 +147,9 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 		return null;
 	}
 
-	/**
-	 * Create a new table
-	 * FIXME: scegli il nome nel registry, lo username corretto
-	 * @throws RemoteException, AllLTMBusyException 
-	 */
 	@Override
-	public InitialTableStatus createTable() throws RemoteException, AllLTMBusyException {
-		try {
-			//Locate a registry on localhost:1099
-			Registry registry = LocateRegistry.getRegistry(null);
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry.lookup("gtm");
-			ServletNotificationsInterface snf = new ServletNotificationsInterfaceImpl();
-			TableDescriptor a = gtm.createTable("username", snf);
-			
-		} catch (RemoteException e) {
-			System.out.println("Servlet: catched RemoteException-> "+e.getMessage());
-			e.printStackTrace();
-			throw new RemoteException("GTM not reachable");
-		} catch (NotBoundException e) {
-			System.out.println("Servlet: catched NotBoundException-> "+e.getMessage());
-			e.printStackTrace();
-			throw new RemoteException();
-		} catch (AllLTMBusyException e){
-			throw new AllLTMBusyException();
-		}
+	public InitialTableStatus createTable() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
