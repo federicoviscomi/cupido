@@ -81,9 +81,6 @@ public interface GlobalTableManagerInterface extends Remote {
 	/** global server's name in the RMI registry */
 	public static final String globalTableManagerName = "globaltableserver";
 
-	/** l'indirizzo di default del server */
-	// public static final String defaultServerAddress = "localhost";
-
 	/**
 	 * 
 	 * This method is used by the Servlet to create a new Table implemented by
@@ -102,8 +99,11 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * 
 	 * This method is userd by the Servlet to get a list of all the tables
 	 * 
+	 * TODO non e' meglio fare restituire direttamente l'interfaccia del tavolo
+	 * e non quella dell'LTM?
 	 * 
 	 * @return
+	 * 
 	 * @throws RemoteException
 	 */
 	public Collection<Pair<Table, LocalTableManagerInterface>> getTableList()
