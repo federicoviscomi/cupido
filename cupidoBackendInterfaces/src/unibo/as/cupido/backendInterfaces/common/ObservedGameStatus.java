@@ -12,11 +12,11 @@ import java.io.Serializable;
 public class ObservedGameStatus implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public PlayerStatus[] ogs;
-	
+
 	public ObservedGameStatus() {
-		
+
 	}
 
 	public ObservedGameStatus(PlayerStatus[] players) {

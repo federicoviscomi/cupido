@@ -54,8 +54,10 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 							try {
 								next.ltmi.isAlive();
 							} catch (RemoteException e) {
-								System.out.println("LTM " + next.ltmi
-										+ ".isAlive() thrown RemoteException\n Removing it from swarm");
+								System.out
+										.println("LTM "
+												+ next.ltmi
+												+ ".isAlive() thrown RemoteException\n Removing it from swarm");
 								iterator.remove();
 							}
 						}
@@ -83,7 +85,8 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 
 		public int tableCount;
 
-		public Triple(LocalTableManagerInterface ltmi, int tableCount, int maximumTable) {
+		public Triple(LocalTableManagerInterface ltmi, int tableCount,
+				int maximumTable) {
 			this.ltmi = ltmi;
 			this.tableCount = tableCount;
 			this.maximumTable = maximumTable;
@@ -91,7 +94,8 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 
 		@Override
 		public int compareTo(Triple o) {
-			return (o.tableCount / o.maximumTable) - (this.tableCount / this.maximumTable);
+			return (o.tableCount / o.maximumTable)
+					- (this.tableCount / this.maximumTable);
 		}
 
 		@Override
@@ -116,7 +120,8 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 			Triple triple = new Triple(ltmi, 0, maximumTable);
 			// work with equals
 			if (swarm.contains(triple)) {
-				throw new IllegalArgumentException("duplicate local table manager");
+				throw new IllegalArgumentException(
+						"duplicate local table manager");
 			}
 			// works with compareTo
 			int index = Collections.binarySearch(swarm, triple);
@@ -135,7 +140,8 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 	public LocalTableManagerInterface chooseLTM() throws AllLTMBusyException {
 		synchronized (swarm) {
 			if (swarm.size() == 0)
-				throw new AllLTMBusyException("There are no LTMs associated with GTM");
+				throw new AllLTMBusyException(
+						"There are no LTMs associated with GTM");
 			Triple triple = swarm.get(0);
 			if (triple.tableCount == triple.maximumTable) {
 				throw new AllLTMBusyException();
@@ -152,7 +158,8 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 	 * @param ltmi
 	 * @throws NoSuchLTMInterfaceException
 	 */
-	public void decreaseTableCount(LocalTableManagerInterface ltmi) throws NoSuchLTMInterfaceException {
+	public void decreaseTableCount(LocalTableManagerInterface ltmi)
+			throws NoSuchLTMInterfaceException {
 		synchronized (swarm) {
 			int index = swarm.indexOf(Triple.getDefault(ltmi));
 			if (index < -1)

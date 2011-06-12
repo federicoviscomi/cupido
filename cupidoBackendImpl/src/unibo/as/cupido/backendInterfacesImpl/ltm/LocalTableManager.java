@@ -55,11 +55,13 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 		// reads configuration file
 		try {
-			BufferedReader configuration = new BufferedReader(new FileReader(LOCALTABLEMANAGER_CONFIGURATION_FILE));
+			BufferedReader configuration = new BufferedReader(new FileReader(
+					LOCALTABLEMANAGER_CONFIGURATION_FILE));
 			String nextConfigurationLine;
 			String gtmAddress = "localhost";
 			while ((nextConfigurationLine = configuration.readLine()) != null) {
-				StringTokenizer tokenizer = new StringTokenizer(nextConfigurationLine.trim());
+				StringTokenizer tokenizer = new StringTokenizer(
+						nextConfigurationLine.trim());
 				if (tokenizer.hasMoreTokens()) {
 					String configurationVariable = tokenizer.nextToken();
 					if (configurationVariable.equals("MAX_TABLE")) {
@@ -71,18 +73,24 @@ public class LocalTableManager implements LocalTableManagerInterface {
 			}
 			configuration.close();
 
-			Registry remoteServerRegistry = LocateRegistry.getRegistry(gtmAddress);
+			Registry remoteServerRegistry = LocateRegistry
+					.getRegistry(gtmAddress);
 			gtmRemote = (GlobalTableManagerInterface) remoteServerRegistry
 					.lookup(GlobalTableManagerInterface.globalTableManagerName);
 
 			gtmRemote.notifyLocalTableManagerStartup(
-					(LocalTableManagerInterface) UnicastRemoteObject.exportObject(this), MAX_TABLE);
+					(LocalTableManagerInterface) UnicastRemoteObject
+							.exportObject(this), MAX_TABLE);
 
 			tableIds = new HashMap<Integer, Table>();
 
-			System.out.println("Local table manager server started correctly at address " + InetAddress.getLocalHost()
-					+ "\nGlobal table manager server address is " + gtmAddress + "\n Current thread is "
-					+ Thread.currentThread());
+			System.out
+					.println("Local table manager server started correctly at address "
+							+ InetAddress.getLocalHost()
+							+ "\nGlobal table manager server address is "
+							+ gtmAddress
+							+ "\n Current thread is "
+							+ Thread.currentThread());
 
 			/*
 			 * while(true){ try { Thread.sleep(1000); } catch
@@ -96,17 +104,21 @@ public class LocalTableManager implements LocalTableManagerInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NotBoundException e) {
-			System.err.println("Error:" + GlobalTableManagerInterface.globalTableManagerName
+			System.err.println("Error:"
+					+ GlobalTableManagerInterface.globalTableManagerName
 					+ " is not bound to anything in the rmiregistry");
 		}
 	}
 
 	@Override
-	public TableInterface createTable(String owner, ServletNotificationsInterface snf) throws RemoteException {
+	public TableInterface createTable(String owner,
+			ServletNotificationsInterface snf) throws RemoteException {
 		try {
 			System.out.println("Current thread is " + Thread.currentThread());
 			Table newTable = new Table(owner, 3, null, nextId++);
-			return (TableInterface) UnicastRemoteObject.exportObject(new SingleTableManager(snf, newTable, gtmRemote));
+			return (TableInterface) UnicastRemoteObject
+					.exportObject(new SingleTableManager(snf, newTable,
+							gtmRemote));
 		} catch (RejectedExecutionException e) {
 			e.printStackTrace();
 		}
@@ -122,7 +134,8 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	@Override
 	public void isAlive() throws RemoteException {
-		System.out.println("Current thread is " + Thread.currentThread() + " called isAlive()");
+		System.out.println("Current thread is " + Thread.currentThread()
+				+ " called isAlive()");
 	}
 
 	@Override

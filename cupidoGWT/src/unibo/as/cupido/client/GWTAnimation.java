@@ -8,22 +8,21 @@ public interface GWTAnimation {
 	public int duration();
 
 	/**
-	 * Start the animation.
-	 * When it finishes, the callback is invoked.
+	 * Start the animation. When it finishes, the callback is invoked.
 	 */
 	public void run(AnimationCompletedListener listener);
-	
+
 	/**
 	 * This is called just before starting the animation.
 	 */
 	public void onStart();
-	
+
 	/**
-	 * This is called when the animation is finished, but before calling
-	 * the listener.
+	 * This is called when the animation is finished, but before calling the
+	 * listener.
 	 */
 	public void onComplete();
-	
+
 	static public interface AnimationCompletedListener {
 		public void onComplete();
 	}

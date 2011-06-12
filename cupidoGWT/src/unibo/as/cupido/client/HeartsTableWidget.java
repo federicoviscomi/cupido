@@ -13,28 +13,30 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class HeartsTableWidget extends AbsolutePanel {
-	
+
 	private ScreenSwitcher screenSwitcher;
 	private CardsGameWidget cardsGameWidget;
-	
+
 	/**
 	 * 
-	 * @param tableSize The size of the table (width and height) in pixels.
+	 * @param tableSize
+	 *            The size of the table (width and height) in pixels.
 	 * @param username
 	 */
-	HeartsTableWidget(int tableSize, String username, final ScreenSwitcher screenSwitcher) {
+	HeartsTableWidget(int tableSize, String username,
+			final ScreenSwitcher screenSwitcher) {
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
-		
+
 		this.screenSwitcher = screenSwitcher;
-		
+
 		// FIXME: Initialize the widget with the correct values.
 		// These values are only meant for debugging purposes.
-		
+
 		ObservedGameStatus observedGameStatus = new ObservedGameStatus();
-		
+
 		observedGameStatus.ogs = new PlayerStatus[4];
-		
+
 		// Bottom player
 		observedGameStatus.ogs[0] = new PlayerStatus();
 		observedGameStatus.ogs[0].isBot = false;
@@ -42,7 +44,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		observedGameStatus.ogs[0].numOfCardsInHand = 13;
 		observedGameStatus.ogs[0].playedCard = new Card(11, Card.Suit.SPADES);
 		observedGameStatus.ogs[0].score = 1234;
-		
+
 		// Left player
 		observedGameStatus.ogs[1] = new PlayerStatus();
 		observedGameStatus.ogs[1].isBot = false;
@@ -50,7 +52,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		observedGameStatus.ogs[1].numOfCardsInHand = 13;
 		observedGameStatus.ogs[1].playedCard = new Card(11, Card.Suit.HEARTS);
 		observedGameStatus.ogs[1].score = 1234;
-		
+
 		// Top player
 		observedGameStatus.ogs[2] = new PlayerStatus();
 		observedGameStatus.ogs[2].isBot = true;
@@ -58,7 +60,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		observedGameStatus.ogs[2].numOfCardsInHand = 5;
 		observedGameStatus.ogs[2].playedCard = new Card(1, Card.Suit.HEARTS);
 		observedGameStatus.ogs[2].score = 1234;
-		
+
 		// Right player
 		observedGameStatus.ogs[3] = new PlayerStatus();
 		observedGameStatus.ogs[3].isBot = false;
@@ -66,16 +68,17 @@ public class HeartsTableWidget extends AbsolutePanel {
 		observedGameStatus.ogs[3].numOfCardsInHand = 13;
 		observedGameStatus.ogs[3].playedCard = null;
 		observedGameStatus.ogs[3].score = 1234;
-		
+
 		Card[] bottomPlayerCards = new Card[13];
-				
+
 		for (int i = 0; i < 13; i++)
 			bottomPlayerCards[i] = new Card(i + 1, Card.Suit.CLUBS);
-		
+
 		final VerticalPanel controllerPanel = new VerticalPanel();
 		controllerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		controllerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		
+		controllerPanel
+				.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+
 		final PushButton exitButton = new PushButton("Esci dal gioco");
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
@@ -85,38 +88,47 @@ public class HeartsTableWidget extends AbsolutePanel {
 			}
 		});
 		controllerPanel.add(exitButton);
-		
-		cardsGameWidget = new CardsGameWidget(tableSize, observedGameStatus, bottomPlayerCards,
-				                                      controllerPanel, new CardsGameWidget.GameEventListener() {			
-			@Override
-			public void onAnimationStart() {
-				exitButton.setEnabled(false);
-				
-			}
-			@Override
-			public void onAnimationEnd() {
-				exitButton.setEnabled(true);
-			}
-			@Override
-			public void onCardClicked(int player, Card card, CardsGameWidget.CardRole.State state, boolean isRaised) {
-				if (card != null && state == CardsGameWidget.CardRole.State.HAND) {
-					if (isRaised)
-						cardsGameWidget.lowerRaisedCard(player, card);
-					else {
-						cardsGameWidget.revealCoveredCard(1, card);
-						
-						cardsGameWidget.raiseCard(player, card);
-						cardsGameWidget.dealCard(1, card);
+
+		cardsGameWidget = new CardsGameWidget(tableSize, observedGameStatus,
+				bottomPlayerCards, controllerPanel,
+				new CardsGameWidget.GameEventListener() {
+					@Override
+					public void onAnimationStart() {
+						exitButton.setEnabled(false);
+
 					}
-					
-					cardsGameWidget.runPendingAnimations(300, new GWTAnimation.AnimationCompletedListener() {
-						@Override
-						public void onComplete() {
+
+					@Override
+					public void onAnimationEnd() {
+						exitButton.setEnabled(true);
+					}
+
+					@Override
+					public void onCardClicked(int player, Card card,
+							CardsGameWidget.CardRole.State state,
+							boolean isRaised) {
+						if (card != null
+								&& state == CardsGameWidget.CardRole.State.HAND) {
+							if (isRaised)
+								cardsGameWidget.lowerRaisedCard(player, card);
+							else {
+								cardsGameWidget.revealCoveredCard(1, card);
+
+								cardsGameWidget.raiseCard(player, card);
+								cardsGameWidget.dealCard(1, card);
+							}
+
+							cardsGameWidget
+									.runPendingAnimations(
+											300,
+											new GWTAnimation.AnimationCompletedListener() {
+												@Override
+												public void onComplete() {
+												}
+											});
 						}
-					});
-				}
-			}
-		});
+					}
+				});
 		add(cardsGameWidget, 0, 0);
 	}
 }

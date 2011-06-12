@@ -9,7 +9,7 @@ public class AllLTMBusyException extends Exception implements Serializable {
 	}
 
 	public AllLTMBusyException() {
-		// 
+		//
 	}
 
 	private static final long serialVersionUID = 1L;

@@ -10,15 +10,17 @@ public class CupidoGeneralErrorScreen extends AbsolutePanel {
 	public CupidoGeneralErrorScreen(ScreenSwitcher screenSwitcher, Exception e) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
-		
+
 		ScrollPanel panel = new ScrollPanel();
 		panel.setHeight(Cupido.height + "px");
 		panel.setWidth(Cupido.width + "px");
 
 		SafeHtmlBuilder htmlBuilder = new SafeHtmlBuilder();
 		htmlBuilder.appendHtmlConstant("<h1>Si è verificato un errore</h1>");
-		htmlBuilder.appendHtmlConstant("<p>Ricaricare la pagina per tornare a Cupido.</p>");
-		htmlBuilder.appendHtmlConstant("<br>Questi sono i dati relativi all'errore: l'eccezione<br>");
+		htmlBuilder
+				.appendHtmlConstant("<p>Ricaricare la pagina per tornare a Cupido.</p>");
+		htmlBuilder
+				.appendHtmlConstant("<br>Questi sono i dati relativi all'errore: l'eccezione<br>");
 		htmlBuilder.appendEscaped(e.toString());
 		htmlBuilder.appendHtmlConstant("<br>Si è verificata:");
 		StackTraceElement[] stackTrace = e.getStackTrace();

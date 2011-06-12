@@ -17,7 +17,8 @@ public class CupidoSessionListener implements HttpSessionListener {
 	@Override
 	public void sessionDestroyed(HttpSessionEvent x) {
 		System.out.println("DumbSessionListener: in sessionDestroyed().");
-		Object untypedListener = x.getSession().getAttribute("sessionClosedListener");
+		Object untypedListener = x.getSession().getAttribute(
+				"sessionClosedListener");
 		if (untypedListener == null)
 			return;
 		if (!(untypedListener instanceof SessionClosedListener))

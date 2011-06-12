@@ -50,8 +50,10 @@ public class LocalTableManagerCommandInterpreterUI {
 
 	public void execute() {
 		CmdLineParser parser = new CmdLineParser();
-		CmdLineParser.Option globalServerAddress = parser.addStringOption('a', "adrress");
-		CmdLineParser.Option tableOwnerOption = parser.addStringOption('o', "owner");
+		CmdLineParser.Option globalServerAddress = parser.addStringOption('a',
+				"adrress");
+		CmdLineParser.Option tableOwnerOption = parser.addStringOption('o',
+				"owner");
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		String nextCommandLine;
 		try {
@@ -70,7 +72,8 @@ public class LocalTableManagerCommandInterpreterUI {
 							} else if (command[0].equals("exit")) {
 								exit(0);
 							} else if (command[0].equals("create")) {
-								String owner = (String) parser.getOptionValue(tableOwnerOption);
+								String owner = (String) parser
+										.getOptionValue(tableOwnerOption);
 								localTableManager.createTable(owner, null);
 							} else if (command[0].equals("list")) {
 								// TODO

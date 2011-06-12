@@ -95,7 +95,8 @@ public class ToBeNotifyed {
 		}
 	}
 
-	public void notifyPlayerJoined(String name, int position, ServletNotificationsInterface joinedSnf) {
+	public void notifyPlayerJoined(String name, int position,
+			ServletNotificationsInterface joinedSnf) {
 		if (name == null || joinedSnf == null)
 			throw new IllegalArgumentException();
 		for (ServletNotificationsInterface snf : snfs.values()) {

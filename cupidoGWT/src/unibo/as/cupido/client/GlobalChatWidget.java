@@ -25,24 +25,26 @@ public class GlobalChatWidget extends AbsolutePanel {
 	GlobalChatWidget(final String username) {
 
 		this.username = username;
-		
+
 		int bottomRowHeight = 30;
 
 		messagesPanel = new ScrollPanel();
-		messagesPanel.setWidth((CupidoMainMenuScreen.chatWidth-20) + "px");
+		messagesPanel.setWidth((CupidoMainMenuScreen.chatWidth - 20) + "px");
 		messagesPanel.setHeight((Cupido.height - bottomRowHeight) + "px");
 		add(messagesPanel, 10, 0);
-		
+
 		messageList = new HTML("<p><i>Benvenuto nella chat</i></p>");
 		messagesPanel.add(messageList);
 
 		HorizontalPanel bottomRow = new HorizontalPanel();
 		bottomRow.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		
+
 		int sendButtonWidth = 50;
 
 		messageField = new TextBox();
-		messageField.setWidth((CupidoMainMenuScreen.chatWidth - sendButtonWidth) + "px");
+		messageField
+				.setWidth((CupidoMainMenuScreen.chatWidth - sendButtonWidth)
+						+ "px");
 		messageField.addKeyUpHandler(new KeyUpHandler() {
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
@@ -74,7 +76,7 @@ public class GlobalChatWidget extends AbsolutePanel {
 			return;
 
 		String messages = messageList.getHTML();
-		
+
 		SafeHtmlBuilder x = new SafeHtmlBuilder();
 		x.appendHtmlConstant("<p><b>");
 		x.appendEscaped(username);

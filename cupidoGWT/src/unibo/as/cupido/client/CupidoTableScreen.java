@@ -13,37 +13,41 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 public class CupidoTableScreen extends AbsolutePanel {
 
 	/**
-	 *  The width of the chat sidebar.
+	 * The width of the chat sidebar.
 	 */
 	public static final int chatWidth = 200;
 
 	public CupidoTableScreen(ScreenSwitcher screenSwitcher, String username,
-			                 final CupidoInterfaceAsync cupidoService, CupidoCometListener listener) {
+			final CupidoInterfaceAsync cupidoService,
+			CupidoCometListener listener) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
 		assert Cupido.height == Cupido.width - chatWidth;
-		HeartsTableWidget tableWidget = new HeartsTableWidget(Cupido.height, username, screenSwitcher);
+		HeartsTableWidget tableWidget = new HeartsTableWidget(Cupido.height,
+				username, screenSwitcher);
 		add(tableWidget, 0, 0);
-		
-		final LocalChatWidget chatWidget = new LocalChatWidget(username, new LocalChatWidget.MessageSender() {
-			@Override
-			public void sendMessage(String message) {
-				cupidoService.sendLocalChatMessage(message, new AsyncCallback<Void>() {
-					@Override
-					public void onFailure(Throwable caught) {
-					}
 
+		final LocalChatWidget chatWidget = new LocalChatWidget(username,
+				new LocalChatWidget.MessageSender() {
 					@Override
-					public void onSuccess(Void result) {
-					}					
+					public void sendMessage(String message) {
+						cupidoService.sendLocalChatMessage(message,
+								new AsyncCallback<Void>() {
+									@Override
+									public void onFailure(Throwable caught) {
+									}
+
+									@Override
+									public void onSuccess(Void result) {
+									}
+								});
+					}
 				});
-			}
-		});
 		chatWidget.setHeight(Cupido.height + "px");
 		chatWidget.setWidth(chatWidth + "px");
 		add(chatWidget, Cupido.width - chatWidth, 0);
-		
+
 		listener.setListener(new CometListener() {
 
 			@Override
@@ -71,14 +75,16 @@ public class CupidoTableScreen extends AbsolutePanel {
 				for (Serializable message : messages) {
 					if (message instanceof NewLocalChatMessage) {
 						NewLocalChatMessage x = (NewLocalChatMessage) message;
-						System.out.println("Client: received a NewLocalChatMessage object, displaying it.");
+						System.out
+								.println("Client: received a NewLocalChatMessage object, displaying it.");
 						chatWidget.displayMessage(x.user, x.message);
 					} else {
-						System.out.println("Client: Received unrecognized Comet message.");
+						System.out
+								.println("Client: Received unrecognized Comet message.");
 					}
 				}
 			}
-			
+
 		});
 	}
 }

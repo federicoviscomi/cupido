@@ -8,15 +8,15 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.ui.Image;
 
 public class CardWidget extends Image {
-	
+
 	private Card card;
 	private int rotation;
-	
+
 	/**
 	 * The width of cards (before rotation).
 	 */
 	public static final int cardWidth = 72;
-	
+
 	/**
 	 * The height of cards (before rotation).
 	 */
@@ -28,7 +28,7 @@ public class CardWidget extends Image {
 	public static final int borderWidth = 13;
 
 	/**
-	 *  Constructs a CardWidget that displays the back of a card.
+	 * Constructs a CardWidget that displays the back of a card.
 	 */
 	public CardWidget() {
 		super(constructCardName(null, 0));
@@ -36,10 +36,12 @@ public class CardWidget extends Image {
 		card = null;
 		rotation = 0;
 	}
-	
+
 	/**
-	 *  Constructs a CardWidget that displays the back of a card.
-	 * @param rotation This is the rotation of the card, in degrees.
+	 * Constructs a CardWidget that displays the back of a card.
+	 * 
+	 * @param rotation
+	 *            This is the rotation of the card, in degrees.
 	 */
 	public CardWidget(int rotation) {
 		super(constructCardName(null, rotation));
@@ -47,10 +49,12 @@ public class CardWidget extends Image {
 		card = null;
 		this.rotation = rotation;
 	}
-	
+
 	/**
-	 *  Constructs a CardWidget that displays the specified card.
-	 * @param rotation This is the rotation of the card, in degrees.
+	 * Constructs a CardWidget that displays the specified card.
+	 * 
+	 * @param rotation
+	 *            This is the rotation of the card, in degrees.
 	 */
 	public CardWidget(Card card, int rotation) {
 		super(constructCardName(card, rotation));
@@ -58,9 +62,9 @@ public class CardWidget extends Image {
 		this.card = card;
 		this.rotation = rotation;
 	}
-	
+
 	/**
-	 *  Constructs a CardWidget that displays the specified card.
+	 * Constructs a CardWidget that displays the specified card.
 	 */
 	public CardWidget(Card card) {
 		super(constructCardName(card, 0));
@@ -68,27 +72,28 @@ public class CardWidget extends Image {
 		this.card = card;
 		this.rotation = 0;
 	}
-	
+
 	public Card getCard() {
 		return card;
 	}
-	
+
 	public void setCard(Card newCard) {
 		if (card == null && newCard == null)
 			return;
-		if (card != null && newCard != null && card.suit == newCard.suit && card.value == newCard.value)
+		if (card != null && newCard != null && card.suit == newCard.suit
+				&& card.value == newCard.value)
 			return;
 		this.card = newCard;
 		setUrl(constructCardName(card, rotation));
 	}
-	
+
 	public void setRotation(int newRotation) {
 		if (rotation == newRotation)
 			return;
 		this.rotation = newRotation;
 		setUrl(constructCardName(card, rotation));
 	}
-	
+
 	private void preventDrag() {
 		addMouseDownHandler(new MouseDownHandler() {
 			@Override
@@ -97,7 +102,7 @@ public class CardWidget extends Image {
 			}
 		});
 	}
-	
+
 	private static String constructCardName(Card card, int rotation) {
 		final String path_prefix = "classic_cards/";
 		rotation = rotation % 360;

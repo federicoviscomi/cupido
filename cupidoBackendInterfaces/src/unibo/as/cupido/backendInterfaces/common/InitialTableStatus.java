@@ -35,7 +35,8 @@ public class InitialTableStatus implements Serializable {
 	public InitialTableStatus() {
 	}
 
-	public InitialTableStatus(String[] opponents, int[] playerPoints, boolean[] whoIsBot) {
+	public InitialTableStatus(String[] opponents, int[] playerPoints,
+			boolean[] whoIsBot) {
 		this.opponents = opponents;
 		this.playerPoints = playerPoints;
 		this.whoIsBot = whoIsBot;

@@ -25,8 +25,10 @@ public class DatabaseManager implements DatabaseInterface {
 			Class.forName("org.gjt.mm.mysql.Driver");
 			System.out.println(" Driver Found.");
 			String url = "jdbc:mysql://" + host + "/" + database;
-			Connection connection = (Connection) DriverManager.getConnection(url, userDB, passDB);
-			System.out.println(" Database connection established to " + url + ".");
+			Connection connection = (Connection) DriverManager.getConnection(
+					url, userDB, passDB);
+			System.out.println(" Database connection established to " + url
+					+ ".");
 			Statement statement = (Statement) connection.createStatement();
 			boolean execute = statement.execute("SELECT * FROM User");
 			System.out.println(execute);

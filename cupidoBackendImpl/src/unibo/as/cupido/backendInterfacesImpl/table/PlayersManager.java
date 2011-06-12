@@ -27,7 +27,8 @@ public class PlayersManager {
 
 		@Override
 		public String toString() {
-			return "[is bot=" + isBot + ", name=" + name + ", score=" + score + "]";
+			return "[is bot=" + isBot + ", name=" + name + ", score=" + score
+					+ "]";
 		}
 	}
 
@@ -45,13 +46,14 @@ public class PlayersManager {
 		players[Positions.OWNER.ordinal()].isBot = isBot;
 	}
 
-	public void addBot(String botName, int position) throws FullTableException, IllegalArgumentException,
-			PositionFullException {
+	public void addBot(String botName, int position) throws FullTableException,
+			IllegalArgumentException, PositionFullException {
 		if (playersCount > 4) {
 			throw new FullTableException();
 		}
 		if (position < 1 || position > 3) {
-			throw new IllegalArgumentException("position " + position + "out of bounds");
+			throw new IllegalArgumentException("position " + position
+					+ "out of bounds");
 		}
 		if (players[position].name != null) {
 			throw new PositionFullException();
@@ -64,7 +66,8 @@ public class PlayersManager {
 		playersCount++;
 	}
 
-	public InitialTableStatus addPlayer(String playerName) throws FullTableException {
+	public InitialTableStatus addPlayer(String playerName)
+			throws FullTableException {
 		if (playersCount > 4) {
 			throw new FullTableException();
 		}

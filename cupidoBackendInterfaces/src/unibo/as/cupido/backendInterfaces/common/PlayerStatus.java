@@ -21,11 +21,12 @@ public class PlayerStatus implements Serializable {
 	public int numOfCardsInHand;
 
 	public boolean isBot;
-	
+
 	public PlayerStatus() {
 	}
 
-	public PlayerStatus(String name, int point, Card playedCard, int numOfCardsInHand, boolean isBot) {
+	public PlayerStatus(String name, int point, Card playedCard,
+			int numOfCardsInHand, boolean isBot) {
 		this.name = name;
 		this.score = point;
 		this.playedCard = playedCard;

@@ -137,83 +137,81 @@ import unibo.as.cupido.backendInterfaces.common.Card;
  * Hearts Play Strategies
  * 
  * Knowing what to play on the first trick is easy. If you have the two of
- * clubs, you must lead it. As you cannot slough any points on the first
- * trick, use this opportunity to get rid of a high club, if you are void in
- * clubs, slough another high card, perhaps a king or ace of spades - two
- * cards that could lead to trouble later if they are not sufficiently
- * backed up.
+ * clubs, you must lead it. As you cannot slough any points on the first trick,
+ * use this opportunity to get rid of a high club, if you are void in clubs,
+ * slough another high card, perhaps a king or ace of spades - two cards that
+ * could lead to trouble later if they are not sufficiently backed up.
  * 
- * Many players go right into leading spades. This is done in order to force
- * the queen out, and it is considered the safest lead possible. The worst
- * that can happen is the trick could draw a heart or two. This is something
- * that the holder of a shallow queen of spades will dread. Her best
- * strategy is then to seize the lead, if possible, and divert her opponents
- * by leading back diamonds or clubs. An alternative strategy is to come
- * back with high diamonds or clubs in order to draw a heart. Once the heart
- * is broken she can dish out a low heart which can cause a heart war that
- * might create a distraction from her precarious spade position, and for a
- * shallow queen of spades, any distraction is a good distraction.
+ * Many players go right into leading spades. This is done in order to force the
+ * queen out, and it is considered the safest lead possible. The worst that can
+ * happen is the trick could draw a heart or two. This is something that the
+ * holder of a shallow queen of spades will dread. Her best strategy is then to
+ * seize the lead, if possible, and divert her opponents by leading back
+ * diamonds or clubs. An alternative strategy is to come back with high diamonds
+ * or clubs in order to draw a heart. Once the heart is broken she can dish out
+ * a low heart which can cause a heart war that might create a distraction from
+ * her precarious spade position, and for a shallow queen of spades, any
+ * distraction is a good distraction.
  * 
- * This heart war may occur because of a common tactic when playing the
- * heart suit. When a player must take a trick, he should do so with as high
- * a card as possible. This leaves him with the opportunity to dish out a
- * low card in the same suit, getting rid of the lead and forcing another
- * player to take several points. This can create a vicious cycle,
- * especially where hearts are involved.
+ * This heart war may occur because of a common tactic when playing the heart
+ * suit. When a player must take a trick, he should do so with as high a card as
+ * possible. This leaves him with the opportunity to dish out a low card in the
+ * same suit, getting rid of the lead and forcing another player to take several
+ * points. This can create a vicious cycle, especially where hearts are
+ * involved.
  * 
- * Of course, playing low and avoiding the queen are paramount, but this
- * does not mean that a player should avoid points altogether. Taking a few
- * points in every hand is generally a good idea because it prevents any
- * other player from running. The best way to stop other players from
- * running is to save a high heart and not slough it until at least two
- * people have points. Holding back a stopper to prevent a run is only good
- * sense, especially if you are sure your opponents have a middling heart
- * losers (which you may well have passed at least one of them).
+ * Of course, playing low and avoiding the queen are paramount, but this does
+ * not mean that a player should avoid points altogether. Taking a few points in
+ * every hand is generally a good idea because it prevents any other player from
+ * running. The best way to stop other players from running is to save a high
+ * heart and not slough it until at least two people have points. Holding back a
+ * stopper to prevent a run is only good sense, especially if you are sure your
+ * opponents have a middling heart losers (which you may well have passed at
+ * least one of them).
  * 
- * In games with sharp players, a successful run is infrequent. This is
- * because a table of sharp players will generally pass a middling heart and
- * orient their own hand in such a way as to prevent the run by their
- * opponents while minimizing their own exposure to points, especially the
- * queen of spades. But there will be times when the cards align to almost
- * make a run seem inevitable. The best configuration for a run will be when
- * no heart losers are held or only the very highest hearts in sequence.
- * Ace, king and queen of hearts is nice, but trying to run with the king,
- * queen, jack is a dangerous maneuver.
+ * In games with sharp players, a successful run is infrequent. This is because
+ * a table of sharp players will generally pass a middling heart and orient
+ * their own hand in such a way as to prevent the run by their opponents while
+ * minimizing their own exposure to points, especially the queen of spades. But
+ * there will be times when the cards align to almost make a run seem
+ * inevitable. The best configuration for a run will be when no heart losers are
+ * held or only the very highest hearts in sequence. Ace, king and queen of
+ * hearts is nice, but trying to run with the king, queen, jack is a dangerous
+ * maneuver.
  * 
- * If such a run were to be attempted, the running player should try to draw
- * the ace before making his intention to run perfectly obvious. Otherwise,
- * the ace will be a sure stopper. If a player has a mere middling heart
- * loser, another strategy is to lead high in clubs or diamonds until a
- * heart has been drawn and then lead back the middling heart. If the
- * opponents are not sure of his intentions they might let the trick slide
- * and put the prospective runner in a good position to run.
+ * If such a run were to be attempted, the running player should try to draw the
+ * ace before making his intention to run perfectly obvious. Otherwise, the ace
+ * will be a sure stopper. If a player has a mere middling heart loser, another
+ * strategy is to lead high in clubs or diamonds until a heart has been drawn
+ * and then lead back the middling heart. If the opponents are not sure of his
+ * intentions they might let the trick slide and put the prospective runner in a
+ * good position to run.
  * 
  * Hearts is as much a game of personalities and bluffing as is poker. It
- * requires skill and intuition to determine how opponents will react to
- * certain styles of play. For example, a player who tries and fails to run
- * frequently will be watched so closely in subsequent play that his
- * prospects of any deceptive plays become impossible. Also, inexperienced
- * players tend to shy away from running, so they usually need not be played
- * closely. This means that when passing to such a player, you do not have
- * to worry so much about making certain they have a middling heart or that
- * by passing them three low hearts you are sending a clear signal of your
- * intention to run.
+ * requires skill and intuition to determine how opponents will react to certain
+ * styles of play. For example, a player who tries and fails to run frequently
+ * will be watched so closely in subsequent play that his prospects of any
+ * deceptive plays become impossible. Also, inexperienced players tend to shy
+ * away from running, so they usually need not be played closely. This means
+ * that when passing to such a player, you do not have to worry so much about
+ * making certain they have a middling heart or that by passing them three low
+ * hearts you are sending a clear signal of your intention to run.
  * 
- * There are so many possibilities of different hands that it is impossible
- * to make provision or comment on every circumstance. The key to remember
- * is that Hearts is only a game. Play it well, but play it to have fun.
+ * There are so many possibilities of different hands that it is impossible to
+ * make provision or comment on every circumstance. The key to remember is that
+ * Hearts is only a game. Play it well, but play it to have fun.
  */
 public class BotManager {
 
 	private Bot[] bots;
-	
+
 	public Card[] choseCardsToPass(int i) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void addBot(int position, ArrayList<Card> cards) {
-		
+
 	}
 
 	public Card playCard(int i) {

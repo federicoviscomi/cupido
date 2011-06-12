@@ -52,7 +52,7 @@ public class CardsManager {
 	private int currentTurnPoints;
 	/** counts the number of card played in the current turn */
 	private int playedCardsCount;
-	/** position of player who plays first in the current turn*/
+	/** position of player who plays first in the current turn */
 	int firstPlaying;
 	/** the number of turn made in this hand */
 	int turn;
@@ -70,8 +70,10 @@ public class CardsManager {
 		@Override
 		public int compare(Card o1, Card o2) {
 			int firstSuit = cardPlayed[firstPlaying].suit.ordinal();
-			return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14 : o1.value))
-					- ((o2.suit.ordinal() == firstSuit ? 1 : 0) * (o2.value == 1 ? 14 : o2.value));
+			return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14
+					: o1.value))
+					- ((o2.suit.ordinal() == firstSuit ? 1 : 0) * (o2.value == 1 ? 14
+							: o2.value));
 		}
 	};
 
@@ -107,7 +109,8 @@ public class CardsManager {
 		for (int i = 0; i < 52; i++) {
 			mazzo[i] = new Card(i % 13 + 1, Card.Suit.values()[i % 4]);
 		}
-		Collections.shuffle(Arrays.asList(mazzo), new Random(System.currentTimeMillis()));
+		Collections.shuffle(Arrays.asList(mazzo),
+				new Random(System.currentTimeMillis()));
 		for (int i = 0; i < 52; i++) {
 			cards[i % 4].add(mazzo[i]);
 		}
@@ -134,19 +137,25 @@ public class CardsManager {
 		}
 	}
 
-	public void playCard(int playerPosition, Card card) throws IllegalMoveException {
+	public void playCard(int playerPosition, Card card)
+			throws IllegalMoveException {
 		if (card == null || !cards[playerPosition].remove(card)) {
-			throw new IllegalArgumentException("User " + playerPosition + " does not own card " + card);
+			throw new IllegalArgumentException("User " + playerPosition
+					+ " does not own card " + card);
 		}
 		if (turn == 0 && playedCardsCount == 0) {
 			if (!card.equals(twoOfClubs)) {
-				throw new IllegalMoveException("First turn card played has to be two of clubs");
+				throw new IllegalMoveException(
+						"First turn card played has to be two of clubs");
 			}
 		}
-		if (playerPosition != firstPlaying && !card.suit.equals(cardPlayed[firstPlaying].suit)) {
+		if (playerPosition != firstPlaying
+				&& !card.suit.equals(cardPlayed[firstPlaying].suit)) {
 			for (Card currentPlayerCard : cards[playerPosition]) {
-				if (currentPlayerCard.suit.equals(cardPlayed[firstPlaying].suit)) {
-					throw new IllegalMoveException("The player " + playerPosition + " must play a card of suit "
+				if (currentPlayerCard.suit
+						.equals(cardPlayed[firstPlaying].suit)) {
+					throw new IllegalMoveException("The player "
+							+ playerPosition + " must play a card of suit "
 							+ cardPlayed[firstPlaying].suit);
 				}
 			}
@@ -156,7 +165,8 @@ public class CardsManager {
 				if (playerPosition == firstPlaying) {
 					for (Card currentPlayerCard : cards[firstPlaying]) {
 						if (!currentPlayerCard.suit.equals(Suit.HEARTS)) {
-							throw new IllegalMoveException("Cannot play heart rigth now");
+							throw new IllegalMoveException(
+									"Cannot play heart rigth now");
 						}
 					}
 				}
@@ -168,11 +178,13 @@ public class CardsManager {
 			/* decide who takes this hand cards and calculate this hand points */
 			int maxPosition = firstPlaying;
 			for (int i = 0; i < 4; i++) {
-				if (winnerComparator.compare(cardPlayed[i], cardPlayed[maxPosition]) > 0)
+				if (winnerComparator.compare(cardPlayed[i],
+						cardPlayed[maxPosition]) > 0)
 					maxPosition = i;
 				if (cardPlayed[i].suit.ordinal() == Card.Suit.HEARTS.ordinal()) {
 					currentTurnPoints++;
-				} else if (cardPlayed[i].suit.ordinal() == Card.Suit.SPADES.ordinal() && cardPlayed[i].value == 12) {
+				} else if (cardPlayed[i].suit.ordinal() == Card.Suit.SPADES
+						.ordinal() && cardPlayed[i].value == 12) {
 					currentTurnPoints += 5;
 				}
 			}
@@ -191,9 +203,12 @@ public class CardsManager {
 	@SuppressWarnings("boxing")
 	public void print(PlayersManager playersManager) {
 		for (int i = 0; i < 4; i++) {
-			System.out.format("\n name=%10.10s, isBot=%5.5b, cardsInHand=%2.2s, score=%3.3s, cards= ",
-					playersManager.getPlayerName(i), playersManager.isBot(i), "playersManager.numOfCardsInHand(i)",
-					playersManager.getScore(i));
+			System.out
+					.format("\n name=%10.10s, isBot=%5.5b, cardsInHand=%2.2s, score=%3.3s, cards= ",
+							playersManager.getPlayerName(i),
+							playersManager.isBot(i),
+							"playersManager.numOfCardsInHand(i)",
+							playersManager.getScore(i));
 			System.out.print(java.util.Arrays.toString(cards[i].toArray()));
 		}
 	}
@@ -211,7 +226,8 @@ public class CardsManager {
 	 * @throws IllegalArgumentException
 	 *             if player does not own the card he wants to pass
 	 */
-	public void setCardPassing(int position, Card[] passedCards) throws IllegalArgumentException {
+	public void setCardPassing(int position, Card[] passedCards)
+			throws IllegalArgumentException {
 		for (int i = 0; i < 3; i++) {
 			if (!cards[position].remove(passedCards[i]))
 				throw new IllegalArgumentException();

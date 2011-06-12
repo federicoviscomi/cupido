@@ -54,7 +54,8 @@ public class GlobalTableManagerCommandInterpreterUI {
 
 	public void execute() {
 		CmdLineParser parser = new CmdLineParser();
-		Option listLocalManagersOtion = parser.addBooleanOption('l', "localManagers");
+		Option listLocalManagersOtion = parser.addBooleanOption('l',
+				"localManagers");
 		Option listTableOption = parser.addBooleanOption('t', "table");
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		String nextCommandLine;
@@ -74,19 +75,27 @@ public class GlobalTableManagerCommandInterpreterUI {
 							} else if (command[0].equals("exit")) {
 								exit(0);
 							} else if (command[0].equals("list")) {
-								boolean listLTM = (parser.getOptionValue(listLocalManagersOtion) == null ? false : true);
-								boolean listTables = (parser.getOptionValue(listTableOption) == null ? false : true);
+								boolean listLTM = (parser
+										.getOptionValue(listLocalManagersOtion) == null ? false
+										: true);
+								boolean listTables = (parser
+										.getOptionValue(listTableOption) == null ? false
+										: true);
 								if (listLTM) {
-									Triple[] allLocalServer = globalTableManager.getAllLTM();
-									System.out.format("\n list af all local server follows:");
+									Triple[] allLocalServer = globalTableManager
+											.getAllLTM();
+									System.out
+											.format("\n list af all local server follows:");
 									for (Triple localServer : allLocalServer) {
-										System.out.format("\n %25s", localServer);
+										System.out.format("\n %25s",
+												localServer);
 									}
 								}
 								if (listTables) {
 									Collection<Pair<Table, LocalTableManagerInterface>> tableList = globalTableManager
 											.getTableList();
-									System.out.format("\n list af all tables follows:");
+									System.out
+											.format("\n list af all tables follows:");
 									for (Pair<Table, LocalTableManagerInterface> table : tableList) {
 										System.out.format("\n %25s", table);
 									}

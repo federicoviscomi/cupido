@@ -19,8 +19,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface CupidoInterface extends RemoteService {
 
 	/**
-	 * This method must be called by the client before it can open the connection itself
-	 * and start receiving Comet notifications.
+	 * This method must be called by the client before it can open the
+	 * connection itself and start receiving Comet notifications.
 	 */
 	public void openCometConnection();
 
@@ -58,14 +58,15 @@ public interface CupidoInterface extends RemoteService {
 
 	/**
 	 * 
-	 * @return InitialTableStatus named ITS, with
-	 * 		ITS.opponents	= null
-	 * 		ITS.whoIsBot  	= null
-	 * 		ITS.
-	 * @throws AllLTMBusyException if a table can't be created now (you can try again later)
-	 * @throws FatalException if there are some internal errors of communication
+	 * @return InitialTableStatus named ITS, with ITS.opponents = null
+	 *         ITS.whoIsBot = null ITS.
+	 * @throws AllLTMBusyException
+	 *             if a table can't be created now (you can try again later)
+	 * @throws FatalException
+	 *             if there are some internal errors of communication
 	 */
-	public InitialTableStatus createTable() throws AllLTMBusyException, FatalException;
+	public InitialTableStatus createTable() throws AllLTMBusyException,
+			FatalException;
 
 	public InitialTableStatus joinTable(String server, int tableId)
 			throws FullTableException, NoSuchTableException;
@@ -97,7 +98,7 @@ public interface CupidoInterface extends RemoteService {
 	void passCards(Card[] cards) throws IllegalMoveException;
 
 	void addBot(int position) throws PositionFullException;
-	
+
 	ChatMessage[] viewLastMessages();
 
 	/**

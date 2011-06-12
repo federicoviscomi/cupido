@@ -6,15 +6,15 @@ import java.util.List;
 import net.zschech.gwt.comet.client.CometListener;
 
 /**
- * This class allows to dynamically change the handlers of the various Comet notifications,
- * using the setListener() method.
+ * This class allows to dynamically change the handlers of the various Comet
+ * notifications, using the setListener() method.
  * 
  * @author Marco Poletti
  */
 public class CupidoCometListener implements CometListener {
-	
+
 	private CometListener impl;
-	
+
 	public CupidoCometListener(CometListener x) {
 		setListener(x);
 	}

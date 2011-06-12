@@ -42,7 +42,8 @@ public interface GlobalTableManagerInterface extends Remote {
 			this.tableDescriptor = new TableDescriptor(server, id);
 		}
 
-		public Table(String owner, int freePosition, TableDescriptor tableDescriptor) {
+		public Table(String owner, int freePosition,
+				TableDescriptor tableDescriptor) {
 			this.owner = owner;
 			this.freePosition = freePosition;
 			this.tableDescriptor = tableDescriptor;
@@ -54,13 +55,15 @@ public interface GlobalTableManagerInterface extends Remote {
 		 * This method is used by an hashmap in the TableManager
 		 */
 		public int hashCode() {
-			return (tableDescriptor.server + Long.toString(tableDescriptor.id)).hashCode();
+			return (tableDescriptor.server + Long.toString(tableDescriptor.id))
+					.hashCode();
 		}
 
 		@Override
 		public String toString() {
-			return "[owner=" + owner + ", free position=" + freePosition + ", server=" + tableDescriptor.server
-					+ ", table id=" + tableDescriptor.id + "]";
+			return "[owner=" + owner + ", free position=" + freePosition
+					+ ", server=" + tableDescriptor.server + ", table id="
+					+ tableDescriptor.id + "]";
 		}
 	}
 
@@ -91,7 +94,8 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * @throws RemoteException
 	 * @throws AllLTMBusyException
 	 */
-	public TableInterface createTable(String owner, ServletNotificationsInterface snf) throws RemoteException,
+	public TableInterface createTable(String owner,
+			ServletNotificationsInterface snf) throws RemoteException,
 			AllLTMBusyException;
 
 	/**
@@ -102,7 +106,8 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * @return
 	 * @throws RemoteException
 	 */
-	public Collection<Pair<Table, LocalTableManagerInterface>> getTableList() throws RemoteException;
+	public Collection<Pair<Table, LocalTableManagerInterface>> getTableList()
+			throws RemoteException;
 
 	/**
 	 * This method is used by a local table manager to notify the global table
@@ -114,7 +119,8 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * 
 	 * @param name
 	 */
-	public void notifyLocalTableManagerShutdown(LocalTableManagerInterface ltm) throws RemoteException;
+	public void notifyLocalTableManagerShutdown(LocalTableManagerInterface ltm)
+			throws RemoteException;
 
 	/**
 	 * 
@@ -131,7 +137,8 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * @return the LTM set
 	 * @throws RemoteException
 	 */
-	public void notifyLocalTableManagerStartup(LocalTableManagerInterface localTableManagerInterface, int maxTable)
+	public void notifyLocalTableManagerStartup(
+			LocalTableManagerInterface localTableManagerInterface, int maxTable)
 			throws RemoteException;
 
 	/**
@@ -142,10 +149,11 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * @param tableDescriptor
 	 * @throws RemoteException
 	 * @throws NoSuchLTMInterfaceException
-	 *  
+	 * 
 	 */
-	public void notifyTableDestruction(TableDescriptor tableDescriptor, LocalTableManagerInterface ltm)
-			throws RemoteException, NoSuchLTMInterfaceException;
+	public void notifyTableDestruction(TableDescriptor tableDescriptor,
+			LocalTableManagerInterface ltm) throws RemoteException,
+			NoSuchLTMInterfaceException;
 
 	/**
 	 * called by the LTM on the GTM
@@ -154,7 +162,8 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * @throws RemoteException
 	 * @throws NoSuchTableException
 	 */
-	public void notifyTableJoin(TableDescriptor tableDescriptor) throws RemoteException, NoSuchTableException;
+	public void notifyTableJoin(TableDescriptor tableDescriptor)
+			throws RemoteException, NoSuchTableException;
 
 	/**
 	 * Just for test purpose

@@ -61,7 +61,8 @@ public interface TableInterface extends Remote {
 	 * </ul>
 	 * 
 	 * @param userName
-	 *            the name of the user who wants to add a bot. Note that only the creator of the table can add a bot
+	 *            the name of the user who wants to add a bot. Note that only
+	 *            the creator of the table can add a bot
 	 * @param position
 	 *            the absolute position of the bot in the table
 	 * @throws PositionFullException
@@ -82,8 +83,9 @@ public interface TableInterface extends Remote {
 	 * @throws IllegalStateException
 	 *             if game status is ENDED
 	 */
-	void addBot(String userName, int position) throws PositionFullException, RemoteException, IllegalArgumentException,
-			FullTableException, NotCreatorException, IllegalStateException;
+	void addBot(String userName, int position) throws PositionFullException,
+			RemoteException, IllegalArgumentException, FullTableException,
+			NotCreatorException, IllegalStateException;
 
 	/**
 	 * Called by player <code>userName</code> to join this table. A player can
@@ -102,12 +104,13 @@ public interface TableInterface extends Remote {
 	 * @throws IllegalArgumentException
 	 *             if an argument is null
 	 * @throws DuplicatePlayerNameException
-	 *             if a player name <code>userName</code> is already playing
-	 *             or viewing the table
+	 *             if a player name <code>userName</code> is already playing or
+	 *             viewing the table
 	 */
-	public InitialTableStatus joinTable(String userName, ServletNotificationsInterface snf) throws FullTableException,
-			NoSuchTableException, RemoteException, IllegalArgumentException, IllegalStateException,
-			DuplicatePlayerNameException;
+	public InitialTableStatus joinTable(String userName,
+			ServletNotificationsInterface snf) throws FullTableException,
+			NoSuchTableException, RemoteException, IllegalArgumentException,
+			IllegalStateException, DuplicatePlayerNameException;
 
 	/**
 	 * Called by a player to leave a table. If a player leaves a table when game
@@ -121,7 +124,8 @@ public interface TableInterface extends Remote {
 	 * @throws PlayerNotFoundException
 	 *             if player <code>userName</code> is not in the table
 	 */
-	void leaveTable(String userName) throws RemoteException, PlayerNotFoundException;
+	void leaveTable(String userName) throws RemoteException,
+			PlayerNotFoundException;
 
 	/**
 	 * The user <code>userName</code> passes cards <code>cards</code> to the
@@ -141,7 +145,8 @@ public interface TableInterface extends Remote {
 	 *             </ul>
 	 * @throws RemoteException
 	 */
-	void passCards(String userName, Card[] cards) throws IllegalArgumentException, RemoteException;
+	void passCards(String userName, Card[] cards)
+			throws IllegalArgumentException, RemoteException;
 
 	/**
 	 * Player <code>platerName</code> plays card <code>card</code>.
@@ -178,7 +183,8 @@ public interface TableInterface extends Remote {
 	 *             <li>if this player does not own the card</li>
 	 *             </ul>
 	 */
-	void playCard(String userName, Card card) throws IllegalMoveException, RemoteException, IllegalArgumentException;
+	void playCard(String userName, Card card) throws IllegalMoveException,
+			RemoteException, IllegalArgumentException;
 
 	/**
 	 * Sends a message to the table chat
@@ -197,7 +203,8 @@ public interface TableInterface extends Remote {
 	 * @return
 	 * @throws NoSuchTableException
 	 */
-	public ObservedGameStatus viewTable(String userName, ServletNotificationsInterface snf) throws NoSuchTableException,
+	public ObservedGameStatus viewTable(String userName,
+			ServletNotificationsInterface snf) throws NoSuchTableException,
 			RemoteException;
 
 }

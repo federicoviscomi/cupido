@@ -21,9 +21,9 @@ public class LocalChatWidget extends AbsolutePanel {
 	private TextBox messageField;
 	private PushButton sendButton;
 	private String username;
-	
+
 	private MessageSender messageSender;
-	
+
 	public interface MessageSender {
 		public void sendMessage(String message);
 	}
@@ -32,14 +32,14 @@ public class LocalChatWidget extends AbsolutePanel {
 
 		this.username = username;
 		this.messageSender = messageSender;
-		
+
 		int bottomRowHeight = 30;
 
 		messagesPanel = new ScrollPanel();
 		messagesPanel.setWidth(CupidoTableScreen.chatWidth + "px");
 		messagesPanel.setHeight((Cupido.height - bottomRowHeight) + "px");
 		add(messagesPanel, 0, 0);
-		
+
 		messageList = new HTML("<p><i>Benvenuto nella chat del tavolo</i></p>");
 		messagesPanel.add(messageList);
 
@@ -47,11 +47,12 @@ public class LocalChatWidget extends AbsolutePanel {
 		bottomRow.setWidth(CupidoTableScreen.chatWidth + "px");
 		bottomRow.setHeight(bottomRowHeight + "px");
 		bottomRow.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		
+
 		int sendButtonWidth = 50;
 
 		messageField = new TextBox();
-		messageField.setWidth((CupidoTableScreen.chatWidth - sendButtonWidth) + "px");
+		messageField.setWidth((CupidoTableScreen.chatWidth - sendButtonWidth)
+				+ "px");
 		messageField.addKeyUpHandler(new KeyUpHandler() {
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
@@ -79,9 +80,9 @@ public class LocalChatWidget extends AbsolutePanel {
 		// Rewrite this method when the servlet is ready.
 		if (messageField.getText().equals(""))
 			return;
-		
+
 		String message = messageField.getText();
-		
+
 		messageSender.sendMessage(message);
 
 		// TODO: Check if this should be called or not.
@@ -90,11 +91,11 @@ public class LocalChatWidget extends AbsolutePanel {
 		messageField.setText("");
 		messageField.setFocus(true);
 	}
-	
+
 	public void displayMessage(String username, String message) {
-		
+
 		String messages = messageList.getHTML();
-		
+
 		SafeHtmlBuilder x = new SafeHtmlBuilder();
 		x.appendHtmlConstant("<p><b>");
 		x.appendEscaped(username);

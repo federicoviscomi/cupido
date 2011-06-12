@@ -23,7 +23,8 @@ public interface ServletNotificationsInterface extends Remote {
 	 * @param playersTotalPoint
 	 *            points of the player updated after this match
 	 */
-	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) throws RemoteException;
+	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint)
+			throws RemoteException;
 
 	/**
 	 * Start of the game is notified to the servlet
@@ -40,7 +41,8 @@ public interface ServletNotificationsInterface extends Remote {
 	 * @throws RemoteException
 	 *             is message can't be send
 	 */
-	public void notifyLocalChatMessage(ChatMessage message) throws RemoteException;
+	public void notifyLocalChatMessage(ChatMessage message)
+			throws RemoteException;
 
 	/**
 	 * Notify that a player has passed 3 card to the player connected with the
@@ -61,7 +63,8 @@ public interface ServletNotificationsInterface extends Remote {
 	 *            table position of the player which has played the card
 	 * @throws RemoteException
 	 */
-	public void notifyPlayedCard(Card card, int playerPosition) throws RemoteException;
+	public void notifyPlayedCard(Card card, int playerPosition)
+			throws RemoteException;
 
 	/**
 	 * Servlet is notified when a player enter the table
@@ -77,7 +80,8 @@ public interface ServletNotificationsInterface extends Remote {
 	 * @param position
 	 *            table position where the player has entered
 	 */
-	public void notifyPlayerJoined(String name, boolean isBot, int point, int position) throws RemoteException;
+	public void notifyPlayerJoined(String name, boolean isBot, int point,
+			int position) throws RemoteException;
 
 	/**
 	 * Servlet is notified when a player leaves the table.

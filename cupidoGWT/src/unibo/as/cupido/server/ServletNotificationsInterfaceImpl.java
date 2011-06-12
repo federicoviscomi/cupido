@@ -9,8 +9,8 @@ import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 
-public class ServletNotificationsInterfaceImpl extends UnicastRemoteObject implements
-		ServletNotificationsInterface {
+public class ServletNotificationsInterfaceImpl extends UnicastRemoteObject
+		implements ServletNotificationsInterface {
 
 	private static final long serialVersionUID = 1L;
 

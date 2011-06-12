@@ -45,9 +45,11 @@ public interface DatabaseInterface extends Remote {
 
 	// Nome utente Password Punteggio Rank
 
-	public void addNewUser(String userName, String password) throws RemoteException;
+	public void addNewUser(String userName, String password)
+			throws RemoteException;
 
-	public boolean login(String userName, String password) throws RemoteException;
+	public boolean login(String userName, String password)
+			throws RemoteException;
 
 	public void updateScore(String userName, int score) throws RemoteException;
 
