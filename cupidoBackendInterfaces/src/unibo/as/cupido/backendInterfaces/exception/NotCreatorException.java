@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfaces.common;
+package unibo.as.cupido.backendInterfaces.exception;
 
 /**
  * Thrown by the TableManager when a user attemps to add a bot in a table he is

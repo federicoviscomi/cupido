@@ -15,10 +15,10 @@ import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
-import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
-import unibo.as.cupido.backendInterfaces.common.NoSuchLTMInterfaceException;
-import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMInterfaceException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
 

@@ -4,9 +4,9 @@ import java.util.Arrays;
 
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface.Positions;
-import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.common.PositionFullException;
+import unibo.as.cupido.backendInterfaces.exception.FullTableException;
+import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 
 public class PlayersManager {
 

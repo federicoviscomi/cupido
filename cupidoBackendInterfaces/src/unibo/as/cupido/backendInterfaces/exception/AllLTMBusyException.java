@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfaces.common;
+package unibo.as.cupido.backendInterfaces.exception;
 
 import java.io.Serializable;
 

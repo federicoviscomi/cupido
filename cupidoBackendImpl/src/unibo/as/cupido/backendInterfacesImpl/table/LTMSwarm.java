@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
-import unibo.as.cupido.backendInterfaces.common.NoSuchLTMInterfaceException;
+import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMInterfaceException;
 
 public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 
