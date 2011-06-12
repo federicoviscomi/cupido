@@ -52,12 +52,12 @@ public class CardsManager {
 	private int currentTurnPoints;
 	/** counts the number of card played in the current turn */
 	private int playedCardsCount;
-	/** position of player who plays first in the current turn */
-	int playingFirst;
+	/** position of player who plays first in the current turn*/
+	int firstPlaying;
 	/** the number of turn made in this hand */
 	int turn;
 	/**
-	 * <code>true</code> is some player correctly played an hearts at some point
+	 * <code>true</code> if some player correctly played an hearts at some point
 	 * in the game. <code>false</code> otherwise
 	 */
 	boolean brokenHearted;
@@ -69,7 +69,7 @@ public class CardsManager {
 	private final Comparator<Card> winnerComparator = new Comparator<Card>() {
 		@Override
 		public int compare(Card o1, Card o2) {
-			int firstSuit = cardPlayed[playingFirst].suit.ordinal();
+			int firstSuit = cardPlayed[firstPlaying].suit.ordinal();
 			return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14 : o1.value))
 					- ((o2.suit.ordinal() == firstSuit ? 1 : 0) * (o2.value == 1 ? 14 : o2.value));
 		}
@@ -78,7 +78,7 @@ public class CardsManager {
 	public CardsManager() {
 		dealCards();
 		allPassedCards = new Card[4][];
-		playingFirst = whoHasTwoOfClubs();
+		firstPlaying = whoHasTwoOfClubs();
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class CardsManager {
 	}
 
 	public int getWinner() {
-		return playingFirst;
+		return firstPlaying;
 	}
 
 	/**
@@ -143,18 +143,18 @@ public class CardsManager {
 				throw new IllegalMoveException("First turn card played has to be two of clubs");
 			}
 		}
-		if (playerPosition != playingFirst && !card.suit.equals(cardPlayed[playingFirst].suit)) {
+		if (playerPosition != firstPlaying && !card.suit.equals(cardPlayed[firstPlaying].suit)) {
 			for (Card currentPlayerCard : cards[playerPosition]) {
-				if (currentPlayerCard.suit.equals(cardPlayed[playingFirst].suit)) {
+				if (currentPlayerCard.suit.equals(cardPlayed[firstPlaying].suit)) {
 					throw new IllegalMoveException("The player " + playerPosition + " must play a card of suit "
-							+ cardPlayed[playingFirst].suit);
+							+ cardPlayed[firstPlaying].suit);
 				}
 			}
 		}
 		if (!brokenHearted) {
 			if (card.suit.equals(Card.Suit.HEARTS)) {
-				if (playerPosition == playingFirst) {
-					for (Card currentPlayerCard : cards[playingFirst]) {
+				if (playerPosition == firstPlaying) {
+					for (Card currentPlayerCard : cards[firstPlaying]) {
 						if (!currentPlayerCard.suit.equals(Suit.HEARTS)) {
 							throw new IllegalMoveException("Cannot play heart rigth now");
 						}
@@ -166,7 +166,7 @@ public class CardsManager {
 		cardPlayed[playerPosition] = card;
 		if (playedCardsCount == 4) {
 			/* decide who takes this hand cards and calculate this hand points */
-			int maxPosition = playingFirst;
+			int maxPosition = firstPlaying;
 			for (int i = 0; i < 4; i++) {
 				if (winnerComparator.compare(cardPlayed[i], cardPlayed[maxPosition]) > 0)
 					maxPosition = i;
