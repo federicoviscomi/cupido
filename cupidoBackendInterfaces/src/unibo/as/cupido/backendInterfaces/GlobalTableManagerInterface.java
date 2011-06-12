@@ -49,14 +49,20 @@ public interface GlobalTableManagerInterface extends Remote {
 			this.tableDescriptor = tableDescriptor;
 		}
 
-		@Override
 		/**
-		 * A Table is uniquely identified by two things: the server it's managed by, the unique id the Table has within that server. 
-		 * This method is used by an hashmap in the TableManager
+		 * A Table is uniquely identified by two things: the server it's managed
+		 * by, the unique id the Table has within that server. This method is
+		 * used by an hashmap in the TableManager
 		 */
+		@Override
 		public int hashCode() {
 			return (tableDescriptor.server + Long.toString(tableDescriptor.id))
 					.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return tableDescriptor.equals(((Table) o).tableDescriptor);
 		}
 
 		@Override
@@ -75,6 +81,12 @@ public interface GlobalTableManagerInterface extends Remote {
 		public TableDescriptor(String server, int id) {
 			this.server = server;
 			this.id = id;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			TableDescriptor otd = (TableDescriptor) o;
+			return (otd.id == this.id && otd.server.equals(this.server));
 		}
 	}
 
