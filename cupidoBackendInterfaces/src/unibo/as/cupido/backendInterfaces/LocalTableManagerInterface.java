@@ -19,7 +19,7 @@ public interface LocalTableManagerInterface extends Remote {
 	 * @param owner
 	 * @return 
 	 */
-	public TableInterface createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException;
+	public TableInterface createTable(String owner, ServletNotificationsInterface snf) throws RemoteException;
 
 
 	/***
