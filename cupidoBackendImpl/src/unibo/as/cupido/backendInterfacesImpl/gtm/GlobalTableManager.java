@@ -57,7 +57,6 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 		try {
 			allTables = new AllTables();
 			ltmSwarm = new LTMSwarm();
-			System.setSecurityManager(new SecurityManager());
 			// registry = LocateRegistry.createRegistry(1099);
 			registry = LocateRegistry.getRegistry();
 			registry.bind(GlobalTableManagerInterface.globalTableManagerName, UnicastRemoteObject.exportObject(this));
