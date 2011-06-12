@@ -27,7 +27,7 @@
 
   <!--  Listeners -->
   <listener>
-	<listener-class>unibo.as.server.CupidoSessionListener</listener-class>
+	<listener-class>unibo.as.cupido.server.CupidoSessionListener</listener-class>
   </listener>
   
   <!-- Default page to serve -->
