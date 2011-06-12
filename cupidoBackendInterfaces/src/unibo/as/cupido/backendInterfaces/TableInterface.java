@@ -4,6 +4,7 @@ import java.rmi.Remote;
 
 import java.rmi.RemoteException;
 
+import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
@@ -206,5 +207,11 @@ public interface TableInterface extends Remote {
 	public ObservedGameStatus viewTable(String userName,
 			ServletNotificationsInterface snf) throws NoSuchTableException,
 			RemoteException;
+
+	/** 
+	 * @return 
+	 * @throws RemoteException
+	 */
+	public Table getTable() throws RemoteException;
 
 }
