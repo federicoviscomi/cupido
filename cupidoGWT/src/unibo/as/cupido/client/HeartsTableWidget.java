@@ -101,13 +101,23 @@ public class HeartsTableWidget extends AbsolutePanel {
 				exitButton.setEnabled(true);
 			}
 			@Override
-			public void onCardClicked(int player, Card card, CardsGameWidget.CardRole.State state) {
-				if (card != null && state == CardsGameWidget.CardRole.State.HAND)
-					cardsGameWidget.dealCard(player, card, new GWTAnimation.AnimationCompletedListener() {
+			public void onCardClicked(int player, Card card, CardsGameWidget.CardRole.State state, boolean isRaised) {
+				if (card != null && state == CardsGameWidget.CardRole.State.HAND) {
+					if (isRaised)
+						cardsGameWidget.lowerRaisedCard(player, card);
+					else {
+						cardsGameWidget.revealCoveredCard(1, card);
+						
+						cardsGameWidget.raiseCard(player, card);
+						cardsGameWidget.dealCard(1, card);
+					}
+					
+					cardsGameWidget.runPendingAnimations(300, new GWTAnimation.AnimationCompletedListener() {
 						@Override
 						public void onComplete() {
 						}
 					});
+				}
 			}
 		});
 		add(cardsGameWidget, 0, 0);

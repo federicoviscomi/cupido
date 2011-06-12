@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
@@ -26,16 +27,23 @@ public class CardsGameWidget extends AbsolutePanel {
 	
 	// The height of the players' labels that contain usernames and scores.
 	private static final int playerLabelHeight = 20;
-	
+		
 	/**
-	 * The current layout of movable widgets within the table.
+	 * The layout that the widgets on the table had the last time runPendingAnimations() was called,
+	 * or the initial layout if runPendingAnimations() has never been called.
 	 */
-	private TableLayout tableLayout;
+	private TableLayout previousTableLayout;
 	
 	/**
-	 * The roles of the cards on the table.
+	 * The current roles of the cards on the table.
 	 */
 	private Map<CardWidget,CardRole> cardRoles;
+	
+	/**
+	 * This is `true' when there are some animations pending, that can be executed with
+	 * runPendingAnimations(). This is reset to `false' when such animations complete.
+	 */
+	boolean someAnimationsPending = false;
 	
 	/**
 	 * The movable widgets within the table.
@@ -133,6 +141,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	public static class CardRole {
 		@Override
 		public int hashCode() {
+			// Note that the `isRaised' field does *not* change the hash code.
+			// This is needed to be consistent with equals().
 			assert player >= 0;
 			assert player < 4;
 			switch (state) {
@@ -146,6 +156,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 		@Override
 		public boolean equals(Object obj) {
+			// Note that the `isRaised' field is *not* compared.
 			if (obj != null && obj instanceof CardRole) {
 				CardRole x = (CardRole) obj;
 				return (player == x.player && state == x.state);
@@ -161,6 +172,12 @@ public class CardsGameWidget extends AbsolutePanel {
 		 * The state of the card (see the State enum).
 		 */
 		public State state;
+
+		/**
+		 * This is valid only when state==HAND.
+		 * It specifies whether this card is raised.
+		 */
+		public boolean isRaised;
 		
 		/**
 		 * The player to whom the card belongs.
@@ -171,7 +188,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			
 		}
 
-		public CardRole(State state, int player) {
+		public CardRole(State state, boolean raised, int player) {
 			this.state = state;
 			this.player = player;
 		}
@@ -198,8 +215,9 @@ public class CardsGameWidget extends AbsolutePanel {
 		 * This is called when the user clicks on a card.
 		 * @player: the player to whom the card belongs
 		 * @card: the card that was clicked, or `null' if a covered card was clicked.
+		 * @isRaised: this is true only if state==HAND and this card is currently raised.
 		 */
-		public void onCardClicked(int player, Card card, CardRole.State state);
+		public void onCardClicked(int player, Card card, CardRole.State state, boolean isRaised);
 	}
 	
 	/**
@@ -258,7 +276,7 @@ public class CardsGameWidget extends AbsolutePanel {
 					// image first.
 					CardWidget cardWidget = new CardWidget(card, 0);
 					movableWidgets.cards.add(cardWidget);
-					cardRoles.put(cardWidget, new CardRole(CardRole.State.HAND, player));
+					cardRoles.put(cardWidget, new CardRole(CardRole.State.HAND, false, player));
 					add(cardWidget, 0, 0);
 				}
 			} else {
@@ -267,7 +285,7 @@ public class CardsGameWidget extends AbsolutePanel {
 					// image first.
 					CardWidget cardWidget = new CardWidget(null, 90 * player);
 					movableWidgets.cards.add(cardWidget);
-					cardRoles.put(cardWidget, new CardRole(CardRole.State.HAND, player));
+					cardRoles.put(cardWidget, new CardRole(CardRole.State.HAND, false, player));
 					add(cardWidget, 0, 0);
 				}
 			}
@@ -277,7 +295,7 @@ public class CardsGameWidget extends AbsolutePanel {
 				// image first.
 				CardWidget cardWidget = new CardWidget(playerStatus.playedCard, 90 * player);
 				movableWidgets.cards.add(cardWidget);
-				cardRoles.put(cardWidget, new CardRole(CardRole.State.DEALT, player));
+				cardRoles.put(cardWidget, new CardRole(CardRole.State.DEALT, false, player));
 				add(cardWidget, 0, 0);
 			}
 		}
@@ -295,13 +313,17 @@ public class CardsGameWidget extends AbsolutePanel {
 				cardWidget.addClickHandler(new ClickHandler() {
 					@Override
 					public void onClick(ClickEvent event) {
+						if (runningAnimation)
+							// Clicking a card during an animation does nothing.
+							return;
+						
 						CardRole role = cardsGameWidget.cardRoles.get(cardWidget);
-						cardsGameWidget.listener.onCardClicked(role.player, cardWidget.getCard(), role.state);
+						cardsGameWidget.listener.onCardClicked(role.player, cardWidget.getCard(), role.state, role.isRaised);
 					}
 				});
 		}
 		
-		tableLayout = computePositions(movableWidgets, cardRoles, tableSize);
+		TableLayout tableLayout = computePositions(movableWidgets, cardRoles, tableSize);
 		
 		// Lay out the widgets according to tableLayout.
 		for (CardWidget x : movableWidgets.cards)
@@ -309,15 +331,18 @@ public class CardsGameWidget extends AbsolutePanel {
 		
 		for (int player = 0; player < 4; player++)
 			setLabelPosition(movableWidgets.playerNames.get(player), tableLayout.names.get(player));
+		
+		previousTableLayout = tableLayout;
 	}
 	
-	private Map<CardWidget,CardRole> cloneCardRoles() {
+	private static Map<CardWidget,CardRole> cloneCardRoles(Map<CardWidget,CardRole> cardRoles) {
 		Map<CardWidget,CardRole> result = new HashMap<CardWidget,CardRole>();
 		for (Entry<CardWidget,CardRole> e : cardRoles.entrySet()) {
 			// Clone the role. The widget does not need to be cloned.
 			CardRole role = new CardRole();
 			role.player = e.getValue().player;
 			role.state = e.getValue().state;
+			role.isRaised = e.getValue().isRaised;
 			result.put(e.getKey(), role);
 		}
 		return result;
@@ -335,70 +360,106 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 	
 	/**
+	 * Starts an animation that moves the widgets from the layout computed from previousCardRoles
+	 * to the layout computed from cardRoles.
+	 * Calls GameEventListener.onAnimationStart() and GameEventListener.onAnimationEnd().
+	 * animationCompletedListener.onComplete() is called after the animation completes,
+	 * but before calling GameEventListener.onAnimationEnd().
 	 * 
-	 * @param newCardRoles
-	 * @param switchZAt
-	 *     Specifies when the z index should be changed. 0.0 means at the beginning of the animation
-	 *     and 1.0 means at the end of the animation. This value must not be negative or greater than 1.
-	 * @return
+	 * @param duration The duration of the animation, in milliseconds.
 	 */
-	private GWTAnimation animateMoveTo(final Map<CardWidget,CardRole> newCardRoles) {
-		final TableLayout newTableLayout = computePositions(movableWidgets, newCardRoles, tableSize);
+	public void runPendingAnimations(int duration, GWTAnimation.AnimationCompletedListener animationCompletedListener) {
 		
-		// A card move takes 2000 milliseconds.
-		final int duration = 2000;
+		assert !runningAnimation;
+		
+		final TableLayout tableLayout = computePositions(movableWidgets, cardRoles, tableSize);
+		
+		runningAnimation = true;
+		listener.onAnimationStart();
+		
 		GWTAnimation animation = new SimpleAnimation(duration) {
 			@Override
 			public void onUpdate(double progress) {
 				for (CardWidget widget : movableWidgets.cards) {
-					Position position = interpolatePosition(tableLayout.cards.get(widget),
-							                                newTableLayout.cards.get(widget),
+					Position position = interpolatePosition(previousTableLayout.cards.get(widget),
+							                                tableLayout.cards.get(widget),
 							                                progress);
 					setCardPosition(widget, position);
 				}
 				for (int player = 0; player < 4; player++) {
-					Position position = interpolatePosition(tableLayout.names.get(player),
-							                                newTableLayout.names.get(player),
+					Position position = interpolatePosition(previousTableLayout.names.get(player),
+							                                tableLayout.names.get(player),
 							                                progress);
 					setLabelPosition(movableWidgets.playerNames.get(player), position);
 				}
 			}
 			@Override
-			public void onStart() {
-				assert !runningAnimation;
-				runningAnimation = true;
-				listener.onAnimationStart();
-			}
-			@Override
 			public void onComplete() {
+				super.onComplete();
 				assert runningAnimation;
 				runningAnimation = false;
-				cardRoles = newCardRoles;
-				tableLayout = newTableLayout;
+				previousTableLayout = tableLayout;
+				someAnimationsPending = false;				
 				listener.onAnimationEnd();
 			}
 		};
-		return animation;
+		animation.run(animationCompletedListener);
 	}
 	
 	/**
-	 * The player `player' deals the card `card'.
-	 * If the player hasn't got that card in its hand, but it has at least one covered card,
-	 * that card is uncovered as the specified card and then dealt.
-	 * It is an error if the player hasn't got neither the specified card nor a covered card.
+	 * Reveal a covered card of the specified player as `card'.
+	 * The card must not be raised.
+	 * 
+	 * NOTE: There must be no animations pending when this method is called.
 	 */
-	public void dealCard(int player, Card card, GWTAnimation.AnimationCompletedListener listener) {
+	public void revealCoveredCard(int player, Card card) {
 		
-		assert card != null;
-		
-		if (runningAnimation)
-			return;
+		assert !runningAnimation;
+		assert !someAnimationsPending;
+	
+		// Otherwise, search for a covered card.
 		
 		CardWidget widget = null;
 		
-		Map<CardWidget,Position> cardPositions = tableLayout.cards;
+		// No animations are pending, so the current table layout is the one
+		// already calculated into previousTableLayout.
+		Map<CardWidget,Position> cardPositions = previousTableLayout.cards;
+
+		for (CardWidget candidateWidget : movableWidgets.cards) {
+			if (candidateWidget.getCard() == null) {
+				CardRole role = cardRoles.get(candidateWidget);
+				if (role.player == player && role.state == CardRole.State.HAND && role.isRaised == false) {
+					// Found a match. Keep the widget with higher z index.
+					if (widget == null || cardPositions.get(widget).z < cardPositions.get(candidateWidget).z)
+						widget = candidateWidget;
+				}
+			}
+		}
+	
+		// If no match has been found, the precondition for this method was violated.
+		assert widget != null;
 		
-		// Firstly, search for the specified card.
+		widget.setCard(card);
+		
+		// `previousTableLayout' must be updated because the z indexes may have changed
+	    // by uncovering the card.
+		previousTableLayout = computePositions(movableWidgets, cardRoles, tableSize);
+	}
+
+	/**
+	 * The player `player' deals the card `card'. The card must be an uncovered card in
+	 * the specified player's hand.
+	 * 
+	 * The corresponding animation will be executed at the next call to runPendingAnimations().
+	 */
+	public void dealCard(int player, Card card) {
+		
+		assert card != null;
+		assert !runningAnimation;
+		
+		CardWidget widget = null;
+				
+		// Search for the specified card.
 		
 		for (CardWidget candidateWidget : movableWidgets.cards) {
 			Card candidateCard = candidateWidget.getCard();
@@ -412,31 +473,83 @@ public class CardsGameWidget extends AbsolutePanel {
 			}
 		}
 		
-		// Otherwise, search for a covered card.
+		assert widget != null;
+				
+		cardRoles.get(widget).state = CardRole.State.DEALT;
+		cardRoles.get(widget).isRaised = false;
 		
-		if (widget == null) {
-			for (CardWidget candidateWidget : movableWidgets.cards) {
-				if (candidateWidget.getCard() == null) {
-					CardRole role = cardRoles.get(candidateWidget);
-					if (role.player == player && role.state == CardRole.State.HAND) {
-						// Found a match. Keep the widget with higher z index.
-						if (widget == null || cardPositions.get(widget).z < cardPositions.get(candidateWidget).z)
-							widget = candidateWidget;
-					}
+		// Note: this may already be `true'.
+		someAnimationsPending = true;
+	}
+	
+	/**
+	 * The player `player' raises the card `card'. The card must be in the specified player's hand, and
+	 * must not be covered.
+	 * 
+	 * The corresponding animation will be executed at the next call to runPendingAnimations().
+	 */
+	public void raiseCard(int player, Card card) {
+		
+		assert card != null;
+		assert !runningAnimation;
+		
+		CardWidget widget = null;
+				
+		// Search for the specified card.
+		
+		for (CardWidget candidateWidget : movableWidgets.cards) {
+			Card candidateCard = candidateWidget.getCard();
+			if (candidateCard != null && card.value == candidateCard.value && card.suit == candidateCard.suit) {
+				CardRole role = cardRoles.get(candidateWidget);
+				if (role.player == player && role.state == CardRole.State.HAND && !role.isRaised) {
+					// Found a match
+					widget = candidateWidget;
+					break;
 				}
 			}
-		
-			// If no match has been found, the precondition for this method was violated.
-			assert widget != null;
-			
-			widget.setCard(card);
 		}
 		
-		Map<CardWidget,CardRole> newCardRoles = cloneCardRoles();
-		newCardRoles.get(widget).state = CardRole.State.DEALT;
+		assert widget != null;
+				
+		cardRoles.get(widget).isRaised = true;
 		
-		GWTAnimation animation = animateMoveTo(newCardRoles);
-		animation.run(listener);
+		// Note: this may already be `true'.
+		someAnimationsPending = true;
+	}
+	
+	/**
+	 * The player `player' lowers the previously-raised the card `card'.
+	 * The card must be in the specified player's hand.
+	 * 
+	 * The corresponding animation will be executed at the next call to runPendingAnimations().
+	 */
+	public void lowerRaisedCard(int player, Card card) {
+		
+		assert card != null;
+		assert !runningAnimation;
+		
+		CardWidget widget = null;
+				
+		// Search for the specified card.
+		
+		for (CardWidget candidateWidget : movableWidgets.cards) {
+			Card candidateCard = candidateWidget.getCard();
+			if (candidateCard != null && card.value == candidateCard.value && card.suit == candidateCard.suit) {
+				CardRole role = cardRoles.get(candidateWidget);
+				if (role.player == player && role.state == CardRole.State.HAND && role.isRaised) {
+					// Found a match
+					widget = candidateWidget;
+					break;
+				}
+			}
+		}
+		
+		assert widget != null;
+				
+		cardRoles.get(widget).isRaised = false;
+		
+		// Note: this may already be `true'.
+		someAnimationsPending = true;
 	}
 	
 	private void setCardPosition(CardWidget x, Position position) {
@@ -546,6 +659,9 @@ public class CardsGameWidget extends AbsolutePanel {
 				if (x.value == 1)
 					return 1;
 				
+				if (y.value == 1)
+					return -1;
+				
 				if (x.value < y.value)
 					return -1;
 				else
@@ -581,6 +697,13 @@ public class CardsGameWidget extends AbsolutePanel {
 		for (CardRole role : widgetByRole.keySet()) {
 			List<CardWidget> widgets = widgetByRole.get(role);
 			List<Position> positions = computePositionsHelper(widgets, role.state, tableSize);
+			if (role.state == CardRole.State.HAND) {
+				for (int i = 0; i < positions.size(); i++)
+					if (cardRoles.get(widgets.get(i)).isRaised) {
+						// Raise the card by 15 pixels.
+						positions.get(i).y -= 15;
+					}
+			}
 			for (int i = 0; i < role.player; i++)
 				rotatePositions(positions, tableSize);
 			assert widgets.size() == positions.size();
