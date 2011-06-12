@@ -4,15 +4,9 @@
 package unibo.as.cupido.client;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.FullTableException;
-import unibo.as.cupido.backendInterfaces.common.IllegalMoveException;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
-import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.PositionFullException;
+import unibo.as.cupido.backendInterfaces.common.*;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -45,7 +39,7 @@ public interface CupidoInterface extends RemoteService {
 
 	public void logout();
 
-	/*
+	/**
 	 * Identify a single table
 	 */
 	public class TableData implements Serializable {
@@ -57,12 +51,21 @@ public interface CupidoInterface extends RemoteService {
 		public int tableId;
 	}
 
-	/*
+	/**
 	 * Return all the tables
 	 */
 	public TableData[] getTableList();
 
-	public InitialTableStatus createTable();
+	/**
+	 * 
+	 * @return InitialTableStatus named ITS, with
+	 * 		ITS.opponents	= null
+	 * 		ITS.whoIsBot  	= null
+	 * 		ITS.
+	 * @throws AllLTMBusyException if a table can't be created now (you can try again later)
+	 * @throws RemoteException if there are some internal errors of communication
+	 */
+	public InitialTableStatus createTable() throws AllLTMBusyException, RemoteException;
 
 	public InitialTableStatus joinTable(String server, int tableId)
 			throws FullTableException, NoSuchTableException;
