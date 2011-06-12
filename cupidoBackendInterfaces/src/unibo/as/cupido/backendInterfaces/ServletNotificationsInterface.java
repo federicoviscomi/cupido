@@ -13,7 +13,7 @@ import unibo.as.cupido.backendInterfaces.common.ChatMessage;
  * Note: servlet in not notified when a player enter the table to observe the
  * match
  */
-public interface ServletNotifcationsInterface extends Remote {
+public interface ServletNotificationsInterface extends Remote {
 
 	/**
 	 * End of the game is notified to the servlet.

@@ -10,7 +10,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
+import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 
 import javax.servlet.http.HttpSession;
 
@@ -34,7 +34,7 @@ public class CupidoServlet extends RemoteServiceServlet implements CupidoInterfa
 
 	private static final long serialVersionUID = 1L;
 
-	ServletNotifcationsInterface sni = new ServletNotifcationsInterface() {
+	ServletNotificationsInterface sni = new ServletNotificationsInterface() {
 
 		@Override
 		public void notifyPlayerLeft(String name) {

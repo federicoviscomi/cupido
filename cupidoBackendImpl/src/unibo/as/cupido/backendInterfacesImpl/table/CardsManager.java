@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl;
+package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -228,6 +228,10 @@ public class CardsManager {
 				return i;
 		}
 		return -1;
+	}
+
+	public int getCurrentPlayer() {
+		return firstPlaying + playedCardsCount;
 	}
 
 }

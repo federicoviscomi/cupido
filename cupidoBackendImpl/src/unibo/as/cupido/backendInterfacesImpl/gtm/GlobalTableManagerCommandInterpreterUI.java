@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl;
+package unibo.as.cupido.backendInterfacesImpl.gtm;
 
 import jargs.gnu.CmdLineParser;
 import jargs.gnu.CmdLineParser.Option;
@@ -10,7 +10,8 @@ import java.util.Collection;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.common.Pair;
-import unibo.as.cupido.backendInterfacesImpl.LTMSwarm.Triple;
+import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm;
+import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
 
 /**
  * 

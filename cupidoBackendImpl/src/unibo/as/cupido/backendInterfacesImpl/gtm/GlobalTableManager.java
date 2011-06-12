@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl;
+package unibo.as.cupido.backendInterfacesImpl.gtm;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -13,13 +13,14 @@ import java.util.Collection;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
+import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.common.NoSuchLTMInterfaceException;
 import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.common.Pair;
-import unibo.as.cupido.backendInterfacesImpl.LTMSwarm.Triple;
+import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm;
+import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
 
 /**
  * 
@@ -79,7 +80,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public TableDescriptor createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException,
+	public TableDescriptor createTable(String owner, ServletNotificationsInterface snf) throws RemoteException,
 			AllLTMBusyException {
 		try {
 			/* chose an LTM according to some load balancing policy */

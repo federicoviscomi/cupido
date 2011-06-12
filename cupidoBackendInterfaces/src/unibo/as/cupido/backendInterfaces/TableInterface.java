@@ -60,8 +60,8 @@ public interface TableInterface extends Remote {
 	 * STARTED and a player leaves</li>
 	 * </ul>
 	 * 
-	 * @param botName
-	 *            the name of the bot to add
+	 * @param userName
+	 *            the name of the user who wants to add a bot. Note that only the creator of the table can add a bot
 	 * @param position
 	 *            the absolute position of the bot in the table
 	 * @throws PositionFullException
@@ -82,14 +82,14 @@ public interface TableInterface extends Remote {
 	 * @throws IllegalStateException
 	 *             if game status is ENDED
 	 */
-	void addBot(String botName, int position) throws PositionFullException, RemoteException, IllegalArgumentException,
+	void addBot(String userName, int position) throws PositionFullException, RemoteException, IllegalArgumentException,
 			FullTableException, NotCreatorException, IllegalStateException;
 
 	/**
-	 * Called by player <code>playerName</code> to join this table. A player can
+	 * Called by player <code>userName</code> to join this table. A player can
 	 * join a Table only if game status is {@link GameStatus}.INIT.
 	 * 
-	 * @param playerName
+	 * @param userName
 	 *            the name of the player who wants to join this table.
 	 * @return a portion of the status of the table as described by
 	 *         {@link InitialTableStatus}
@@ -102,10 +102,10 @@ public interface TableInterface extends Remote {
 	 * @throws IllegalArgumentException
 	 *             if an argument is null
 	 * @throws DuplicatePlayerNameException
-	 *             if a player name <code>playerName</code> is already playing
+	 *             if a player name <code>userName</code> is already playing
 	 *             or viewing the table
 	 */
-	public InitialTableStatus joinTable(String playerName, ServletNotifcationsInterface snf) throws FullTableException,
+	public InitialTableStatus joinTable(String userName, ServletNotificationsInterface snf) throws FullTableException,
 			NoSuchTableException, RemoteException, IllegalArgumentException, IllegalStateException,
 			DuplicatePlayerNameException;
 
@@ -114,14 +114,14 @@ public interface TableInterface extends Remote {
 	 * status is PASSING_CARDS or STARTED then a bot takes its place. TODO ? If
 	 * the creator leaves the table when game status is INIT then the table is
 	 * destoyed.? If the creator leaves the table when game status is not INIT
-	 * what happens?
+	 * what happens? Can a bot leave the game?
 	 * 
 	 * 
 	 * @param userName
 	 * @throws PlayerNotFoundException
-	 *             if player <code>playerName</code> is not in the table
+	 *             if player <code>userName</code> is not in the table
 	 */
-	void leaveTable(String playerName) throws RemoteException, PlayerNotFoundException;
+	void leaveTable(String userName) throws RemoteException, PlayerNotFoundException;
 
 	/**
 	 * The user <code>userName</code> passes cards <code>cards</code> to the
@@ -173,12 +173,12 @@ public interface TableInterface extends Remote {
 	 * @throws IllegalArgumentException
 	 *             <ul>
 	 *             <li>if an argument is null</li>
-	 *             <li>if <code>playerName</code> is not playing in this table</li>
+	 *             <li>if <code>userName</code> is not playing in this table</li>
 	 *             <li>if it's not this player turn</li>
 	 *             <li>if this player does not own the card</li>
 	 *             </ul>
 	 */
-	void playCard(String playerName, Card card) throws IllegalMoveException, RemoteException, IllegalArgumentException;
+	void playCard(String userName, Card card) throws IllegalMoveException, RemoteException, IllegalArgumentException;
 
 	/**
 	 * Sends a message to the table chat
@@ -197,7 +197,7 @@ public interface TableInterface extends Remote {
 	 * @return
 	 * @throws NoSuchTableException
 	 */
-	public ObservedGameStatus viewTable(String userName, ServletNotifcationsInterface snf) throws NoSuchTableException,
+	public ObservedGameStatus viewTable(String userName, ServletNotificationsInterface snf) throws NoSuchTableException,
 			RemoteException;
 
 }

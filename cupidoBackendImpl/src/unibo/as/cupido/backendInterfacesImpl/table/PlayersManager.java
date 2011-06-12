@@ -1,8 +1,8 @@
-package unibo.as.cupido.backendInterfacesImpl;
+package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.util.Arrays;
 
-import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
+import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface.Positions;
 import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
@@ -144,6 +144,10 @@ public class PlayersManager {
 			throw new IllegalArgumentException("player not found");
 		playersCount--;
 		players[position].name = null;
+	}
+
+	public boolean isCreator(String userName) {
+		return players[Positions.OWNER.ordinal()].equals(userName);
 	}
 
 }

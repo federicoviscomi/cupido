@@ -23,7 +23,7 @@ public interface LocalTableManagerInterface extends Remote {
 	 * @return a remote interface to the table manager
 	 * @throws RemoteException
 	 */
-	public TableInterface createTable(String owner, ServletNotifcationsInterface snf) throws RemoteException;
+	public TableInterface createTable(String owner, ServletNotificationsInterface snf) throws RemoteException;
 
 	/***
 	 * 

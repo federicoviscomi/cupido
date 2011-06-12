@@ -3,11 +3,11 @@ package unibo.as.cupido.backendInterfacesImpl;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
-import unibo.as.cupido.backendInterfaces.ServletNotifcationsInterface;
+import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 
-public class DummyLoggerServletNotifyer implements ServletNotifcationsInterface {
+public class DummyLoggerServletNotifyer implements ServletNotificationsInterface {
 
 	// private PrintStream log;
 

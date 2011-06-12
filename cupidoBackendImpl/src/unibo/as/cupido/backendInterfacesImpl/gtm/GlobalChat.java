@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl;
+package unibo.as.cupido.backendInterfacesImpl.gtm;
 
 import unibo.as.cupido.backendInterfaces.GlobalChatInterface;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
