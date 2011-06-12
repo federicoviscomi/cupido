@@ -546,6 +546,9 @@ public class CardsGameWidget extends AbsolutePanel {
 				if (x.value == 1)
 					return 1;
 				
+				if (y.value == 1)
+					return -1;
+				
 				if (x.value < y.value)
 					return -1;
 				else
