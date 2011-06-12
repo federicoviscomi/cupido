@@ -32,7 +32,6 @@ public class DatabaseManager implements DatabaseInterface {
 
 	public DatabaseManager() {
 		try {
-			// Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("Initializing Server... ");
 			Class.forName("org.gjt.mm.mysql.Driver");
 			System.out.println(" Driver Found.");
@@ -41,15 +40,7 @@ public class DatabaseManager implements DatabaseInterface {
 					url, userDB, passDB);
 			System.out.println(" Database connection established to " + url
 					+ ".");
-			/*
-			 * TODO check this connection.clientPrepareStatement(arg0)
-			 * connection.createStatement(resultSetType, resultSetConcurrency,
-			 * resultSetHoldability)
-			 */
 			statement = (Statement) connection.createStatement();
-			
-			statement.executeUpdate("CREATE DATABASE  database IF NOT EXISTS;");
-			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,7 +75,6 @@ public class DatabaseManager implements DatabaseInterface {
 		}
 		this.updateScore("rosa", 34);
 		this.updateScore("cane", 34);
-		System.out.println(" Rank ");
 		ArrayList<Pair<String, Integer>> globalRank = this.getLocalRank("cane");
 		for (Pair<String, Integer> p : globalRank) {
 			System.out.println(":" + p);
@@ -109,7 +99,6 @@ public class DatabaseManager implements DatabaseInterface {
 				+ password + "', 0);");
 	}
 
-
 	@Override
 	public ArrayList<Pair<String, Integer>> getLocalRank(String userName)
 			throws SQLException, NoSuchUserException {
@@ -130,8 +119,6 @@ public class DatabaseManager implements DatabaseInterface {
 		ArrayList<Pair<String, Integer>> rank = new ArrayList<Pair<String, Integer>>(
 				10);
 		while (chunk.next()) {
-			System.out.println(chunk.getLong(1) + " " + chunk.getString(2)
-					+ " " + chunk.getLong(3));
 			rank.add(new Pair<String, Integer>(chunk.getString(2), chunk
 					.getInt(3)));
 		}
