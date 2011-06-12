@@ -17,14 +17,14 @@ import javax.servlet.http.HttpSession;
 import net.sourceforge.htmlunit.corejs.javascript.tools.shell.Global;
 import net.zschech.gwt.comet.server.CometServlet;
 import net.zschech.gwt.comet.server.CometSession;
-import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.FullTableException;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.PositionFullException;
+import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
+import unibo.as.cupido.backendInterfaces.exception.FullTableException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
+import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
 

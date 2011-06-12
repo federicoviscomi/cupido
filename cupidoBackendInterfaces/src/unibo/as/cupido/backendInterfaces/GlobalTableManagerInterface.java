@@ -3,12 +3,12 @@ package unibo.as.cupido.backendInterfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import unibo.as.cupido.backendInterfaces.common.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.NoSuchLTMInterfaceException;
-import unibo.as.cupido.backendInterfaces.common.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMInterfaceException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 
 /**
  * 
@@ -91,7 +91,7 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * @throws RemoteException
 	 * @throws AllLTMBusyException
 	 */
-	public TableDescriptor createTable(String owner, ServletNotificationsInterface snf) throws RemoteException,
+	public TableInterface createTable(String owner, ServletNotificationsInterface snf) throws RemoteException,
 			AllLTMBusyException;
 
 	/**
