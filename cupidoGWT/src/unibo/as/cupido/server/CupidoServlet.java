@@ -30,6 +30,7 @@ import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
+import unibo.as.cupido.shared.cometNotification.PlayerLeft;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -37,13 +38,39 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		CupidoInterface {
 
 	private static final long serialVersionUID = 1L;
+	/**
+	 * hostname and port of registry to locate GlobalTableManagerInterface
+	 * default is 127.0.0.1:1099
+	 */
+	private static final String registryHost= "127.0.0.1";
+	private static final int registryPort = 1099;
 
+	/**
+	 * Define here methods to be notified by the table
+	 */
 	ServletNotificationsInterface sni = new ServletNotificationsInterface() {
 
+		/**
+		 * Called by the table when a player left the game
+		 */
 		@Override
 		public void notifyPlayerLeft(String name) {
-			// TODO Auto-generated method stub
+			// Get the HTTP session for the browser
+			HttpSession httpSession = getThreadLocalRequest().getSession(false);
+			if (httpSession == null) {
+				//Notifica playerLeft al tavolo
+				return;
+			}
 
+			// Get the Comet session for the browser
+			CometSession cometSession = CometServlet.getCometSession(httpSession, false);
+			if (cometSession==null){
+				//Notifica playerLeft al tavolo
+				httpSession.invalidate();
+				return;
+			}
+			PlayerLeft playerLeft=new PlayerLeft(name);
+			cometSession.enqueue(playerLeft);
 		}
 
 		@Override
@@ -126,7 +153,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	@Override
 	public boolean login(String username, String password) {
-		// TODO Auto-generated method stub
+		// TODO retieve information from the DB
 		return false;
 	}
 
@@ -155,8 +182,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * Create a new table FIXME: scegli il nome nel registry, lo username
-	 * corretto
+	 * Create a new table
+	 * FIXME: scegli lo username corretto, ed ottieni il punteggio dal DB
 	 * 
 	 * @throws RemoteException
 	 *             , AllLTMBusyException
@@ -164,28 +191,36 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public InitialTableStatus createTable() throws FatalException,
 			AllLTMBusyException {
+		InitialTableStatus its = new InitialTableStatus();
 		try {
-			// Locate a registry on localhost:1099
-			Registry registry = LocateRegistry.getRegistry(null);
+			Registry registry = LocateRegistry.getRegistry(registryHost,registryPort);
 			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
-					.lookup("gtm");
-			ServletNotificationsInterface snf = new ServletNotificationsInterfaceImpl();
-			TableInterface a = gtm.createTable("username", snf);
-
+					.lookup("globaltableserver");
+			TableInterface ti = gtm.createTable("username", sni);
+			
+			// Get or create the HTTP session for the browser
+			HttpSession httpSession = getThreadLocalRequest().getSession();
+			httpSession.setAttribute("tableInterface", ti);
+			httpSession.setAttribute("servletNotificationInterface", sni);
+			
+			//FIXME: retrieve point from DB
+			its.playerPoints[0]=99;
+			
 		} catch (RemoteException e) {
-			System.out.println("Servlet: catched RemoteException-> "
+			System.out.println("Servlet: on createTable(): catched RemoteException-> "
 					+ e.getMessage());
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new FatalException("GTM not reachable");
 		} catch (NotBoundException e) {
-			System.out.println("Servlet: catched NotBoundException-> "
+			System.out.println("Servlet: on createTable(): catched NotBoundException-> "
 					+ e.getMessage());
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new FatalException();
 		} catch (AllLTMBusyException e) {
 			throw new AllLTMBusyException();
 		}
-		return null;
+		
+		return its;
 	}
 
 	@Override
@@ -208,6 +243,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public void playCard(Card card) {
 		// TODO Auto-generated method stub
@@ -233,23 +271,21 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 		// Get or create the HTTP session for the browser
 		HttpSession httpSession = getThreadLocalRequest().getSession();
-
+		if (httpSession == null){
+			return;
+		}
 		httpSession.setAttribute("sessionClosedListener",
 				new SessionClosedListener() {
 					@Override
 					public void onSessionClosed() {
 						System.out
 								.println("Servlet: onSessionClosed() was called.");
+						//Notify player left at the table
 					}
 				});
 
 		// Get or create the Comet session for the browser
-		CometSession cometSession = CometServlet.getCometSession(httpSession);
-
-		getServletContext().setAttribute("cometSession", cometSession);
-
-		// FIXME: Use the correct username.
-		getServletContext().setAttribute("username", "pippo");
+		//CometSession cometSession = CometServlet.getCometSession(httpSession);
 
 		System.out.println("Servlet: Comet connession opened.");
 	}
