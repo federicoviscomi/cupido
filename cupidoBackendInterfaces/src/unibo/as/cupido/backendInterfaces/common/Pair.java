@@ -1,6 +1,13 @@
 package unibo.as.cupido.backendInterfaces.common;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 
 public class Pair<T1, T2> implements Serializable {
 
@@ -21,5 +28,13 @@ public class Pair<T1, T2> implements Serializable {
 	@Override
 	public String toString() {
 		return "[" + first + ", " + second + "]";
+	}
+
+	public static <T, S> Collection<T> projectPairCollectionOnFirstComponent(
+			Collection<Pair<T, S>> collection) {
+		Collection<T> proj1 = new ArrayList<T>();
+		for (Pair<T, S> pair : collection)
+			proj1.add(pair.first);
+		return proj1;
 	}
 }

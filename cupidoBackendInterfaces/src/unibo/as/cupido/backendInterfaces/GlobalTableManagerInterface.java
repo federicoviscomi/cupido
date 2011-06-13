@@ -6,7 +6,10 @@ import java.util.Collection;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 
@@ -19,76 +22,6 @@ import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
  * 
  */
 public interface GlobalTableManagerInterface extends Remote {
-
-	/**
-	 * 
-	 * 
-	 * 
-	 * @author cane
-	 * 
-	 */
-	public class Table {
-		public String owner;
-		public int freePosition;
-		public TableDescriptor tableDescriptor;
-
-		public Table() {
-			//
-		}
-
-		public Table(String owner, int freePosition, String server, int id) {
-			this.owner = owner;
-			this.freePosition = freePosition;
-			this.tableDescriptor = new TableDescriptor(server, id);
-		}
-
-		public Table(String owner, int freePosition,
-				TableDescriptor tableDescriptor) {
-			this.owner = owner;
-			this.freePosition = freePosition;
-			this.tableDescriptor = tableDescriptor;
-		}
-
-		/**
-		 * A Table is uniquely identified by two things: the server it's managed
-		 * by, the unique id the Table has within that server. This method is
-		 * used by an hashmap in the TableManager
-		 */
-		@Override
-		public int hashCode() {
-			return (tableDescriptor.server + Long.toString(tableDescriptor.id))
-					.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			return tableDescriptor.equals(((Table) o).tableDescriptor);
-		}
-
-		@Override
-		public String toString() {
-			return "[owner=" + owner + ", free position=" + freePosition
-					+ ", server=" + tableDescriptor.server + ", table id="
-					+ tableDescriptor.id + "]";
-		}
-	}
-
-	public class TableDescriptor {
-		public int id;
-
-		public String server;
-
-		public TableDescriptor(String server, int id) {
-			this.server = server;
-			this.id = id;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			TableDescriptor otd = (TableDescriptor) o;
-			return (otd.id == this.id && otd.server.equals(this.server));
-		}
-	}
 
 	/** global server's name in the RMI registry */
 	public static final String globalTableManagerName = "globaltableserver";
@@ -109,17 +42,13 @@ public interface GlobalTableManagerInterface extends Remote {
 
 	/**
 	 * 
-	 * This method is userd by the Servlet to get a list of all the tables
-	 * 
-	 * TODO non e' meglio fare restituire direttamente l'interfaccia del tavolo
-	 * e non quella dell'LTM?
+	 * This method is userd by the Servlet to get a list of all the tables.
 	 * 
 	 * @return
 	 * 
 	 * @throws RemoteException
 	 */
-	public Collection<Pair<Table, LocalTableManagerInterface>> getTableList()
-			throws RemoteException;
+	public Collection<TableInfoForClient> getTableList() throws RemoteException;
 
 	/**
 	 * This method is used by a local table manager to notify the global table
@@ -176,6 +105,18 @@ public interface GlobalTableManagerInterface extends Remote {
 	 */
 	public void notifyTableJoin(TableDescriptor tableDescriptor)
 			throws RemoteException, NoSuchTableException;
+
+	/**
+	 * Get the LTM remote object identified by <code>ltmId</code>
+	 * 
+	 * @param ltmId
+	 * @return
+	 * @throws RemoteException
+	 * @throws NoSuchLTMException
+	 *             if <code>ltmId</code> is not found.
+	 */
+	public LocalTableManagerInterface getLTMInterface(String ltmId)
+			throws RemoteException, NoSuchLTMException;
 
 	/**
 	 * Just for test purpose
