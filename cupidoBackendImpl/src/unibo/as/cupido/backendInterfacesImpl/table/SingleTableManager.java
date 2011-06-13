@@ -1,6 +1,7 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
@@ -16,6 +17,7 @@ import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
@@ -54,6 +56,7 @@ public class SingleTableManager implements TableInterface {
 	private ToBeNotifyed toNotify;
 	private BotManager botManager;
 	private final Table table;
+	
 
 	public SingleTableManager(ServletNotificationsInterface snf, Table table,
 			GlobalTableManagerInterface gtm) throws RemoteException {
@@ -235,10 +238,19 @@ public class SingleTableManager implements TableInterface {
 				if (runningPlayer == -1) {
 
 				} else {
-					DatabaseManager a = new DatabaseManager();
+					DatabaseManager databaseManager = new DatabaseManager();
 					for (String player : playersManager.getPlayersName()) {
-						a.updateScore(player, a.getPlayerScore(player));
+						try {
+							databaseManager.updateScore(player, databaseManager.getPlayerScore(player));
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoSuchUserException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
+					databaseManager.close();
 				}
 				// FIXME
 				toNotify.notifyGameEnded(playersManager.getAllPoints(),
