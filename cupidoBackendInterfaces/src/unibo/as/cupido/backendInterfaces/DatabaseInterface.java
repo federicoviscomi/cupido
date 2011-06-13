@@ -45,9 +45,9 @@ import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
  * 
  * 
  * 
- * TODO what is score? the total number of game won by this user minus the
- * number of lost game? in this case should not be unsigned. should be added a
- * field logged BOOLEAN which stores if the user is logged in or not?
+ * 
+ * TODO should be added a field logged BOOLEAN which stores if the user is
+ * logged in or not?
  * 
  * <code>
 CREATE TABLE `cupido`.`User` (
