@@ -3,8 +3,14 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 import java.util.ArrayList;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 
 public class BotManager {
+
+	public Bot chooseBotStrategy(InitialTableStatus initialTableStatus) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	/**
 	 * If a player got all points (26) then he "shot the moon". The 26 points
@@ -180,15 +186,6 @@ public class BotManager {
 	 * protection there.
 	 */
 
-	private Bot[] bots;
-
-	public BotManager() {
-		bots = new Bot[4];
-	}
-
-	public void addBot(int position, ArrayList<Card> cards) {
-		bots[position] = new BotFewTricks(cards);
-	}
 
 	/**
 	 * Hearts Strategy - Passing strategy
@@ -258,9 +255,6 @@ public class BotManager {
 	 * 
 	 * Next Page
 	 */
-	public Card[] chooseCardsToPass(int i) {
-		return bots[i].chooseCardsToPass();
-	}
 
 	/**
 	 * Hearts Play Strategies:
@@ -344,8 +338,5 @@ public class BotManager {
 	 * </ul>
 	 * 
 	 */
-	public Card chooseCardToPlay(int position) {
-		return bots[position].chooseCardToPlay();
-	}
 
 }

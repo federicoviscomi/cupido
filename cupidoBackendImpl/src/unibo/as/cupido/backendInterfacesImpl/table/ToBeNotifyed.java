@@ -12,14 +12,15 @@ import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 public class ToBeNotifyed {
 	private Map<String, ServletNotificationsInterface> snfs;
 
-	public ToBeNotifyed() {
+	public ToBeNotifyed(String owner, ServletNotificationsInterface snf) {
 		snfs = new HashMap<String, ServletNotificationsInterface>(4);
+		snfs.put(owner, snf);
 	}
 
-	public void notifyBotJoined(String botName, int position, int points) {
+	public void notifyBotJoined(String botName, int position) {
 		for (ServletNotificationsInterface snf : snfs.values()) {
 			try {
-				snf.notifyPlayerJoined(botName, true, points, position);
+				snf.notifyPlayerJoined(botName, true, 0, position);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -130,4 +131,9 @@ public class ToBeNotifyed {
 	public void viewerJoined(String userName, ServletNotificationsInterface snf) {
 		snfs.put(userName, snf);
 	}
+
+	public void addBot(String string, ServletNotificationsInterface sni) {
+		snfs.put(string, sni);
+	}
+
 }

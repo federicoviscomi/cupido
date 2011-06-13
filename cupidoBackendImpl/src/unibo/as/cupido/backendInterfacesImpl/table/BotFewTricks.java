@@ -18,16 +18,5 @@ public class BotFewTricks extends AbstractBot {
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public Card[] chooseCardsToPass() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Card chooseCardToPlay() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 }
