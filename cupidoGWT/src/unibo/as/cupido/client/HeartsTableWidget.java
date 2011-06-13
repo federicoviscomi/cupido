@@ -92,6 +92,10 @@ public class HeartsTableWidget extends AbsolutePanel {
 		cardsGameWidget = new CardsGameWidget(tableSize, observedGameStatus,
 				bottomPlayerCards, controllerPanel,
 				new CardsGameWidget.GameEventListener() {
+			
+					private int n = 0;
+					private int nextPlayer = 0;
+			
 					@Override
 					public void onAnimationStart() {
 						exitButton.setEnabled(false);
@@ -107,25 +111,33 @@ public class HeartsTableWidget extends AbsolutePanel {
 					public void onCardClicked(int player, Card card,
 							CardsGameWidget.CardRole.State state,
 							boolean isRaised) {
+						
+						GWTAnimation.AnimationCompletedListener emptyListener = new GWTAnimation.AnimationCompletedListener() {
+							@Override
+							public void onComplete() {
+							}
+						};
+						
 						if (card != null
 								&& state == CardsGameWidget.CardRole.State.HAND) {
-							if (isRaised)
+							if (isRaised) {
 								cardsGameWidget.lowerRaisedCard(player, card);
-							else {
-								cardsGameWidget.revealCoveredCard(1, card);
-
-								cardsGameWidget.raiseCard(player, card);
-								cardsGameWidget.dealCard(1, card);
+								cardsGameWidget.runPendingAnimations(300, emptyListener);
+							} else {
+								if (n == 4) {
+									cardsGameWidget.animateTrickTaking(nextPlayer, 2000, 2000, emptyListener);
+									n = 0;
+									nextPlayer++;
+									nextPlayer = nextPlayer % 4;
+								} else {
+									n++;
+									cardsGameWidget.revealCoveredCard(1, card);
+	
+									cardsGameWidget.raiseCard(player, card);
+									cardsGameWidget.dealCard(1, card);
+									cardsGameWidget.runPendingAnimations(300, emptyListener);
+								}
 							}
-
-							cardsGameWidget
-									.runPendingAnimations(
-											300,
-											new GWTAnimation.AnimationCompletedListener() {
-												@Override
-												public void onComplete() {
-												}
-											});
 						}
 					}
 				});
