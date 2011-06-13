@@ -72,6 +72,15 @@ public class CupidoMainMenuScreen extends AbsolutePanel {
 		});
 		add(scoresButton, 200, 550);
 
+		PushButton aboutButton = new PushButton("Informazioni su Cupido");
+		aboutButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				screenSwitcher.displayAboutScreen();
+			}
+		});
+		add(aboutButton, 200, 600);
+
 		GlobalChatWidget chatWidget = new GlobalChatWidget(this.username);
 		chatWidget.setHeight(Cupido.height + "px");
 		chatWidget.setWidth(chatWidth + "px");

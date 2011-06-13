@@ -127,6 +127,20 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 	}
 
 	@Override
+	public void displayAboutScreen() {
+		assert !switchingScreen;
+		switchingScreen = true;
+
+		removeCurrentScreen();
+		assert username != null;
+		remove(currentScreen);
+		currentScreen = new CupidoAboutScreen(this);
+		add(currentScreen, 0, 0);
+
+		switchingScreen = false;
+	}
+
+	@Override
 	public void displayTableScreen() {
 		assert !switchingScreen;
 		switchingScreen = true;

@@ -8,17 +8,22 @@ public interface ScreenSwitcher {
 	public void displayMainMenuScreen();
 
 	/**
-	 * Shows the main menu screen instead of the current one.
+	 * Shows the scores' screen instead of the current one.
 	 */
 	public void displayScoresScreen();
 
 	/**
-	 * Shows the main menu screen instead of the current one.
+	 * Shows the about screen instead of the current one.
+	 */
+	public void displayAboutScreen();
+	
+	/**
+	 * Shows the table screen (as a player) instead of the current one.
 	 */
 	public void displayTableScreen();
 
 	/**
-	 * Shows the main menu screen instead of the current one.
+	 * Shows the table screen (as a viewer) instead of the current one.
 	 */
 	public void displayObservedTableScreen();
 
