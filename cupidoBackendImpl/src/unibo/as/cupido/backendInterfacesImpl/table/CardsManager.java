@@ -137,10 +137,7 @@ public class CardsManager {
 		return winners;
 	}
 
-	/**
-	 * 
-	 */
-	public void passCards() {
+	private void passCards() {
 		for (int i = 0; i < 4; i++) {
 			cards[i].addAll(Arrays.asList(allPassedCards[(i - 1) % 4]));
 		}
@@ -209,19 +206,6 @@ public class CardsManager {
 		}
 	}
 
-	@SuppressWarnings("boxing")
-	public void print(PlayersManager playersManager) {
-		for (int i = 0; i < 4; i++) {
-			System.out
-					.format("\n name=%10.10s, isBot=%5.5b, cardsInHand=%2.2s, score=%3.3s, cards= ",
-							playersManager.getPlayerName(i),
-							playersManager.isBot(i),
-							"playersManager.numOfCardsInHand(i)",
-							playersManager.getScore(i));
-			System.out.print(java.util.Arrays.toString(cards[i].toArray()));
-		}
-	}
-
 	/**
 	 * Stores the card that player whit given position wants to pass. This
 	 * method does not actually move the cards to the next player because every
@@ -242,6 +226,9 @@ public class CardsManager {
 				throw new IllegalArgumentException();
 		}
 		allPassedCards[position] = passedCards;
+		if (allPlayerPassedCards()) {
+			this.passCards();
+		}
 	}
 
 	/**

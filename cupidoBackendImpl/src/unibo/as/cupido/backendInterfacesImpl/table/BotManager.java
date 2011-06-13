@@ -1,17 +1,17 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-import java.util.ArrayList;
-
-import unibo.as.cupido.backendInterfaces.common.Card;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 
 public class BotManager {
 
-	public Bot chooseBotStrategy(InitialTableStatus initialTableStatus) {
-		// TODO Auto-generated method stub
-		return null;
+	public Bot chooseBotStrategy(InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager) throws RemoteException {
+		return (Bot) UnicastRemoteObject.exportObject(new BotFewTricks(
+				initialTableStatus, singleTableManager));
 	}
-
 	/**
 	 * If a player got all points (26) then he "shot the moon". The 26 points
 	 * isn't added to his score, but to everyone else's. How to pass
@@ -185,7 +185,6 @@ public class BotManager {
 	 * being the victim. Preferably, keep the ace of hearts when you have enough
 	 * protection there.
 	 */
-
 
 	/**
 	 * Hearts Strategy - Passing strategy

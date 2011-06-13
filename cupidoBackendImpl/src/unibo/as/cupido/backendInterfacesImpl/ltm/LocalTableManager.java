@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -23,6 +24,7 @@ import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Pair;
 import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
 import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfacesImpl.table.SingleTableManager;
 
 /**
@@ -126,6 +128,12 @@ public class LocalTableManager implements LocalTableManagerInterface {
 			return new Pair<TableInterface, TableInfoForClient>(tableRemote,
 					newTable);
 		} catch (RejectedExecutionException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchUserException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

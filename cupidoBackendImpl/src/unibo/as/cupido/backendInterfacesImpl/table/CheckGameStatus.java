@@ -28,4 +28,9 @@ public class CheckGameStatus {
 			throw new IllegalStateException();
 	}
 
+	public void checkPassCards() throws IllegalStateException {
+		if (!gameStatus.equals(GameStatus.PASSING_CARDS))
+			throw new IllegalStateException();
+	}
+
 }

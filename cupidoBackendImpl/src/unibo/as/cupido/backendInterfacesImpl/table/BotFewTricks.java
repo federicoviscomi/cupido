@@ -1,8 +1,7 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-import java.util.ArrayList;
-
-import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.TableInterface;
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 
 /**
  * 
@@ -14,9 +13,9 @@ import unibo.as.cupido.backendInterfaces.common.Card;
  */
 public class BotFewTricks extends AbstractBot {
 
-	public BotFewTricks(ArrayList<Card> cards) {
+	public BotFewTricks(InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager) {
 		// TODO Auto-generated constructor stub
 	}
 
-	
 }
