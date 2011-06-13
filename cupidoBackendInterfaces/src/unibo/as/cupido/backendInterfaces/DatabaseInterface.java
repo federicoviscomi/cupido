@@ -189,4 +189,11 @@ public interface DatabaseInterface extends Remote {
 	public int getPlayerScore(String userName) throws RemoteException,
 			SQLException, IllegalArgumentException, NoSuchUserException;
 
+	/**
+	 * Close the connection with database.
+	 * 
+	 * @throws RemoteException
+	 */
+	void close() throws RemoteException;
+
 }

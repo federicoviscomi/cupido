@@ -25,6 +25,7 @@ public class DatabaseManager implements DatabaseInterface {
 	private String host = "localhost";
 	// TODO handle statement.close() problem
 	private Statement statement;
+	private Connection connection;
 
 	public DatabaseManager() {
 		try {
@@ -32,8 +33,8 @@ public class DatabaseManager implements DatabaseInterface {
 			Class.forName("org.gjt.mm.mysql.Driver");
 			System.out.println(" Driver Found.");
 			String url = "jdbc:mysql://" + host + "/" + database;
-			Connection connection = (Connection) DriverManager.getConnection(
-					url, userDB, passDB);
+			connection = (Connection) DriverManager.getConnection(url, userDB,
+					passDB);
 			System.out.println(" Database connection established to " + url
 					+ ".");
 			statement = (Statement) connection.createStatement();
@@ -201,5 +202,19 @@ public class DatabaseManager implements DatabaseInterface {
 					.getInt(3)));
 		}
 		return rank;
+	}
+
+	@Override
+	public void close() {
+		try {
+			statement.close();
+		} catch (SQLException e) {
+			//
+		}
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			//
+		}
 	}
 }
