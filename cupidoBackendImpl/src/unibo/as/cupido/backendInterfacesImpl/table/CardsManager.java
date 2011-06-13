@@ -4,22 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.Card.Suit;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
-
-/**
- * 
- * ELIMINARE?? ?? ?? Vi è anche un secondo modo di vincere la partita: un
- * giocatore vince se riesce a prendere tutte le carte di cuori e la donna di
- * picche lasciando gli avversari a zero punti.
- * 
- * 
- * @author cane
- * 
- */
 
 public class CardsManager {
 
@@ -56,6 +46,8 @@ public class CardsManager {
 	int firstPlaying;
 	/** the number of turn made in this hand */
 	int turn;
+	/** stores round points of every player */
+	int[] points;
 	/**
 	 * <code>true</code> if some player correctly played an hearts at some point
 	 * in the game. <code>false</code> otherwise
@@ -250,4 +242,9 @@ public class CardsManager {
 		return firstPlaying + playedCardsCount;
 	}
 
+	public ArrayList<String> getWinners() {
+		List<int[]> asList = Arrays.asList(points);
+		//int min = Collections.min();
+		return null;
+	}
 }

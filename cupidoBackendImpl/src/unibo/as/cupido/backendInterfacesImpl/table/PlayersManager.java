@@ -1,9 +1,6 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 
 import unibo.as.cupido.backendInterfaces.TableInterface.Positions;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
@@ -15,22 +12,23 @@ public class PlayersManager {
 	static class PlayerInfo {
 		boolean isBot;
 		String name;
-		/** points of player in current round */
-		int points;
+		/** total score of this player. Not points of this round! */
+		int score;
 
 		public PlayerInfo(String name, int score, boolean isBot) {
 			this.name = name;
-			this.points = score;
+			this.score = score;
 			this.isBot = isBot;
 		}
 
+		@Override
 		public Object clone() {
-			return new PlayerInfo(name, points, isBot);
+			return new PlayerInfo(name, score, isBot);
 		}
 
 		@Override
 		public String toString() {
-			return "[is bot=" + isBot + ", name=" + name + ", score=" + points
+			return "[is bot=" + isBot + ", name=" + name + ", score=" + score
 					+ "]";
 		}
 	}
@@ -82,9 +80,6 @@ public class PlayersManager {
 		return getTableStatus(position);
 	}
 
-	public void addPoint(int winner, int points) {
-		players[winner].points += points;
-	}
 
 	public int[] getAllPoints() {
 		int[] points = new int[4];
@@ -107,7 +102,7 @@ public class PlayersManager {
 	}
 
 	public int getScore(int i) {
-		return players[i].points;
+		return players[i].score;
 	}
 
 	public InitialTableStatus getTableStatus(int position) {
@@ -126,7 +121,7 @@ public class PlayersManager {
 		 */
 		int[] playerPoints = new int[4];
 		for (int i = 0; i < 4; i++)
-			playerPoints[i] = players[(position + i) % 4].points;
+			playerPoints[i] = players[(position + i) % 4].score;
 
 		/**
 		 * if opponents[i]==null then whoIsBot[i] has no meaning. if
@@ -160,17 +155,24 @@ public class PlayersManager {
 	 * @return the position of the running player if there exists such a player;
 	 *         otherwise -1
 	 */
-	public int getRunningPlayer() {
+	public String getRunningPlayer() {
 		for (int i = 0; i < 4; i++) {
-			if (players[i].points == 26)
-				return i;
+			if (players[i].score == 26) {
+				if (!players[i].isBot)
+					return players[i].name;
+			}
 		}
-		return -1;
+		return null;
 	}
 
 	public Iterable<String> getPlayersName() {
 		return Arrays.asList(players[0].name, players[1].name, players[2].name,
 				players[3].name);
+	}
+
+	public boolean botIsWinner() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

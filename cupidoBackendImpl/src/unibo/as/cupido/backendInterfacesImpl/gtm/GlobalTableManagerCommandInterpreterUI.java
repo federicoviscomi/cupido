@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
 
 /**
@@ -109,11 +109,11 @@ public class GlobalTableManagerCommandInterpreterUI {
 											}
 										}
 										if (listTables) {
-											Collection<Pair<Table, LocalTableManagerInterface>> tableList = globalTableManager
+											Collection<TableInfoForClient> tableList = globalTableManager
 													.getTableList();
 											System.out
 													.format("\n list af all tables follows:");
-											for (Pair<Table, LocalTableManagerInterface> table : tableList) {
+											for (TableInfoForClient table : tableList) {
 												System.out.format("\n %25s",
 														table);
 											}

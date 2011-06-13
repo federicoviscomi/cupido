@@ -16,7 +16,10 @@ import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm;
@@ -86,12 +89,13 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			LocalTableManagerInterface chosenLTM = ltmSwarm.chooseLTM();
 
 			/* create table in the chosen local table manager */
-			TableInterface tableInterface = chosenLTM.createTable(owner, snf);
-			
+			Pair<TableInterface, TableInfoForClient> table = chosenLTM
+					.createTable(owner, snf);
+
 			/* store created table */
-			allTables.addTable(tableInterface.getTable(), chosenLTM);
+			allTables.addTable(table.second, chosenLTM);
 			System.out.println("Current thread is " + Thread.currentThread());
-			return tableInterface;
+			return table.first;
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			System.exit(-1);
@@ -105,8 +109,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public Collection<Pair<Table, LocalTableManagerInterface>> getTableList()
-			throws RemoteException {
+	public Collection<TableInfoForClient> getTableList() throws RemoteException {
 		System.out.println("Current thread is " + Thread.currentThread());
 		return allTables.getAllTables();
 	}
@@ -170,5 +173,11 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public LocalTableManagerInterface getLTMInterface(String ltmId)
+			throws RemoteException, NoSuchLTMException {
+		return allTables.getLTMInterface(ltmId);
 	}
 }

@@ -17,10 +17,12 @@ import java.util.StringTokenizer;
 import java.util.concurrent.RejectedExecutionException;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
+import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfacesImpl.table.SingleTableManager;
 
 /**
@@ -50,6 +52,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	private int nextId = 0;
 
+	// TODO can use HashSet<TableInterface> and table id is hashCode?
 	private Map<Integer, TableInterface> allTables;
 
 	private String localAddress;
@@ -85,7 +88,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 					(LocalTableManagerInterface) UnicastRemoteObject
 							.exportObject(this), MAX_TABLE);
 
-			allTables = new HashMap<Integer, TableInterface>();
+			allTables = new HashMap<Integer, TableInterface>(MAX_TABLE);
 
 			System.out
 					.println("Local table manager server started correctly at address "
@@ -109,17 +112,19 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	}
 
 	@Override
-	public TableInterface createTable(String owner,
+	public Pair<TableInterface, TableInfoForClient> createTable(String owner,
 			ServletNotificationsInterface snf) throws RemoteException {
 		try {
 			System.out.println("Current thread is " + Thread.currentThread());
-			Table newTable = new Table(owner, 3, localAddress, nextId);
+			TableInfoForClient newTable = new TableInfoForClient(owner, 3,
+					new TableDescriptor(localAddress + this.toString(), nextId));
 			TableInterface tableRemote = (TableInterface) UnicastRemoteObject
 					.exportObject(new SingleTableManager(snf, newTable,
 							gtmRemote));
 			allTables.put(nextId, tableRemote);
 			nextId++;
-			return tableRemote;
+			return new Pair<TableInterface, TableInfoForClient>(tableRemote,
+					newTable);
 		} catch (RejectedExecutionException e) {
 			e.printStackTrace();
 		}

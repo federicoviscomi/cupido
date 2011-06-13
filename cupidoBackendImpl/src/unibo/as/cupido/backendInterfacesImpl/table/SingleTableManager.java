@@ -1,23 +1,22 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
+
 import java.rmi.RemoteException;
-import java.sql.SQLException;
+import java.util.ArrayList;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.TableDescriptor;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.DatabaseManager;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
+import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
-import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
@@ -34,8 +33,9 @@ public class SingleTableManager implements TableInterface {
 		try {
 			// TODO implement the following class
 			ServletNotificationsInterface sni = new DummyLoggerServletNotifyer();
-			SingleTableManager stm = new SingleTableManager(sni, new Table(
-					"Owner", 0, new TableDescriptor("servercane", 34453)), null);
+			SingleTableManager stm = new SingleTableManager(sni,
+					new TableInfoForClient("Owner", 0, new TableDescriptor(
+							"servercane", 34453)), null);
 			stm.printGameStatus();
 			stm.addBot("bot", 1);
 			stm.printGameStatus();
@@ -55,11 +55,11 @@ public class SingleTableManager implements TableInterface {
 	private PlayersManager playersManager;
 	private ToBeNotifyed toNotify;
 	private BotManager botManager;
-	private final Table table;
-	
+	private final TableInfoForClient table;
 
-	public SingleTableManager(ServletNotificationsInterface snf, Table table,
-			GlobalTableManagerInterface gtm) throws RemoteException {
+	public SingleTableManager(ServletNotificationsInterface snf,
+			TableInfoForClient table, GlobalTableManagerInterface gtm)
+			throws RemoteException {
 		this.table = table;
 		toNotify = new ToBeNotifyed();
 		cardsManager = new CardsManager();
@@ -117,26 +117,7 @@ public class SingleTableManager implements TableInterface {
 				Card card = botManager.chooseCardToPlay(position);
 				cardsManager.playCard(position, card);
 				toNotify.notifyCardPlayed("bot", card, position);
-				if (cardsManager.allPlayerPlayedCards()) {
-					if (gameStatus.equals(GameStatus.STARTED)) {
-						int winner = cardsManager.getWinner();
-						int points = cardsManager.getPoints();
-						playersManager.addPoint(winner, points);
-						gameStatus = GameStatus.STARTED;
-					}
-					if (cardsManager.gameEnded()) {
-						// FIXME
-						toNotify.notifyGameEnded(playersManager.getAllPoints(),
-								playersManager.getAllPoints());
-					}
-				}
 				position++;
-			}
-			if (gameStatus.ordinal() == GameStatus.STARTED.ordinal()) {
-				int winner = cardsManager.getWinner();
-				int points = cardsManager.getPoints();
-				playersManager.addPoint(winner, points);
-				gameStatus = GameStatus.STARTED;
 			}
 			if (cardsManager.gameEnded()) {
 				// FIXME
@@ -226,37 +207,28 @@ public class SingleTableManager implements TableInterface {
 		int position = playersManager.getPlayerPosition(userName);
 		cardsManager.playCard(position, card);
 		toNotify.notifyCardPlayed(userName, card, position);
-		if (cardsManager.allPlayerPlayedCards()) {
-			if (gameStatus.ordinal() == GameStatus.STARTED.ordinal()) {
-				int winner = cardsManager.getWinner();
-				int points = cardsManager.getPoints();
-				playersManager.addPoint(winner, points);
-				gameStatus = GameStatus.STARTED;
-			}
-			if (cardsManager.gameEnded()) {
-				int runningPlayer = playersManager.getRunningPlayer();
-				if (runningPlayer == -1) {
 
-				} else {
-					DatabaseManager databaseManager = new DatabaseManager();
-					for (String player : playersManager.getPlayersName()) {
-						try {
-							databaseManager.updateScore(player, databaseManager.getPlayerScore(player));
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (NoSuchUserException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					databaseManager.close();
-				}
-				// FIXME
-				toNotify.notifyGameEnded(playersManager.getAllPoints(),
-						playersManager.getAllPoints());
-			}
+		/**
+		 * per ogni partita terminata e vinta il giocatore guadagna 4 punti. Per
+		 * ogni partita terminata e persa il giocatore perde 1 punto. [RF710, 2,
+		 * necessario] Una partita si considera vinta dal giocatore che ha
+		 * totalizzato meno punti nella mano. In caso di parimerito vincono
+		 * tutti i giocatori a parimerito. La partita si considera persa da
+		 * tutti gli altri giocatori.
+		 * 
+		 * [RF711, 2, necessario] Un partita si considera terminata da un
+		 * giocatore, se quel giocatore rimane seduto al tavolo fino al momento
+		 * in cui vengono conteggiati i punti alla fien della mano.
+		 * 
+		 * 
+		 */
+		if (cardsManager.gameEnded()) {
+			ArrayList<String> winners = cardsManager.getWinners();
+			// FIXME
+			toNotify.notifyGameEnded(playersManager.getAllPoints(),
+					playersManager.getAllPoints());
 		}
+
 	}
 
 	private void printGameStatus() {
@@ -283,14 +255,14 @@ public class SingleTableManager implements TableInterface {
 		PlayerStatus[] ps = new PlayerStatus[4];
 		for (int i = 0; i < 4; i++)
 			ps[i] = new PlayerStatus(playersManager.players[i].name,
-					playersManager.players[i].points,
+					playersManager.players[i].score,
 					cardsManager.cardPlayed[i], cardsManager.cards[i].size(),
 					playersManager.players[i].isBot);
 		return ogs;
 	}
 
 	@Override
-	public Table getTable() throws RemoteException {
+	public TableInfoForClient getTable() throws RemoteException {
 		return table;
 	}
 }
