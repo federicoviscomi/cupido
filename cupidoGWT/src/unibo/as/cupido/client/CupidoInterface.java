@@ -6,7 +6,12 @@ package unibo.as.cupido.client;
 import java.io.Serializable;
 
 import unibo.as.cupido.backendInterfaces.common.*;
-import unibo.as.cupido.backendInterfaces.exception.*;
+import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
+import unibo.as.cupido.backendInterfaces.exception.FatalException;
+import unibo.as.cupido.backendInterfaces.exception.FullTableException;
+import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
+import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -58,8 +63,9 @@ public interface CupidoInterface extends RemoteService {
 
 	/**
 	 * 
-	 * @return InitialTableStatus named ITS, with ITS.opponents = null
-	 *         ITS.whoIsBot = null ITS.
+	 * @return InitialTableStatus with
+	 * 		   InitialTableStatus.playerPoints[0] is the only meaningful attributes in this object
+	 * 		   all other attributes of InitialTableStatus are meaningless and must be ignored
 	 * @throws AllLTMBusyException
 	 *             if a table can't be created now (you can try again later)
 	 * @throws FatalException
