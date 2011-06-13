@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Random;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
@@ -112,12 +111,30 @@ public class CardsManager {
 		return turn == 12;
 	}
 
+	public int getCurrentPlayer() {
+		return firstPlaying + playedCardsCount;
+	}
+
 	public int getPoints() {
 		return currentTurnPoints;
 	}
 
 	public int getWinner() {
 		return firstPlaying;
+	}
+
+	public ArrayList<Integer> getWinners() {
+		ArrayList<Integer> winners = new ArrayList<Integer>();
+		int minimumPoint = points[0];
+		for (int i = 1; i < 4; i++) {
+			if (points[i] < minimumPoint)
+				minimumPoint = points[i];
+		}
+		for (int i = 0; i < 4; i++) {
+			if (points[i] == minimumPoint)
+				winners.add(i);
+		}
+		return winners;
 	}
 
 	/**
@@ -236,15 +253,5 @@ public class CardsManager {
 				return i;
 		}
 		return -1;
-	}
-
-	public int getCurrentPlayer() {
-		return firstPlaying + playedCardsCount;
-	}
-
-	public ArrayList<String> getWinners() {
-		List<int[]> asList = Arrays.asList(points);
-		//int min = Collections.min();
-		return null;
 	}
 }

@@ -67,6 +67,11 @@ public class ToBeNotifyed {
 		snfs = null;
 	}
 
+	public void notifyGameEnded(Object matchPoints, Object playersTotalPoint) {
+		// TODO Auto-generated method stub
+
+	}
+
 	public void notifyGameStarted(String userName, Card[] cards) {
 		for (Entry<String, ServletNotificationsInterface> snf : snfs.entrySet()) {
 			try {

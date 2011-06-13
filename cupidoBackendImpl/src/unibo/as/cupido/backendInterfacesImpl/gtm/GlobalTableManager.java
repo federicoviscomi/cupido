@@ -109,6 +109,12 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
+	public LocalTableManagerInterface getLTMInterface(String ltmId)
+			throws RemoteException, NoSuchLTMException {
+		return allTables.getLTMInterface(ltmId);
+	}
+
+	@Override
 	public Collection<TableInfoForClient> getTableList() throws RemoteException {
 		System.out.println("Current thread is " + Thread.currentThread());
 		return allTables.getAllTables();
@@ -173,11 +179,5 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public LocalTableManagerInterface getLTMInterface(String ltmId)
-			throws RemoteException, NoSuchLTMException {
-		return allTables.getLTMInterface(ltmId);
 	}
 }

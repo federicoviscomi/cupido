@@ -1,9 +1,6 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
@@ -36,22 +33,17 @@ public class SingleTableManager implements TableInterface {
 			SingleTableManager stm = new SingleTableManager(sni,
 					new TableInfoForClient("Owner", 0, new TableDescriptor(
 							"servercane", 34453)), null);
-			stm.printGameStatus();
 			stm.addBot("bot", 1);
-			stm.printGameStatus();
 			stm.joinTable("Cane", sni);
-			stm.printGameStatus();
 			stm.joinTable("Gatto", sni);
-			stm.printGameStatus();
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	private CheckGameStatus checkGameStatus;
 	private CardsManager cardsManager;
-	/* posso spostarlo in CardsManagers? */
-	private GameStatus gameStatus;
 	private PlayersManager playersManager;
 	private ToBeNotifyed toNotify;
 	private BotManager botManager;
@@ -62,36 +54,22 @@ public class SingleTableManager implements TableInterface {
 			throws RemoteException {
 		this.table = table;
 		toNotify = new ToBeNotifyed();
+		checkGameStatus = new CheckGameStatus();
 		cardsManager = new CardsManager();
 		playersManager = new PlayersManager(table.owner, false);
 		botManager = new BotManager();
 		toNotify.notifyPlayerJoined(table.owner, 0, snf);
-		gameStatus = GameStatus.INIT;
 	}
 
 	@Override
 	public void addBot(String userName, int position)
 			throws PositionFullException, FullTableException,
 			NotCreatorException {
-		if (gameStatus.equals(GameStatus.ENDED)) {
-			throw new IllegalStateException();
-		}
-		if (!playersManager.isCreator(userName))
-			throw new NotCreatorException();
+		checkGameStatus.checkAddBot();
 		playersManager.addBot(userName, position);
 		toNotify.notifyBotJoined(userName, position, 0);
 		botManager.addBot(position, cardsManager.cards[position]);
-		if (playersManager.getPlayersCount() == 4) {
-			if (gameStatus.equals(GameStatus.INIT)) {
-				gameStatus = GameStatus.PASSING_CARDS;
-				botPassCard();
-			} else {
-				if (gameStatus.equals(GameStatus.PASSING_CARDS)) {
-					gameStatus = GameStatus.STARTED;
-				}
-				botPlayCard();
-			}
-		}
+		updateGameStatus();
 	}
 
 	private void botPassCard() {
@@ -102,11 +80,6 @@ public class SingleTableManager implements TableInterface {
 				toNotify.notifyCardPassed(cardsToPass,
 						playersManager.getPlayerName((i + 1) % 4));
 			}
-		}
-		if (cardsManager.allPlayerPassedCards()) {
-			gameStatus = GameStatus.STARTED;
-			cardsManager.passCards();
-			toNotify.notifyGameStarted(null, null);
 		}
 	}
 
@@ -119,69 +92,67 @@ public class SingleTableManager implements TableInterface {
 				toNotify.notifyCardPlayed("bot", card, position);
 				position++;
 			}
-			if (cardsManager.gameEnded()) {
-				// FIXME
-				toNotify.notifyGameEnded(playersManager.getAllPoints(),
-						playersManager.getAllPoints());
-			}
 		} catch (IllegalMoveException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	private void endGame() {
+		playersManager.updateScore(cardsManager.getWinners());
+		toNotify.notifyGameEnded(cardsManager.points,
+				playersManager.getScores());
+	}
+
+	@Override
+	public TableInfoForClient getTable() throws RemoteException {
+		return table;
+	}
+
 	@Override
 	public InitialTableStatus joinTable(String playerName,
 			ServletNotificationsInterface snf) throws FullTableException,
 			NoSuchTableException {
-		if (!gameStatus.equals(GameStatus.INIT)) {
-			throw new IllegalStateException();
-		}
 		if (playerName == null || snf == null) {
 			throw new IllegalArgumentException();
 		}
 		InitialTableStatus its = playersManager.addPlayer(playerName);
 		toNotify.notifyPlayerJoined(playerName,
 				playersManager.getPlayerPosition(playerName), snf);
-		if (playersManager.getPlayersCount() == 4) {
-			gameStatus = GameStatus.PASSING_CARDS;
-			botPassCard();
-		}
 		return its;
 	}
 
 	@Override
 	public void leaveTable(String playerName) throws PlayerNotFoundException {
-		if (gameStatus.equals(GameStatus.ENDED)) {
-			throw new IllegalStateException();
+
+	}
+
+	private void updateGameStatus() {
+		switch (checkGameStatus.gameStatus) {
+		case INIT: {
+			if (playersManager.getPlayersCount() == 4)
+				checkGameStatus.gameStatus = GameStatus.PASSING_CARDS;
+			break;
 		}
-		int position = playersManager.getPlayerPosition(playerName);
-		if (gameStatus.equals(GameStatus.INIT)) {
-			playersManager.removePlayer(playerName);
-			toNotify.removePlayer(playerName);
-		} else {
-			try {
-				this.addBot(
-						playersManager.getPlayerName(Positions.OWNER.ordinal()),
-						position);
-			} catch (PositionFullException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (FullTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NotCreatorException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		case PASSING_CARDS: {
+			if (cardsManager.allPlayerPassedCards())
+				checkGameStatus.gameStatus = GameStatus.STARTED;
+			break;
+		}
+		case STARTED: {
+			if (cardsManager.gameEnded())
+				checkGameStatus.gameStatus = GameStatus.ENDED;
+			break;
+		}
+		case ENDED: {
+			//
+		}
 		}
 	}
 
 	@Override
 	public void passCards(String userName, Card[] passedCards)
 			throws IllegalArgumentException {
-		if (gameStatus.ordinal() != GameStatus.PASSING_CARDS.ordinal())
-			throw new IllegalStateException();
 		if (userName == null || passedCards == null || passedCards.length != 3)
 			throw new IllegalArgumentException();
 		int position = playersManager.getPlayerPosition(userName);
@@ -190,50 +161,19 @@ public class SingleTableManager implements TableInterface {
 		cardsManager.setCardPassing(position, passedCards);
 		toNotify.notifyCardPassed(passedCards,
 				playersManager.getPlayerName((position + 1) % 4));
-		if (cardsManager.allPlayerPassedCards()) {
-			gameStatus = GameStatus.STARTED;
-			cardsManager.passCards();
-			toNotify.notifyGameStarted(userName, passedCards);
-		}
 	}
 
 	@Override
 	public void playCard(String userName, Card card)
 			throws IllegalMoveException {
-		if (gameStatus.ordinal() != GameStatus.STARTED.ordinal()
-				&& gameStatus.ordinal() != GameStatus.STARTED.ordinal()) {
-			throw new IllegalStateException();
-		}
 		int position = playersManager.getPlayerPosition(userName);
 		cardsManager.playCard(position, card);
 		toNotify.notifyCardPlayed(userName, card, position);
 
-		/**
-		 * per ogni partita terminata e vinta il giocatore guadagna 4 punti. Per
-		 * ogni partita terminata e persa il giocatore perde 1 punto. [RF710, 2,
-		 * necessario] Una partita si considera vinta dal giocatore che ha
-		 * totalizzato meno punti nella mano. In caso di parimerito vincono
-		 * tutti i giocatori a parimerito. La partita si considera persa da
-		 * tutti gli altri giocatori.
-		 * 
-		 * [RF711, 2, necessario] Un partita si considera terminata da un
-		 * giocatore, se quel giocatore rimane seduto al tavolo fino al momento
-		 * in cui vengono conteggiati i punti alla fien della mano.
-		 * 
-		 * 
-		 */
 		if (cardsManager.gameEnded()) {
-			ArrayList<String> winners = cardsManager.getWinners();
-			// FIXME
-			toNotify.notifyGameEnded(playersManager.getAllPoints(),
-					playersManager.getAllPoints());
+			endGame();
 		}
 
-	}
-
-	private void printGameStatus() {
-		System.out.format("\n\nGame status: %s", gameStatus.toString());
-		cardsManager.print(playersManager);
 	}
 
 	@Override
@@ -245,9 +185,6 @@ public class SingleTableManager implements TableInterface {
 	public ObservedGameStatus viewTable(String userName,
 			ServletNotificationsInterface snf) throws NoSuchTableException,
 			IllegalArgumentException, IllegalStateException {
-		if (gameStatus.equals(GameStatus.ENDED)) {
-			throw new IllegalStateException();
-		}
 		if (userName == null || snf == null)
 			throw new IllegalArgumentException();
 		toNotify.viewerJoined(userName, snf);
@@ -259,10 +196,5 @@ public class SingleTableManager implements TableInterface {
 					cardsManager.cardPlayed[i], cardsManager.cards[i].size(),
 					playersManager.players[i].isBot);
 		return ogs;
-	}
-
-	@Override
-	public TableInfoForClient getTable() throws RemoteException {
-		return table;
 	}
 }

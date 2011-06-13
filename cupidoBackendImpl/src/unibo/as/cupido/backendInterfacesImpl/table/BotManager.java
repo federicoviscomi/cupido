@@ -186,6 +186,10 @@ public class BotManager {
 		bots = new Bot[4];
 	}
 
+	public void addBot(int position, ArrayList<Card> cards) {
+		bots[position] = new BotFewTricks(cards);
+	}
+
 	/**
 	 * Hearts Strategy - Passing strategy
 	 * 
@@ -256,10 +260,6 @@ public class BotManager {
 	 */
 	public Card[] chooseCardsToPass(int i) {
 		return bots[i].chooseCardsToPass();
-	}
-
-	public void addBot(int position, ArrayList<Card> cards) {
-		bots[position] = new BotFewTricks(cards);
 	}
 
 	/**
