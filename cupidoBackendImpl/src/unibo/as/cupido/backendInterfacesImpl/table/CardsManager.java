@@ -185,7 +185,7 @@ public class CardsManager {
 					currentTurnPoints++;
 				} else if (cardPlayed[i].suit.ordinal() == Card.Suit.SPADES
 						.ordinal() && cardPlayed[i].value == 12) {
-					currentTurnPoints += 5;
+					currentTurnPoints += 13;
 				}
 			}
 			turn++;

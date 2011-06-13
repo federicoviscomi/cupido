@@ -1,9 +1,6 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
-import java.util.Collections;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
@@ -12,6 +9,7 @@ import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.backendInterfaces.common.DatabaseManager;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
@@ -96,7 +94,7 @@ public class SingleTableManager implements TableInterface {
 	private void botPassCard() {
 		for (int i = 1; i < 4; i++) {
 			if (playersManager.isBot(i)) {
-				Card[] cardsToPass = botManager.choseCardsToPass(i);
+				Card[] cardsToPass = botManager.chooseCardsToPass(i);
 				cardsManager.setCardPassing(i, cardsToPass);
 				toNotify.notifyCardPassed(cardsToPass,
 						playersManager.getPlayerName((i + 1) % 4));
@@ -233,6 +231,15 @@ public class SingleTableManager implements TableInterface {
 				gameStatus = GameStatus.STARTED;
 			}
 			if (cardsManager.gameEnded()) {
+				int runningPlayer = playersManager.getRunningPlayer();
+				if (runningPlayer == -1) {
+
+				} else {
+					DatabaseManager a = new DatabaseManager();
+					for (String player : playersManager.getPlayersName()) {
+						a.updateScore(player, a.getPlayerScore(player));
+					}
+				}
 				// FIXME
 				toNotify.notifyGameEnded(playersManager.getAllPoints(),
 						playersManager.getAllPoints());
@@ -264,7 +271,7 @@ public class SingleTableManager implements TableInterface {
 		PlayerStatus[] ps = new PlayerStatus[4];
 		for (int i = 0; i < 4; i++)
 			ps[i] = new PlayerStatus(playersManager.players[i].name,
-					playersManager.players[i].score,
+					playersManager.players[i].points,
 					cardsManager.cardPlayed[i], cardsManager.cards[i].size(),
 					playersManager.players[i].isBot);
 		return ogs;

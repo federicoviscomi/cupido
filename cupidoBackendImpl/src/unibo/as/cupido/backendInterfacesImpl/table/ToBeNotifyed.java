@@ -1,9 +1,7 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.rmi.RemoteException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 

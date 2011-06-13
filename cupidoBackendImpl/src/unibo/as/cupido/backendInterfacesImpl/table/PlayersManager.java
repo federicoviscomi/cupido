@@ -1,8 +1,10 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 
-import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface.Positions;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
@@ -13,21 +15,22 @@ public class PlayersManager {
 	static class PlayerInfo {
 		boolean isBot;
 		String name;
-		int score;
+		/** points of player in current round */
+		int points;
 
 		public PlayerInfo(String name, int score, boolean isBot) {
 			this.name = name;
-			this.score = score;
+			this.points = score;
 			this.isBot = isBot;
 		}
 
 		public Object clone() {
-			return new PlayerInfo(name, score, isBot);
+			return new PlayerInfo(name, points, isBot);
 		}
 
 		@Override
 		public String toString() {
-			return "[is bot=" + isBot + ", name=" + name + ", score=" + score
+			return "[is bot=" + isBot + ", name=" + name + ", score=" + points
 					+ "]";
 		}
 	}
@@ -80,7 +83,7 @@ public class PlayersManager {
 	}
 
 	public void addPoint(int winner, int points) {
-		players[winner].score += points;
+		players[winner].points += points;
 	}
 
 	public int[] getAllPoints() {
@@ -104,7 +107,7 @@ public class PlayersManager {
 	}
 
 	public int getScore(int i) {
-		return players[i].score;
+		return players[i].points;
 	}
 
 	public InitialTableStatus getTableStatus(int position) {
@@ -123,7 +126,7 @@ public class PlayersManager {
 		 */
 		int[] playerPoints = new int[4];
 		for (int i = 0; i < 4; i++)
-			playerPoints[i] = players[(position + i) % 4].score;
+			playerPoints[i] = players[(position + i) % 4].points;
 
 		/**
 		 * if opponents[i]==null then whoIsBot[i] has no meaning. if
@@ -151,6 +154,23 @@ public class PlayersManager {
 
 	public boolean isCreator(String userName) {
 		return players[Positions.OWNER.ordinal()].equals(userName);
+	}
+
+	/**
+	 * @return the position of the running player if there exists such a player;
+	 *         otherwise -1
+	 */
+	public int getRunningPlayer() {
+		for (int i = 0; i < 4; i++) {
+			if (players[i].points == 26)
+				return i;
+		}
+		return -1;
+	}
+
+	public Iterable<String> getPlayersName() {
+		return Arrays.asList(players[0].name, players[1].name, players[2].name,
+				players[3].name);
 	}
 
 }

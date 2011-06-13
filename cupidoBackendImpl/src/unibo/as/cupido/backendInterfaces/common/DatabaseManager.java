@@ -3,19 +3,15 @@ package unibo.as.cupido.backendInterfaces.common;
 import java.rmi.RemoteException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 
 import unibo.as.cupido.backendInterfaces.DatabaseInterface;
 import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 
-import com.mysql.jdbc.*;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.Statement;
 
 public class DatabaseManager implements DatabaseInterface {
 
