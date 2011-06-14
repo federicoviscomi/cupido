@@ -226,7 +226,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		public void onAnimationEnd();
 
 		/**
-		 * This is called when the user clicks on a card.
+		 * This is called when the user clicks on a card, except during animations.
 		 * 
 		 * @player: the player to whom the card belongs
 		 * @card: the card that was clicked, or `null' if a covered card was
@@ -899,7 +899,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 			// Left player: under its cards.
 			Position leftPosition = new Position(10 + playerLabelWidth / 2,
-					tableSize / 2, 100, 0);
+					tableSize / 2, z, 0);
 			for (CardWidget widget : movableWidgets.cards) {
 				CardRole role = cardRoles.get(widget);
 				if (role.player == 1 && role.state == CardRole.State.HAND) {

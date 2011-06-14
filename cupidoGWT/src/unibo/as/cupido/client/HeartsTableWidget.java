@@ -11,11 +11,31 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class HeartsTableWidget extends AbsolutePanel {
 
 	private ScreenSwitcher screenSwitcher;
+	private BeforeGameWidget beforeGameWidget;
 	private CardsGameWidget cardsGameWidget;
+	private int tableSize;
+	
+	public enum UserRole {
+		/**
+		 * The user is the creator of the table.
+		 */
+		OWNER,
+		/**
+		 * The user is a player, but not the owner.
+		 */
+		PLAYER,
+		/**
+		 * The user is not a player, but it's only viewing the table.
+		 */
+		VIEWER
+	};
+	
+	private int numPlayers = 1;
 
 	/**
 	 * 
@@ -23,12 +43,29 @@ public class HeartsTableWidget extends AbsolutePanel {
 	 *            The size of the table (width and height) in pixels.
 	 * @param username
 	 */
-	HeartsTableWidget(int tableSize, String username,
+	public HeartsTableWidget(int tableSize, String username,
 			final ScreenSwitcher screenSwitcher) {
+		this.tableSize = tableSize;
+		this.screenSwitcher = screenSwitcher;
+		
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 
-		this.screenSwitcher = screenSwitcher;
+		beforeGameWidget = new BeforeGameWidget(tableSize, "pippo", 1234, true,
+				new BeforeGameWidget.Callback() {
+					@Override
+					public void onAddBot(int position) {
+						numPlayers++;
+						if (numPlayers == 4)
+							startGame();
+					}
+				});
+		add(beforeGameWidget, 0, 0);
+	}
+	
+	public void startGame() {
+		
+		remove(beforeGameWidget);
 
 		// FIXME: Initialize the widget with the correct values.
 		// These values are only meant for debugging purposes.
