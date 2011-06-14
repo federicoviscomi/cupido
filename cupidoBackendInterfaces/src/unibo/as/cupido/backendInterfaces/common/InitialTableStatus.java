@@ -18,7 +18,7 @@ public class InitialTableStatus implements Serializable {
 	public String[] opponents;
 
 	/**
-	 * playerPoints.length is 3. playerPoints[i] is the score of the opponent i
+	 * playerScores.length is 3. playerScores[i] is the score of the opponent i
 	 * positions next to you in clockwise order. A <code>null</code> value
 	 * indicates that opponent does not exist yet.
 	 */
