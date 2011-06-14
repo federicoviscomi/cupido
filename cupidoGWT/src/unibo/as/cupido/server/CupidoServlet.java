@@ -56,6 +56,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		@Override
 		public void notifyPlayerLeft(String name) {
 			// Get the HTTP session for the browser
+			//FIXME come faccio a controllare che ritorni la httpSession giusta?
 			HttpSession httpSession = getThreadLocalRequest().getSession(false);
 			if (httpSession == null) {
 				//Notifica playerLeft al tavolo
@@ -190,22 +191,25 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	@Override
 	public InitialTableStatus createTable() throws FatalException,
-			AllLTMBusyException {
+	AllLTMBusyException {
 		InitialTableStatus its = new InitialTableStatus();
 		try {
 			Registry registry = LocateRegistry.getRegistry(registryHost,registryPort);
 			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
-					.lookup("globaltableserver");
+			.lookup("globaltableserver");
 			TableInterface ti = gtm.createTable("username", sni);
-			
+
 			// Get or create the HTTP session for the browser
 			HttpSession httpSession = getThreadLocalRequest().getSession();
+			if (httpSession == null) {
+				return null;
+			}
 			httpSession.setAttribute("tableInterface", ti);
 			httpSession.setAttribute("servletNotificationInterface", sni);
-			
+
 			//FIXME: retrieve point from DB
 			its.playerPoints[0]=99;
-			
+
 		} catch (RemoteException e) {
 			System.out.println("Servlet: on createTable(): catched RemoteException-> "
 					+ e.getMessage());
@@ -274,6 +278,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		if (httpSession == null){
 			return;
 		}
+		System.out.println("Servlet: HttpSession opened " + httpSession.getId());
 		httpSession.setAttribute("sessionClosedListener",
 				new SessionClosedListener() {
 					@Override
