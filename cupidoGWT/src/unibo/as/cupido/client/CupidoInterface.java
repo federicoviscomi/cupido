@@ -74,8 +74,17 @@ public interface CupidoInterface extends RemoteService {
 	public InitialTableStatus createTable() throws AllLTMBusyException,
 			FatalException;
 
+	/**
+	 * join a match not yet started
+	 * @param server
+	 * @param tableId
+	 * @return InitialTableStatus state of the match not yet started
+	 * @throws FullTableException if game already have 4 players
+	 * @throws NoSuchTableException if table is no more available, but user can join other table
+	 * @throws FatalException Internal error while joining the table, probably future action will not be performed
+	 */
 	public InitialTableStatus joinTable(String server, int tableId)
-			throws FullTableException, NoSuchTableException;
+			throws FullTableException, NoSuchTableException, FatalException;
 
 	public ObservedGameStatus viewTable(String server, int tableId)
 			throws NoSuchTableException;
