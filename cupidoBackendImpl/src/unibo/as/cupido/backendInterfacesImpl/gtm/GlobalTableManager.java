@@ -56,6 +56,10 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 	private Registry registry;
 
+	public static void main(String args[]) throws RemoteException {
+		new GlobalTableManager();
+	}
+
 	public GlobalTableManager() throws RemoteException {
 		try {
 			allTables = new AllTables();

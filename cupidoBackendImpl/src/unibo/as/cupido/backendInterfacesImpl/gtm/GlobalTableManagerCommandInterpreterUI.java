@@ -6,9 +6,11 @@ import jargs.gnu.CmdLineParser.Option;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.rmi.RemoteException;
 import java.util.Collection;
 
 import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
+import unibo.as.cupido.backendInterfacesImpl.ltm.LocalTableManagerCommandInterpreterUI;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
 
 /**
@@ -52,8 +54,28 @@ public class GlobalTableManagerCommandInterpreterUI {
 			"list all LTM managed by this GTM server", "list", "-t", "--table",
 			"list all table managed by this GTM server");
 
+	public GlobalTableManagerCommandInterpreterUI(boolean startGTM)
+			throws RemoteException {
+		if (startGTM)
+			globalTableManager = new GlobalTableManager();
+	}
+
 	public static void main(String[] args) {
-		new GlobalTableManagerCommandInterpreterUI().execute();
+		if (args.length > 1 && "start".equals(args[1])) {
+			try {
+				new GlobalTableManagerCommandInterpreterUI(true).execute();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				new GlobalTableManagerCommandInterpreterUI(false).execute();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private GlobalTableManager globalTableManager = null;
@@ -83,13 +105,13 @@ public class GlobalTableManagerCommandInterpreterUI {
 									System.out.println("GTM already started!");
 								}
 							} else {
-								if (globalTableManager == null) {
+								if (command[0].equals("exit")) {
+									exit(0);
+								} else if (globalTableManager == null) {
 									System.out.println("start GTM first!");
 									System.out.println(USAGE);
 								} else {
-									if (command[0].equals("exit")) {
-										exit(0);
-									} else if (command[0].equals("list")) {
+									if (command[0].equals("list")) {
 										boolean listLTM = (parser
 												.getOptionValue(listLocalManagersOtion) == null ? false
 												: true);
