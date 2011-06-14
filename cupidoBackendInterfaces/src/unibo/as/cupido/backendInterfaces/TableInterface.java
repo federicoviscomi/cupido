@@ -213,10 +213,4 @@ public interface TableInterface extends Remote {
 			ServletNotificationsInterface snf) throws NoSuchTableException,
 			RemoteException;
 
-	/**
-	 * @return
-	 * @throws RemoteException
-	 */
-	public TableInfoForClient getTable() throws RemoteException;
-
 }
