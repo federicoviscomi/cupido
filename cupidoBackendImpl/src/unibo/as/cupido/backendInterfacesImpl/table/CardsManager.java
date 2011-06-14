@@ -45,7 +45,7 @@ public class CardsManager {
 	/** position of player who plays first in the current turn */
 	private int firstPlaying;
 	/** the number of turn made in this hand */
-	private int turn;
+	private int turn = 0;
 	/** stores round points of every player */
 	private int[] points = new int[4];
 	/**
@@ -225,6 +225,22 @@ public class CardsManager {
 			playerStatus[i].numOfCardsInHand = cards[i].size();
 			playerStatus[i].playedCard = cardPlayed[i];
 		}
+	}
+
+	public boolean gameEnded() {
+		return turn == 13;
+	}
+
+	public int[] getMatchPoints() {
+		return points;
+	}
+
+	public Card[][] getCards() {
+		Card[][] cards = new Card[4][];
+		for (int i = 0; i < 4; i++) {
+			cards[i] = this.cards[i].toArray(new Card[13]);
+		}
+		return cards;
 	}
 
 }

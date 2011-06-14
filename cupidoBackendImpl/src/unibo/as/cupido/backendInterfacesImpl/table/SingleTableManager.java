@@ -3,6 +3,7 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
@@ -22,7 +23,6 @@ import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
-import unibo.as.cupido.backendInterfacesImpl.DummyLoggerServletNotifyer;
 import unibo.as.cupido.backendInterfacesImpl.database.DatabaseManager;
 import unibo.as.cupido.backendInterfacesImpl.table.PlayersManager.PlayerInfo;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.Bot;
@@ -60,62 +60,78 @@ public class SingleTableManager implements TableInterface {
 	private final TableInfoForClient table;
 	private final ViewersSwarm viewers = new ViewersSwarm();
 
+	private final Integer turns = new Integer(0);
+	private Semaphore start;
+	private Semaphore end;
+
 	public SingleTableManager(ServletNotificationsInterface snf,
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
 			throws RemoteException, SQLException, NoSuchUserException {
 		this.table = table;
 		playersManager = new PlayersManager(table.owner, snf,
-				databaseManager.getPlayerScore(table.owner), cardsManager);
+				databaseManager.getPlayerScore(table.owner));
+		start = new Semaphore(0);
+		end = new Semaphore(0);
+		new StartNotifierThread(start, this).start();
+		new EndNotifierThread(end, this).start();
 	}
 
 	@Override
-	public void addBot(String userName, int position)
+	public synchronized void addBot(String userName, int position)
 			throws PositionFullException, RemoteException,
 			IllegalArgumentException, FullTableException, NotCreatorException,
 			IllegalStateException {
+
 		Bot bot = botManager.chooseBotStrategy(
 				playersManager.getInitialTableStatus(position), this, "_bot."
 						+ userName);
-		playersManager.addBot(userName, position, bot);
 		viewers.notifyBotJoined("_bot." + userName, position);
+		playersManager.addBot(userName, position, bot);
+		if (playersManager.playersCount() == 4)
+			start.release();
 	}
 
 	@Override
-	public InitialTableStatus joinTable(String userName,
+	public synchronized InitialTableStatus joinTable(String userName,
 			ServletNotificationsInterface snf) throws FullTableException,
 			NoSuchTableException, RemoteException, IllegalArgumentException,
 			IllegalStateException, DuplicateUserNameException, SQLException,
 			NoSuchUserException {
+
 		if (userName == null || snf == null)
 			throw new IllegalArgumentException();
 
 		int score = databaseManager.getPlayerScore(userName);
 		int position = playersManager.addPlayer(userName, snf, score);
 		viewers.notifyPlayerJoined(userName, score, position);
+		if (playersManager.playersCount() == 4)
+			start.release();
 		return playersManager.getInitialTableStatus(position);
 	}
 
 	@Override
-	public void leaveTable(String userName) throws RemoteException,
-			PlayerNotFoundException {
+	public synchronized void leaveTable(String userName)
+			throws RemoteException, PlayerNotFoundException {
+
 		if (userName == null)
 			throw new IllegalArgumentException();
 		playersManager.removePlayer(userName);
 		viewers.notifyPlayerLeft(userName);
+
 	}
 
 	@Override
-	public void passCards(String userName, Card[] cards)
+	public synchronized void passCards(String userName, Card[] cards)
 			throws IllegalArgumentException, RemoteException {
 		if (userName == null || cards == null || cards.length != 3)
 			throw new IllegalArgumentException();
 		int position = playersManager.getPlayerPosition(userName);
 		cardsManager.setCardPassing(position, cards);
-		playersManager.notifyPassedCards(position, cards);
+		playersManager.notifyPassedCards((position + 1) % 4, cards);
 	}
 
 	@Override
-	public void playCard(String userName, Card card)
+	public synchronized void playCard(String userName, Card card)
 			throws IllegalMoveException, RemoteException,
 			IllegalArgumentException {
 		if (userName == null || card == null)
@@ -124,10 +140,13 @@ public class SingleTableManager implements TableInterface {
 		cardsManager.playCard(playerPosition, card);
 		playersManager.notifyPlayedCard(userName, card);
 		viewers.notifyPlayedCard(playerPosition, card);
+		if (cardsManager.gameEnded())
+			end.release();
 	}
 
 	@Override
-	public void sendMessage(ChatMessage message) throws RemoteException {
+	public synchronized void sendMessage(ChatMessage message)
+			throws RemoteException {
 		if (message == null || message.message == null
 				|| message.userName == null)
 			throw new IllegalArgumentException();
@@ -136,7 +155,7 @@ public class SingleTableManager implements TableInterface {
 	}
 
 	@Override
-	public ObservedGameStatus viewTable(String viewerName,
+	public synchronized ObservedGameStatus viewTable(String viewerName,
 			ServletNotificationsInterface snf) throws NoSuchTableException,
 			RemoteException {
 		if (viewerName == null || snf == null)
@@ -148,9 +167,15 @@ public class SingleTableManager implements TableInterface {
 		return new ObservedGameStatus(playerStatus);
 	}
 
-	@Override
-	public TableInfoForClient getTable() throws RemoteException {
-		return table;
+	public synchronized void notifyGameStarted() {
+		playersManager.notifyGameStarted(cardsManager.getCards());
+	}
+
+	public void notifyGameEnded() {
+		int[] matchPoints = cardsManager.getMatchPoints();
+		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
+		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
+		viewers.notifyGameEnded(matchPoints, playersTotalPoint);
 	}
 
 }

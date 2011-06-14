@@ -3,6 +3,9 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface.Positions;
@@ -55,12 +58,9 @@ public class PlayersManager {
 
 	private PlayerInfo[] players = new PlayerInfo[4];
 	private int playersCount = 1;
-	private final CardsManager cardsManager;
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
-			int score, CardsManager cardsManager) throws SQLException,
-			NoSuchUserException {
-		this.cardsManager = cardsManager;
+			int score) throws SQLException, NoSuchUserException {
 		players[Positions.OWNER.ordinal()] = new PlayerInfo(owner, false,
 				score, snf);
 	}
@@ -69,6 +69,7 @@ public class PlayersManager {
 			ServletNotificationsInterface bot) throws FullTableException,
 			IllegalArgumentException, PositionFullException,
 			NotCreatorException {
+
 		if (playersCount > 4)
 			throw new FullTableException();
 		if (position < 1 || position > 3 || userName == null)
@@ -95,17 +96,17 @@ public class PlayersManager {
 
 		players[position] = new PlayerInfo("_bot." + userName, true, 0, bot);
 		playersCount++;
-
 	}
 
 	public int addPlayer(String playerName, ServletNotificationsInterface sni,
 			int score) throws FullTableException, SQLException,
 			NoSuchUserException {
+
 		if (playerName == null)
 			throw new IllegalArgumentException();
-		if (playersCount > 4) {
+		if (playersCount > 4)
 			throw new FullTableException();
-		}
+
 		int position = 1;
 		while ((players[position] != null) && (position < 4))
 			position++;
@@ -125,20 +126,19 @@ public class PlayersManager {
 
 		players[position] = new PlayerInfo(playerName, false, score, sni);
 		playersCount++;
+		return position;
 
-		if (playersCount == 4) {
-			for (int i = 0; i < 4; i++) {
-				try {
-					players[i].sni.notifyGameStarted(cardsManager
-							.getPlayerCards(i));
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+	}
+
+	public void notifyGameStarted(Card[][] cards) {
+		for (int i = 0; i < 4; i++) {
+			try {
+				players[i].sni.notifyGameStarted(cards[i]);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
-
-		return position;
 	}
 
 	public int getPlayerPosition(String playerName) {
@@ -153,6 +153,8 @@ public class PlayersManager {
 		int position = getPlayerPosition(playerName);
 		if (position == -1)
 			throw new PlayerNotFoundException();
+		if (playersCount < 1)
+			throw new IllegalStateException();
 		playersCount--;
 		players[position] = null;
 
@@ -224,6 +226,37 @@ public class PlayersManager {
 			}
 		}
 		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
+	}
+
+	public int[] updateScore(int[] matchPoints) {
+		int min = matchPoints[0];
+		for (int point : matchPoints)
+			if (min < point)
+				min = point;
+		int[] newScore = new int[4];
+		for (int i = 0; i < 4; i++) {
+			if (matchPoints[i] == min) {
+				players[i].score += 4;
+			} else {
+				players[i].score -= 1;
+			}
+			newScore[i] = players[i].score;
+		}
+		return newScore;
+	}
+
+	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
+		for (PlayerInfo pi : players)
+			try {
+				pi.sni.notifyGameEnded(matchPoints, playersTotalPoint);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+
+	public int playersCount() {
+		return playersCount;
 	}
 
 }
