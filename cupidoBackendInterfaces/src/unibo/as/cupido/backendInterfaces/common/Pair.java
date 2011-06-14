@@ -1,6 +1,8 @@
 package unibo.as.cupido.backendInterfaces.common;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class Pair<T1, T2> implements Serializable {
 

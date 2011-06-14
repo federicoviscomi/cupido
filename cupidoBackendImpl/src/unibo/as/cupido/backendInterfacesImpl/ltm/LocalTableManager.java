@@ -11,16 +11,21 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.RejectedExecutionException;
-import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
+
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
-import unibo.as.cupido.backendInterfacesImpl.table.SingleTableManager;
+import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
+import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
+import unibo.as.cupido.backendInterfacesImpl.table.SingleTableManager;
 
 /**
  * 
@@ -49,7 +54,10 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	private int nextId = 0;
 
-	private Map<Integer, Table> tableIds;
+	// TODO can use HashSet<TableInterface> and table id is hashCode?
+	private Map<Integer, TableInterface> allTables;
+
+	private String localAddress;
 
 	public LocalTableManager() throws RemoteException {
 
@@ -82,7 +90,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 					(LocalTableManagerInterface) UnicastRemoteObject
 							.exportObject(this), MAX_TABLE);
 
-			tableIds = new HashMap<Integer, Table>();
+			allTables = new HashMap<Integer, TableInterface>(MAX_TABLE);
 
 			System.out
 					.println("Local table manager server started correctly at address "
@@ -91,12 +99,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 							+ gtmAddress
 							+ "\n Current thread is "
 							+ Thread.currentThread());
-
-			/*
-			 * while(true){ try { Thread.sleep(1000); } catch
-			 * (InterruptedException e) { // TODO Auto-generated catch block
-			 * e.printStackTrace(); } System.out.println(serverRemote.ping()); }
-			 */
+			localAddress = InetAddress.getLocalHost().toString();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,15 +114,26 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	}
 
 	@Override
-	public TableInterface createTable(String owner,
+	public Pair<TableInterface, TableInfoForClient> createTable(String owner,
 			ServletNotificationsInterface snf) throws RemoteException {
 		try {
 			System.out.println("Current thread is " + Thread.currentThread());
-			Table newTable = new Table(owner, 3, null, nextId++);
-			return (TableInterface) UnicastRemoteObject
+			TableInfoForClient newTable = new TableInfoForClient(owner, 3,
+					new TableDescriptor(localAddress + this.toString(), nextId));
+			TableInterface tableRemote = (TableInterface) UnicastRemoteObject
 					.exportObject(new SingleTableManager(snf, newTable,
 							gtmRemote));
+			allTables.put(nextId, tableRemote);
+			nextId++;
+			return new Pair<TableInterface, TableInfoForClient>(tableRemote,
+					newTable);
 		} catch (RejectedExecutionException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchUserException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -127,9 +141,8 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	@Override
 	public TableInterface getTable(int tableId) {
-		// TODO Auto-generated method stub
 		System.out.println("Current thread is " + Thread.currentThread());
-		return null;
+		return allTables.get(tableId);
 	}
 
 	@Override
@@ -154,7 +167,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	 */
 	public void notifyTableDestruction(int tableId) {
 		System.out.println("Current thread is " + Thread.currentThread());
-		tableIds.remove(tableId);
+		allTables.remove(tableId);
 	}
 
 	public void shutDown() {

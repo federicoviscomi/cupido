@@ -103,6 +103,7 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 			return this.ltmi == ((Triple) o).ltmi;
 		}
 
+		@Override
 		public String toString() {
 			return "[" + ltmi + ", " + tableCount + ", " + maximumTable + "]";
 		}

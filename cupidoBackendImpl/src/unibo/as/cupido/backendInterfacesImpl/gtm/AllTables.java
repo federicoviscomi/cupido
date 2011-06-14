@@ -3,32 +3,39 @@ package unibo.as.cupido.backendInterfacesImpl.gtm;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.TableDescriptor;
-import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 
 public class AllTables {
-	Map<TableDescriptor, Pair<Table, LocalTableManagerInterface>> allTables;
+
+	Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
+	Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
 
 	public AllTables() {
-		allTables = new HashMap<TableDescriptor, Pair<Table, LocalTableManagerInterface>>();
+		//
 	}
 
-	public void addTable(Table table, LocalTableManagerInterface chosenLTM) {
-		allTables.put(table.tableDescriptor, new Pair(table, chosenLTM));
+	public void addTable(TableInfoForClient table,
+			LocalTableManagerInterface chosenLTM) {
+		tifc.put(table.tableDescriptor, table);
+		ltmMap.put(table.tableDescriptor.ltmId, chosenLTM);
 	}
 
 	public void decreaseFreePosition(TableDescriptor tableDescriptor) {
-		allTables.get(tableDescriptor).first.freePosition--;
+		tifc.get(tableDescriptor).freePosition--;
 	}
 
-	public Collection<Pair<Table, LocalTableManagerInterface>> getAllTables() {
-		return allTables.values();
+	public Collection<TableInfoForClient> getAllTables() {
+		return tifc.values();
+	}
+
+	public LocalTableManagerInterface getLTMInterface(String ltmId) {
+		return ltmMap.get(ltmId);
 	}
 
 	public void removeTable(TableDescriptor tableDescriptor) {
-		allTables.remove(tableDescriptor);
+		tifc.remove(tableDescriptor);
 	}
+
 }

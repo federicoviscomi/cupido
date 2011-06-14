@@ -1,5 +1,7 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-public interface Bot {
+import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
+
+public interface Bot extends ServletNotificationsInterface {
 
 }

@@ -10,17 +10,6 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.Card.Suit;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 
-/**
- * 
- * ELIMINARE?? ?? ?? Vi è anche un secondo modo di vincere la partita: un
- * giocatore vince se riesce a prendere tutte le carte di cuori e la donna di
- * picche lasciando gli avversari a zero punti.
- * 
- * 
- * @author cane
- * 
- */
-
 public class CardsManager {
 
 	/**
@@ -56,6 +45,8 @@ public class CardsManager {
 	int firstPlaying;
 	/** the number of turn made in this hand */
 	int turn;
+	/** stores round points of every player */
+	int[] points;
 	/**
 	 * <code>true</code> if some player correctly played an hearts at some point
 	 * in the game. <code>false</code> otherwise
@@ -120,6 +111,10 @@ public class CardsManager {
 		return turn == 12;
 	}
 
+	public int getCurrentPlayer() {
+		return firstPlaying + playedCardsCount;
+	}
+
 	public int getPoints() {
 		return currentTurnPoints;
 	}
@@ -128,10 +123,21 @@ public class CardsManager {
 		return firstPlaying;
 	}
 
-	/**
-	 * 
-	 */
-	public void passCards() {
+	public ArrayList<Integer> getWinners() {
+		ArrayList<Integer> winners = new ArrayList<Integer>();
+		int minimumPoint = points[0];
+		for (int i = 1; i < 4; i++) {
+			if (points[i] < minimumPoint)
+				minimumPoint = points[i];
+		}
+		for (int i = 0; i < 4; i++) {
+			if (points[i] == minimumPoint)
+				winners.add(i);
+		}
+		return winners;
+	}
+
+	private void passCards() {
 		for (int i = 0; i < 4; i++) {
 			cards[i].addAll(Arrays.asList(allPassedCards[(i - 1) % 4]));
 		}
@@ -185,7 +191,7 @@ public class CardsManager {
 					currentTurnPoints++;
 				} else if (cardPlayed[i].suit.ordinal() == Card.Suit.SPADES
 						.ordinal() && cardPlayed[i].value == 12) {
-					currentTurnPoints += 5;
+					currentTurnPoints += 13;
 				}
 			}
 			turn++;
@@ -197,19 +203,6 @@ public class CardsManager {
 		for (int i = 0; i < 4; i++) {
 			Collections.sort(cards[i], cardsComparator);
 			System.out.println((cards[i]));
-		}
-	}
-
-	@SuppressWarnings("boxing")
-	public void print(PlayersManager playersManager) {
-		for (int i = 0; i < 4; i++) {
-			System.out
-					.format("\n name=%10.10s, isBot=%5.5b, cardsInHand=%2.2s, score=%3.3s, cards= ",
-							playersManager.getPlayerName(i),
-							playersManager.isBot(i),
-							"playersManager.numOfCardsInHand(i)",
-							playersManager.getScore(i));
-			System.out.print(java.util.Arrays.toString(cards[i].toArray()));
 		}
 	}
 
@@ -233,6 +226,9 @@ public class CardsManager {
 				throw new IllegalArgumentException();
 		}
 		allPassedCards[position] = passedCards;
+		if (allPlayerPassedCards()) {
+			this.passCards();
+		}
 	}
 
 	/**
@@ -245,9 +241,4 @@ public class CardsManager {
 		}
 		return -1;
 	}
-
-	public int getCurrentPlayer() {
-		return firstPlaying + playedCardsCount;
-	}
-
 }

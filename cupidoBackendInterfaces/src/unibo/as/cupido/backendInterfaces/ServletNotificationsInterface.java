@@ -19,7 +19,7 @@ public interface ServletNotificationsInterface extends Remote {
 	 * End of the game is notified to the servlet.
 	 * 
 	 * @param matchPoints
-	 *            points the player has taken during this hand
+	 *            points the player has taken during this hand FIXME arguments are array not integer
 	 * @param playersTotalPoint
 	 *            points of the player updated after this match
 	 */

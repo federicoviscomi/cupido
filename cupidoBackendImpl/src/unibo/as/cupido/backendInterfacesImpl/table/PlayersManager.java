@@ -1,156 +1,108 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-import java.util.Arrays;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
-import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface.Positions;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
+import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
+import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
+import unibo.as.cupido.backendInterfacesImpl.database.DatabaseManager;
 
 public class PlayersManager {
 
 	static class PlayerInfo {
+		/**
+		 * <code>true</code> if this player is a bot; <code>false</code>
+		 * otherwise
+		 */
 		boolean isBot;
+
+		/** this player name */
 		String name;
+
+		/** player global score. Not points! */
 		int score;
 
-		public PlayerInfo(String name, int score, boolean isBot) {
+		public PlayerInfo(String name, boolean isBot, int score) {
 			this.name = name;
-			this.score = score;
 			this.isBot = isBot;
-		}
-
-		public Object clone() {
-			return new PlayerInfo(name, score, isBot);
+			this.score = score;
 		}
 
 		@Override
 		public String toString() {
-			return "[is bot=" + isBot + ", name=" + name + ", score=" + score
-					+ "]";
+			return "[is bot=" + isBot + ", name=" + name + "]";
 		}
 	}
 
-	PlayerInfo[] players;
-	private int playersCount;
+	PlayerInfo[] players = new PlayerInfo[4];
+	int playersCount = 0;
 
-	private int whoPlaysNext;
+	private final DatabaseManager databaseManager;
 
-	public PlayersManager(String owner, boolean isBot) {
-		playersCount = 0;
-		players = new PlayerInfo[4];
-		for (int i = 0; i < 4; i++)
-			players[i] = new PlayerInfo(null, 0, false);
-		players[Positions.OWNER.ordinal()].name = owner;
-		players[Positions.OWNER.ordinal()].isBot = isBot;
+	public PlayersManager(String owner, DatabaseManager databaseManager)
+			throws SQLException, NoSuchUserException {
+		this.databaseManager = databaseManager;
+		players[Positions.OWNER.ordinal()] = new PlayerInfo(owner, false,
+				databaseManager.getPlayerScore(owner));
 	}
 
-	public void addBot(String botName, int position) throws FullTableException,
-			IllegalArgumentException, PositionFullException {
-		if (playersCount > 4) {
+	public void addBot(String userName, int position)
+			throws FullTableException, IllegalArgumentException,
+			PositionFullException, NotCreatorException {
+		if (playersCount > 4)
 			throw new FullTableException();
-		}
-		if (position < 1 || position > 3) {
-			throw new IllegalArgumentException("position " + position
-					+ "out of bounds");
-		}
-		if (players[position].name != null) {
+		if (position < 1 || position > 3 || userName == null)
+			throw new IllegalArgumentException();
+		if (players[position] != null)
 			throw new PositionFullException();
-		}
-		if (botName == null) {
-			throw new IllegalArgumentException("invalid bot name");
-		}
-		players[position].isBot = true;
-		players[position].name = botName;
+		if (!userName.equals(players[Positions.OWNER.ordinal()]))
+			throw new NotCreatorException();
+		players[position] = new PlayerInfo("_bot." + userName, true, 0);
 		playersCount++;
 	}
 
-	public InitialTableStatus addPlayer(String playerName)
-			throws FullTableException {
+	public int addPlayer(String playerName) throws FullTableException,
+			SQLException, NoSuchUserException {
+		if (playerName == null)
+			throw new IllegalArgumentException();
 		if (playersCount > 4) {
 			throw new FullTableException();
 		}
 		int position = 1;
-		while (players[position].name != null)
+		while ((players[position] != null) && (position < 4))
 			position++;
-		players[position].name = playerName;
-
-		return getTableStatus(position);
+		players[position] = new PlayerInfo(playerName, false,
+				databaseManager.getPlayerScore(playerName));
+		playersCount++;
+		return position;
 	}
 
-	public void addPoint(int winner, int points) {
-		players[winner].score += points;
-	}
-
-	public int[] getAllPoints() {
-		int[] points = new int[4];
-		return points;
-	}
-
-	public String getPlayerName(int i) {
-		return players[i].name;
-	}
-
-	int getPlayerPosition(String playerName) {
-		for (int i = 0; i < 4; i++)
-			if (players[i].name.equals(playerName))
+	public int getPlayerPosition(String playerName) {
+		for (int i = 0; i < 4; i++) {
+			if (players[i] != null && players[i].name.equals(playerName))
 				return i;
+		}
 		return -1;
 	}
 
-	public int getPlayersCount() {
-		return playersCount;
-	}
-
-	public int getScore(int i) {
-		return players[i].score;
-	}
-
-	public InitialTableStatus getTableStatus(int position) {
-		/**
-		 * Opponents are sorted clockwise (game is clockwise) opponents.lenght
-		 * is always 3 opponents[i]==null means there is no i-th player
-		 * opponents[0] is the player at your left, and so on...
-		 */
-		String[] opponents = new String[3];
-		for (int i = 0; i < 3; i++)
-			opponents[i] = players[(position + i + 1) % 4].name;
-
-		/**
-		 * (global) points of all the player playerPoints[0] are you,
-		 * playerPoints[1] is the player at your left, and so on
-		 */
-		int[] playerPoints = new int[4];
-		for (int i = 0; i < 4; i++)
-			playerPoints[i] = players[(position + i) % 4].score;
-
-		/**
-		 * if opponents[i]==null then whoIsBot[i] has no meaning. if
-		 * opponents[i]!= null then whoIsBot[i] is true if the player i is a
-		 * bot, otherwise is false
-		 */
-		boolean[] whoIsBot = new boolean[4];
-		for (int i = 0; i < 4; i++)
-			whoIsBot[i] = whoIsBot[(position + i) % 4];
-
-		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
-	}
-
-	public boolean isBot(int i) {
-		return players[i].isBot;
-	}
-
-	public void removePlayer(String playerName) {
+	public void removePlayer(String playerName) throws PlayerNotFoundException {
 		int position = getPlayerPosition(playerName);
 		if (position == -1)
-			throw new IllegalArgumentException("player not found");
+			throw new PlayerNotFoundException();
 		playersCount--;
-		players[position].name = null;
+		players[position] = null;
 	}
 
-	public boolean isCreator(String userName) {
-		return players[Positions.OWNER.ordinal()].equals(userName);
+	public ArrayList<String> nonBotPlayersName() {
+		ArrayList<String> nbpn = new ArrayList<String>();
+		for (int i = 0; i < 4; i++)
+			if (players[i] != null && !players[i].isBot)
+				nbpn.add(players[i].name);
+		return nbpn;
 	}
 
 }

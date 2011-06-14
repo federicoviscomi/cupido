@@ -11,34 +11,33 @@ public class InitialTableStatus implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Opponents are sorted clockwise (game is clockwise) opponents.lenght is
-	 * always 3 opponents[i]==null means there is no i-th player opponents[0] is
-	 * the player at your left, and so on...
+	 * opponents.length is 3. opponents[i] is the name of the opponent i
+	 * positions next to you in clockwise order. A <code>null</code> value
+	 * indicates that opponent does not exist yet
 	 */
 	public String[] opponents;
 
 	/**
-	 * (global) points of all the player playerPoints[0] are you,
-	 * playerPoints[1] is the player at your left, and so on
+	 * playerPoints.length is 3. playerPoints[i] is the score of the opponent i
+	 * positions next to you in clockwise order. A <code>null</code> value
+	 * indicates that opponent does not exist yet.
 	 */
-	public int[] playerPoints;
+	public int[] playerScores;
 
 	/**
-	 * if opponents[i]==null then whoIsBot[i] has no meaning. if opponents[i]!=
-	 * null then whoIsBot[i] is true if the player i is a bot, otherwise is
-	 * false
-	 * 
-	 * 
+	 * whoIsBot.length is 3. whoIsBot[i] is the score of the opponent i
+	 * positions next to you in clockwise order. A <code>null</code> value
+	 * indicates that opponent does not exist yet
 	 */
 	public boolean[] whoIsBot;
 
 	public InitialTableStatus() {
 	}
 
-	public InitialTableStatus(String[] opponents, int[] playerPoints,
+	public InitialTableStatus(String[] opponents, int[] playerScores,
 			boolean[] whoIsBot) {
 		this.opponents = opponents;
-		this.playerPoints = playerPoints;
+		this.playerScores = playerScores;
 		this.whoIsBot = whoIsBot;
 	}
 }

@@ -2,8 +2,12 @@ package unibo.as.cupido.backendInterfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
-import unibo.as.cupido.backendInterfaces.common.Rank;
+import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 
 /**
  * Schema del database:
@@ -37,26 +41,159 @@ import unibo.as.cupido.backendInterfaces.common.Rank;
  * volte a settimana.</li>
  * <ul>
  * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * TODO should be added a field logged BOOLEAN which stores if the user is
+ * logged in or not?
+ * 
+ * <code>
+CREATE TABLE `cupido`.`User` (
+  `name` VARCHAR(16)  NOT NULL,
+  `password` CHAR(8) UNICODE NOT NULL,
+  `score` INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`name`),
+  INDEX `scoreIndex`(`score`, `name`)
+)
+ENGINE = MyISAM;
+</code>
+ * 
+ * 
+ * 
+ * 
  * @author cane
  * 
  */
 public interface DatabaseInterface extends Remote {
+
+	/** default database name */
 	public static final String database = "cupido";
 
-	// Nome utente Password Punteggio Rank
-
+	/**
+	 * Add a new user with name <code>userName</code>, password
+	 * <code>password</code> and score zero.
+	 * 
+	 * @param userName
+	 * @param password
+	 * @throws RemoteException
+	 * @throws DuplicateUserNameException
+	 *             if a user named <code>userName</code> already exists in the
+	 *             database
+	 * @throws IllegalArgumentException
+	 *             if any of the arguments is <code>null</code>
+	 */
 	public void addNewUser(String userName, String password)
-			throws RemoteException;
+			throws RemoteException, SQLException, DuplicateUserNameException,
+			IllegalArgumentException;
 
+	/**
+	 * TODO ?Log <code>userName</code> in the database.?
+	 * 
+	 * @param userName
+	 * @param password
+	 * @return <code>true</code> if <code>userName</code> is in the database and
+	 *         his password is <code>password</code>; otherwise return false.
+	 * @throws RemoteException
+	 * @throws SQLException
+	 * @throws IllegalArgumentException
+	 *             if argument is <code>null</code>
+	 * @throws NoSuchUserException
+	 *             if <code>userName</code> is not in database
+	 */
 	public boolean login(String userName, String password)
-			throws RemoteException;
+			throws RemoteException, SQLException, IllegalArgumentException,
+			NoSuchUserException;
 
-	public void updateScore(String userName, int score) throws RemoteException;
+	/**
+	 * Update score of user <code>userName</code>
+	 * 
+	 * @param userName
+	 * @param score
+	 *            the new score of user <code>userName</code>
+	 * @throws RemoteException
+	 * @throws SQLException
+	 * @throws IllegalArgumentException
+	 *             if argument is <code>null</code>
+	 * @throws NoSuchUserException
+	 *             if <code>userName</code> is not in database
+	 */
+	public void updateScore(String userName, int score) throws RemoteException,
+			SQLException, IllegalArgumentException, NoSuchUserException;
 
-	public Rank getGlobalRank() throws RemoteException;
+	/**
+	 * Retreive at most the first top <code>size</code> positions in the global
+	 * rank.
+	 * 
+	 * @param
+	 * @return
+	 * @throws RemoteException
+	 * @throws SQLException
+	 * @throws IllegalArgumentException
+	 *             if <code>size</code> is not positive
+	 */
+	public ArrayList<Pair<String, Integer>> getTopRank(int size)
+			throws RemoteException, SQLException, IllegalArgumentException;
 
-	public int getPlayerRank(String player) throws RemoteException;
+	/**
+	 * Returns one chunk the global rank that contains from four position before
+	 * <code>userName</code> to five position after the <code>userName</code>.
+	 * 
+	 * 
+	 * TODO this methods troubles me
+	 * 
+	 * @param userName
+	 *            the user who wants the rank
+	 * @return a list of size twenty, the first half contains the first chunk
+	 *         and the second half contains the second chunk
+	 * @throws RemoteException
+	 * @throws SQLException
+	 * @throws IllegalArgumentException
+	 *             if argument is <code>null</code>
+	 * @throws NoSuchUserException
+	 *             if <code>userName</code> is not in database
+	 */
+	public ArrayList<Pair<String, Integer>> getLocalRank(String userName)
+			throws RemoteException, SQLException, IllegalArgumentException,
+			NoSuchUserException;
 
-	public int getPlayerScore(String player) throws RemoteException;
+	/**
+	 * Get player position in the global rank.
+	 * 
+	 * @param userName
+	 * @return
+	 * @throws RemoteException
+	 * @throws SQLException
+	 * @throws IllegalArgumentException
+	 *             if argument is <code>null</code>
+	 * @throws NoSuchUserException
+	 *             if <code>userName</code> is not in database
+	 */
+	public int getUserRank(String userName) throws RemoteException,
+			SQLException, IllegalArgumentException, NoSuchUserException;
+
+	/**
+	 * Get the player total score which is TODO ?the number of total wins minus
+	 * the number of total losses?
+	 * 
+	 * @param userName
+	 * @return
+	 * @throws RemoteException
+	 * @throws SQLException
+	 * @throws IllegalArgumentException
+	 *             if argument is <code>null</code>
+	 * @throws NoSuchUserException
+	 *             if <code>userName</code> is not in database
+	 */
+	public int getPlayerScore(String userName) throws RemoteException,
+			SQLException, IllegalArgumentException, NoSuchUserException;
+
+	/**
+	 * Close the connection with database.
+	 * 
+	 * @throws RemoteException
+	 */
+	void close() throws RemoteException;
 
 }

@@ -3,6 +3,9 @@ package unibo.as.cupido.backendInterfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import unibo.as.cupido.backendInterfaces.common.Pair;
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
+
 /**
  * 
  * @author cane
@@ -23,7 +26,7 @@ public interface LocalTableManagerInterface extends Remote {
 	 * @return a remote interface to the table manager
 	 * @throws RemoteException
 	 */
-	public TableInterface createTable(String owner,
+	public Pair<TableInterface, TableInfoForClient> createTable(String owner,
 			ServletNotificationsInterface snf) throws RemoteException;
 
 	/***
