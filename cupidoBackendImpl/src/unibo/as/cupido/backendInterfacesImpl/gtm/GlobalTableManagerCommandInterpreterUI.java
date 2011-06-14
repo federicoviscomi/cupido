@@ -10,7 +10,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 
 import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
-import unibo.as.cupido.backendInterfacesImpl.ltm.LocalTableManagerCommandInterpreterUI;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
 
 /**
@@ -54,12 +53,6 @@ public class GlobalTableManagerCommandInterpreterUI {
 			"list all LTM managed by this GTM server", "list", "-t", "--table",
 			"list all table managed by this GTM server");
 
-	public GlobalTableManagerCommandInterpreterUI(boolean startGTM)
-			throws RemoteException {
-		if (startGTM)
-			globalTableManager = new GlobalTableManager();
-	}
-
 	public static void main(String[] args) {
 		if (args.length > 1 && "start".equals(args[1])) {
 			try {
@@ -79,6 +72,12 @@ public class GlobalTableManagerCommandInterpreterUI {
 	}
 
 	private GlobalTableManager globalTableManager = null;
+
+	public GlobalTableManagerCommandInterpreterUI(boolean startGTM)
+			throws RemoteException {
+		if (startGTM)
+			globalTableManager = new GlobalTableManager();
+	}
 
 	public void execute() {
 		CmdLineParser parser = new CmdLineParser();

@@ -2,13 +2,15 @@ package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
 import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 
 public class BotManager {
 
 	public Bot chooseBotStrategy(InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager, String botName) throws RemoteException {
+			TableInterface singleTableManager, String botName)
+			throws RemoteException {
 		return (Bot) UnicastRemoteObject
 				.exportObject(new DummyLoggerBotNotifyer(initialTableStatus,
 						singleTableManager, botName));

@@ -74,6 +74,20 @@ public class CardsManager {
 		firstPlaying = whoHasTwoOfClubs();
 	}
 
+	public void addCardsInformationForViewers(PlayerStatus[] playerStatus) {
+		for (int i = 0; i < 4; i++) {
+			playerStatus[i].numOfCardsInHand = cards[i].size();
+			playerStatus[i].playedCard = cardPlayed[i];
+		}
+	}
+
+	private boolean allPlayerPassedCards() {
+		for (int i = 0; i < 4; i++)
+			if (allPassedCards[i] == null)
+				return false;
+		return true;
+	}
+
 	/** deals card pseudo-uniformly at random */
 	private void dealCards() {
 		cards = new ArrayList[4];
@@ -88,6 +102,26 @@ public class CardsManager {
 		for (int i = 0; i < 52; i++) {
 			cards[i % 4].add(mazzo[i]);
 		}
+	}
+
+	public boolean gameEnded() {
+		return turn == 13;
+	}
+
+	public Card[][] getCards() {
+		Card[][] cards = new Card[4][];
+		for (int i = 0; i < 4; i++) {
+			cards[i] = this.cards[i].toArray(new Card[13]);
+		}
+		return cards;
+	}
+
+	public int[] getMatchPoints() {
+		return points;
+	}
+
+	public Card[] getPlayerCards(int position) {
+		return cards[position].toArray(new Card[13]);
 	}
 
 	public ArrayList<Integer> getWinners() {
@@ -198,13 +232,6 @@ public class CardsManager {
 		}
 	}
 
-	private boolean allPlayerPassedCards() {
-		for (int i = 0; i < 4; i++)
-			if (allPassedCards[i] == null)
-				return false;
-		return true;
-	}
-
 	/**
 	 * @return the position of the player who owns the two of clubs
 	 */
@@ -214,33 +241,6 @@ public class CardsManager {
 				return i;
 		}
 		return -1;
-	}
-
-	public Card[] getPlayerCards(int position) {
-		return cards[position].toArray(new Card[13]);
-	}
-
-	public void addCardsInformationForViewers(PlayerStatus[] playerStatus) {
-		for (int i = 0; i < 4; i++) {
-			playerStatus[i].numOfCardsInHand = cards[i].size();
-			playerStatus[i].playedCard = cardPlayed[i];
-		}
-	}
-
-	public boolean gameEnded() {
-		return turn == 13;
-	}
-
-	public int[] getMatchPoints() {
-		return points;
-	}
-
-	public Card[][] getCards() {
-		Card[][] cards = new Card[4][];
-		for (int i = 0; i < 4; i++) {
-			cards[i] = this.cards[i].toArray(new Card[13]);
-		}
-		return cards;
 	}
 
 }

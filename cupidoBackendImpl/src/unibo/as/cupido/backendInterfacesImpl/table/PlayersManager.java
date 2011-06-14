@@ -2,10 +2,6 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface.Positions;
@@ -18,8 +14,6 @@ import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
-import unibo.as.cupido.backendInterfacesImpl.database.DatabaseManager;
-import unibo.as.cupido.backendInterfacesImpl.table.bot.Bot;
 
 public class PlayersManager {
 
@@ -130,6 +124,49 @@ public class PlayersManager {
 
 	}
 
+	public void addPlayersInformationForViewers(PlayerStatus[] playerStatus) {
+		for (int i = 0; i < 4; i++) {
+			if (players[i] != null) {
+				playerStatus[i].name = players[i].name;
+				playerStatus[i].isBot = players[i].isBot;
+				playerStatus[i].score = players[i].score;
+			}
+		}
+	}
+
+	InitialTableStatus getInitialTableStatus(int position) {
+		String[] opponents = new String[3];
+		int[] playerPoints = new int[3];
+		boolean[] whoIsBot = new boolean[3];
+		for (int i = 0; i < 3; i++) {
+			PlayerInfo nextOpponent = players[(position + i + 1) % 4];
+			if (nextOpponent != null) {
+				opponents[i] = nextOpponent.name;
+				playerPoints[i] = nextOpponent.score;
+				whoIsBot[i] = nextOpponent.isBot;
+			}
+		}
+		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
+	}
+
+	public int getPlayerPosition(String playerName) {
+		for (int i = 0; i < 4; i++) {
+			if (players[i] != null && players[i].name.equals(playerName))
+				return i;
+		}
+		return -1;
+	}
+
+	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
+		for (PlayerInfo pi : players)
+			try {
+				pi.sni.notifyGameEnded(matchPoints, playersTotalPoint);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+
 	public void notifyGameStarted(Card[][] cards) {
 		for (int i = 0; i < 4; i++) {
 			try {
@@ -141,29 +178,15 @@ public class PlayersManager {
 		}
 	}
 
-	public int getPlayerPosition(String playerName) {
-		for (int i = 0; i < 4; i++) {
-			if (players[i] != null && players[i].name.equals(playerName))
-				return i;
-		}
-		return -1;
-	}
-
-	public void removePlayer(String playerName) throws PlayerNotFoundException {
-		int position = getPlayerPosition(playerName);
-		if (position == -1)
-			throw new PlayerNotFoundException();
-		if (playersCount < 1)
-			throw new IllegalStateException();
-		playersCount--;
-		players[position] = null;
-
+	public void notifyNewLocalChatMessage(ChatMessage message) {
 		for (PlayerInfo pi : players) {
-			try {
-				pi.sni.notifyPlayerLeft(playerName);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (!pi.name.equals(message.userName)) {
+				try {
+					pi.sni.notifyLocalChatMessage(message);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -190,42 +213,27 @@ public class PlayersManager {
 		}
 	}
 
-	public void notifyNewLocalChatMessage(ChatMessage message) {
+	public int playersCount() {
+		return playersCount;
+	}
+
+	public void removePlayer(String playerName) throws PlayerNotFoundException {
+		int position = getPlayerPosition(playerName);
+		if (position == -1)
+			throw new PlayerNotFoundException();
+		if (playersCount < 1)
+			throw new IllegalStateException();
+		playersCount--;
+		players[position] = null;
+
 		for (PlayerInfo pi : players) {
-			if (!pi.name.equals(message.userName)) {
-				try {
-					pi.sni.notifyLocalChatMessage(message);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			try {
+				pi.sni.notifyPlayerLeft(playerName);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
-	}
-
-	public void addPlayersInformationForViewers(PlayerStatus[] playerStatus) {
-		for (int i = 0; i < 4; i++) {
-			if (players[i] != null) {
-				playerStatus[i].name = players[i].name;
-				playerStatus[i].isBot = players[i].isBot;
-				playerStatus[i].score = players[i].score;
-			}
-		}
-	}
-
-	InitialTableStatus getInitialTableStatus(int position) {
-		String[] opponents = new String[3];
-		int[] playerPoints = new int[3];
-		boolean[] whoIsBot = new boolean[3];
-		for (int i = 0; i < 3; i++) {
-			PlayerInfo nextOpponent = players[(position + i + 1) % 4];
-			if (nextOpponent != null) {
-				opponents[i] = nextOpponent.name;
-				playerPoints[i] = nextOpponent.score;
-				whoIsBot[i] = nextOpponent.isBot;
-			}
-		}
-		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
 	}
 
 	public int[] updateScore(int[] matchPoints) {
@@ -243,20 +251,6 @@ public class PlayersManager {
 			newScore[i] = players[i].score;
 		}
 		return newScore;
-	}
-
-	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-		for (PlayerInfo pi : players)
-			try {
-				pi.sni.notifyGameEnded(matchPoints, playersTotalPoint);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	}
-
-	public int playersCount() {
-		return playersCount;
 	}
 
 }

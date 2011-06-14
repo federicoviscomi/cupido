@@ -3,6 +3,7 @@ package unibo.as.cupido.backendInterfacesImpl.gtm;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
 import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;

@@ -2,7 +2,6 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
@@ -24,7 +23,6 @@ import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 import unibo.as.cupido.backendInterfacesImpl.database.DatabaseManager;
-import unibo.as.cupido.backendInterfacesImpl.table.PlayersManager.PlayerInfo;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.Bot;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.BotManager;
 
@@ -120,6 +118,17 @@ public class SingleTableManager implements TableInterface {
 
 	}
 
+	public void notifyGameEnded() {
+		int[] matchPoints = cardsManager.getMatchPoints();
+		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
+		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
+		viewers.notifyGameEnded(matchPoints, playersTotalPoint);
+	}
+
+	public synchronized void notifyGameStarted() {
+		playersManager.notifyGameStarted(cardsManager.getCards());
+	}
+
 	@Override
 	public synchronized void passCards(String userName, Card[] cards)
 			throws IllegalArgumentException, RemoteException {
@@ -165,17 +174,6 @@ public class SingleTableManager implements TableInterface {
 		playersManager.addPlayersInformationForViewers(playerStatus);
 		cardsManager.addCardsInformationForViewers(playerStatus);
 		return new ObservedGameStatus(playerStatus);
-	}
-
-	public synchronized void notifyGameStarted() {
-		playersManager.notifyGameStarted(cardsManager.getCards());
-	}
-
-	public void notifyGameEnded() {
-		int[] matchPoints = cardsManager.getMatchPoints();
-		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
-		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
-		viewers.notifyGameEnded(matchPoints, playersTotalPoint);
 	}
 
 }

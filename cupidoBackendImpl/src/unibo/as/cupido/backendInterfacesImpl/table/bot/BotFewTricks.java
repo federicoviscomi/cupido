@@ -26,46 +26,46 @@ public class BotFewTricks extends AbstractBot {
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint)
 			throws RemoteException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyGameStarted(Card[] cards) throws RemoteException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyLocalChatMessage(ChatMessage message)
 			throws RemoteException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyPassedCards(Card[] cards) throws RemoteException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyPlayedCard(Card card, int playerPosition)
 			throws RemoteException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyPlayerJoined(String playerName, boolean isBot, int score,
 			int position) throws RemoteException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void notifyPlayerLeft(String playerName) throws RemoteException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
