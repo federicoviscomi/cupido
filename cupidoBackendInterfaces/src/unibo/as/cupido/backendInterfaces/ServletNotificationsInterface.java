@@ -63,7 +63,11 @@ public interface ServletNotificationsInterface extends Remote {
 	 * @param card
 	 *            card played
 	 * @param playerPosition
-	 *            position in the table of the player who played the card
+	 *            position in the table of the player who played the card. Note
+	 *            that position is relative to the player who is notified. More
+	 *            precisely the player who joined is <code>position</code>
+	 *            positions next to the player who received the notification in
+	 *            clockwise order.
 	 * @throws RemoteException
 	 */
 	public void notifyPlayedCard(Card card, int playerPosition)
@@ -84,7 +88,11 @@ public interface ServletNotificationsInterface extends Remote {
 	 *            total player score. This is meaningful only if player is not a
 	 *            bot.
 	 * @param position
-	 *            table position where the player has entered
+	 *            table position where the player has entered. Note that
+	 *            position is relative to the player who is notified. More
+	 *            precisely the player who joined is <code>position</code>
+	 *            positions next to the player who received the notification in
+	 *            clockwise order.
 	 * @throws RemoteException
 	 */
 	public void notifyPlayerJoined(String playerName, boolean isBot, int score,
