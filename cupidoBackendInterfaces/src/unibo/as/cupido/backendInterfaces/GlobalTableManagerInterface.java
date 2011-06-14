@@ -3,6 +3,7 @@ package unibo.as.cupido.backendInterfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Collection;
+
 import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
 import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;

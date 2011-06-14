@@ -1,16 +1,19 @@
-package unibo.as.cupido.backendInterfacesImpl.table;
+package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
 import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 
 public class BotManager {
 
 	public Bot chooseBotStrategy(InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager) throws RemoteException {
-		return (Bot) UnicastRemoteObject.exportObject(new BotFewTricks(
-				initialTableStatus, singleTableManager));
+			TableInterface singleTableManager, String botName)
+			throws RemoteException {
+		return (Bot) UnicastRemoteObject
+				.exportObject(new DummyLoggerBotNotifyer(initialTableStatus,
+						singleTableManager, botName));
 	}
 	/**
 	 * If a player got all points (26) then he "shot the moon". The 26 points

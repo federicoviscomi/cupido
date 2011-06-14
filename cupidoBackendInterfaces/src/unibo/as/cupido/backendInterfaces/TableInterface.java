@@ -1,7 +1,6 @@
 package unibo.as.cupido.backendInterfaces;
 
 import java.rmi.Remote;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 
@@ -9,7 +8,6 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
@@ -212,11 +210,5 @@ public interface TableInterface extends Remote {
 	public ObservedGameStatus viewTable(String userName,
 			ServletNotificationsInterface snf) throws NoSuchTableException,
 			RemoteException;
-
-	/**
-	 * @return
-	 * @throws RemoteException
-	 */
-	public TableInfoForClient getTable() throws RemoteException;
 
 }

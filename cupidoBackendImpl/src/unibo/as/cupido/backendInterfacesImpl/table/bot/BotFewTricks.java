@@ -1,33 +1,26 @@
-package unibo.as.cupido.backendInterfacesImpl.table;
+package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import java.rmi.RemoteException;
 
+import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 
 /**
- * Some domain terms:
- * <table>
- * <tr>
- * <td>duck</td>
- * <td></td>
- * </tr>
- * <tr>
- * <td>trick</td>
- * <td></td>
- * </tr>
- * <tr>
- * <td>round</td>
- * <td>each player gets 13 cards in a round to start with. A round is over after
- * 13 tricks. A trick always has 4 cards</td>
- * </tr>
  * 
- * </table>
+ * This is a bot who plays heart with the following strategy:
+ * 
  * 
  * @author cane
  * 
  */
-public abstract class AbstractBot implements Bot {
+public class BotFewTricks extends AbstractBot {
+
+	public BotFewTricks(InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager) {
+		// TODO Auto-generated constructor stub
+	}
 
 	@Override
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint)
@@ -63,14 +56,14 @@ public abstract class AbstractBot implements Bot {
 	}
 
 	@Override
-	public void notifyPlayerJoined(String name, boolean isBot, int point,
+	public void notifyPlayerJoined(String playerName, boolean isBot, int score,
 			int position) throws RemoteException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void notifyPlayerLeft(String name) throws RemoteException {
+	public void notifyPlayerLeft(String playerName) throws RemoteException {
 		// TODO Auto-generated method stub
 
 	}

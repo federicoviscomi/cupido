@@ -48,7 +48,21 @@ public class LocalTableManagerCommandInterpreterUI {
 			"--owner", "create a new table with specified owner");
 
 	public static void main(String[] args) {
-		new LocalTableManagerCommandInterpreterUI().execute();
+		if (args.length > 1 && "start".equals(args[1])) {
+			try {
+				new LocalTableManagerCommandInterpreterUI(true).execute();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				new LocalTableManagerCommandInterpreterUI(false).execute();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -56,6 +70,13 @@ public class LocalTableManagerCommandInterpreterUI {
 	 * just one local table manager server
 	 */
 	private LocalTableManager localTableManager = null;
+
+	public LocalTableManagerCommandInterpreterUI(boolean startLTM)
+			throws RemoteException {
+		if (startLTM) {
+			localTableManager = new LocalTableManager();
+		}
+	}
 
 	public void execute() {
 		CmdLineParser parser = new CmdLineParser();
@@ -89,13 +110,13 @@ public class LocalTableManagerCommandInterpreterUI {
 									}
 								}
 							} else {
-								if (localTableManager == null) {
+								if (command[0].equals("exit")) {
+									exit(0);
+								} else if (localTableManager == null) {
 									System.out.println("start LTM first!");
 									System.out.println(USAGE);
 								} else {
-									if (command[0].equals("exit")) {
-										exit(0);
-									} else if (command[0].equals("create")) {
+									if (command[0].equals("create")) {
 										String owner = (String) parser
 												.getOptionValue(tableOwnerOption);
 										localTableManager.createTable(owner,

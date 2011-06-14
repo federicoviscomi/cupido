@@ -49,6 +49,10 @@ import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
  */
 public class GlobalTableManager implements GlobalTableManagerInterface {
 
+	public static void main(String args[]) throws RemoteException {
+		new GlobalTableManager();
+	}
+
 	private AllTables allTables;
 
 	/** manage a swarm of LTM */
