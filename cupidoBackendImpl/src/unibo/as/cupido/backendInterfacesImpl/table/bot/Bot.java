@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.table;
+package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 

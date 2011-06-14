@@ -1,18 +1,23 @@
-package unibo.as.cupido.backendInterfacesImpl;
+package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
-import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
+import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 
-public class DummyLoggerServletNotifyer implements
-		ServletNotificationsInterface {
+public class DummyLoggerBotNotifyer extends AbstractBot {
 
 	private final String userName;
+	private final TableInterface singleTableManager;
+	private final InitialTableStatus initialTableStatus;
 
-	public DummyLoggerServletNotifyer(String userName) {
+	public DummyLoggerBotNotifyer(InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager, String userName) {
+		this.initialTableStatus = initialTableStatus;
+		this.singleTableManager = singleTableManager;
 		this.userName = userName;
 	}
 

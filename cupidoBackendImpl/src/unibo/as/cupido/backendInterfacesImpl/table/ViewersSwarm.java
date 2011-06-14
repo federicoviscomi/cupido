@@ -2,7 +2,9 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -10,12 +12,14 @@ import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 
-public class ToBeNotifyed {
+/***
+ * Keeps track of a viewers of a table
+ */
+public class ViewersSwarm {
 	private Map<String, ServletNotificationsInterface> snfs;
 
-	public ToBeNotifyed(String owner, ServletNotificationsInterface snf) {
+	public ViewersSwarm() {
 		snfs = new HashMap<String, ServletNotificationsInterface>(4);
-		snfs.put(owner, snf);
 	}
 
 	public void notifyBotJoined(String botName, int position) {
@@ -30,36 +34,21 @@ public class ToBeNotifyed {
 		}
 	}
 
-	public void notifyCardPassed(Card[] cards, String name) {
-		for (Entry<String, ServletNotificationsInterface> snf : snfs.entrySet()) {
+	public void notifyPlayedCard(int playerPosition, Card card) {
+		for (ServletNotificationsInterface snf : snfs.values()) {
 			try {
-				if (!snf.getKey().equals(name))
-					snf.getValue().notifyPassedCards(cards);
+				snf.notifyPlayedCard(card, playerPosition);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				System.exit(-1);
-			}
-		}
-	}
-
-	public void notifyCardPlayed(String userName, Card card, int playerPosition) {
-		for (Entry<String, ServletNotificationsInterface> snf : snfs.entrySet()) {
-			try {
-				if (!snf.getKey().equals(userName))
-					snf.getValue().notifyPlayedCard(card, playerPosition);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
 			}
 		}
 	}
 
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-		for (Entry<String, ServletNotificationsInterface> snf : snfs.entrySet()) {
+		for (ServletNotificationsInterface snf : snfs.values()) {
 			try {
-				snf.getValue().notifyGameEnded(matchPoints, playersTotalPoint);
+				snf.notifyGameEnded(matchPoints, playersTotalPoint);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -69,21 +58,10 @@ public class ToBeNotifyed {
 		snfs = null;
 	}
 
-	public void notifyGameStarted(String userName, ArrayList<Card> cards) {
-		try {
-			snfs.get(userName).notifyGameStarted(
-					cards.toArray(new Card[cards.size()]));
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void notifyPlayerJoined(String name, int position,
-			ServletNotificationsInterface joinedSnf) {
+	public void notifyPlayerJoined(String playerName, int score, int position) {
 		for (ServletNotificationsInterface snf : snfs.values()) {
 			try {
-				snf.notifyPlayerJoined(name, false, 0, position);
+				snf.notifyPlayerJoined(playerName, false, score, position);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -92,19 +70,21 @@ public class ToBeNotifyed {
 		}
 	}
 
-	public void removePlayer(String playerName) {
-		snfs.remove(playerName);
+	private void print() {
+		for (Entry<String, ServletNotificationsInterface> e : snfs.entrySet()) {
+			System.out.print("\n\t[" + e.getKey() + ", " + e.getValue() + "]");
+		}
 	}
 
-	public void viewerJoined(String userName, ServletNotificationsInterface snf) {
-		snfs.put(userName, snf);
+	public void removeViewer(String viewerName) {
+		snfs.remove(viewerName);
 	}
 
-	public void addBot(String string, ServletNotificationsInterface sni) {
-		snfs.put(string, sni);
+	public void addViewer(String viewerName, ServletNotificationsInterface snf) {
+		snfs.put(viewerName, snf);
 	}
 
-	public void notifyNewChatMessage(ChatMessage message) {
+	public void notifyNewLocalChatMessage(ChatMessage message) {
 		for (Entry<String, ServletNotificationsInterface> snf : snfs.entrySet()) {
 			try {
 				if (!snf.getKey().equals(message.userName))
@@ -115,11 +95,6 @@ public class ToBeNotifyed {
 				System.exit(-1);
 			}
 		}
-	}
-
-	public void addPlayer(String userName, int position,
-			ServletNotificationsInterface snf) {
-		snfs.put(userName, snf);
 	}
 
 	public void notifyPlayerLeft(String userName) {
@@ -144,10 +119,6 @@ public class ToBeNotifyed {
 				System.exit(-1);
 			}
 		}
-	}
-
-	public void addViewer(String userName, ServletNotificationsInterface snf) {
-		snfs.put(userName, snf);
 	}
 
 }

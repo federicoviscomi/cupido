@@ -8,6 +8,7 @@ import java.util.Random;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.Card.Suit;
+import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 
 public class CardsManager {
@@ -32,26 +33,26 @@ public class CardsManager {
 	}
 
 	/** stores the cards passed by each player */
-	private Card[][] allPassedCards;
+	private Card[][] allPassedCards = new Card[4][];
 	/** stores the cards played in the current turn */
-	Card[] cardPlayed;
+	private Card[] cardPlayed = new Card[4];
 	/** stores the cards owned by each player */
-	ArrayList<Card>[] cards;
+	private ArrayList<Card>[] cards = new ArrayList[4];
 	/** the total points of the cards played in the current turn */
 	private int currentTurnPoints;
 	/** counts the number of card played in the current turn */
 	private int playedCardsCount;
 	/** position of player who plays first in the current turn */
-	int firstPlaying;
+	private int firstPlaying;
 	/** the number of turn made in this hand */
-	int turn;
+	private int turn;
 	/** stores round points of every player */
-	int[] points;
+	private int[] points = new int[4];
 	/**
 	 * <code>true</code> if some player correctly played an hearts at some point
 	 * in the game. <code>false</code> otherwise
 	 */
-	boolean brokenHearted;
+	private boolean brokenHearted;
 
 	/**
 	 * compare to cards according to the order given by ths suit of first card
@@ -70,25 +71,7 @@ public class CardsManager {
 
 	public CardsManager() {
 		dealCards();
-		allPassedCards = new Card[4][];
 		firstPlaying = whoHasTwoOfClubs();
-	}
-
-	/**
-	 * @return <code>true</code> if all player chosen cards to pass;
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean allPlayerPassedCards() {
-		return Arrays.asList(allPassedCards).contains(null);
-	}
-
-	/**
-	 * 
-	 * @return <code>true</code> if all player played a card in current turn;
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean allPlayerPlayedCards() {
-		return playedCardsCount == 4;
 	}
 
 	/** deals card pseudo-uniformly at random */
@@ -105,22 +88,6 @@ public class CardsManager {
 		for (int i = 0; i < 52; i++) {
 			cards[i % 4].add(mazzo[i]);
 		}
-	}
-
-	public boolean gameEnded() {
-		return turn == 12;
-	}
-
-	public int getCurrentPlayer() {
-		return firstPlaying + playedCardsCount;
-	}
-
-	public int getPoints() {
-		return currentTurnPoints;
-	}
-
-	public int getWinner() {
-		return firstPlaying;
 	}
 
 	public ArrayList<Integer> getWinners() {
@@ -231,6 +198,13 @@ public class CardsManager {
 		}
 	}
 
+	private boolean allPlayerPassedCards() {
+		for (int i = 0; i < 4; i++)
+			if (allPassedCards[i] == null)
+				return false;
+		return true;
+	}
+
 	/**
 	 * @return the position of the player who owns the two of clubs
 	 */
@@ -241,4 +215,16 @@ public class CardsManager {
 		}
 		return -1;
 	}
+
+	public Card[] getPlayerCards(int position) {
+		return cards[position].toArray(new Card[13]);
+	}
+
+	public void addCardsInformationForViewers(PlayerStatus[] playerStatus) {
+		for (int i = 0; i < 4; i++) {
+			playerStatus[i].numOfCardsInHand = cards[i].size();
+			playerStatus[i].playedCard = cardPlayed[i];
+		}
+	}
+
 }

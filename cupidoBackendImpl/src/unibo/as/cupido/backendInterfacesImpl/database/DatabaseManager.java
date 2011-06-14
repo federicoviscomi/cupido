@@ -55,7 +55,7 @@ public class DatabaseManager implements DatabaseInterface {
 		if (userName == null || password == null)
 			throw new IllegalArgumentException();
 		if (this.contains(userName))
-			throw new DuplicateUserNameException();
+			throw new DuplicateUserNameException(userName);
 		// TODO is there any way to exploit return value of
 		// statement.executeUpdate in order not to use this.contains?
 		statement.executeUpdate("INSERT INTO User VALUE ('" + userName + "', '"
