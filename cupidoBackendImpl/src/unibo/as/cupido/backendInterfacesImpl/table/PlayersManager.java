@@ -75,12 +75,16 @@ public class PlayersManager {
 					+ players[Positions.OWNER.ordinal()] + ". Current user: "
 					+ userName);
 
-		/* notify every players but the one who is adding the bot */
-		for (PlayerInfo pi : players) {
-			if (pi != null && !pi.name.equals(userName)) {
+		/*
+		 * notify every players but the one who is adding the bot and the bot
+		 * itself
+		 */
+		for (int i = 1; i < 4; i++) {
+			if (i != position && players[i] != null
+					&& !players[i].name.equals(userName)) {
 				try {
-					pi.sni.notifyPlayerJoined("_bot." + userName, true, 0,
-							position);
+					players[i].sni.notifyPlayerJoined("_bot." + userName, true,
+							0, (position - i) % 4);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -106,11 +110,11 @@ public class PlayersManager {
 			position++;
 
 		/* notify every players but the one who is joining */
-		for (PlayerInfo pi : players) {
-			if (pi != null) {
+		for (int i = 1; i < 4; i++) {
+			if (players[i] != null && !players[i].name.equals(playerName)) {
 				try {
-					pi.sni.notifyPlayerJoined(playerName, false, score,
-							position);
+					players[i].sni.notifyPlayerJoined("_bot." + playerName,
+							false, score, (position - i) % 4);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

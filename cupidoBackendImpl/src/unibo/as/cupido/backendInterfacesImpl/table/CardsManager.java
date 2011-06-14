@@ -25,8 +25,8 @@ public class CardsManager {
 	};
 
 	/** the two of clubs */
-	private static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
-	private static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
+	public static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
+	public static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
 
 	public static void main(String args[]) {
 		new CardsManager().print();
