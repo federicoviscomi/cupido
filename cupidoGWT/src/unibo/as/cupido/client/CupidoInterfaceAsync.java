@@ -51,4 +51,6 @@ public interface CupidoInterfaceAsync {
 	void sendGlobalChatMessage(String message, AsyncCallback<Void> callback);
 
 	void sendLocalChatMessage(String message, AsyncCallback<Void> callback);
+
+	void destroySession(AsyncCallback<Void> callback);
 }

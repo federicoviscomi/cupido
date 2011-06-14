@@ -122,4 +122,9 @@ public interface CupidoInterface extends RemoteService {
 	 * @param message
 	 */
 	void sendGlobalChatMessage(String message);
+	
+	/**
+	 * Destroy comet and http sessions
+	 */
+	public void destroySession();
 }
