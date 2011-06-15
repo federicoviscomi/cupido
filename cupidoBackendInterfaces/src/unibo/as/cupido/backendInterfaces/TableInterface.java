@@ -102,6 +102,7 @@ public interface TableInterface extends Remote {
 	 *             TODO what's the meaning of this?
 	 * @throws IllegalStateException
 	 *             if game status is not {@link GameStatus}.INIT
+	 *             FIXME: are not this and FullTableException threw in the same case?
 	 * @throws IllegalArgumentException
 	 *             if an argument is null
 	 * @throws DuplicateUserNameException
