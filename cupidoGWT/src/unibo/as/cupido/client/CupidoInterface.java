@@ -11,6 +11,7 @@ import unibo.as.cupido.backendInterfaces.exception.MaxNumTableReachedException;
 import unibo.as.cupido.backendInterfaces.exception.FatalException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchServerException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
@@ -98,12 +99,14 @@ public interface CupidoInterface extends RemoteService {
 	 * @param tableId
 	 * @return
 	 * @throws NoSuchTableException
-	 *             if table no longer exist
+	 *             if tableId is invalid or table no longer exists
+	 * @throws NoSuchServerException
+	 * 			   if server is invalid
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
 	public ObservedGameStatus viewTable(String server, int tableId)
-			throws NoSuchTableException, UserNotAuthenticatedException,
+			throws NoSuchTableException, NoSuchServerException, UserNotAuthenticatedException,
 			FatalException;
 
 	/**
