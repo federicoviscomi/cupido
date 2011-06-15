@@ -6,6 +6,7 @@ package unibo.as.cupido.client;
 import java.util.Collection;
 
 import unibo.as.cupido.backendInterfaces.common.*;
+import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.MaxNumTableReachedException;
 import unibo.as.cupido.backendInterfaces.exception.FatalException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
@@ -79,6 +80,8 @@ public interface CupidoInterface extends RemoteService {
 	 *             if game already have 4 players
 	 * @throws NoSuchTableException
 	 *             if table is no more available, but user can join other table
+	 * @throws DuplicateUserNameException
+	 *             if player is already playing or viewing the selected table
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 *             in case of internal serious error while joining the table,
@@ -86,7 +89,8 @@ public interface CupidoInterface extends RemoteService {
 	 */
 	public InitialTableStatus joinTable(String server, int tableId)
 			throws FullTableException, NoSuchTableException,
-			UserNotAuthenticatedException, FatalException;
+			DuplicateUserNameException, UserNotAuthenticatedException,
+			FatalException;
 
 	/**
 	 * 

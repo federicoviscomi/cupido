@@ -349,6 +349,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 *            id of the table, unique in the server
 	 * @throws FullTableException
 	 *             if catch FullTableException
+	 * @throws DuplicateUserNameException
+	 *             if player is already playing or viewing the selected table
 	 * @throws NoSuchTableException
 	 *             if catch NoSuchTableException or DuplicateUserNameException
 	 * @throws FatalException
