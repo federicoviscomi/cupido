@@ -1,15 +1,13 @@
 package unibo.as.cupido.server;
 
 
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
@@ -18,21 +16,26 @@ import unibo.as.cupido.backendInterfaces.TableInterface;
 
 import javax.servlet.http.HttpSession;
 
-import net.sourceforge.htmlunit.corejs.javascript.tools.shell.Global;
 import net.zschech.gwt.comet.server.CometServlet;
 import net.zschech.gwt.comet.server.CometSession;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.FatalException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
+import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
+import unibo.as.cupido.backendInterfaces.exception.MaxNumTableReachedException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
+import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
+import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
+import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
 import unibo.as.cupido.shared.cometNotification.PlayerLeft;
@@ -52,11 +55,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	private static final int registryPort = 1099;
 	private static final String GTS= "globaltableserver";
 	/*
-	 * Name used in httpSession attributes
+	 * Names used in httpSession attributes
 	 */
 	private static final String SNI	= "servletNotificationInterface";
 	private static final String TI	= "tableInterfaces";
 	private static final String USERNAME = "username";
+	private static final String ISAUTHENTICATED = "isAuthenticated";
 	
 	/**
 	 * Implements here action to perform when notified by the table
@@ -188,7 +192,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	};
 	*/
 
+	/**
+	 * HttpListener use this interface to perform action
+	 */
 	public interface SessionClosedListener {
+		/**
+		 * HttpListener must call this method when httpSession in closing
+		 */
 		public void onSessionClosed();
 	}
 
@@ -196,17 +206,24 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	}
 
-	public ChatMessage[] viewLastMessages() {
+	@Override
+	public ChatMessage[] viewLastMessages() throws UserNotAuthenticatedException,
+	FatalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public void sendGlobalChatMessage(String message) {
+	@Override
+	public void sendGlobalChatMessage(String message) throws IllegalArgumentException, UserNotAuthenticatedException,
+	FatalException{
 		// TODO Auto-generated method stub
 
 	}
 
-	public void sendLocalChatMessage(String message) {
+	@Override
+	public void sendLocalChatMessage(String message)
+			throws IllegalArgumentException, UserNotAuthenticatedException,
+			FatalException {
 
 		// FIXME: This implementation does *not* really work, it is only meant
 		// for debugging purposes.
@@ -224,31 +241,44 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		cometSession.enqueue(x);
 	}
 
-	public boolean login(String username, String password) {
-		// TODO retieve information from the DB
+	@Override
+	public boolean login(String username, String password) throws FatalException {
+		// TODO retRieve information from the DB
+		if (true){
+			HttpSession httpSession = getThreadLocalRequest().getSession();
+			if (httpSession != null)
+				httpSession.setAttribute(ISAUTHENTICATED, true);
+			return true;
+		}
 		return false;
 	}
 
-
-	public boolean registerUser(String username, String password) {
+	@Override
+	public boolean registerUser(String username, String password) throws FatalException{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-
-	public boolean isUserRegistered(String username) {
+	@Override
+	public boolean isUserRegistered(String username) throws FatalException{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-
+	/*
+	 * @see unibo.as.cupido.client.CupidoInterface#logout()
+	 */
+	@Override
 	public void logout() {
-		// TODO Auto-generated method stub
-
+		HttpSession httpSession = getThreadLocalRequest().getSession();
+		if (httpSession != null) {
+			httpSession.setAttribute(ISAUTHENTICATED, false);
+		}
 	}
 
-	
-	public TableData[] getTableList() {
+	@Override
+	public Collection<TableInfoForClient> getTableList()
+			throws UserNotAuthenticatedException, FatalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -256,13 +286,14 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	/**
 	 * Create a new table
 	 * FIXME: ottieni il punteggio dal DB
+	 * @throws MaxNumTableReachedException 
 	 * 
-	 * @throws RemoteException
-	 *             , AllLTMBusyException
+	 * @throws RemoteException in case of internal errors
+	 * @throws AllLTMBusyException if catch AllLTMBusyException
 	 */
-
-	public InitialTableStatus createTable() throws FatalException,
-	AllLTMBusyException {
+	@Override
+	public InitialTableStatus createTable() throws MaxNumTableReachedException,
+	UserNotAuthenticatedException, FatalException {
 		InitialTableStatus its = new InitialTableStatus();
 		try {
 			Registry registry = LocateRegistry.getRegistry(registryHost,registryPort);
@@ -278,6 +309,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			CometSession cometSession = CometServlet.getCometSession(httpSession);
 			if (cometSession == null) {
 				return null;
+			}
+
+			if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+				throw new FatalException();
 			}
 
 			ServletNotificationsInterface sni = getServletNotificationsInterface(httpSession, cometSession);
@@ -301,24 +336,28 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			//e.printStackTrace();
 			throw new FatalException();
 		} catch (AllLTMBusyException e) {
-			throw new AllLTMBusyException();
+			throw new MaxNumTableReachedException();
 		}
 
 		return its;
 	}
-
 
 	/**
 	 * @param server
 	 *            the id of the LTM (aka ltmId)
 	 * @param tableId
 	 *            id of the table, unique in the server
-	 * @throws FullTableException if catch FullTableException
-	 * @throws NoSuchTableException if catch NoSuchTableException or DuplicateUserNameException
-	 * @throws FatalException otherwise
+	 * @throws FullTableException
+	 *             if catch FullTableException
+	 * @throws NoSuchTableException
+	 *             if catch NoSuchTableException or DuplicateUserNameException
+	 * @throws FatalException
+	 *             otherwise
 	 */
+	@Override
 	public InitialTableStatus joinTable(String server, int tableId)
-	throws FullTableException, NoSuchTableException, FatalException {
+			throws FullTableException, NoSuchTableException,
+			UserNotAuthenticatedException, FatalException {
 		try {
 			// Get or create the HTTP session for the browser
 			HttpSession httpSession = getThreadLocalRequest().getSession();
@@ -332,7 +371,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				httpSession.invalidate();
 				return null;
 			}
-
+			
+			if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+				throw new FatalException();
+			}
+			
 			Registry registry = LocateRegistry.getRegistry(registryHost,
 					registryPort);
 			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
@@ -399,35 +442,68 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		return null;
 	}
 
-
+	@Override
 	public ObservedGameStatus viewTable(String server, int tableId)
-			throws NoSuchTableException {
+			throws NoSuchTableException, UserNotAuthenticatedException,
+			FatalException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-
-	public void leaveTable() {
+	@Override
+	public void leaveTable() throws UserNotAuthenticatedException, PlayerNotFoundException, FatalException{
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
+	public void playCard(Card card) throws IllegalMoveException,
+			FatalException, IllegalArgumentException,
+			UserNotAuthenticatedException {
+		HttpSession httpSession = getThreadLocalRequest().getSession();
+		if (httpSession == null) {
+			return;
+		}
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
+			// FIXME: choice what to do
+		}
+		TableInterface ti = (TableInterface) httpSession.getAttribute(TI);
+		if (ti == null){
+			//FIXME: choice what to do
+			return;
+		}
+		try {
+			ti.playCard((String) httpSession.getAttribute(USERNAME), card);
+		} catch (RemoteException e) {
+			throw new FatalException();
+			//e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			throw e;
+		} catch (IllegalMoveException e){
+			throw e;
+		}
+	
+	}
 
-	public void playCard(Card card) {
+	@Override
+	public void passCards(Card[] cards) throws IllegalStateException,
+			IllegalArgumentException, UserNotAuthenticatedException,
+			FatalException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void addBot(int position) throws PositionFullException,
+			FullTableException, NotCreatorException, IllegalArgumentException,
+			UserNotAuthenticatedException, FatalException {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void passCards(Card[] cards) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void addBot(int position) throws PositionFullException {
-		// TODO Auto-generated method stub
-
-	}
-
+	/**
+	 * Open connection and perform actions to bind httpSession with remote service interfaces
+	 */
+	@Override
 	public void openCometConnection() {
 
 		System.out.println("Servlet: Opening a Comet connession...");
@@ -445,13 +521,21 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			public void onSessionClosed() {
 				System.out
 				.println("Servlet: onSessionClosed() was called.");
-				// Notify player left at the table
+				// TODO: Notify player left at the table
 			}
 		});
-
+		
+		httpSession.setAttribute(ISAUTHENTICATED, false);
 		// Create the Comet session for the browser
 		CometServlet.getCometSession(httpSession);
-
 		System.out.println("Servlet: Comet connession opened.");
+	}
+
+	/**
+	 * Invalidate httpSession
+	 */
+	@Override
+	public void destroySession() {
+		getThreadLocalRequest().getSession().invalidate();
 	}
 }
