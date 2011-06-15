@@ -5,6 +5,10 @@ import javax.servlet.http.HttpSessionListener;
 
 import unibo.as.cupido.server.CupidoServlet.SessionClosedListener;
 
+/**
+ * Listen to event oh httpSession.
+ *
+ */
 public class CupidoSessionListener implements HttpSessionListener {
 
 	@Override
@@ -16,7 +20,7 @@ public class CupidoSessionListener implements HttpSessionListener {
 
 	@Override
 	public void sessionDestroyed(HttpSessionEvent x) {
-		System.out.println("DumbSessionListener: in sessionDestroyed().");
+		System.out.println("Servlet: on CupidoSessionListener sessionDestroyed()");
 		Object untypedListener = x.getSession().getAttribute(
 				"sessionClosedListener");
 		if (untypedListener == null)
