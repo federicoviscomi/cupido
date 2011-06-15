@@ -1,6 +1,6 @@
-package unibo.as.cupido.client.states;
+package unibo.as.cupido.client.gamestates;
 
-import unibo.as.cupido.client.ScreenSwitcher;
+import unibo.as.cupido.client.screens.ScreenSwitcher;
 
 public class StateManagerImpl implements StateManager {
 	

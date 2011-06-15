@@ -1,4 +1,4 @@
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.screens;
 
 public interface ScreenSwitcher {
 

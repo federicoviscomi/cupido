@@ -1,4 +1,7 @@
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.screens;
+
+import unibo.as.cupido.client.Cupido;
+import unibo.as.cupido.client.GlobalChatWidget;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
