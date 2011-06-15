@@ -132,7 +132,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @param card
 	 *            Card to be played
 	 * @throws IllegalMoveException
-	 *             user can't play that card now
+	 *             user can't play that card now or the player is not at the table
 	 * @throws IllegalArgumentException
 	 *             if player does not own the card, or card==null
 	 * @throws UserNotAuthenticatedException

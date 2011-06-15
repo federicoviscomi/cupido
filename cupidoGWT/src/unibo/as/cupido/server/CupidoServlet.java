@@ -53,7 +53,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	private static final String registryHost= "127.0.0.1";
 	private static final int registryPort = 1099;
-	private static final String GTS= "globaltableserver";
+	private static final String GTM= "globaltableserver";
 	/*
 	 * Names used in httpSession attributes
 	 */
@@ -130,74 +130,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		};
 	}
 
-/*	ServletNotificationsInterface sni = new ServletNotificationsInterface() {
-		@Override
-		public void notifyPlayerLeft(String name) {
-			// Get the HTTP session for the browser
-			//FIXME come faccio a controllare che ritorni la httpSession giusta?
-			HttpSession httpSession = getThreadLocalRequest().getSession(false);
-			if (httpSession == null) {
-				//Notifica playerLeft al tavolo
-				return;
-			}
-
-			// Get the Comet session for the browser
-			CometSession cometSession = CometServlet.getCometSession(httpSession, false);
-			if (cometSession==null){
-				//Notifica playerLeft al tavolo
-				httpSession.invalidate();
-				return;
-			}
-			PlayerLeft playerLeft=new PlayerLeft(name);
-			cometSession.enqueue(playerLeft);
-		}
-
-		@Override
-		public void notifyPlayerJoined(String name, boolean isBot, int point,
-				int position) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void notifyPlayedCard(Card card, int playerPosition) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void notifyPassedCards(Card[] cards) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void notifyLocalChatMessage(ChatMessage message) {
-			System.out
-					.println("Servlet: received a notification from the backend. Sending it to the client...");
-			// cometSession.enqueue(message);
-		}
-
-		@Override
-		public void notifyGameStarted(Card[] cards) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-			// TODO Auto-generated method stub
-
-		}
-	};
-	*/
-
 	/**
 	 * HttpListener use this interface to perform action
 	 */
 	public interface SessionClosedListener {
 		/**
-		 * HttpListener must call this method when httpSession in closing
+		 * HttpListener must call this method when httpSession is closing
 		 */
 		public void onSessionClosed();
 	}
@@ -207,15 +145,32 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	@Override
+	/*
+	 * refers to GlobalChat. Client poll this method
+	 */
 	public ChatMessage[] viewLastMessages() throws UserNotAuthenticatedException,
 	FatalException {
-		// TODO Auto-generated method stub
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null){
+			return null;
+		}
+		if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+			throw new UserNotAuthenticatedException();
+		}
+		// TODO retrieve messages
 		return null;
 	}
 
 	@Override
 	public void sendGlobalChatMessage(String message) throws IllegalArgumentException, UserNotAuthenticatedException,
 	FatalException{
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null){
+			return;
+		}
+		if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+			throw new UserNotAuthenticatedException();
+		}
 		// TODO Auto-generated method stub
 
 	}
@@ -245,10 +200,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	public boolean login(String username, String password) throws FatalException {
 		// TODO retRieve information from the DB
 		if (true){
-			HttpSession httpSession = getThreadLocalRequest().getSession();
-			if (httpSession != null)
+			HttpSession httpSession = getThreadLocalRequest().getSession(false);
+			if (httpSession != null){
 				httpSession.setAttribute(ISAUTHENTICATED, true);
-			return true;
+				httpSession.setAttribute(USERNAME, username);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -270,15 +227,38 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	@Override
 	public void logout() {
-		HttpSession httpSession = getThreadLocalRequest().getSession();
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		if (httpSession != null) {
 			httpSession.setAttribute(ISAUTHENTICATED, false);
+			httpSession.removeAttribute(USERNAME);
 		}
 	}
 
 	@Override
 	public Collection<TableInfoForClient> getTableList()
 			throws UserNotAuthenticatedException, FatalException {
+		
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null) {
+			return null;
+		}
+		if(! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+			throw new UserNotAuthenticatedException();
+		}
+
+		Registry registry;
+		try {
+			registry = LocateRegistry.getRegistry(registryHost,registryPort);
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry.lookup(GTM);
+			return gtm.getTableList();
+		} catch (RemoteException e) {
+			System.out.println("Servlet: on getTableList() catched RemoteException-> "+e.getMessage());
+			//e.printStackTrace();
+		} catch (NotBoundException e) {
+			System.out.println("Servlet: on getTableList() catched NotBoundException-> "+e.getMessage());
+			//e.printStackTrace();
+		}
+
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -298,12 +278,15 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		try {
 			Registry registry = LocateRegistry.getRegistry(registryHost,registryPort);
 			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
-			.lookup("globaltableserver");
+			.lookup(GTM);
 
 			// Get or create the HTTP session for the browser
-			HttpSession httpSession = getThreadLocalRequest().getSession();
+			HttpSession httpSession = getThreadLocalRequest().getSession(false);
 			if (httpSession == null) {
 				return null;
+			}
+			if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+				throw new UserNotAuthenticatedException();
 			}
 			// Get or create the Comet session for the browser
 			CometSession cometSession = CometServlet.getCometSession(httpSession);
@@ -311,14 +294,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				return null;
 			}
 
-			if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
-				throw new FatalException();
-			}
-
 			ServletNotificationsInterface sni = getServletNotificationsInterface(httpSession, cometSession);
 			httpSession.setAttribute(SNI, sni);
-			httpSession.getAttribute("username");
-			TableInterface ti = gtm.createTable("username", sni);
+			httpSession.getAttribute(USERNAME);
+			TableInterface ti = gtm.createTable(USERNAME, sni);
 			httpSession.setAttribute(TI, ti);
 			UnicastRemoteObject.exportObject(sni);
 
@@ -359,13 +338,18 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public InitialTableStatus joinTable(String server, int tableId)
 			throws FullTableException, NoSuchTableException,
-			UserNotAuthenticatedException, FatalException {
+			DuplicateUserNameException, UserNotAuthenticatedException,
+			FatalException {
 		try {
 			// Get or create the HTTP session for the browser
-			HttpSession httpSession = getThreadLocalRequest().getSession();
+			HttpSession httpSession = getThreadLocalRequest().getSession(false);
 			if (httpSession == null) {
 				return null;
 			}
+			if(! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+				throw new UserNotAuthenticatedException();
+			}
+
 			// Get or create the Comet session for the browser
 			CometSession cometSession = CometServlet
 			.getCometSession(httpSession);
@@ -373,11 +357,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				httpSession.invalidate();
 				return null;
 			}
-			
-			if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
-				throw new FatalException();
-			}
-			
+
 			Registry registry = LocateRegistry.getRegistry(registryHost,
 					registryPort);
 			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
@@ -390,9 +370,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					.getAttribute(SNI));
 
 		} catch (NoSuchTableException e) {
-			throw new NoSuchTableException();
+			throw e;
 		} catch (FullTableException e) {
-			throw new FullTableException();
+			throw e;
+		} catch (DuplicateUserNameException e){
+			throw e;
 		} catch (RemoteException e) {
 			System.out
 			.println("Servlet: on joinTable() catched RemoteException-> "
@@ -422,12 +404,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
-		} catch (DuplicateUserNameException e) {
-			System.out
-			.println("Servlet: on joinTable() catched DuplicateUserNameException-> "
-					+ e.getMessage());
-			// e.printStackTrace();
-			throw new NoSuchTableException();
 		} catch (SQLException e) {
 			System.out
 			.println("Servlet: on joinTable() catched SQLException-> "
@@ -453,7 +429,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void leaveTable() throws UserNotAuthenticatedException, PlayerNotFoundException, FatalException{
+	public void leaveTable() throws UserNotAuthenticatedException,
+			PlayerNotFoundException, FatalException {
 		// TODO Auto-generated method stub
 
 	}
@@ -462,29 +439,30 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	public void playCard(Card card) throws IllegalMoveException,
 			FatalException, IllegalArgumentException,
 			UserNotAuthenticatedException {
-		HttpSession httpSession = getThreadLocalRequest().getSession();
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		if (httpSession == null) {
 			return;
 		}
 		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
-			// FIXME: choice what to do
+			throw new UserNotAuthenticatedException();
 		}
 		TableInterface ti = (TableInterface) httpSession.getAttribute(TI);
-		if (ti == null){
-			//FIXME: choice what to do
-			return;
+		if (ti == null) {
+			System.out.println("Servlet: on playCard() ti == null");
+			// player is not at table
+			throw new IllegalMoveException();
 		}
+
 		try {
 			ti.playCard((String) httpSession.getAttribute(USERNAME), card);
 		} catch (RemoteException e) {
 			throw new FatalException();
-			//e.printStackTrace();
+			// e.printStackTrace();
 		} catch (IllegalArgumentException e) {
 			throw e;
-		} catch (IllegalMoveException e){
+		} catch (IllegalMoveException e) {
 			throw e;
 		}
-	
 	}
 
 	@Override
@@ -527,7 +505,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			}
 		});
 		
-		httpSession.setAttribute(ISAUTHENTICATED, false);
+		httpSession.setAttribute(ISAUTHENTICATED, Boolean.FALSE);
 		// Create the Comet session for the browser
 		CometServlet.getCometSession(httpSession);
 		System.out.println("Servlet: Comet connession opened.");
@@ -538,6 +516,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	@Override
 	public void destroySession() {
-		getThreadLocalRequest().getSession().invalidate();
+		getThreadLocalRequest().getSession(false).invalidate();
 	}
 }
