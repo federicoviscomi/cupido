@@ -9,6 +9,8 @@ package unibo.as.cupido.backendInterfaces.exception;
  */
 public class NotCreatorException extends Exception {
 
+	public NotCreatorException(){
+	}
 	public NotCreatorException(String string) {
 		super(string);
 	}
