@@ -13,16 +13,6 @@ public class StateManagerImpl implements StateManager {
 	}
 
 	@Override
-	public void transitionToBeforeGameAsOwner() {
-		currentState = new BeforeGameAsOwner();
-	}
-
-	@Override
-	public void transitionToBeforeGameNotOwner() {
-		currentState = new BeforeGameNotOwner();
-	}
-
-	@Override
 	public void transitionToCardPassingAsPlayer() {
 		currentState = new CardPassingAsPlayer();
 	}

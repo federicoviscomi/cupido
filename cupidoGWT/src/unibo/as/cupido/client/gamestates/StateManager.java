@@ -2,8 +2,6 @@ package unibo.as.cupido.client.gamestates;
 
 public interface StateManager {
 
-	public void transitionToBeforeGameAsOwner();                                                                                                
-	public void transitionToBeforeGameNotOwner();                                                                                               
 	public void transitionToCardPassingAsPlayer();                                                                                              
 	public void transitionToCardPassingAsViewer();                                                                                              
 	public void transitionToCardPassingEndAsPlayer();                                                                                           
