@@ -1,6 +1,7 @@
 package unibo.as.cupido.server;
 
 
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -30,6 +31,7 @@ import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 import unibo.as.cupido.backendInterfaces.exception.MaxNumTableReachedException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchServerException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
@@ -49,7 +51,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	/*
 	 * hostname and port of registry to locate GlobalTableManagerInterface
 	 * default is 127.0.0.1:1099
-	 * valus of GTS in defined in GlobalTableManagerInterface
+	 * values of GTM in defined in GlobalTableManagerInterface
 	 */
 	private static final String registryHost= "127.0.0.1";
 	private static final int registryPort = 1099;
@@ -361,7 +363,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			Registry registry = LocateRegistry.getRegistry(registryHost,
 					registryPort);
 			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
-			.lookup(GTS);
+			.lookup(GTM);
 			LocalTableManagerInterface LTMinterf = gtm.getLTMInterface(server);
 			TableInterface ti = LTMinterf.getTable(tableId);
 			httpSession.setAttribute(TI, ti);
@@ -423,16 +425,91 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public ObservedGameStatus viewTable(String server, int tableId)
 			throws NoSuchTableException, UserNotAuthenticatedException,
-			FatalException {
-		// TODO Auto-generated method stub
-		return null;
+			FatalException, NoSuchServerException {
+
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null) {
+			return null;
+		}
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
+			throw new UserNotAuthenticatedException();
+		}
+
+		LocalTableManagerInterface ltmi = null;
+		try {
+			Registry registry = LocateRegistry.getRegistry(registryHost,
+					registryPort);
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
+					.lookup(GTM);
+			ltmi = gtm.getLTMInterface(server);
+		} catch (NotBoundException e) {
+			System.out
+					.println("Servlet: on viewTable() catched NotBoundException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		} catch (AccessException e) {
+			System.out
+					.println("Servlet: on viewTable() catched AccessException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		} catch (RemoteException e) {
+			System.out
+					.println("Servlet: on viewTable() catched RemoteException1-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		} catch (NoSuchLTMException e) {
+			throw new NoSuchServerException();
+		}
+
+		try {
+			TableInterface ti = ltmi.getTable(tableId);
+			httpSession.setAttribute(TI, ti);
+			CometSession cometSession = CometServlet
+					.getCometSession(httpSession);
+			ServletNotificationsInterface sni = getServletNotificationsInterface(
+					httpSession, cometSession);
+			httpSession.setAttribute(SNI, sni);
+			return ti.viewTable((String) httpSession.getAttribute(USERNAME),
+					sni);
+		} catch (RemoteException e) {
+			System.out
+					.println("Servlet: on viewTable() catched RemoteException2-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		} catch (NoSuchTableException e) {
+			throw e;
+		}
 	}
 
 	@Override
 	public void leaveTable() throws UserNotAuthenticatedException,
 			PlayerNotFoundException, FatalException {
-		// TODO Auto-generated method stub
-
+		HttpSession httpSession = getThreadLocalRequest().getSession();
+		if (httpSession == null) {
+			return;
+		}
+		if(! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+			throw new UserNotAuthenticatedException();
+		}
+		TableInterface ti= (TableInterface) httpSession.getAttribute(TI);
+		if (ti == null){
+			throw new PlayerNotFoundException();
+		}
+		
+		try {
+			ti.leaveTable(USERNAME);
+		} catch (RemoteException e) {
+			System.out.println("Servlet: onLeaveTable catched RemoteException ->");
+			throw new FatalException();
+			//e.printStackTrace();
+		} catch (PlayerNotFoundException e){
+			throw e;
+		}
+		httpSession.removeAttribute(TI);
 	}
 
 	@Override
