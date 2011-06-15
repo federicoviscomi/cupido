@@ -84,7 +84,7 @@ public class PlayersManager {
 					&& !players[i].name.equals(userName)) {
 				try {
 					players[i].sni.notifyPlayerJoined("_bot." + userName, true,
-							0, (position - i) % 4);
+							0, (position - i) % 3);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -110,11 +110,11 @@ public class PlayersManager {
 			position++;
 
 		/* notify every players but the one who is joining */
-		for (int i = 1; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			if (players[i] != null && !players[i].name.equals(playerName)) {
 				try {
-					players[i].sni.notifyPlayerJoined("_bot." + playerName,
-							false, score, (position - i) % 4);
+					players[i].sni.notifyPlayerJoined(playerName, false, score,
+							(position - i) % 3);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -255,6 +255,13 @@ public class PlayersManager {
 			newScore[i] = players[i].score;
 		}
 		return newScore;
+	}
+
+	public void print() {
+		System.out.print("\nPlayersManager.print(): ");
+		for (PlayerInfo pi : players) {
+			System.out.print(pi);
+		}
 	}
 
 }

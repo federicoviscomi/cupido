@@ -30,9 +30,7 @@ public class DatabaseManager implements DatabaseInterface {
 
 	public DatabaseManager() {
 		try {
-			System.out.println("Initializing Server... ");
 			Class.forName("org.gjt.mm.mysql.Driver");
-			System.out.println(" Driver Found.");
 			String url = "jdbc:mysql://" + host + "/" + database;
 			connection = (Connection) DriverManager.getConnection(url, userDB,
 					passDB);

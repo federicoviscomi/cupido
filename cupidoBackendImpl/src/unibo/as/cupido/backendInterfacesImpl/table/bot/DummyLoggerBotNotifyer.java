@@ -24,6 +24,7 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	private Card[] playedCard = new Card[4];
 	private int nextToPlay = -1;
 	private int turn;
+	private int point;
 
 	private Semaphore playNextCardLock;
 	private CardPlayingThread cardPlayingThread;
@@ -51,8 +52,9 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	@Override
 	public void notifyGameStarted(Card[] cards) throws RemoteException {
 		System.out.println("\n" + userName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + Arrays.toString(cards) + ")");
+
+		+ Thread.currentThread().getStackTrace()[1].getMethodName() + "("
+				+ Arrays.toString(cards) + ")");
 
 		if (turn != 0)
 			throw new Error();
@@ -64,15 +66,17 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	public void notifyLocalChatMessage(ChatMessage message)
 			throws RemoteException {
 		System.out.println("\n" + userName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + message + ")");
+
+		+ Thread.currentThread().getStackTrace()[1].getMethodName() + "("
+				+ message + ")");
 	}
 
 	@Override
 	public void notifyPassedCards(Card[] cards) throws RemoteException {
 		System.out.println("\n" + userName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + Arrays.toString(cards) + ")");
+
+		+ Thread.currentThread().getStackTrace()[1].getMethodName() + "("
+				+ Arrays.toString(cards) + ")");
 		this.cards.addAll(Arrays.asList(cards));
 		for (Card card : this.cards) {
 			if (card.equals(CardsManager.twoOfClubs)) {
@@ -96,22 +100,25 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	@Override
 	public void notifyPlayerJoined(String name, boolean isBot, int point,
 			int position) throws RemoteException {
-		System.out.println("\n" + userName + ": "
+		System.out.print("\n DummyLoggerBotNotifier " + userName + "."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ", " + isBot + "," + point + "," + position
 				+ ")");
-		if (name == null || position < 1 || position > 3)
+		if (name == null || position < 0 || position > 2)
 			throw new IllegalArgumentException();
 		if (initialTableStatus.opponents[position] != null)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Unable to add player" + name
+					+ " beacuse ITS: " + initialTableStatus
+					+ " already contains a player in position " + position);
 		initialTableStatus.opponents[position] = name;
 		initialTableStatus.playerScores[position] = position;
 		initialTableStatus.whoIsBot[position] = isBot;
+		System.out.println(initialTableStatus);
 	}
 
 	@Override
 	public void notifyPlayerLeft(String name) throws RemoteException {
-		System.out.println("\n" + userName + ": "
+		System.out.print("\n" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ")");
 		int position = 0;
@@ -120,6 +127,7 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 		if (position == 3)
 			throw new IllegalArgumentException("Player not found " + name);
 		initialTableStatus.opponents[position] = null;
+		System.out.println(initialTableStatus);
 	}
 
 	@Override

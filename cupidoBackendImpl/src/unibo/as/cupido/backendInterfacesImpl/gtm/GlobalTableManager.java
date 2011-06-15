@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 import java.util.Collection;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
@@ -68,10 +69,21 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			registry = LocateRegistry.getRegistry();
 			registry.bind(GlobalTableManagerInterface.globalTableManagerName,
 					UnicastRemoteObject.exportObject(this));
+
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					try {
+						registry.unbind(GlobalTableManagerInterface.globalTableManagerName);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+
 			System.out
 					.println("Global table manager server started correctly at address "
-							+ InetAddress.getLocalHost()
-							+ "\n Current thread is " + Thread.currentThread());
+							+ InetAddress.getLocalHost());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			System.exit(-1);
@@ -89,6 +101,9 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			ServletNotificationsInterface snf) throws RemoteException,
 			AllLTMBusyException {
 		try {
+			System.out.println("\n"
+					+ Thread.currentThread().getStackTrace()[1].getMethodName()
+					+ "(" + owner + ", " + snf + ")");
 			/* chose an LTM according to some load balancing policy */
 			LocalTableManagerInterface chosenLTM = ltmSwarm.chooseLTM();
 
@@ -98,7 +113,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 			/* store created table */
 			allTables.addTable(table.second, chosenLTM);
-			System.out.println("Current thread is " + Thread.currentThread());
+
 			return table.first;
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -108,7 +123,6 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	public Triple[] getAllLTM() {
-		System.out.println("Current thread is " + Thread.currentThread());
 		return ltmSwarm.getAllLTM();
 	}
 
@@ -120,20 +134,21 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 	@Override
 	public Collection<TableInfoForClient> getTableList() throws RemoteException {
-		System.out.println("Current thread is " + Thread.currentThread());
+
 		return allTables.getAllTables();
 	}
 
 	@Override
 	public void notifyLocalTableManagerShutdown(LocalTableManagerInterface ltm) {
-		System.out.println("Current thread is " + Thread.currentThread());
 		ltmSwarm.remove(ltm);
 	}
 
 	@Override
 	public void notifyLocalTableManagerStartup(LocalTableManagerInterface ltmi,
 			int maxTable) throws RemoteException {
-		System.out.println("Current thread is " + Thread.currentThread());
+		System.out.println("\n GlobalTableManager."
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + ltmi + ", " + maxTable + ")");
 		ltmSwarm.addLTM(ltmi, maxTable);
 	}
 
@@ -141,7 +156,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	public void notifyTableDestruction(TableDescriptor tableDescriptor,
 			LocalTableManagerInterface ltm) throws RemoteException,
 			NoSuchLTMInterfaceException {
-		System.out.println("Current thread is " + Thread.currentThread());
+
 		allTables.removeTable(tableDescriptor);
 		ltmSwarm.decreaseTableCount(ltm);
 	}
@@ -149,14 +164,13 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	@Override
 	public void notifyTableJoin(TableDescriptor tableDescriptor)
 			throws RemoteException, NoSuchTableException {
-		System.out.println("Current thread is " + Thread.currentThread());
 		allTables.decreaseFreePosition(tableDescriptor);
 	}
 
 	@Override
 	public char[] ping() throws RemoteException {
 		try {
-			System.out.println("Current thread is " + Thread.currentThread());
+
 			Thread.sleep(500);
 			return "pong".toCharArray();
 		} catch (Exception e) {
@@ -168,7 +182,6 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 	public void shutDown() {
 		try {
-			System.out.println("Current thread is " + Thread.currentThread());
 			registry.unbind(globalTableManagerName);
 			for (LocalTableManagerInterface ltmi : ltmSwarm) {
 				ltmi.notifyGTMShutDown();

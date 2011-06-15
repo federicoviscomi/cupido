@@ -91,15 +91,24 @@ public class LocalTableManager implements LocalTableManagerInterface {
 							.exportObject(this), MAX_TABLE);
 
 			allTables = new HashMap<Integer, TableInterface>(MAX_TABLE);
+			localAddress = InetAddress.getLocalHost().toString();
 
 			System.out
 					.println("Local table manager server started correctly at address "
-							+ InetAddress.getLocalHost()
-							+ "\nGlobal table manager server address is "
-							+ gtmAddress
-							+ "\n Current thread is "
-							+ Thread.currentThread());
-			localAddress = InetAddress.getLocalHost().toString();
+							+ InetAddress.getLocalHost());
+
+			final LocalTableManager ltm = this;
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					try {
+						gtmRemote.notifyLocalTableManagerShutdown(ltm);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -117,7 +126,6 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	public Pair<TableInterface, TableInfoForClient> createTable(String owner,
 			ServletNotificationsInterface snf) throws RemoteException {
 		try {
-			System.out.println("Current thread is " + Thread.currentThread());
 			TableInfoForClient newTable = new TableInfoForClient(owner, 3,
 					new TableDescriptor(localAddress + this.toString(), nextId));
 			TableInterface tableRemote = (TableInterface) UnicastRemoteObject
@@ -141,7 +149,6 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	@Override
 	public TableInterface getTable(int tableId) {
-		System.out.println("Current thread is " + Thread.currentThread());
 		return allTables.get(tableId);
 	}
 
@@ -154,7 +161,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	@Override
 	public void notifyGTMShutDown() {
 		// TODO Auto-generated method stub
-		System.out.println("Current thread is " + Thread.currentThread());
+
 	}
 
 	/**
@@ -166,13 +173,12 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	 *            the id of the table that terminates
 	 */
 	public void notifyTableDestruction(int tableId) {
-		System.out.println("Current thread is " + Thread.currentThread());
+
 		allTables.remove(tableId);
 	}
 
 	public void shutDown() {
 		try {
-			System.out.println("Current thread is " + Thread.currentThread());
 			gtmRemote.notifyLocalTableManagerShutdown(this);
 		} catch (AccessException e) {
 			// TODO Auto-generated catch block
