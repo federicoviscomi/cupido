@@ -55,8 +55,7 @@ public class PlayersManager {
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
 			int score) throws SQLException, NoSuchUserException {
-		players[Positions.OWNER.ordinal()] = new PlayerInfo(owner, false,
-				score, snf);
+		players[0] = new PlayerInfo(owner, false, score, snf);
 	}
 
 	public void addBot(String userName, int position,
@@ -83,8 +82,9 @@ public class PlayersManager {
 			if (i != position && players[i] != null
 					&& !players[i].name.equals(userName)) {
 				try {
+					this.print();
 					players[i].sni.notifyPlayerJoined("_bot." + userName, true,
-							0, (position - i) % 3);
+							0, ((position - i) % 4) - 1);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -111,10 +111,11 @@ public class PlayersManager {
 
 		/* notify every players but the one who is joining */
 		for (int i = 0; i < 4; i++) {
-			if (players[i] != null && !players[i].name.equals(playerName)) {
+			if (players[i] != null) {
 				try {
+					this.print();
 					players[i].sni.notifyPlayerJoined(playerName, false, score,
-							(position - i) % 3);
+							 ((position - i) % 4) - 1);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

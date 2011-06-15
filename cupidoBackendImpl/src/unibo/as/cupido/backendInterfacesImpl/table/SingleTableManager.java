@@ -50,7 +50,6 @@ public class SingleTableManager implements TableInterface {
 	public SingleTableManager(ServletNotificationsInterface snf,
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
 			throws RemoteException, SQLException, NoSuchUserException {
-
 		this.table = table;
 		playersManager = new PlayersManager(table.owner, snf,
 				databaseManager.getPlayerScore(table.owner));
@@ -77,7 +76,7 @@ public class SingleTableManager implements TableInterface {
 		playersManager.addBot(userName, position, bot);
 		if (playersManager.playersCount() == 4)
 			start.release();
-		// playersManager.print();
+		playersManager.print();
 	}
 
 	@Override
@@ -96,6 +95,7 @@ public class SingleTableManager implements TableInterface {
 		viewers.notifyPlayerJoined(userName, score, position);
 		if (playersManager.playersCount() == 4)
 			start.release();
+		playersManager.print();
 		return playersManager.getInitialTableStatus(position);
 	}
 

@@ -52,9 +52,9 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	@Override
 	public void notifyGameStarted(Card[] cards) throws RemoteException {
 		System.out.println("\n" + userName + ": "
-
-		+ Thread.currentThread().getStackTrace()[1].getMethodName() + "("
-				+ Arrays.toString(cards) + ")");
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + Arrays.toString(cards) + "). initial table status "
+				+ initialTableStatus);
 
 		if (turn != 0)
 			throw new Error();
@@ -66,17 +66,15 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	public void notifyLocalChatMessage(ChatMessage message)
 			throws RemoteException {
 		System.out.println("\n" + userName + ": "
-
-		+ Thread.currentThread().getStackTrace()[1].getMethodName() + "("
-				+ message + ")");
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + message + ")");
 	}
 
 	@Override
 	public void notifyPassedCards(Card[] cards) throws RemoteException {
 		System.out.println("\n" + userName + ": "
-
-		+ Thread.currentThread().getStackTrace()[1].getMethodName() + "("
-				+ Arrays.toString(cards) + ")");
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + Arrays.toString(cards) + ")");
 		this.cards.addAll(Arrays.asList(cards));
 		for (Card card : this.cards) {
 			if (card.equals(CardsManager.twoOfClubs)) {

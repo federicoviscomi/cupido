@@ -1,5 +1,6 @@
 package unibo.as.cupido.backendInterfacesImpl.gtm;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,10 @@ public class AllTables {
 	}
 
 	public Collection<TableInfoForClient> getAllTables() {
-		return tifc.values();
+		ArrayList<TableInfoForClient> values = new ArrayList<TableInfoForClient>();
+		values.addAll(tifc.values());
+		return values;
+		//return tifc.values();
 	}
 
 	public LocalTableManagerInterface getLTMInterface(String ltmId) {
