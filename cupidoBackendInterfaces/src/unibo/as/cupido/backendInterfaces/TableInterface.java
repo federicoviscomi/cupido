@@ -147,10 +147,12 @@ public interface TableInterface extends Remote {
 	 *             he wants to pass</li>
 	 *             <li>if the user <code>userName</code> does not exists</li>
 	 *             </ul>
+	 * @throws IllegalStateException
+	 *             if the card must not be passed in this state of the game
 	 * @throws RemoteException
 	 */
 	void passCards(String userName, Card[] cards)
-			throws IllegalArgumentException, RemoteException;
+			throws IllegalArgumentException, IllegalStateException, RemoteException;
 
 	/**
 	 * Player <code>platerName</code> plays card <code>card</code>.
