@@ -1,20 +1,14 @@
-/**
- * 
- */
 package unibo.as.cupido.client;
+
+import java.util.Collection;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.client.CupidoInterface.TableData;
-
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-/**
- * @author Lorenzo Belli
- * 
- */
 public interface CupidoInterfaceAsync {
 
 	void logout(AsyncCallback<Void> callback);
@@ -26,7 +20,7 @@ public interface CupidoInterfaceAsync {
 
 	void login(String username, String password, AsyncCallback<Boolean> callback);
 
-	void getTableList(AsyncCallback<TableData[]> callback);
+	void getTableList(AsyncCallback<Collection<TableInfoForClient>> callback);
 
 	void createTable(AsyncCallback<InitialTableStatus> callback);
 
@@ -51,4 +45,6 @@ public interface CupidoInterfaceAsync {
 	void sendGlobalChatMessage(String message, AsyncCallback<Void> callback);
 
 	void sendLocalChatMessage(String message, AsyncCallback<Void> callback);
+
+	void destroySession(AsyncCallback<Void> callback);
 }

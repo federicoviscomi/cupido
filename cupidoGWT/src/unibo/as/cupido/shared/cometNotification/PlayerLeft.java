@@ -10,5 +10,11 @@ public class PlayerLeft implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	public PlayerLeft(){
+		super();
+	}
 	String player;
+	public PlayerLeft(String player){
+		this.player=player;
+	}
 }

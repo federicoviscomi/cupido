@@ -1,17 +1,18 @@
 package unibo.as.cupido.backendInterfaces;
 
 import java.rmi.Remote;
-
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.exception.DuplicatePlayerNameException;
+import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
@@ -101,16 +102,20 @@ public interface TableInterface extends Remote {
 	 *             TODO what's the meaning of this?
 	 * @throws IllegalStateException
 	 *             if game status is not {@link GameStatus}.INIT
+	 *             FIXME: are not this and FullTableException threw in the same case?
 	 * @throws IllegalArgumentException
 	 *             if an argument is null
-	 * @throws DuplicatePlayerNameException
+	 * @throws DuplicateUserNameException
 	 *             if a player name <code>userName</code> is already playing or
 	 *             viewing the table
+	 * @throws NoSuchUserException
+	 * @throws SQLException
 	 */
 	public InitialTableStatus joinTable(String userName,
 			ServletNotificationsInterface snf) throws FullTableException,
 			NoSuchTableException, RemoteException, IllegalArgumentException,
-			IllegalStateException, DuplicatePlayerNameException;
+			IllegalStateException, DuplicateUserNameException, SQLException,
+			NoSuchUserException;
 
 	/**
 	 * Called by a player to leave a table. If a player leaves a table when game
@@ -143,10 +148,12 @@ public interface TableInterface extends Remote {
 	 *             he wants to pass</li>
 	 *             <li>if the user <code>userName</code> does not exists</li>
 	 *             </ul>
+	 * @throws IllegalStateException
+	 *             if the card must not be passed in this state of the game
 	 * @throws RemoteException
 	 */
 	void passCards(String userName, Card[] cards)
-			throws IllegalArgumentException, RemoteException;
+			throws IllegalArgumentException, IllegalStateException, RemoteException;
 
 	/**
 	 * Player <code>platerName</code> plays card <code>card</code>.

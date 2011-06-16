@@ -59,7 +59,7 @@ public class StateManagerImpl implements StateManager {
 		});
 		
 		players = new ArrayList<PlayerInfo>();
-		for (PlayerStatus playerStatus : observedGameStatus.ogs) {
+		for (PlayerStatus playerStatus : observedGameStatus.playerStatus) {
 			PlayerInfo playerInfo = new PlayerInfo();
 			playerInfo.isBot = playerStatus.isBot;
 			playerInfo.name = playerStatus.name;
@@ -80,39 +80,39 @@ public class StateManagerImpl implements StateManager {
 			assert opponent != null;
 		
 		ObservedGameStatus observedGameStatus = new ObservedGameStatus();
-		observedGameStatus.ogs = new PlayerStatus[4];
+		observedGameStatus.playerStatus = new PlayerStatus[4];
 		
 		// Bottom player
-		observedGameStatus.ogs[0] = new PlayerStatus();
-		observedGameStatus.ogs[0].isBot = false;
-		observedGameStatus.ogs[0].name = username;
-		observedGameStatus.ogs[0].numOfCardsInHand = 13;
-		observedGameStatus.ogs[0].playedCard = null;
-		observedGameStatus.ogs[0].score = initialTableStatus.playerPoints[0];
+		observedGameStatus.playerStatus[0] = new PlayerStatus();
+		observedGameStatus.playerStatus[0].isBot = false;
+		observedGameStatus.playerStatus[0].name = username;
+		observedGameStatus.playerStatus[0].numOfCardsInHand = 13;
+		observedGameStatus.playerStatus[0].playedCard = null;
+		observedGameStatus.playerStatus[0].score = initialTableStatus.playerScores[0];
 
 		// Left player
-		observedGameStatus.ogs[1] = new PlayerStatus();
-		observedGameStatus.ogs[1].isBot = initialTableStatus.whoIsBot[0];
-		observedGameStatus.ogs[1].name = initialTableStatus.opponents[0];
-		observedGameStatus.ogs[1].numOfCardsInHand = 13;
-		observedGameStatus.ogs[1].playedCard = null;
-		observedGameStatus.ogs[1].score = initialTableStatus.playerPoints[1];
+		observedGameStatus.playerStatus[1] = new PlayerStatus();
+		observedGameStatus.playerStatus[1].isBot = initialTableStatus.whoIsBot[0];
+		observedGameStatus.playerStatus[1].name = initialTableStatus.opponents[0];
+		observedGameStatus.playerStatus[1].numOfCardsInHand = 13;
+		observedGameStatus.playerStatus[1].playedCard = null;
+		observedGameStatus.playerStatus[1].score = initialTableStatus.playerScores[1];
 
 		// Top player
-		observedGameStatus.ogs[2] = new PlayerStatus();
-		observedGameStatus.ogs[2].isBot = initialTableStatus.whoIsBot[1];
-		observedGameStatus.ogs[2].name = initialTableStatus.opponents[1];
-		observedGameStatus.ogs[2].numOfCardsInHand = 13;
-		observedGameStatus.ogs[2].playedCard = null;
-		observedGameStatus.ogs[2].score = initialTableStatus.playerPoints[2];
+		observedGameStatus.playerStatus[2] = new PlayerStatus();
+		observedGameStatus.playerStatus[2].isBot = initialTableStatus.whoIsBot[1];
+		observedGameStatus.playerStatus[2].name = initialTableStatus.opponents[1];
+		observedGameStatus.playerStatus[2].numOfCardsInHand = 13;
+		observedGameStatus.playerStatus[2].playedCard = null;
+		observedGameStatus.playerStatus[2].score = initialTableStatus.playerScores[2];
 
 		// Right player
-		observedGameStatus.ogs[3] = new PlayerStatus();
-		observedGameStatus.ogs[3].isBot = initialTableStatus.whoIsBot[2];
-		observedGameStatus.ogs[3].name = initialTableStatus.opponents[2];
-		observedGameStatus.ogs[3].numOfCardsInHand = 13;
-		observedGameStatus.ogs[3].playedCard = null;
-		observedGameStatus.ogs[3].score = initialTableStatus.playerPoints[3];
+		observedGameStatus.playerStatus[3] = new PlayerStatus();
+		observedGameStatus.playerStatus[3].isBot = initialTableStatus.whoIsBot[2];
+		observedGameStatus.playerStatus[3].name = initialTableStatus.opponents[2];
+		observedGameStatus.playerStatus[3].numOfCardsInHand = 13;
+		observedGameStatus.playerStatus[3].playedCard = null;
+		observedGameStatus.playerStatus[3].score = initialTableStatus.playerScores[3];
 		
 		this.cardsGameWidget = new CardsGameWidget(tableSize, observedGameStatus,
 				cards, new VerticalPanel(),
@@ -132,7 +132,7 @@ public class StateManagerImpl implements StateManager {
 		});
 		
 		players = new ArrayList<PlayerInfo>();
-		for (PlayerStatus playerStatus : observedGameStatus.ogs) {
+		for (PlayerStatus playerStatus : observedGameStatus.playerStatus) {
 			PlayerInfo playerInfo = new PlayerInfo();
 			playerInfo.isBot = playerStatus.isBot;
 			playerInfo.name = playerStatus.name;

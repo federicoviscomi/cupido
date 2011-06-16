@@ -1,27 +1,27 @@
-package unibo.as.cupido.server;
+package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
-import net.zschech.gwt.comet.server.CometSession;
-
-import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
+import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 
-public class ServletNotificationsInterfaceImpl extends UnicastRemoteObject
-		implements ServletNotificationsInterface {
+/**
+ * 
+ * This is a bot who plays heart with the following strategy:
+ * 
+ * 
+ * @author cane
+ * 
+ */
+public class BotFewTricks extends AbstractBot {
 
-	private static final long serialVersionUID = 1L;
-
-	protected ServletNotificationsInterfaceImpl() throws RemoteException {
-		super();
+	public BotFewTricks(InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager) {
 		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * Called by a Table to notify the end of the game.
-	 */
 	@Override
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint)
 			throws RemoteException {
@@ -56,14 +56,26 @@ public class ServletNotificationsInterfaceImpl extends UnicastRemoteObject
 	}
 
 	@Override
-	public void notifyPlayerJoined(String name, boolean isBot, int point,
+	public void notifyPlayerJoined(String playerName, boolean isBot, int score,
 			int position) throws RemoteException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void notifyPlayerLeft(String name) throws RemoteException {
+	public void notifyPlayerLeft(String playerName) throws RemoteException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void passCards() throws RemoteException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void playNextCard() throws RemoteException {
 		// TODO Auto-generated method stub
 
 	}

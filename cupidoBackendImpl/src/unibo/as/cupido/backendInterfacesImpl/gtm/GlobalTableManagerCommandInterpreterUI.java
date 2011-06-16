@@ -6,11 +6,10 @@ import jargs.gnu.CmdLineParser.Option;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.rmi.RemoteException;
 import java.util.Collection;
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface.Table;
-import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.common.Pair;
-import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm;
+
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
 
 /**
@@ -46,11 +45,39 @@ import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
  */
 public class GlobalTableManagerCommandInterpreterUI {
 
+	private static final String FORMAT = "%-7.7s %-3.3s %-10.10s %-20.20s\n";
+	private static final String USAGE = String.format(FORMAT + FORMAT + FORMAT
+			+ FORMAT + FORMAT, "COMMAND", "OPT", "LONG_OPT", "DESCRIPTION",
+			"start", "", "", "start the GTM server", "exit", "", "",
+			"shutdown the GTM server", "list", "-l", "--localManagers",
+			"list all LTM managed by this GTM server", "list", "-t", "--table",
+			"list all table managed by this GTM server");
+
 	public static void main(String[] args) {
-		new GlobalTableManagerCommandInterpreterUI().execute();
+		if (args.length > 1 && "start".equals(args[1])) {
+			try {
+				new GlobalTableManagerCommandInterpreterUI(true).execute();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				new GlobalTableManagerCommandInterpreterUI(false).execute();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private GlobalTableManager globalTableManager = null;
+
+	public GlobalTableManagerCommandInterpreterUI(boolean startGTM)
+			throws RemoteException {
+		if (startGTM)
+			globalTableManager = new GlobalTableManager();
+	}
 
 	public void execute() {
 		CmdLineParser parser = new CmdLineParser();
@@ -71,37 +98,54 @@ public class GlobalTableManagerCommandInterpreterUI {
 						String[] command = parser.getRemainingArgs();
 						if (command.length == 1) {
 							if (command[0].equals("start")) {
-								globalTableManager = new GlobalTableManager();
-							} else if (command[0].equals("exit")) {
-								exit(0);
-							} else if (command[0].equals("list")) {
-								boolean listLTM = (parser
-										.getOptionValue(listLocalManagersOtion) == null ? false
-										: true);
-								boolean listTables = (parser
-										.getOptionValue(listTableOption) == null ? false
-										: true);
-								if (listLTM) {
-									Triple[] allLocalServer = globalTableManager
-											.getAllLTM();
-									System.out
-											.format("\n list af all local server follows:");
-									for (Triple localServer : allLocalServer) {
-										System.out.format("\n %25s",
-												localServer);
-									}
+								if (globalTableManager == null) {
+									globalTableManager = new GlobalTableManager();
+								} else {
+									System.out.println("GTM already started!");
 								}
-								if (listTables) {
-									Collection<Pair<Table, LocalTableManagerInterface>> tableList = globalTableManager
-											.getTableList();
-									System.out
-											.format("\n list af all tables follows:");
-									for (Pair<Table, LocalTableManagerInterface> table : tableList) {
-										System.out.format("\n %25s", table);
+							} else {
+								if (command[0].equals("exit")) {
+									exit(0);
+								} else if (globalTableManager == null) {
+									System.out.println("start GTM first!");
+									System.out.println(USAGE);
+								} else {
+									if (command[0].equals("list")) {
+										boolean listLTM = (parser
+												.getOptionValue(listLocalManagersOtion) == null ? false
+												: true);
+										boolean listTables = (parser
+												.getOptionValue(listTableOption) == null ? false
+												: true);
+										if (listLTM) {
+											Triple[] allLocalServer = globalTableManager
+													.getAllLTM();
+											System.out
+													.format("\n list af all local server follows:");
+											for (Triple localServer : allLocalServer) {
+												System.out.format("\n %25s",
+														localServer);
+											}
+										}
+										if (listTables) {
+											Collection<TableInfoForClient> tableList = globalTableManager
+													.getTableList();
+											System.out
+													.format("\n list af all tables follows:");
+											for (TableInfoForClient table : tableList) {
+												System.out.format("\n %25s",
+														table);
+											}
+										}
+										if (!listLTM && !listTables) {
+											System.out
+													.println(" nothing to list?");
+										}
+									} else {
+										System.out.println(command[0]
+												+ ": command not found");
+										System.out.println(USAGE);
 									}
-								}
-								if (!listLTM && !listTables) {
-									System.out.println(" nothing to list?");
 								}
 							}
 						} else {

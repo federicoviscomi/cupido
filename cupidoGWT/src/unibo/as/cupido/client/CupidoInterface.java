@@ -3,18 +3,25 @@
  */
 package unibo.as.cupido.client;
 
-import java.io.Serializable;
+import java.util.Collection;
 
 import unibo.as.cupido.backendInterfaces.common.*;
-import unibo.as.cupido.backendInterfaces.exception.*;
+import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
+import unibo.as.cupido.backendInterfaces.exception.MaxNumTableReachedException;
+import unibo.as.cupido.backendInterfaces.exception.FatalException;
+import unibo.as.cupido.backendInterfaces.exception.FullTableException;
+import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchServerException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
+import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
+import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
+import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
+import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-/**
- * @author Lorenzo Belli
- * 
- */
+
 @RemoteServiceRelativePath("cupido")
 public interface CupidoInterface extends RemoteService {
 
@@ -24,7 +31,8 @@ public interface CupidoInterface extends RemoteService {
 	 */
 	public void openCometConnection();
 
-	public boolean login(String username, String password);
+	public boolean login(String username, String password)
+			throws FatalException;
 
 	/**
 	 * 
@@ -32,79 +40,167 @@ public interface CupidoInterface extends RemoteService {
 	 * 
 	 * @param password
 	 * @return
+	 * @throws FatalException
 	 */
-	public boolean registerUser(String username, String password);
+	public boolean registerUser(String username, String password)
+			throws FatalException;
 
-	public boolean isUserRegistered(String username);
+	public boolean isUserRegistered(String username) throws FatalException;
 
 	public void logout();
 
 	/**
-	 * Identify a single table
+	 * 
+	 * @return
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
 	 */
-	public class TableData implements Serializable {
-
-		private static final long serialVersionUID = 1L;
-		public String owner;
-		public int vacantSeats;
-		public String server;
-		public int tableId;
-	}
-
-	/**
-	 * Return all the tables
-	 */
-	public TableData[] getTableList();
+	public Collection<TableInfoForClient> getTableList() throws UserNotAuthenticatedException,
+	FatalException;
 
 	/**
 	 * 
-	 * @return InitialTableStatus named ITS, with ITS.opponents = null
-	 *         ITS.whoIsBot = null ITS.
-	 * @throws AllLTMBusyException
+	 * @return InitialTableStatus with InitialTableStatus.playerPoints[0] is the
+	 *         only meaningful attributes in this object all other attributes of
+	 *         InitialTableStatus are meaningless and must be ignored
+	 * @throws MaxNumTableReachedException
 	 *             if a table can't be created now (you can try again later)
+	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
-	 *             if there are some internal errors of communication
 	 */
-	public InitialTableStatus createTable() throws AllLTMBusyException,
+	public InitialTableStatus createTable() throws MaxNumTableReachedException,
+			UserNotAuthenticatedException, FatalException;
+
+	/**
+	 * join a match not yet started
+	 * 
+	 * @param server
+	 * @param tableId
+	 * @return InitialTableStatus state of the match not yet started
+	 * @throws FullTableException
+	 *             if game already have 4 players
+	 * @throws NoSuchTableException
+	 *             if table is no more available, but user can join other table
+	 * @throws DuplicateUserNameException
+	 *             if player is already playing or viewing the selected table
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
+	 *             in case of internal serious error while joining the table,
+	 *             probably future action will not be performed
+	 */
+	public InitialTableStatus joinTable(String server, int tableId)
+			throws FullTableException, NoSuchTableException,
+			DuplicateUserNameException, UserNotAuthenticatedException,
 			FatalException;
 
-	public InitialTableStatus joinTable(String server, int tableId)
-			throws FullTableException, NoSuchTableException;
-
+	/**
+	 * 
+	 * @param server
+	 * @param tableId
+	 * @return
+	 * @throws NoSuchTableException
+	 *             if tableId is invalid or table no longer exists
+	 * @throws NoSuchServerException
+	 * 			   if server is invalid
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
+	 */
 	public ObservedGameStatus viewTable(String server, int tableId)
-			throws NoSuchTableException;
+			throws NoSuchTableException, NoSuchServerException, UserNotAuthenticatedException,
+			FatalException;
 
 	/**
 	 * Sends a message to the table chat
 	 * 
 	 * @param message
+	 * @throws IllegalArgumentException if message has bad format
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
 	 */
-	void sendLocalChatMessage(String message);
+	void sendLocalChatMessage(String message) throws IllegalArgumentException,
+			UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * The current player leaves the table
+	 * 
+	 * @throws UserNotAuthenticatedException
+	 * @throws PlayerNotFoundException
+	 *             if player is not playing or viewing a game
+	 * @throws FatalException
 	 */
-	void leaveTable();
+	void leaveTable() throws UserNotAuthenticatedException, PlayerNotFoundException, FatalException;
 
-	void playCard(Card card) throws IllegalMoveException;
+	/**
+	 * 
+	 * @param card
+	 *            Card to be played
+	 * @throws IllegalMoveException
+	 *             user can't play that card now or the player is not at the table
+	 * @throws IllegalArgumentException
+	 *             if player does not own the card, or card==null
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
+	 */
+	void playCard(Card card) throws IllegalMoveException, FatalException,
+			IllegalArgumentException, UserNotAuthenticatedException;
 
 	/**
 	 * 
 	 * @param cards
 	 *            cards.length must be 3
-	 * @throws IllegalMoveException
-	 * 
+	 * @throws IllegalStateException
+	 *             if the cards must not be passed now in the game
+	 * @throws IllegalArgumentException
+	 *             if cards is not a valid parameter or the user is not playing
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
 	 */
-	void passCards(Card[] cards) throws IllegalMoveException;
+	void passCards(Card[] cards) throws IllegalStateException, IllegalArgumentException,
+			UserNotAuthenticatedException, FatalException;
 
-	void addBot(int position) throws PositionFullException;
+	/**
+	 * Add an automatic playing machine to the table
+	 * 
+	 * @param position
+	 *            valid range is [1-3]
+	 * @throws PositionFullException
+	 *             if at the table in position (position) there is a human
+	 *             player
+	 * @throws FullTableException
+	 *             if the table already has four player
+	 * @throws NotCreatorException
+	 *             if the user is not the table creator
+	 * @throws IllegalArgumentException
+	 *             if position value is not valid
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
+	 */
+	void addBot(int position) throws PositionFullException, FullTableException,
+			NotCreatorException, IllegalArgumentException,
+			UserNotAuthenticatedException, FatalException;
 
-	ChatMessage[] viewLastMessages();
+	/**
+	 * 
+	 * @return
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
+	 */
+	ChatMessage[] viewLastMessages() throws UserNotAuthenticatedException,
+			FatalException;
 
 	/**
 	 * Sends a message to the table chat
 	 * 
 	 * @param message
+	 * @throws IllegalArgumentException if message has bad format
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
 	 */
-	void sendGlobalChatMessage(String message);
+	void sendGlobalChatMessage(String message) throws IllegalArgumentException, UserNotAuthenticatedException,
+			FatalException;
+
+	/**
+	 * Destroy comet and http sessions
+	 */
+	public void destroySession();
 }

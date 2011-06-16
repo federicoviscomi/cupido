@@ -1,0 +1,4 @@
+* Add a timer in the GUI (and maybe also in the backend) to prevent an user
+  from waiting endlessly instead of dealing a card.
+* Add to the local (and maybe also the global) chat some notifications to
+  let others know when a user joins the chat or leaves it.
