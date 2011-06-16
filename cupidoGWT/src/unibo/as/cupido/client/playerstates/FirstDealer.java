@@ -1,4 +1,4 @@
-package unibo.as.cupido.client.gamestates;
+package unibo.as.cupido.client.playerstates;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 
 public class FirstDealer {
 
-	public FirstDealer(final CardsGameWidget cardsGameWidget, final StateManager stateManager, final List<Card> hand) {
+	public FirstDealer(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);

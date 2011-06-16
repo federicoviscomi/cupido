@@ -1,4 +1,4 @@
-package unibo.as.cupido.client.gamestates;
+package unibo.as.cupido.client.playerstates;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +14,6 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.client.CardWidget;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
@@ -28,7 +27,7 @@ public class CardPassingAsPlayer {
 	 */
 	boolean confirmed = false;
 
-	public CardPassingAsPlayer(final CardsGameWidget cardsGameWidget, final StateManager stateManager, final List<Card> hand) {
+	public CardPassingAsPlayer(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
 		VerticalPanel cornerWidget = new VerticalPanel();
 		cornerWidget.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		cornerWidget.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);

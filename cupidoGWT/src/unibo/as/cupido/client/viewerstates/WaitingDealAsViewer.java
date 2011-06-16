@@ -1,11 +1,8 @@
-package unibo.as.cupido.client.gamestates;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+package unibo.as.cupido.client.viewerstates;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -15,18 +12,32 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.GWTAnimation;
-import unibo.as.cupido.client.RandomCardGenerator;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
+import unibo.as.cupido.client.RandomCardGenerator;
 
-public class CardPassingWaitingAsPlayer {
+public class WaitingDealAsViewer {
 
-	public CardPassingWaitingAsPlayer(final CardsGameWidget cardsGameWidget, final StateManager stateManager, final List<Card> hand) {
+	public WaitingDealAsViewer(final CardsGameWidget cardsGameWidget, final ViewerStateManager stateManager) {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
-		final HTML text = new HTML("Aspetta che gli altri giocatori decidano quali carte passare.");
+		final int currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager.getDealtCards().size()) % 4;
+		ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo().get(currentPlayer);
+		
+		final HTML text;
+		
+		if (playerInfo.isBot)
+			text = new HTML("Attendi che il bot giochi");
+		else {
+			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+			safeHtmlBuilder.appendEscaped(playerInfo.name);
+			safeHtmlBuilder.appendHtmlConstant(" giochi.");
+			text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
+		}
+		
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
@@ -37,38 +48,22 @@ public class CardPassingWaitingAsPlayer {
 		continueButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
+				// FIXME: This data should come from the servlet.
+				int player = currentPlayer;
+				Card card = RandomCardGenerator.generateCard();
 				
-				text.setText("");
+				stateManager.addDealtCard(player, card);
 				
-				// FIXME: Remove this. This data should come from the servlet.
-				List<Card> passedCards = new ArrayList<Card>();
-				passedCards.add(RandomCardGenerator.generateCard());
-				passedCards.add(RandomCardGenerator.generateCard());
-				passedCards.add(RandomCardGenerator.generateCard());
+				cardsGameWidget.revealCoveredCard(player, card);
 				
-				hand.addAll(passedCards);
-				
-				Collections.sort(passedCards, CardsGameWidget.getCardComparator());
-				
-				for (int i = 0; i < 3; i++)
-					cardsGameWidget.revealCoveredCard(0, passedCards.get(3 - i - 1));
-
-				for (Card card : passedCards)
-					cardsGameWidget.pickCard(0, card);
-				
+				cardsGameWidget.dealCard(player, card);
 				cardsGameWidget.runPendingAnimations(2000, new GWTAnimation.AnimationCompletedListener() {
 					@Override
 					public void onComplete() {
-						boolean found = false;
-						for (Card card : hand)
-							if (card.suit == Card.Suit.CLUBS && card.value == 2) {
-								found = true;
-								break;
-							}
-						if (found)
-							stateManager.transitionToFirstDealer(hand);
+						if (stateManager.getDealtCards().size() == 4)
+							stateManager.transitionToEndOfTrickAsViewer();
 						else
-							stateManager.transitionToWaitingFirstDealAsPlayer(hand);
+							stateManager.transitionToWaitingDealAsViewer();
 					}
 				});
 			}
@@ -86,7 +81,6 @@ public class CardPassingWaitingAsPlayer {
 		panel.add(exitButton);
 		
 		cardsGameWidget.setCornerWidget(panel);
-		
 		cardsGameWidget.setListener(new GameEventListener() {
 			@Override
 			public void onAnimationStart() {

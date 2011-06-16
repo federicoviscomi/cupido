@@ -1,4 +1,4 @@
-package unibo.as.cupido.client.gamestates;
+package unibo.as.cupido.client.playerstates;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.screens.ScreenSwitcher;
 
-public class StateManagerImpl implements StateManager {
+public class PlayerStateManagerImpl implements PlayerStateManager {
 	
 	private Object currentState = null;
 	private ScreenSwitcher screenSwitcher;
@@ -36,43 +36,9 @@ public class StateManagerImpl implements StateManager {
 	private List<Card> dealtCards = new ArrayList<Card>();
 	
 	/**
-	 * Initialize the state manager. The current user is a viewer.
-	 */
-	public StateManagerImpl(int tableSize, ScreenSwitcher screenSwitcher, ObservedGameStatus observedGameStatus) {
-		
-		this.screenSwitcher = screenSwitcher;
-		this.cardsGameWidget = new CardsGameWidget(tableSize, observedGameStatus,
-				null, new VerticalPanel(),
-				new CardsGameWidget.GameEventListener() {
-					@Override
-					public void onAnimationStart() {
-					}
-
-					@Override
-					public void onAnimationEnd() {
-					}
-
-					@Override
-					public void onCardClicked(int player, Card card,
-							State state, boolean isRaised) {
-					}
-		});
-		
-		players = new ArrayList<PlayerInfo>();
-		for (PlayerStatus playerStatus : observedGameStatus.playerStatus) {
-			PlayerInfo playerInfo = new PlayerInfo();
-			playerInfo.isBot = playerStatus.isBot;
-			playerInfo.name = playerStatus.name;
-			players.add(playerInfo);
-		}
-		
-		transitionToCardPassingAsViewer();
-	}
-
-	/**
 	 * Initialize the state manager. The current user is a player, and his hand cards are `cards'.
 	 */
-	public StateManagerImpl(int tableSize, ScreenSwitcher screenSwitcher,
+	public PlayerStateManagerImpl(int tableSize, ScreenSwitcher screenSwitcher,
 			InitialTableStatus initialTableStatus, Card[] cards, String username) {
 		this.screenSwitcher = screenSwitcher;
 		
@@ -153,11 +119,6 @@ public class StateManagerImpl implements StateManager {
 	}
 
 	@Override
-	public void transitionToCardPassingAsViewer() {
-		currentState = new CardPassingAsViewer(cardsGameWidget, this);
-	}
-
-	@Override
 	public void transitionToCardPassingWaitingAsPlayer(List<Card> hand) {
 		currentState = new CardPassingWaitingAsPlayer(cardsGameWidget, this, hand);
 	}
@@ -165,11 +126,6 @@ public class StateManagerImpl implements StateManager {
 	@Override
 	public void transitionToEndOfTrickAsPlayer(List<Card> hand) {
 		currentState = new EndOfTrickAsPlayer(cardsGameWidget, this, hand);
-	}
-
-	@Override
-	public void transitionToEndOfTrickAsViewer() {
-		currentState = new EndOfTrickAsViewer(cardsGameWidget, this);
 	}
 
 	@Override
@@ -188,11 +144,6 @@ public class StateManagerImpl implements StateManager {
 	}
 
 	@Override
-	public void transitionToWaitingFirstDealAsViewer() {
-		currentState = new WaitingFirstDealAsViewer(cardsGameWidget, this);
-	}
-
-	@Override
 	public void transitionToYourTurn(List<Card> hand) {
 		currentState = new YourTurn(cardsGameWidget, this, hand);
 	}
@@ -200,11 +151,6 @@ public class StateManagerImpl implements StateManager {
 	@Override
 	public void transitionToGameEndedAsPlayer() {
 		currentState = new GameEndedAsPlayer(cardsGameWidget, this);
-	}
-	
-	@Override
-	public void transitionToGameEndedAsViewer() {
-		currentState = new GameEndedAsViewer(cardsGameWidget, this);
 	}
 	
 	@Override
@@ -269,6 +215,7 @@ public class StateManagerImpl implements StateManager {
 		screenSwitcher.displayMainMenuScreen();
 	}
 	
+	@Override
 	public CardsGameWidget getWidget() {
 		return cardsGameWidget;
 	}

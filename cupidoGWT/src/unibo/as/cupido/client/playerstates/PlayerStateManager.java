@@ -1,10 +1,11 @@
-package unibo.as.cupido.client.gamestates;
+package unibo.as.cupido.client.playerstates;
 
 import java.util.List;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.client.CardsGameWidget;
 
-public interface StateManager {
+public interface PlayerStateManager {
 	
 	public class PlayerInfo {
 		/**
@@ -43,15 +44,13 @@ public interface StateManager {
 	public List<PlayerInfo> getPlayerInfo();
 	
 	public void transitionToCardPassingAsPlayer(List<Card> hand);
-	public void transitionToCardPassingAsViewer();
 	public void transitionToCardPassingWaitingAsPlayer(List<Card> hand);
 	public void transitionToEndOfTrickAsPlayer(List<Card> hand);
-	public void transitionToEndOfTrickAsViewer();
 	public void transitionToFirstDealer(List<Card> hand);
 	public void transitionToWaitingDealAsPlayer(List<Card> hand);
 	public void transitionToWaitingFirstDealAsPlayer(List<Card> hand);
-	public void transitionToWaitingFirstDealAsViewer();
 	public void transitionToYourTurn(List<Card> hand);
 	public void transitionToGameEndedAsPlayer();
-	public void transitionToGameEndedAsViewer();
+
+	CardsGameWidget getWidget();
 }

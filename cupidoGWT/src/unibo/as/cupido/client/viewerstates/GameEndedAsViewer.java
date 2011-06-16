@@ -1,6 +1,4 @@
-package unibo.as.cupido.client.gamestates;
-
-import java.util.List;
+package unibo.as.cupido.client.viewerstates;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -14,16 +12,16 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
-import unibo.as.cupido.client.GWTAnimation;
 
-public class EndOfTrickAsPlayer {
+public class GameEndedAsViewer {
 
-	public EndOfTrickAsPlayer(CardsGameWidget cardsGameWidget, final StateManager stateManager, final List<Card> hand) {
+	public GameEndedAsViewer(CardsGameWidget cardsGameWidget, final ViewerStateManager stateManager) {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
-		final HTML text = new HTML("");
+		// FIXME: Display the scores in some way.
+		final HTML text = new HTML("La partita &egrave; finita");
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
@@ -53,25 +51,6 @@ public class EndOfTrickAsPlayer {
 			@Override
 			public void onCardClicked(int player, Card card, State state,
 					boolean isRaised) {
-			}
-		});
-		
-		stateManager.goToNextTrick();
-		
-		final int player = stateManager.getFirstPlayerInTrick();
-		
-		cardsGameWidget.animateTrickTaking(player, 1500, 2000,
-				new GWTAnimation.AnimationCompletedListener() {
-			
-			@Override
-			public void onComplete() {
-				if (hand.size() != 0) {
-					if (player == 0)
-						stateManager.transitionToYourTurn(hand);
-					else
-						stateManager.transitionToWaitingDealAsPlayer(hand);
-				} else
-					stateManager.transitionToGameEndedAsPlayer();
 			}
 		});
 	}

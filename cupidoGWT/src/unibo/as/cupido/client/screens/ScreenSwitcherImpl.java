@@ -165,7 +165,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 
 		removeCurrentScreen();
 		assert username != null;
-		currentScreen = new CupidoObservedTableScreen(this, username);
+		currentScreen = new CupidoObservedTableScreen(this, username, cupidoService, cometListener);
 		add(currentScreen, 0, 0);
 
 		switchingScreen = false;

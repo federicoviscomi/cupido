@@ -1,7 +1,10 @@
-package unibo.as.cupido.client.gamestates;
+package unibo.as.cupido.client.playerstates;
+
+import java.util.List;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -10,35 +13,72 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.client.CardsGameWidget;
+import unibo.as.cupido.client.GWTAnimation;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
+import unibo.as.cupido.client.RandomCardGenerator;
 
-public class GameEndedAsViewer {
+public class WaitingDealAsPlayer {
 
-	public GameEndedAsViewer(CardsGameWidget cardsGameWidget, final StateManager stateManager) {
+	public WaitingDealAsPlayer(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
-		final HTML text = new HTML("TODO");
+		final int currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager.getDealtCards().size()) % 4;
+		PlayerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo().get(currentPlayer);
+		
+		assert currentPlayer != 0;
+		
+		final HTML text;
+		
+		if (playerInfo.isBot)
+			text = new HTML("Attendi che il bot giochi");
+		else {
+			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+			safeHtmlBuilder.appendEscaped(playerInfo.name);
+			safeHtmlBuilder.appendHtmlConstant(" giochi.");
+			text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
+		}
+		
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
 		
 		// FIXME: Remove this button when the servlet is ready.
 		final PushButton continueButton = new PushButton("[DEBUG] Continua");
-		continueButton.setEnabled(false);
 		continueButton.setWidth("80px");
 		continueButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub				
+				// FIXME: This data should come from the servlet.
+				int player = currentPlayer;
+				Card card = RandomCardGenerator.generateCard();
+				
+				stateManager.addDealtCard(player, card);
+				
+				cardsGameWidget.revealCoveredCard(player, card);
+				
+				cardsGameWidget.dealCard(player, card);
+				cardsGameWidget.runPendingAnimations(2000, new GWTAnimation.AnimationCompletedListener() {
+					@Override
+					public void onComplete() {
+						if (stateManager.getDealtCards().size() == 4)
+							stateManager.transitionToEndOfTrickAsPlayer(hand);
+						else {
+							if (currentPlayer == 3)
+								stateManager.transitionToYourTurn(hand);
+							else
+								stateManager.transitionToWaitingDealAsPlayer(hand);
+						}
+					}
+				});
 			}
 		});
 		panel.add(continueButton);
 		
 		final PushButton exitButton = new PushButton("Esci");
-		exitButton.setEnabled(false);
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -65,7 +105,6 @@ public class GameEndedAsViewer {
 			@Override
 			public void onCardClicked(int player, Card card, State state,
 					boolean isRaised) {
-				// TODO Auto-generated method stub
 			}
 		});
 	}
