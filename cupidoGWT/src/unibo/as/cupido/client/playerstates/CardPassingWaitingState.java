@@ -1,10 +1,11 @@
 package unibo.as.cupido.client.playerstates;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -14,34 +15,18 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.GWTAnimation;
+import unibo.as.cupido.client.RandomCardGenerator;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
-import unibo.as.cupido.client.RandomCardGenerator;
 
-public class WaitingDealAsPlayer {
+public class CardPassingWaitingState {
 
-	public WaitingDealAsPlayer(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
+	public CardPassingWaitingState(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
-		final int currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager.getDealtCards().size()) % 4;
-		PlayerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo().get(currentPlayer);
-		
-		assert currentPlayer != 0;
-		
-		final HTML text;
-		
-		if (playerInfo.isBot)
-			text = new HTML("Attendi che il bot giochi");
-		else {
-			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
-			safeHtmlBuilder.appendEscaped(playerInfo.name);
-			safeHtmlBuilder.appendHtmlConstant(" giochi.");
-			text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
-		}
-		
+		final HTML text = new HTML("Aspetta che gli altri giocatori decidano quali carte passare.");
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
@@ -52,26 +37,38 @@ public class WaitingDealAsPlayer {
 		continueButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				// FIXME: This data should come from the servlet.
-				int player = currentPlayer;
-				Card card = RandomCardGenerator.generateCard();
 				
-				stateManager.addDealtCard(player, card);
+				text.setText("");
 				
-				cardsGameWidget.revealCoveredCard(player, card);
+				// FIXME: Remove this. This data should come from the servlet.
+				List<Card> passedCards = new ArrayList<Card>();
+				passedCards.add(RandomCardGenerator.generateCard());
+				passedCards.add(RandomCardGenerator.generateCard());
+				passedCards.add(RandomCardGenerator.generateCard());
 				
-				cardsGameWidget.dealCard(player, card);
+				hand.addAll(passedCards);
+				
+				Collections.sort(passedCards, CardsGameWidget.getCardComparator());
+				
+				for (int i = 0; i < 3; i++)
+					cardsGameWidget.revealCoveredCard(0, passedCards.get(3 - i - 1));
+
+				for (Card card : passedCards)
+					cardsGameWidget.pickCard(0, card);
+				
 				cardsGameWidget.runPendingAnimations(2000, new GWTAnimation.AnimationCompletedListener() {
 					@Override
 					public void onComplete() {
-						if (stateManager.getDealtCards().size() == 4)
-							stateManager.transitionToEndOfTrickAsPlayer(hand);
-						else {
-							if (currentPlayer == 3)
-								stateManager.transitionToYourTurn(hand);
-							else
-								stateManager.transitionToWaitingDealAsPlayer(hand);
-						}
+						boolean found = false;
+						for (Card card : hand)
+							if (card.suit == Card.Suit.CLUBS && card.value == 2) {
+								found = true;
+								break;
+							}
+						if (found)
+							stateManager.transitionToFirstDealer(hand);
+						else
+							stateManager.transitionToWaitingFirstDeal(hand);
 					}
 				});
 			}
@@ -89,6 +86,7 @@ public class WaitingDealAsPlayer {
 		panel.add(exitButton);
 		
 		cardsGameWidget.setCornerWidget(panel);
+		
 		cardsGameWidget.setListener(new GameEventListener() {
 			@Override
 			public void onAnimationStart() {

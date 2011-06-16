@@ -110,47 +110,47 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		for (Card card : cards)
 			handCards.add(card);
 		
-		transitionToCardPassingAsPlayer(handCards);
+		transitionToCardPassing(handCards);
 	}
 
 	@Override
-	public void transitionToCardPassingAsPlayer(List<Card> hand) {
-		currentState = new CardPassingAsPlayer(cardsGameWidget, this, hand);
+	public void transitionToCardPassing(List<Card> hand) {
+		currentState = new CardPassingState(cardsGameWidget, this, hand);
 	}
 
 	@Override
-	public void transitionToCardPassingWaitingAsPlayer(List<Card> hand) {
-		currentState = new CardPassingWaitingAsPlayer(cardsGameWidget, this, hand);
+	public void transitionToCardPassingWaiting(List<Card> hand) {
+		currentState = new CardPassingWaitingState(cardsGameWidget, this, hand);
 	}
 
 	@Override
-	public void transitionToEndOfTrickAsPlayer(List<Card> hand) {
-		currentState = new EndOfTrickAsPlayer(cardsGameWidget, this, hand);
+	public void transitionToEndOfTrick(List<Card> hand) {
+		currentState = new EndOfTrickState(cardsGameWidget, this, hand);
 	}
 
 	@Override
 	public void transitionToFirstDealer(List<Card> hand) {
-		currentState = new FirstDealer(cardsGameWidget, this, hand);
+		currentState = new FirstDealerState(cardsGameWidget, this, hand);
 	}
 
 	@Override
-	public void transitionToWaitingDealAsPlayer(List<Card> hand) {
-		currentState = new WaitingDealAsPlayer(cardsGameWidget, this, hand);
+	public void transitionToWaitingDeal(List<Card> hand) {
+		currentState = new WaitingDealState(cardsGameWidget, this, hand);
 	}
 
 	@Override
-	public void transitionToWaitingFirstDealAsPlayer(List<Card> hand) {
-		currentState = new WaitingFirstDealAsPlayer(cardsGameWidget, this, hand);
+	public void transitionToWaitingFirstDeal(List<Card> hand) {
+		currentState = new WaitingFirstDealState(cardsGameWidget, this, hand);
 	}
 
 	@Override
 	public void transitionToYourTurn(List<Card> hand) {
-		currentState = new YourTurn(cardsGameWidget, this, hand);
+		currentState = new YourTurnState(cardsGameWidget, this, hand);
 	}
 
 	@Override
-	public void transitionToGameEndedAsPlayer() {
-		currentState = new GameEndedAsPlayer(cardsGameWidget, this);
+	public void transitionToGameEnded() {
+		currentState = new GameEndedState(cardsGameWidget, this);
 	}
 	
 	@Override

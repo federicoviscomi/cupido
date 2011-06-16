@@ -1,4 +1,6 @@
-package unibo.as.cupido.client.viewerstates;
+package unibo.as.cupido.client.playerstates;
+
+import java.util.List;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -16,15 +18,17 @@ import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.RandomCardGenerator;
 
-public class WaitingDealAsViewer {
+public class WaitingDealState {
 
-	public WaitingDealAsViewer(final CardsGameWidget cardsGameWidget, final ViewerStateManager stateManager) {
+	public WaitingDealState(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
 		final int currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager.getDealtCards().size()) % 4;
-		ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo().get(currentPlayer);
+		PlayerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo().get(currentPlayer);
+		
+		assert currentPlayer != 0;
 		
 		final HTML text;
 		
@@ -61,9 +65,13 @@ public class WaitingDealAsViewer {
 					@Override
 					public void onComplete() {
 						if (stateManager.getDealtCards().size() == 4)
-							stateManager.transitionToEndOfTrickAsViewer();
-						else
-							stateManager.transitionToWaitingDealAsViewer();
+							stateManager.transitionToEndOfTrick(hand);
+						else {
+							if (currentPlayer == 3)
+								stateManager.transitionToYourTurn(hand);
+							else
+								stateManager.transitionToWaitingDeal(hand);
+						}
 					}
 				});
 			}

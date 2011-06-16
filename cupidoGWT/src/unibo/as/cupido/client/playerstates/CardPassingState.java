@@ -19,7 +19,7 @@ import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.GWTAnimation;
 
-public class CardPassingAsPlayer {
+public class CardPassingState {
 	
 	List<Card> raisedCards = new ArrayList<Card>();
 	/**
@@ -27,7 +27,7 @@ public class CardPassingAsPlayer {
 	 */
 	boolean confirmed = false;
 
-	public CardPassingAsPlayer(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
+	public CardPassingState(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
 		VerticalPanel cornerWidget = new VerticalPanel();
 		cornerWidget.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		cornerWidget.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -75,7 +75,7 @@ public class CardPassingAsPlayer {
 							assert removedSomething;
 						}
 						
-						stateManager.transitionToCardPassingWaitingAsPlayer(hand);
+						stateManager.transitionToCardPassingWaiting(hand);
 					}
 				});
 			}

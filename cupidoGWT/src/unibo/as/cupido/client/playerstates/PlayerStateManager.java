@@ -43,14 +43,14 @@ public interface PlayerStateManager {
 	
 	public List<PlayerInfo> getPlayerInfo();
 	
-	public void transitionToCardPassingAsPlayer(List<Card> hand);
-	public void transitionToCardPassingWaitingAsPlayer(List<Card> hand);
-	public void transitionToEndOfTrickAsPlayer(List<Card> hand);
+	public void transitionToCardPassing(List<Card> hand);
+	public void transitionToCardPassingWaiting(List<Card> hand);
+	public void transitionToEndOfTrick(List<Card> hand);
 	public void transitionToFirstDealer(List<Card> hand);
-	public void transitionToWaitingDealAsPlayer(List<Card> hand);
-	public void transitionToWaitingFirstDealAsPlayer(List<Card> hand);
+	public void transitionToWaitingDeal(List<Card> hand);
+	public void transitionToWaitingFirstDeal(List<Card> hand);
 	public void transitionToYourTurn(List<Card> hand);
-	public void transitionToGameEndedAsPlayer();
+	public void transitionToGameEnded();
 
 	CardsGameWidget getWidget();
 }

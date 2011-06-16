@@ -11,9 +11,9 @@ import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.screens.ScreenSwitcher;
-import unibo.as.cupido.client.viewerstates.EndOfTrickAsViewer;
-import unibo.as.cupido.client.viewerstates.GameEndedAsViewer;
-import unibo.as.cupido.client.viewerstates.WaitingFirstDealAsViewer;
+import unibo.as.cupido.client.viewerstates.EndOfTrickState;
+import unibo.as.cupido.client.viewerstates.GameEndedState;
+import unibo.as.cupido.client.viewerstates.WaitingFirstDealState;
 
 public class ViewerStateManagerImpl implements ViewerStateManager {
 	
@@ -85,7 +85,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 				&& observedGameStatus.playerStatus[1].numOfCardsInHand == 13
 				&& observedGameStatus.playerStatus[2].numOfCardsInHand == 13
 				&& observedGameStatus.playerStatus[3].numOfCardsInHand == 13) {
-			transitionToWaitingFirstDealAsViewer();
+			transitionToWaitingFirstDeal();
 			return;
 		}
 		
@@ -96,29 +96,29 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 				n++;
 				
 		if (n == 4)
-			transitionToEndOfTrickAsViewer();
+			transitionToEndOfTrick();
 		else
-			transitionToWaitingDealAsViewer();
+			transitionToWaitingDeal();
 	}
 
 	@Override
-	public void transitionToEndOfTrickAsViewer() {
-		currentState = new EndOfTrickAsViewer(cardsGameWidget, this);
+	public void transitionToEndOfTrick() {
+		currentState = new EndOfTrickState(cardsGameWidget, this);
 	}
 
 	@Override
-	public void transitionToWaitingFirstDealAsViewer() {
-		currentState = new WaitingFirstDealAsViewer(cardsGameWidget, this);
+	public void transitionToWaitingFirstDeal() {
+		currentState = new WaitingFirstDealState(cardsGameWidget, this);
 	}
 
 	@Override
-	public void transitionToGameEndedAsViewer() {
-		currentState = new GameEndedAsViewer(cardsGameWidget, this);
+	public void transitionToGameEnded() {
+		currentState = new GameEndedState(cardsGameWidget, this);
 	}
 	
 	@Override
-	public void transitionToWaitingDealAsViewer() {
-		currentState = new WaitingDealAsViewer(cardsGameWidget, this);
+	public void transitionToWaitingDeal() {
+		currentState = new WaitingDealState(cardsGameWidget, this);
 	}
 	
 	@Override

@@ -1,10 +1,8 @@
-package unibo.as.cupido.client.playerstates;
-
-import java.util.List;
+package unibo.as.cupido.client.viewerstates;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Random;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -16,15 +14,30 @@ import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.GWTAnimation;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
+import unibo.as.cupido.client.RandomCardGenerator;
 
-public class WaitingFirstDealAsPlayer {
+public class WaitingDealState {
 
-	public WaitingFirstDealAsPlayer(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
+	public WaitingDealState(final CardsGameWidget cardsGameWidget, final ViewerStateManager stateManager) {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
-		final HTML text = new HTML("Attendi che il giocatore che ha il due di picche lo giochi.");
+		final int currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager.getDealtCards().size()) % 4;
+		ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo().get(currentPlayer);
+		
+		final HTML text;
+		
+		if (playerInfo.isBot)
+			text = new HTML("Attendi che il bot giochi");
+		else {
+			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+			safeHtmlBuilder.appendEscaped(playerInfo.name);
+			safeHtmlBuilder.appendHtmlConstant(" giochi.");
+			text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
+		}
+		
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
@@ -35,11 +48,9 @@ public class WaitingFirstDealAsPlayer {
 		continueButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				// FIXME: don't generate this data, get them from the servlet instead.
-				final int player = Random.nextInt(3) + 1;
-				Card card = new Card(2, Card.Suit.CLUBS);
-				
-				text.setText("");
+				// FIXME: This data should come from the servlet.
+				int player = currentPlayer;
+				Card card = RandomCardGenerator.generateCard();
 				
 				stateManager.addDealtCard(player, card);
 				
@@ -47,13 +58,12 @@ public class WaitingFirstDealAsPlayer {
 				
 				cardsGameWidget.dealCard(player, card);
 				cardsGameWidget.runPendingAnimations(2000, new GWTAnimation.AnimationCompletedListener() {
-					
 					@Override
 					public void onComplete() {
-						if (player == 3)
-							stateManager.transitionToYourTurn(hand);
+						if (stateManager.getDealtCards().size() == 4)
+							stateManager.transitionToEndOfTrick();
 						else
-							stateManager.transitionToWaitingDealAsPlayer(hand);
+							stateManager.transitionToWaitingDeal();
 					}
 				});
 			}

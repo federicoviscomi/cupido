@@ -12,18 +12,18 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.client.CardsGameWidget;
-import unibo.as.cupido.client.GWTAnimation;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
+import unibo.as.cupido.client.GWTAnimation;
 
-public class FirstDealer {
+public class EndOfTrickState {
 
-	public FirstDealer(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
+	public EndOfTrickState(CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		
-		final HTML text = new HTML("Sei il primo a giocare; devi giocare il due di fiori");
+		final HTML text = new HTML("");
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
@@ -53,24 +53,25 @@ public class FirstDealer {
 			@Override
 			public void onCardClicked(int player, Card card, State state,
 					boolean isRaised) {
-				if (player != 0 || card == null)
-					return;
-				if (card.suit != Card.Suit.CLUBS || card.value != 2)
-					return;
-				
-				text.setText("");
-				
-				hand.remove(card);
-				
-				stateManager.addDealtCard(0, card);
-				
-				cardsGameWidget.dealCard(0, card);
-				cardsGameWidget.runPendingAnimations(2000, new GWTAnimation.AnimationCompletedListener() {
-					@Override
-					public void onComplete() {
-						stateManager.transitionToWaitingDealAsPlayer(hand);
-					}
-				});
+			}
+		});
+		
+		stateManager.goToNextTrick();
+		
+		final int player = stateManager.getFirstPlayerInTrick();
+		
+		cardsGameWidget.animateTrickTaking(player, 1500, 2000,
+				new GWTAnimation.AnimationCompletedListener() {
+			
+			@Override
+			public void onComplete() {
+				if (hand.size() != 0) {
+					if (player == 0)
+						stateManager.transitionToYourTurn(hand);
+					else
+						stateManager.transitionToWaitingDeal(hand);
+				} else
+					stateManager.transitionToGameEnded();
 			}
 		});
 	}

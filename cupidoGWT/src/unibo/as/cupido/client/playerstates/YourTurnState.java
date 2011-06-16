@@ -16,9 +16,9 @@ import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.GWTAnimation;
 
-public class YourTurn {
+public class YourTurnState {
 
-	public YourTurn(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
+	public YourTurnState(final CardsGameWidget cardsGameWidget, final PlayerStateManager stateManager, final List<Card> hand) {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -75,9 +75,9 @@ public class YourTurn {
 					@Override
 					public void onComplete() {
 						if (stateManager.getDealtCards().size() == 4)
-							stateManager.transitionToEndOfTrickAsPlayer(hand);
+							stateManager.transitionToEndOfTrick(hand);
 						else
-							stateManager.transitionToWaitingDealAsPlayer(hand);
+							stateManager.transitionToWaitingDeal(hand);
 					}
 				});
 			}

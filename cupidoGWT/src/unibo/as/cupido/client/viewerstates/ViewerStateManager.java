@@ -48,8 +48,8 @@ public interface ViewerStateManager {
 
 	CardsGameWidget getWidget();
 
-	public void transitionToEndOfTrickAsViewer();
-	public void transitionToWaitingFirstDealAsViewer();
-	public void transitionToGameEndedAsViewer();
-	public void transitionToWaitingDealAsViewer();
+	public void transitionToEndOfTrick();
+	public void transitionToWaitingFirstDeal();
+	public void transitionToGameEnded();
+	public void transitionToWaitingDeal();
 }
