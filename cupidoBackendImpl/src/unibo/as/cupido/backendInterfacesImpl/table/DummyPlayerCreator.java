@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
@@ -26,6 +27,7 @@ public class DummyPlayerCreator implements Serializable,
 
 	public static void main(String[] args) throws Exception {
 		DummyPlayerCreator dummyPlayerCreator = new DummyPlayerCreator("Owner");
+		UnicastRemoteObject.exportObject(dummyPlayerCreator);
 		dummyPlayerCreator.createTable();
 		// 1 refers to absolute position
 		dummyPlayerCreator.addBot(1);
