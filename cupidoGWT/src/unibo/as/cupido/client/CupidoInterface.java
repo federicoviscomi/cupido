@@ -119,11 +119,13 @@ public interface CupidoInterface extends RemoteService {
 	 * @param message
 	 * @throws IllegalArgumentException
 	 *             if message has bad format
+	 * @throws NoSuchTableException
+	 *             if player is not playing or viewing a game
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
 	void sendLocalChatMessage(String message) throws IllegalArgumentException,
-			UserNotAuthenticatedException, FatalException;
+			NoSuchTableException, UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * The current player leaves the table
