@@ -13,9 +13,9 @@ import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 
-public class CardPassingAsViewer {
+public class GameEndedAsViewer {
 
-	public CardPassingAsViewer(CardsGameWidget cardsGameWidget, final StateManager stateManager) {
+	public GameEndedAsViewer(CardsGameWidget cardsGameWidget, final StateManager stateManager) {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);

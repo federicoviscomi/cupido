@@ -1,16 +1,57 @@
 package unibo.as.cupido.client.gamestates;
 
-public interface StateManager {
+import java.util.List;
 
-	public void transitionToCardPassingAsPlayer();                                                                                              
-	public void transitionToCardPassingAsViewer();                                                                                              
-	public void transitionToCardPassingEndAsPlayer();                                                                                           
-	public void transitionToCardPassingWaitingAsPlayer();                                                                                       
-	public void transitionToEndOfTrickAsPlayer();                                                                                               
+import unibo.as.cupido.backendInterfaces.common.Card;
+
+public interface StateManager {
+	
+	public class PlayerInfo {
+		/**
+		 * This is relevant only when `isBot' is false.
+		 */
+		String name;
+		boolean isBot;
+	}
+
+	/**
+	 * Returns the leading player for the current trick.
+	 * A return value of 0 means the bottom player, and other players' indexes
+	 * follow in clockwise order.
+	 * 
+	 * This returns -1 in the initial card-passing states and at the beginning
+	 * of the first trick.
+	 */
+	public int getFirstPlayerInTrick();
+	
+	/**
+	 * @return The ordered list containing the cards dealt in the current trick.
+	 */
+	public List<Card> getDealtCards();
+	
+	public void addDealtCard(int player, Card card);
+	
+	public void goToNextTrick();
+	
+	public boolean areHeartsBroken();
+	
+	/**
+	 * Exits from the game.
+	 */
+	public void exit();
+	
+	public List<PlayerInfo> getPlayerInfo();
+	
+	public void transitionToCardPassingAsPlayer(List<Card> hand);
+	public void transitionToCardPassingAsViewer();
+	public void transitionToCardPassingWaitingAsPlayer(List<Card> hand);
+	public void transitionToEndOfTrickAsPlayer(List<Card> hand);
 	public void transitionToEndOfTrickAsViewer();
-	public void transitionToFirstDealer();
-	public void transitionToWaitingDealAsPlayer();
-	public void transitionToWaitingFirstDealAsPlayer();
+	public void transitionToFirstDealer(List<Card> hand);
+	public void transitionToWaitingDealAsPlayer(List<Card> hand);
+	public void transitionToWaitingFirstDealAsPlayer(List<Card> hand);
 	public void transitionToWaitingFirstDealAsViewer();
-	public void transitionToYourTurn();
+	public void transitionToYourTurn(List<Card> hand);
+	public void transitionToGameEndedAsPlayer();
+	public void transitionToGameEndedAsViewer();
 }
