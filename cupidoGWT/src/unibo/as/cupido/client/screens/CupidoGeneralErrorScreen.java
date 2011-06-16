@@ -1,4 +1,6 @@
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.screens;
+
+import unibo.as.cupido.client.Cupido;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.AbsolutePanel;

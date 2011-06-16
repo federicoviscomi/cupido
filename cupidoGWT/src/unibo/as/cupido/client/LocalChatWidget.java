@@ -1,5 +1,7 @@
 package unibo.as.cupido.client;
 
+import unibo.as.cupido.client.screens.CupidoTableScreen;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -28,7 +30,7 @@ public class LocalChatWidget extends AbsolutePanel {
 		public void sendMessage(String message);
 	}
 
-	LocalChatWidget(final String username, MessageSender messageSender) {
+	public LocalChatWidget(final String username, MessageSender messageSender) {
 
 		this.username = username;
 		this.messageSender = messageSender;

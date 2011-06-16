@@ -66,7 +66,7 @@ ENGINE = MyISAM;
  * @author cane
  * 
  */
-public interface DatabaseInterface extends Remote {
+public interface DatabaseInterface {
 
 	/** default database name */
 	public static final String database = "cupido";
@@ -77,7 +77,6 @@ public interface DatabaseInterface extends Remote {
 	 * 
 	 * @param userName
 	 * @param password
-	 * @throws RemoteException
 	 * @throws DuplicateUserNameException
 	 *             if a user named <code>userName</code> already exists in the
 	 *             database
@@ -85,7 +84,7 @@ public interface DatabaseInterface extends Remote {
 	 *             if any of the arguments is <code>null</code>
 	 */
 	public void addNewUser(String userName, String password)
-			throws RemoteException, SQLException, DuplicateUserNameException,
+			throws SQLException, DuplicateUserNameException,
 			IllegalArgumentException;
 
 	/**
@@ -95,16 +94,14 @@ public interface DatabaseInterface extends Remote {
 	 * @param password
 	 * @return <code>true</code> if <code>userName</code> is in the database and
 	 *         his password is <code>password</code>; otherwise return false.
-	 * @throws RemoteException
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>
 	 * @throws NoSuchUserException
 	 *             if <code>userName</code> is not in database
 	 */
-	public boolean login(String userName, String password)
-			throws RemoteException, SQLException, IllegalArgumentException,
-			NoSuchUserException;
+	public boolean login(String userName, String password) throws SQLException,
+			IllegalArgumentException, NoSuchUserException;
 
 	/**
 	 * Update score of user <code>userName</code>
@@ -112,15 +109,14 @@ public interface DatabaseInterface extends Remote {
 	 * @param userName
 	 * @param score
 	 *            the new score of user <code>userName</code>
-	 * @throws RemoteException
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>
 	 * @throws NoSuchUserException
 	 *             if <code>userName</code> is not in database
 	 */
-	public void updateScore(String userName, int score) throws RemoteException,
-			SQLException, IllegalArgumentException, NoSuchUserException;
+	public void updateScore(String userName, int score) throws SQLException,
+			IllegalArgumentException, NoSuchUserException;
 
 	/**
 	 * Retreive at most the first top <code>size</code> positions in the global
@@ -128,13 +124,12 @@ public interface DatabaseInterface extends Remote {
 	 * 
 	 * @param
 	 * @return
-	 * @throws RemoteException
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
 	 *             if <code>size</code> is not positive
 	 */
 	public ArrayList<Pair<String, Integer>> getTopRank(int size)
-			throws RemoteException, SQLException, IllegalArgumentException;
+			throws SQLException, IllegalArgumentException;
 
 	/**
 	 * Returns one chunk the global rank that contains from four position before
@@ -147,7 +142,6 @@ public interface DatabaseInterface extends Remote {
 	 *            the user who wants the rank
 	 * @return a list of size twenty, the first half contains the first chunk
 	 *         and the second half contains the second chunk
-	 * @throws RemoteException
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>
@@ -155,23 +149,21 @@ public interface DatabaseInterface extends Remote {
 	 *             if <code>userName</code> is not in database
 	 */
 	public ArrayList<Pair<String, Integer>> getLocalRank(String userName)
-			throws RemoteException, SQLException, IllegalArgumentException,
-			NoSuchUserException;
+			throws SQLException, IllegalArgumentException, NoSuchUserException;
 
 	/**
 	 * Get player position in the global rank.
 	 * 
 	 * @param userName
 	 * @return
-	 * @throws RemoteException
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>
 	 * @throws NoSuchUserException
 	 *             if <code>userName</code> is not in database
 	 */
-	public int getUserRank(String userName) throws RemoteException,
-			SQLException, IllegalArgumentException, NoSuchUserException;
+	public int getUserRank(String userName) throws SQLException,
+			IllegalArgumentException, NoSuchUserException;
 
 	/**
 	 * Get the player total score which is TODO ?the number of total wins minus
@@ -179,21 +171,18 @@ public interface DatabaseInterface extends Remote {
 	 * 
 	 * @param userName
 	 * @return
-	 * @throws RemoteException
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>
 	 * @throws NoSuchUserException
 	 *             if <code>userName</code> is not in database
 	 */
-	public int getPlayerScore(String userName) throws RemoteException,
-			SQLException, IllegalArgumentException, NoSuchUserException;
+	public int getPlayerScore(String userName) throws SQLException,
+			IllegalArgumentException, NoSuchUserException;
 
 	/**
 	 * Close the connection with database.
-	 * 
-	 * @throws RemoteException
 	 */
-	void close() throws RemoteException;
+	void close();
 
 }

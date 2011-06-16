@@ -5,12 +5,16 @@ package unibo.as.cupido.client;
 
 import java.util.Collection;
 
-import unibo.as.cupido.backendInterfaces.common.*;
+import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
+import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
+import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
-import unibo.as.cupido.backendInterfaces.exception.MaxNumTableReachedException;
 import unibo.as.cupido.backendInterfaces.exception.FatalException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
+import unibo.as.cupido.backendInterfaces.exception.MaxNumTableReachedException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchServerException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
@@ -19,7 +23,6 @@ import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
 
 @RemoteServiceRelativePath("cupido")
 public interface CupidoInterface extends RemoteService {
@@ -54,8 +57,8 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	public Collection<TableInfoForClient> getTableList() throws UserNotAuthenticatedException,
-	FatalException;
+	public Collection<TableInfoForClient> getTableList()
+			throws UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * 
@@ -102,19 +105,20 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws NoSuchTableException
 	 *             if tableId is invalid or table no longer exists
 	 * @throws NoSuchServerException
-	 * 			   if server is invalid
+	 *             if server is invalid
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
 	public ObservedGameStatus viewTable(String server, int tableId)
-			throws NoSuchTableException, NoSuchServerException, UserNotAuthenticatedException,
-			FatalException;
+			throws NoSuchTableException, NoSuchServerException,
+			UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * Sends a message to the table chat
 	 * 
 	 * @param message
-	 * @throws IllegalArgumentException if message has bad format
+	 * @throws IllegalArgumentException
+	 *             if message has bad format
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
@@ -202,12 +206,13 @@ public interface CupidoInterface extends RemoteService {
 	 * Sends a message to the table chat
 	 * 
 	 * @param message
-	 * @throws IllegalArgumentException if message has bad format
+	 * @throws IllegalArgumentException
+	 *             if message has bad format
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void sendGlobalChatMessage(String message) throws IllegalArgumentException, UserNotAuthenticatedException,
-			FatalException;
+	void sendGlobalChatMessage(String message) throws IllegalArgumentException,
+			UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * Destroy comet and http sessions
