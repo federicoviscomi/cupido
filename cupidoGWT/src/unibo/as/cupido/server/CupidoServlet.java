@@ -1,10 +1,10 @@
 /*
- * WARNING comment constructor method CupidoServlet() to test servlet without registry
+ * WARNING comment constructor method CupidoServlet() to test Servlet without registry
  */
 package unibo.as.cupido.server;
 
 /*
- * FIXME: Do NOT remove unused import
+ * FIXME: on development do NOT remove unused imports
  */
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -65,14 +65,14 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	private static final long serialVersionUID = 1L;
 	/*
 	 * hostname and port of registry, default is 127.0.0.1:1099
-	 * GTM and GC are name for registry lookup
-	 * Values of GTM in defined in GlobalTableManagerInterface
-	 * Values of GC can be found in GlobalChatInterface
+	 * GTMLookupName and GCLookupName are name for registry lookup
+	 * Values of GTMLookupName in defined in GlobalTableManagerInterface
+	 * Values of GCLookupName can be found in GlobalChatInterface
 	 */
 	private static final String registryHost = "127.0.0.1";
 	private static final int registryPort = 1099;
-	private static final String GTM = "globaltableserver";
-	private static final String GC = "globalChatName";
+	private static final String GTMLookupName = "globaltableserver";
+	private static final String GCLookupName = "globalChatName";
 	/*
 	 * Names used in httpSession and servlet-context attributes
 	 */
@@ -96,8 +96,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		GlobalTableManagerInterface gtmi = null;
 		try {
 			registry = LocateRegistry.getRegistry(registryHost, registryPort);
-			gci = (GlobalChatInterface) registry.lookup(GC);
-			gtmi = (GlobalTableManagerInterface) registry.lookup(GTM);
+			gci = (GlobalChatInterface) registry.lookup(GCLookupName);
+			gtmi = (GlobalTableManagerInterface) registry.lookup(GTMLookupName);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (NotBoundException e) {
@@ -191,36 +191,55 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	/*
 	 * refers to GlobalChat. Client poll this method
 	 */
-	public ChatMessage[] viewLastMessages() throws UserNotAuthenticatedException,
-	FatalException {
+	public ChatMessage[] viewLastMessages()
+			throws UserNotAuthenticatedException, FatalException {
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
-		if (httpSession == null){
+		if (httpSession == null) {
 			return null;
 		}
-		if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 			throw new UserNotAuthenticatedException();
 		}
-		// TODO retrieve messages
-		return null;
+		GlobalChatInterface gci = (GlobalChatInterface) getServletContext()
+				.getAttribute(GCI);
+		try {
+			return gci.getLastMessages();
+		} catch (RemoteException e) {
+			System.out
+					.println("Servlet: on viewLastMessages() catched RemoteException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		}
 	}
 
 	/*
-	 * TODO implements me!
+	 * TODO: IllegalArgumentException in never thrown because input is never checked
+	 * TODO: choice legal messages
 	 * @see unibo.as.cupido.client.CupidoInterface#sendGlobalChatMessage(java.lang.String)
 	 */
 	@Override
 	public void sendGlobalChatMessage(String message) throws IllegalArgumentException, UserNotAuthenticatedException,
 	FatalException{
-		HttpSession httpSession = getThreadLocalRequest().getSession(false);
-		if (httpSession == null){
-			return;
-		}
-		if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
-			throw new UserNotAuthenticatedException();
-		}
-		getServletContext().getAttribute(GCI);
-		// TODO invio messaggi
-
+			HttpSession httpSession = getThreadLocalRequest().getSession(false);
+			if (httpSession == null) {
+				return;
+			}
+			if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
+				throw new UserNotAuthenticatedException();
+			}
+			GlobalChatInterface gci = (GlobalChatInterface) getServletContext()
+					.getAttribute(GCI);
+			try {
+				ChatMessage m= new ChatMessage((String) httpSession.getAttribute(USERNAME), message);
+				gci.sendMessage(m);
+			} catch (RemoteException e) {
+				System.out
+						.println("Servlet: on viewLastMessages() catched RemoteException-> "
+								+ e.getMessage());
+				// e.printStackTrace();
+				throw new FatalException();
+			}
 	}
 
 	@Override
@@ -357,7 +376,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					.println("Servlet: on createTable() catched RemoteException-> "
 							+ e.getMessage());
 			// e.printStackTrace();
-			throw new FatalException("GTM not reachable");
+			throw new FatalException("GTMLookupName not reachable");
 		} catch (AllLTMBusyException e) {
 			throw new MaxNumTableReachedException();
 		}
@@ -641,10 +660,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 							+ e.getMessage());
 			// e.printStackTrace();
 		} catch (IllegalStateException e) {
-			System.out
-					.println("Servlet: on addBot() catched RemoteException-> "
-							+ e.getMessage());
-			// e.printStackTrace();
 			throw new NoSuchTableException();
 		}
 	}
