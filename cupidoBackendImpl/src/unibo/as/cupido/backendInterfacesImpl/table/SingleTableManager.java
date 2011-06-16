@@ -11,7 +11,6 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
@@ -60,7 +59,7 @@ public class SingleTableManager implements TableInterface {
 	public synchronized void addBot(String userName, int position)
 			throws PositionFullException, RemoteException,
 			IllegalArgumentException, FullTableException, NotCreatorException,
-			IllegalStateException {		
+			IllegalStateException {
 		System.out.print("\n\n\nSingleTableManager inizio ."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + userName + ", " + position + ").\n Table status is: ");
@@ -92,7 +91,7 @@ public class SingleTableManager implements TableInterface {
 				+ "(" + userName + ", " + snf + "). \n Table status is:");
 		playersManager.print();
 		System.out.println();
-		
+
 		if (userName == null || snf == null)
 			throw new IllegalArgumentException();
 		int score = databaseManager.getPlayerScore(userName);
@@ -100,7 +99,7 @@ public class SingleTableManager implements TableInterface {
 		viewers.notifyPlayerJoined(userName, score, position);
 		if (playersManager.playersCount() == 4)
 			start.release();
-		
+
 		System.out.print("\n\n\n SingleTableManager fine ."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + userName + ", " + snf + "). \n Table status is:");

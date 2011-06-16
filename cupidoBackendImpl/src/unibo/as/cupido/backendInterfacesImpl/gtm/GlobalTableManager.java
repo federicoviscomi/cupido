@@ -79,6 +79,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 				public void run() {
 					try {
 						registry.unbind(GlobalTableManagerInterface.globalTableManagerName);
+						registry.unbind(GlobalChatInterface.globalChatName);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

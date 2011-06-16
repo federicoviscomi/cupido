@@ -28,6 +28,7 @@ public class DummyPlayerJoiner implements Serializable,
 	private InitialTableStatus initialTableStatus;
 	private TableInterface table;
 	private GlobalTableManagerInterface gtm;
+
 	public DummyPlayerJoiner(String userName) {
 		this.userName = userName;
 		try {

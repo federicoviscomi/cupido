@@ -13,7 +13,7 @@ public class ObservedGameStatus implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public PlayerStatus[] ogs;
+	public PlayerStatus[] playerStatus;
 
 	/**
 	 * The index of the first player that dealt a card in the current trick.
@@ -21,14 +21,19 @@ public class ObservedGameStatus implements Serializable {
 	 * was led by the left player, and so on for other players, in clockwise
 	 * order.
 	 * 
-	 * If there is currently no trick, this is -1. This can happen in four
+	 * If there is currently no trick, this is -1. This can happen in three
 	 * cases: when some players are still missing in the table, when players are
 	 * passing cards, when the players have passed cards but no-one has dealt
-	 * the two of clubs yet, and when the game has ended.
+	 * the two of clubs yet.
 	 */
 	public int firstDealerInTrick;
 
 	public ObservedGameStatus() {
-		ogs = new PlayerStatus[4];
+		playerStatus = new PlayerStatus[4];
+	}
+
+	public ObservedGameStatus(PlayerStatus[] ogs, int firstDealerInTrick) {
+		this.playerStatus = ogs;
+		this.firstDealerInTrick = firstDealerInTrick;
 	}
 }

@@ -38,7 +38,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	private static final String LOCALTABLEMANAGER_CONFIGURATION_FILE = "localTableManager.config";
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		try {
 			new LocalTableManager();
 		} catch (RemoteException e) {
@@ -67,7 +67,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	private Map<Integer, TableInterface> allTables;
 
 	private String localAddress;
-	
+
 	public LocalTableManager() throws RemoteException {
 
 		// reads configuration file

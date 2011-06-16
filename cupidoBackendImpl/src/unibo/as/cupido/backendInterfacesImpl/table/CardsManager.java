@@ -9,7 +9,6 @@ import java.util.Random;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.Card.Suit;
-import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 
 public class CardsManager {
@@ -79,11 +78,14 @@ public class CardsManager {
 	public void addCardsInformationForViewers(
 			ObservedGameStatus observedGameStatus) {
 		for (int i = 0; i < 4; i++) {
-			observedGameStatus.ogs[i].numOfCardsInHand = cards[i].size();
-			observedGameStatus.ogs[i].playedCard = cardPlayed[i];
+			observedGameStatus.playerStatus[i].numOfCardsInHand = cards[i]
+					.size();
+			observedGameStatus.playerStatus[i].playedCard = cardPlayed[i];
 		}
 		if (observedGameStatus.firstDealerInTrick != -1) {
 			if (!allPlayerPassedCards()) {
+				observedGameStatus.firstDealerInTrick = -1;
+			} else if (turn == 0 && playedCardsCount == 0) {
 				observedGameStatus.firstDealerInTrick = -1;
 			} else {
 				observedGameStatus.firstDealerInTrick = firstPlaying;

@@ -35,39 +35,39 @@ public class HeartsTableWidget extends AbsolutePanel {
 
 		ObservedGameStatus observedGameStatus = new ObservedGameStatus();
 
-		observedGameStatus.ogs = new PlayerStatus[4];
+		observedGameStatus.playerStatus = new PlayerStatus[4];
 
 		// Bottom player
-		observedGameStatus.ogs[0] = new PlayerStatus();
-		observedGameStatus.ogs[0].isBot = false;
-		observedGameStatus.ogs[0].name = "bottom player name";
-		observedGameStatus.ogs[0].numOfCardsInHand = 13;
-		observedGameStatus.ogs[0].playedCard = new Card(11, Card.Suit.SPADES);
-		observedGameStatus.ogs[0].score = 1234;
+		observedGameStatus.playerStatus[0] = new PlayerStatus();
+		observedGameStatus.playerStatus[0].isBot = false;
+		observedGameStatus.playerStatus[0].name = "bottom player name";
+		observedGameStatus.playerStatus[0].numOfCardsInHand = 13;
+		observedGameStatus.playerStatus[0].playedCard = new Card(11, Card.Suit.SPADES);
+		observedGameStatus.playerStatus[0].score = 1234;
 
 		// Left player
-		observedGameStatus.ogs[1] = new PlayerStatus();
-		observedGameStatus.ogs[1].isBot = false;
-		observedGameStatus.ogs[1].name = "left player name";
-		observedGameStatus.ogs[1].numOfCardsInHand = 13;
-		observedGameStatus.ogs[1].playedCard = new Card(11, Card.Suit.HEARTS);
-		observedGameStatus.ogs[1].score = 1234;
+		observedGameStatus.playerStatus[1] = new PlayerStatus();
+		observedGameStatus.playerStatus[1].isBot = false;
+		observedGameStatus.playerStatus[1].name = "left player name";
+		observedGameStatus.playerStatus[1].numOfCardsInHand = 13;
+		observedGameStatus.playerStatus[1].playedCard = new Card(11, Card.Suit.HEARTS);
+		observedGameStatus.playerStatus[1].score = 1234;
 
 		// Top player
-		observedGameStatus.ogs[2] = new PlayerStatus();
-		observedGameStatus.ogs[2].isBot = true;
-		observedGameStatus.ogs[2].name = null;
-		observedGameStatus.ogs[2].numOfCardsInHand = 5;
-		observedGameStatus.ogs[2].playedCard = new Card(1, Card.Suit.HEARTS);
-		observedGameStatus.ogs[2].score = 1234;
+		observedGameStatus.playerStatus[2] = new PlayerStatus();
+		observedGameStatus.playerStatus[2].isBot = true;
+		observedGameStatus.playerStatus[2].name = null;
+		observedGameStatus.playerStatus[2].numOfCardsInHand = 5;
+		observedGameStatus.playerStatus[2].playedCard = new Card(1, Card.Suit.HEARTS);
+		observedGameStatus.playerStatus[2].score = 1234;
 
 		// Right player
-		observedGameStatus.ogs[3] = new PlayerStatus();
-		observedGameStatus.ogs[3].isBot = false;
-		observedGameStatus.ogs[3].name = "right player name";
-		observedGameStatus.ogs[3].numOfCardsInHand = 13;
-		observedGameStatus.ogs[3].playedCard = null;
-		observedGameStatus.ogs[3].score = 1234;
+		observedGameStatus.playerStatus[3] = new PlayerStatus();
+		observedGameStatus.playerStatus[3].isBot = false;
+		observedGameStatus.playerStatus[3].name = "right player name";
+		observedGameStatus.playerStatus[3].numOfCardsInHand = 13;
+		observedGameStatus.playerStatus[3].playedCard = null;
+		observedGameStatus.playerStatus[3].score = 1234;
 
 		Card[] bottomPlayerCards = new Card[13];
 

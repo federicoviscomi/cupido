@@ -27,13 +27,15 @@ public class DummyPlayerCreator implements Serializable,
 	public static void main(String[] args) throws Exception {
 		DummyPlayerCreator dummyPlayerCreator = new DummyPlayerCreator("Owner");
 		dummyPlayerCreator.createTable();
-		dummyPlayerCreator.addBot(0);
+		// 1 refers to absolute position
+		dummyPlayerCreator.addBot(1);
 	}
 
 	private final String userName;
 	private final InitialTableStatus initialTableStatus;
 	private TableInterface tableInterface;
 	private GlobalTableManagerInterface gtm;
+
 	public DummyPlayerCreator(String userName) {
 
 		this.userName = userName;

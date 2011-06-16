@@ -9,7 +9,6 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
@@ -152,9 +151,9 @@ public class PlayersManager {
 			ObservedGameStatus observedGameStatus) {
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null) {
-				observedGameStatus.ogs[i].name = players[i].name;
-				observedGameStatus.ogs[i].isBot = players[i].isBot;
-				observedGameStatus.ogs[i].score = players[i].score;
+				observedGameStatus.playerStatus[i].name = players[i].name;
+				observedGameStatus.playerStatus[i].isBot = players[i].isBot;
+				observedGameStatus.playerStatus[i].score = players[i].score;
 			}
 		}
 		if (playersCount < 4)
