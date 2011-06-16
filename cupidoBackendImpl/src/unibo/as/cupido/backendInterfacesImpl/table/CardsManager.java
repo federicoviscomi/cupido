@@ -152,7 +152,7 @@ public class CardsManager {
 
 	private void passCards() {
 		for (int i = 0; i < 4; i++) {
-			cards[i].addAll(Arrays.asList(allPassedCards[(i - 1) % 4]));
+			cards[i].addAll(Arrays.asList(allPassedCards[(i + 3) % 4]));
 		}
 	}
 
