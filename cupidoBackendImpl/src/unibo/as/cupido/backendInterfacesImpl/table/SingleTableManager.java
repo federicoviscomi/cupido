@@ -71,7 +71,7 @@ public class SingleTableManager implements TableInterface {
 
 		Bot bot = botManager.chooseBotStrategy(initialTableStatus, this,
 				"_bot." + userName + "." + position);
-		
+
 		viewers.notifyBotJoined(userName, position);
 		playersManager.addBot(userName, position, bot);
 		if (playersManager.playersCount() == 4)
@@ -147,8 +147,8 @@ public class SingleTableManager implements TableInterface {
 		System.out.println("\n"
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + userName + ", " + Arrays.toString(cards) + ")");
-		//playersManager.print();
-		//cardsManager.print();
+		// playersManager.print();
+		// cardsManager.print();
 		if (userName == null || cards == null || cards.length != 3)
 			throw new IllegalArgumentException();
 		int position = playersManager.getPlayerPosition(userName);

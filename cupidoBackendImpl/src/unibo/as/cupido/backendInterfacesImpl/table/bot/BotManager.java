@@ -11,10 +11,13 @@ public class BotManager {
 	public Bot chooseBotStrategy(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, String botName)
 			throws RemoteException {
-		return (Bot) UnicastRemoteObject
-				.exportObject(new DummyLoggerBotNotifyer(initialTableStatus,
-						singleTableManager, botName));
+		DummyLoggerBotNotifyer dummyLoggerBotNotifyer = new DummyLoggerBotNotifyer(
+				initialTableStatus, singleTableManager, botName);
+		Bot bot = (Bot) UnicastRemoteObject.exportObject(dummyLoggerBotNotifyer);
+		dummyLoggerBotNotifyer.startPlayingThread(bot);
+		return bot;
 	}
+	
 	/**
 	 * If a player got all points (26) then he "shot the moon". The 26 points
 	 * isn't added to his score, but to everyone else's. How to pass

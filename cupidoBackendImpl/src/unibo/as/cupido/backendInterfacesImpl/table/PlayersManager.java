@@ -84,7 +84,7 @@ public class PlayersManager {
 				try {
 					this.print();
 					players[i].sni.notifyPlayerJoined("_bot." + userName + "."
-							+ position, true, 0, ((position - i) % 4) - 1);
+							+ position, true, 0, ((position - i + 4) % 4) - 1);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -133,7 +133,7 @@ public class PlayersManager {
 					System.err.println("\nnotifing joind player " + playerName
 							+ " to player " + i + " " + players[i].name);
 					players[i].sni.notifyPlayerJoined(playerName, false, score,
-							((position - i) % 4) - 1);
+							((position - i + 4) % 4) - 1);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

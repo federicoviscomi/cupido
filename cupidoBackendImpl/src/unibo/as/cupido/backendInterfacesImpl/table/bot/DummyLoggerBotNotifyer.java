@@ -1,6 +1,8 @@
 package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import java.rmi.RemoteException;
+import java.rmi.server.RemoteStub;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
@@ -9,37 +11,38 @@ import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
 
-public class DummyLoggerBotNotifyer extends AbstractBot {
+public class DummyLoggerBotNotifyer implements Bot {
 
-	private final String userName;
-	private final TableInterface singleTableManager;
-	private final InitialTableStatus initialTableStatus;
-	private ArrayList<Card> cards;
-	private Card[] playedCard = new Card[4];
-	private int nextToPlay = -1;
-	private int turn;
-	private int point;
-
-	private Semaphore playNextCardLock;
-	private CardPlayingThread cardPlayingThread;
-	
 	public DummyLoggerBotNotifyer(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, String userName) {
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;
 		playNextCardLock = new Semaphore(0);
-		cardPlayingThread = new CardPlayingThread(playNextCardLock, this);
-		System.out.println("\nDummyLoggerBotNotifyer constructor " + userName
-				+ ". " + initialTableStatus);
+		System.out.println("\n constructor " + userName + ". "
+				+ initialTableStatus);
 	}
 
+	protected final String userName;
+	protected TableInterface singleTableManager;
+	protected InitialTableStatus initialTableStatus;
+	protected ArrayList<Card> cards;
+	protected Card[] playedCard = new Card[4];
+	protected int point;
+	protected final Semaphore playNextCardLock;
+	protected CardPlayingThread cardPlayingThread;
+	/**
+	 * </code>firstDealer == 0</code> means this player is the first dealer.
+	 * Otherwise first dealer is the player in position
+	 * </code>firstDealer-1</code> relative to this player
+	 */
+	protected int firstDealer = -1;
+
 	@Override
-	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint)
-			throws RemoteException {
+	public synchronized void notifyGameEnded(int[] matchPoints,
+			int[] playersTotalPoint) {
 		System.out.println("\n" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(matchPoints) + ", "
@@ -49,43 +52,44 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	}
 
 	@Override
-	public void notifyGameStarted(Card[] cards) throws RemoteException {
-		System.out.println("\n" + userName + ": "
+	public synchronized void notifyGameStarted(Card[] cards) {
+		System.err.println("\n" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(cards) + "). initial table status "
 				+ initialTableStatus);
-
-		if (turn != 0)
-			throw new Error();
+		System.err.flush();
 		this.cards = new ArrayList<Card>(4);
 		this.cards.addAll(Arrays.asList(cards));
-		cardPlayingThread.start();
+		if (this.cards.contains(CardsManager.twoOfClubs)) {
+			firstDealer = 0;
+		}
+		playNextCardLock.release();
 	}
 
 	@Override
-	public void notifyLocalChatMessage(ChatMessage message)
-			throws RemoteException {
+	public synchronized void notifyLocalChatMessage(ChatMessage message) {
 		System.out.println("\n" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + message + ")");
 	}
 
 	@Override
-	public void notifyPassedCards(Card[] cards) throws RemoteException {
+	public synchronized void notifyPassedCards(Card[] cards) {
 		System.out.println("\n" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(cards) + ")");
 		this.cards.addAll(Arrays.asList(cards));
 		for (Card card : this.cards) {
 			if (card.equals(CardsManager.twoOfClubs)) {
+				System.err.println("\n:\n:\n:\n:");
 				playNextCardLock.release();
+				return;
 			}
 		}
 	}
 
 	@Override
-	public void notifyPlayedCard(Card card, int playerPosition)
-			throws RemoteException {
+	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
 		System.out.println("\n" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + card + ", " + playerPosition + ")");
@@ -96,9 +100,9 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	}
 
 	@Override
-	public void notifyPlayerJoined(String name, boolean isBot, int point,
-			int position) throws RemoteException {
-		System.out.println("\n DummyLoggerBotNotifier inizio " + userName + "."
+	public synchronized void notifyPlayerJoined(String name, boolean isBot,
+			int point, int position) {
+		System.out.println("\n AbstractBot inizio " + userName + "."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ", " + isBot + "," + point + "," + position
 				+ ")\n table status " + initialTableStatus);
@@ -112,14 +116,14 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 		initialTableStatus.playerScores[position] = position;
 		initialTableStatus.whoIsBot[position] = isBot;
 
-		System.out.println("\n DummyLoggerBotNotifier fine " + userName + "."
+		System.out.println("\n AbstractBot fine " + userName + "."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ", " + isBot + "," + point + "," + position
 				+ ")\n table status " + initialTableStatus);
 	}
 
 	@Override
-	public void notifyPlayerLeft(String name) throws RemoteException {
+	public synchronized void notifyPlayerLeft(String name) {
 		System.out.print("\n" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ")");
@@ -133,27 +137,48 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	}
 
 	@Override
-	public void passCards() throws RemoteException {
+	public synchronized void passCards() {
 		Card[] cardsToPass = new Card[3];
 		for (int i = 0; i < 3; i++)
 			cardsToPass[i] = cards.remove(0);
-		singleTableManager.passCards(userName, cardsToPass);
-	}
-
-	@Override
-	public void playNextCard() {
 		try {
-			playedCard[0] = cards.remove(0);
-			singleTableManager.playCard(userName, playedCard[0]);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalMoveException e) {
+			singleTableManager.passCards(userName, cardsToPass);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public synchronized void playNextCard() {
+		try {
+			if (cards.remove(CardsManager.twoOfClubs)) {
+				playedCard[0] = CardsManager.twoOfClubs;
+			} else {
+				playedCard[0] = cards.remove(0);
+			}
+			singleTableManager.playCard(userName, playedCard[0]);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void startPlayingThread(Bot bot) {
+		cardPlayingThread = new CardPlayingThread(playNextCardLock, this);
+		cardPlayingThread.start();
+	}
+
+	@Override
+	public void createTable() throws RemoteException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addBot(int i) throws RemoteException {
+		// TODO Auto-generated method stub
+
+	}
+
 }
