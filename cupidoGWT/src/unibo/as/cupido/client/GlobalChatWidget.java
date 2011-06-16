@@ -1,5 +1,7 @@
 package unibo.as.cupido.client;
 
+import unibo.as.cupido.client.screens.CupidoMainMenuScreen;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -22,7 +24,7 @@ public class GlobalChatWidget extends AbsolutePanel {
 	private PushButton sendButton;
 	private String username;
 
-	GlobalChatWidget(final String username) {
+	public GlobalChatWidget(final String username) {
 
 		this.username = username;
 

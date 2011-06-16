@@ -7,6 +7,7 @@ import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface CupidoInterfaceAsync {

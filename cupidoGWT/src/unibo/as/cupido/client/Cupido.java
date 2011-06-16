@@ -2,6 +2,7 @@ package unibo.as.cupido.client;
 
 import net.zschech.gwt.comet.client.CometSerializer;
 import net.zschech.gwt.comet.client.SerialTypes;
+import unibo.as.cupido.client.screens.ScreenSwitcherImpl;
 import unibo.as.cupido.shared.cometNotification.CardPassed;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
 import unibo.as.cupido.shared.cometNotification.GameEnded;
@@ -18,8 +19,8 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class Cupido implements EntryPoint {
 
-	static final int width = 900;
-	static final int height = 700;
+	public static final int width = 900;
+	public static final int height = 700;
 
 	@SerialTypes({ CardPassed.class, CardPlayed.class, GameEnded.class,
 			GameStarted.class, NewLocalChatMessage.class,
