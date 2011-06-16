@@ -3,15 +3,14 @@ package unibo.as.cupido.client.screens;
 import java.io.Serializable;
 import java.util.List;
 
-import unibo.as.cupido.client.Cupido;
-import unibo.as.cupido.client.CupidoCometListener;
-import unibo.as.cupido.client.CupidoInterface;
-import unibo.as.cupido.client.CupidoInterfaceAsync;
-import unibo.as.cupido.client.Cupido.CupidoCometSerializer;
-
 import net.zschech.gwt.comet.client.CometClient;
 import net.zschech.gwt.comet.client.CometListener;
 import net.zschech.gwt.comet.client.CometSerializer;
+import unibo.as.cupido.client.Cupido;
+import unibo.as.cupido.client.Cupido.CupidoCometSerializer;
+import unibo.as.cupido.client.CupidoCometListener;
+import unibo.as.cupido.client.CupidoInterface;
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -165,7 +164,8 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 
 		removeCurrentScreen();
 		assert username != null;
-		currentScreen = new CupidoObservedTableScreen(this, username, cupidoService, cometListener);
+		currentScreen = new CupidoObservedTableScreen(this, username,
+				cupidoService, cometListener);
 		add(currentScreen, 0, 0);
 
 		switchingScreen = false;

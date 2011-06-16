@@ -3,15 +3,13 @@ package unibo.as.cupido.client.screens;
 import java.io.Serializable;
 import java.util.List;
 
+import net.zschech.gwt.comet.client.CometListener;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoCometListener;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.HeartsTableWidget;
 import unibo.as.cupido.client.LocalChatWidget;
-import unibo.as.cupido.client.LocalChatWidget.MessageSender;
 import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
-
-import net.zschech.gwt.comet.client.CometListener;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;

@@ -3,8 +3,6 @@ package unibo.as.cupido.client.playerstates;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.user.client.ui.VerticalPanel;
-
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
@@ -13,41 +11,43 @@ import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.screens.ScreenSwitcher;
 
+import com.google.gwt.user.client.ui.VerticalPanel;
+
 public class PlayerStateManagerImpl implements PlayerStateManager {
-	
+
 	private Object currentState = null;
 	private ScreenSwitcher screenSwitcher;
 	private CardsGameWidget cardsGameWidget;
 	private int firstPlayerInTrick = -1;
-	
+
 	// FIXME: This is guaranteed to be correct for players only.
 	boolean heartsBroken = false;
-		
+
 	/**
-	 * Some information about the players.
-	 * The first element refers to the bottom player, and the other players
-	 * follow in clockwise order.
+	 * Some information about the players. The first element refers to the
+	 * bottom player, and the other players follow in clockwise order.
 	 */
 	private List<PlayerInfo> players;
-		
+
 	/**
 	 * The (ordered) list of cards dealt in the current trick.
 	 */
 	private List<Card> dealtCards = new ArrayList<Card>();
-	
+
 	/**
-	 * Initialize the state manager. The current user is a player, and his hand cards are `cards'.
+	 * Initialize the state manager. The current user is a player, and his hand
+	 * cards are `cards'.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenSwitcher screenSwitcher,
 			InitialTableStatus initialTableStatus, Card[] cards, String username) {
 		this.screenSwitcher = screenSwitcher;
-		
+
 		for (String opponent : initialTableStatus.opponents)
 			assert opponent != null;
-		
+
 		ObservedGameStatus observedGameStatus = new ObservedGameStatus();
 		observedGameStatus.playerStatus = new PlayerStatus[4];
-		
+
 		// Bottom player
 		observedGameStatus.playerStatus[0] = new PlayerStatus();
 		observedGameStatus.playerStatus[0].isBot = false;
@@ -79,24 +79,24 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		observedGameStatus.playerStatus[3].numOfCardsInHand = 13;
 		observedGameStatus.playerStatus[3].playedCard = null;
 		observedGameStatus.playerStatus[3].score = initialTableStatus.playerScores[3];
-		
-		this.cardsGameWidget = new CardsGameWidget(tableSize, observedGameStatus,
-				cards, new VerticalPanel(),
+
+		this.cardsGameWidget = new CardsGameWidget(tableSize,
+				observedGameStatus, cards, new VerticalPanel(),
 				new CardsGameWidget.GameEventListener() {
-			@Override
-			public void onAnimationStart() {
-			}
+					@Override
+					public void onAnimationStart() {
+					}
 
-			@Override
-			public void onAnimationEnd() {
-			}
+					@Override
+					public void onAnimationEnd() {
+					}
 
-			@Override
-			public void onCardClicked(int player, Card card,
-					State state, boolean isRaised) {
-			}
-		});
-		
+					@Override
+					public void onCardClicked(int player, Card card,
+							State state, boolean isRaised) {
+					}
+				});
+
 		players = new ArrayList<PlayerInfo>();
 		for (PlayerStatus playerStatus : observedGameStatus.playerStatus) {
 			PlayerInfo playerInfo = new PlayerInfo();
@@ -104,12 +104,12 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			playerInfo.name = playerStatus.name;
 			players.add(playerInfo);
 		}
-		
+
 		List<Card> handCards = new ArrayList<Card>();
-		
+
 		for (Card card : cards)
 			handCards.add(card);
-		
+
 		transitionToCardPassing(handCards);
 	}
 
@@ -152,7 +152,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	public void transitionToGameEnded() {
 		currentState = new GameEndedState(cardsGameWidget, this);
 	}
-	
+
 	@Override
 	public int getFirstPlayerInTrick() {
 		return firstPlayerInTrick;
@@ -185,7 +185,9 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	/**
 	 * Computes the index of the winning card in a trick.
-	 * @param cards An ordered list containing the cards in the current trick.
+	 * 
+	 * @param cards
+	 *            An ordered list containing the cards in the current trick.
 	 */
 	private static int winnerCard(List<Card> cards) {
 		assert cards.size() == 4;
@@ -197,7 +199,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				winner = candidate;
 		return winner;
 	}
-	
+
 	private static boolean cardTakes(Card candidate, Card previous) {
 		if (candidate.suit != previous.suit)
 			return false;
@@ -214,12 +216,12 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	public void exit() {
 		screenSwitcher.displayMainMenuScreen();
 	}
-	
+
 	@Override
 	public CardsGameWidget getWidget() {
 		return cardsGameWidget;
 	}
-	
+
 	public List<PlayerInfo> getPlayerInfo() {
 		return players;
 	}

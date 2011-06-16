@@ -1,10 +1,8 @@
 package unibo.as.cupido.client;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
-import unibo.as.cupido.client.playerstates.PlayerStateManagerImpl;
 import unibo.as.cupido.client.screens.ScreenSwitcher;
 import unibo.as.cupido.client.viewerstates.ViewerStateManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManagerImpl;
@@ -16,7 +14,6 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class HeartsObservedTableWidget extends AbsolutePanel {
 
@@ -24,7 +21,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	private BeforeGameWidget beforeGameWidget;
 	private CardsGameWidget cardsGameWidget;
 	private int tableSize;
-	
+
 	private ViewerStateManager stateManager;
 
 	/**
@@ -37,7 +34,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 			final ScreenSwitcher screenSwitcher) {
 		this.tableSize = tableSize;
 		this.screenSwitcher = screenSwitcher;
-		
+
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 
@@ -45,6 +42,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		beforeGameWidget = new BeforeGameWidget(tableSize, "pippo", 1234, true,
 				new BeforeGameWidget.Callback() {
 					private int numPlayers = 1;
+
 					@Override
 					public void onAddBot(int position) {
 						numPlayers++;
@@ -54,11 +52,11 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 				});
 		add(beforeGameWidget, 0, 0);
 	}
-	
+
 	public void startGame(String username) {
-				
+
 		remove(beforeGameWidget);
-		
+
 		// FIXME: Initialize the widget with the correct values.
 		// These values are only meant for debugging purposes.
 
@@ -72,7 +70,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		observedGameStatus.playerStatus[0].isBot = false;
 		observedGameStatus.playerStatus[0].name = "bottom player name";
 		observedGameStatus.playerStatus[0].numOfCardsInHand = 12;
-		observedGameStatus.playerStatus[0].playedCard = new Card(11, Card.Suit.SPADES);
+		observedGameStatus.playerStatus[0].playedCard = new Card(11,
+				Card.Suit.SPADES);
 		observedGameStatus.playerStatus[0].score = 1234;
 
 		// Left player
@@ -80,7 +79,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		observedGameStatus.playerStatus[1].isBot = false;
 		observedGameStatus.playerStatus[1].name = "left player name";
 		observedGameStatus.playerStatus[1].numOfCardsInHand = 12;
-		observedGameStatus.playerStatus[1].playedCard = new Card(11, Card.Suit.HEARTS);
+		observedGameStatus.playerStatus[1].playedCard = new Card(11,
+				Card.Suit.HEARTS);
 		observedGameStatus.playerStatus[1].score = 1234;
 
 		// Top player
@@ -88,7 +88,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		observedGameStatus.playerStatus[2].isBot = true;
 		observedGameStatus.playerStatus[2].name = null;
 		observedGameStatus.playerStatus[2].numOfCardsInHand = 12;
-		observedGameStatus.playerStatus[2].playedCard = new Card(1, Card.Suit.HEARTS);
+		observedGameStatus.playerStatus[2].playedCard = new Card(1,
+				Card.Suit.HEARTS);
 		observedGameStatus.playerStatus[2].score = 1234;
 
 		// Right player
@@ -98,9 +99,10 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		observedGameStatus.playerStatus[3].numOfCardsInHand = 13;
 		observedGameStatus.playerStatus[3].playedCard = null;
 		observedGameStatus.playerStatus[3].score = 1234;
-		
-		stateManager = new ViewerStateManagerImpl(tableSize, screenSwitcher, observedGameStatus);
-			
+
+		stateManager = new ViewerStateManagerImpl(tableSize, screenSwitcher,
+				observedGameStatus);
+
 		final VerticalPanel controllerPanel = new VerticalPanel();
 		controllerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		controllerPanel

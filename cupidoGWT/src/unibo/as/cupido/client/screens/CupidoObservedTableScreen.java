@@ -3,14 +3,13 @@ package unibo.as.cupido.client.screens;
 import java.io.Serializable;
 import java.util.List;
 
+import net.zschech.gwt.comet.client.CometListener;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoCometListener;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.HeartsObservedTableWidget;
 import unibo.as.cupido.client.LocalChatWidget;
 import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
-
-import net.zschech.gwt.comet.client.CometListener;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -22,15 +21,15 @@ public class CupidoObservedTableScreen extends AbsolutePanel {
 	 */
 	public static final int chatWidth = 200;
 
-	public CupidoObservedTableScreen(ScreenSwitcher screenSwitcher, String username,
-			final CupidoInterfaceAsync cupidoService,
+	public CupidoObservedTableScreen(ScreenSwitcher screenSwitcher,
+			String username, final CupidoInterfaceAsync cupidoService,
 			CupidoCometListener listener) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
 		assert Cupido.height == Cupido.width - chatWidth;
-		HeartsObservedTableWidget tableWidget = new HeartsObservedTableWidget(Cupido.height,
-				username, screenSwitcher);
+		HeartsObservedTableWidget tableWidget = new HeartsObservedTableWidget(
+				Cupido.height, username, screenSwitcher);
 		add(tableWidget, 0, 0);
 
 		final LocalChatWidget chatWidget = new LocalChatWidget(username,

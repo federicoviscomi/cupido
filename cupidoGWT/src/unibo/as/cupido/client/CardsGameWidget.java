@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import sun.reflect.generics.tree.BottomSignature;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
@@ -20,7 +19,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class CardsGameWidget extends AbsolutePanel {
@@ -31,15 +29,17 @@ public class CardsGameWidget extends AbsolutePanel {
 	// The height of the players' labels that contain usernames and scores.
 	private static final int playerLabelHeight = 20;
 
-	// The distance between the center of the bottom player's dealt cards and the
+	// The distance between the center of the bottom player's dealt cards and
+	// the
 	// bottom of the screen.
 	private static final int dealtCardsOffset = 260;
 
 	// The distance between the center of the bottom player's hand and the
 	// bottom of the screen.
 	private static final int handCardsOffset = 90;
-	
-	// This is added to every z-index to allow "positive" and "negative" z-indexes.
+
+	// This is added to every z-index to allow "positive" and "negative"
+	// z-indexes.
 	private static final int defaultZIndex = 50;
 
 	/**
@@ -229,7 +229,8 @@ public class CardsGameWidget extends AbsolutePanel {
 		public void onAnimationEnd();
 
 		/**
-		 * This is called when the user clicks on a card, except during animations.
+		 * This is called when the user clicks on a card, except during
+		 * animations.
 		 * 
 		 * @player: the player to whom the card belongs
 		 * @card: the card that was clicked, or `null' if a covered card was
@@ -379,9 +380,11 @@ public class CardsGameWidget extends AbsolutePanel {
 
 		previousTableLayout = tableLayout;
 	}
-	
+
 	/**
-	 * Sets the listener to `listener'. The old listener will not receive new events.
+	 * Sets the listener to `listener'. The old listener will not receive new
+	 * events.
+	 * 
 	 * @param listener
 	 */
 	public void setListener(GameEventListener listener) {
@@ -430,20 +433,21 @@ public class CardsGameWidget extends AbsolutePanel {
 	public void runPendingAnimations(int duration,
 			GWTAnimation.AnimationCompletedListener animationCompletedListener) {
 
-		TableLayout tableLayout = computePositions(movableWidgets,
-				cardRoles, tableSize);
-		
+		TableLayout tableLayout = computePositions(movableWidgets, cardRoles,
+				tableSize);
+
 		animateLayoutChange(duration, tableLayout, animationCompletedListener);
 	}
-	
-	private void animateLayoutChange(int duration, final TableLayout targetTableLayout,
+
+	private void animateLayoutChange(int duration,
+			final TableLayout targetTableLayout,
 			GWTAnimation.AnimationCompletedListener animationCompletedListener) {
-		
+
 		assert !runningAnimation;
 
 		runningAnimation = true;
 		listener.onAnimationStart();
-		
+
 		GWTAnimation animation = new SimpleAnimation(duration) {
 			@Override
 			public void onUpdate(double progress) {
@@ -480,8 +484,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * not be raised. If the player has multiple covered cards, the one with
 	 * higher z index is chosen.
 	 * 
-	 * The card is *not* moved to the correct position. Instead, the caller
-	 * must ensure that it will be at the right position even when uncovered.
+	 * The card is *not* moved to the correct position. Instead, the caller must
+	 * ensure that it will be at the right position even when uncovered.
 	 * 
 	 * NOTE: There must be no animations pending when this method is called.
 	 */
@@ -502,8 +506,8 @@ public class CardsGameWidget extends AbsolutePanel {
 				if (role.player == player && role.isRaised == false) {
 					// Found a match. Keep the widget with higher z index.
 					if (widget == null
-							|| cardPositions.get(widget).z
-							   < cardPositions.get(candidateWidget).z)
+							|| cardPositions.get(widget).z < cardPositions
+									.get(candidateWidget).z)
 						widget = candidateWidget;
 				}
 			}
@@ -523,11 +527,11 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * Cover the card `card' of the specified player. The card must
-	 * not be raised.
+	 * Cover the card `card' of the specified player. The card must not be
+	 * raised.
 	 * 
-	 * The card is *not* moved to the correct position. Instead, the caller
-	 * must ensure that it will be at the right position even when covered.
+	 * The card is *not* moved to the correct position. Instead, the caller must
+	 * ensure that it will be at the right position even when covered.
 	 * 
 	 * NOTE: There must be no animations pending when this method is called.
 	 */
@@ -549,8 +553,8 @@ public class CardsGameWidget extends AbsolutePanel {
 				if (role.player == player && role.isRaised == false) {
 					// Found a match. Keep the widget with higher z index.
 					if (widget == null
-							|| cardPositions.get(widget).z
-							   < cardPositions.get(candidateWidget).z)
+							|| cardPositions.get(widget).z < cardPositions
+									.get(candidateWidget).z)
 						widget = candidateWidget;
 				}
 			}
@@ -606,8 +610,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * The player `player' picks up the card `card' that was previously in the DEALT state in front
-	 * of him. The card must not be covered.
+	 * The player `player' picks up the card `card' that was previously in the
+	 * DEALT state in front of him. The card must not be covered.
 	 * 
 	 * The corresponding animation will be executed at the next call to
 	 * runPendingAnimations().
@@ -717,88 +721,100 @@ public class CardsGameWidget extends AbsolutePanel {
 		// Note: this may already be `true'.
 		someAnimationsPending = true;
 	}
-	
+
 	/**
-	 * Runs an animation in which the dealt cards move towards the specified player,
-	 * until they go off screen. After the animation, but before triggering the listener,
-	 * such cards are removed.
+	 * Runs an animation in which the dealt cards move towards the specified
+	 * player, until they go off screen. After the animation, but before
+	 * triggering the listener, such cards are removed.
 	 * 
-	 * Note: there must be no pending animation when calling this method.
-	 * Note: the initial waiting and the following card move are considered two different
-	 * animations. So the GameEventListener receives the onAnimationEnd() and
-	 * onAnimationStart() notifications between the two animations.
+	 * Note: there must be no pending animation when calling this method. Note:
+	 * the initial waiting and the following card move are considered two
+	 * different animations. So the GameEventListener receives the
+	 * onAnimationEnd() and onAnimationStart() notifications between the two
+	 * animations.
 	 */
-	public void animateTrickTaking(final int player, int waitTime, final int animationTime,
+	public void animateTrickTaking(
+			final int player,
+			int waitTime,
+			final int animationTime,
 			final GWTAnimation.AnimationCompletedListener animationCompletedListener) {
-		
+
 		assert !runningAnimation;
 		assert !someAnimationsPending;
-		
+
 		listener.onAnimationStart();
-		
+
 		Timer timer = new Timer() {
 			@Override
 			public void run() {
-				TableLayout tableLayout = computePositions(movableWidgets, cardRoles, tableSize);
-				
+				TableLayout tableLayout = computePositions(movableWidgets,
+						cardRoles, tableSize);
+
 				// Now tableLayout is equivalent to previousTableLayout.
-				
+
 				for (int i = 0; i < 4 - player; i++)
 					rotateTableLayout(tableLayout, tableSize);
-				
-				// Now the layout has been rotated so that the cards must move towards
+
+				// Now the layout has been rotated so that the cards must move
+				// towards
 				// the bottom player.
-				
+
 				// Move the dealt cards off-screen.
-				
+
 				final List<CardWidget> dealtCards = new ArrayList<CardWidget>();
-				
-				for (Entry<CardWidget,Position> e : tableLayout.cards.entrySet()) {
+
+				for (Entry<CardWidget, Position> e : tableLayout.cards
+						.entrySet()) {
 					if (cardRoles.get(e.getKey()).state == CardRole.State.DEALT) {
 						dealtCards.add(e.getKey());
-						e.getValue().y += (tableSize + CardWidget.cardHeight/2 - dealtCardsOffset);
+						e.getValue().y += (tableSize + CardWidget.cardHeight
+								/ 2 - dealtCardsOffset);
 					}
 				}
-				
+
 				// Rotate the layout back to the original orientation.
-				
+
 				for (int i = 0; i < player; i++)
 					rotateTableLayout(tableLayout, tableSize);
-				
+
 				// Let the dealt cards slide below hands' cards.
 				for (CardWidget widget : dealtCards) {
-					tableLayout.cards.get(widget).z -= defaultZIndex/2;
-					previousTableLayout.cards.get(widget).z -= defaultZIndex/2;
+					tableLayout.cards.get(widget).z -= defaultZIndex / 2;
+					previousTableLayout.cards.get(widget).z -= defaultZIndex / 2;
 				}
-				
-				// Call this here, to minimize the delay before the succeeding onAnimationStart().
+
+				// Call this here, to minimize the delay before the succeeding
+				// onAnimationStart().
 				listener.onAnimationEnd();
-				
+
 				// Actually run the animation.
-				animateLayoutChange(animationTime, tableLayout, new GWTAnimation.AnimationCompletedListener() {
-					@Override
-					public void onComplete() {
-						// Remove the widgets for the off-screen cards.
-						for (CardWidget widget : dealtCards) {
-							movableWidgets.cards.remove(widget);
-							previousTableLayout.cards.remove(widget);
-							cardRoles.remove(widget);
-							// Remove the widget from the panel.
-							remove(widget);
-						}
-						
-						// Recompute the layout, as the z indexes may have changed.
-						previousTableLayout = computePositions(movableWidgets, cardRoles, tableSize);
-						
-						animationCompletedListener.onComplete();
-					}
-				});
+				animateLayoutChange(animationTime, tableLayout,
+						new GWTAnimation.AnimationCompletedListener() {
+							@Override
+							public void onComplete() {
+								// Remove the widgets for the off-screen cards.
+								for (CardWidget widget : dealtCards) {
+									movableWidgets.cards.remove(widget);
+									previousTableLayout.cards.remove(widget);
+									cardRoles.remove(widget);
+									// Remove the widget from the panel.
+									remove(widget);
+								}
+
+								// Recompute the layout, as the z indexes may
+								// have changed.
+								previousTableLayout = computePositions(
+										movableWidgets, cardRoles, tableSize);
+
+								animationCompletedListener.onComplete();
+							}
+						});
 			}
 		};
-		
+
 		timer.schedule(waitTime);
 	}
-	
+
 	private void setCardPosition(CardWidget x, Position position) {
 		int rotation = position.rotation;
 		x.setRotation(rotation);
@@ -855,14 +871,15 @@ public class CardsGameWidget extends AbsolutePanel {
 
 		for (int i = 0; i < cards.size(); i++)
 			positions.add(new Position(tableSize / 2 - maxCenterDistance / 2
-					+ i * CardWidget.borderWidth, tableSize - offset, defaultZIndex, 0));
+					+ i * CardWidget.borderWidth, tableSize - offset,
+					defaultZIndex, 0));
 
 		return positions;
 	}
 
 	/**
-	 * Gets a comparator that uses the same ordering that is used for
-	 * displaying cards.
+	 * Gets a comparator that uses the same ordering that is used for displaying
+	 * cards.
 	 * 
 	 * This is public to help callers to satisfy the preconditions for
 	 * revealCoveredCard().
@@ -923,7 +940,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			}
 		};
 	}
-	
+
 	public static void sortCardWidgets(List<CardWidget> list) {
 		final Comparator<Card> cardComparator = getCardComparator();
 		Collections.sort(list, new Comparator<CardWidget>() {
@@ -1070,7 +1087,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			position.y = y;
 		}
 	}
-	
+
 	private static void rotateTableLayout(TableLayout layout, int tableSize) {
 		for (Position position : layout.cards.values()) {
 			position.rotation = (position.rotation + 90) % 360;
@@ -1085,7 +1102,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	public void setCornerWidget(Widget cornerWidget) {
 		if (this.cornerWidget != null)
 			remove(this.cornerWidget);
-		this.cornerWidget  = cornerWidget;
+		this.cornerWidget = cornerWidget;
 		cornerWidget.setWidth("200px");
 		cornerWidget.setHeight("200px");
 		add(cornerWidget, tableSize - 200, tableSize - 200);

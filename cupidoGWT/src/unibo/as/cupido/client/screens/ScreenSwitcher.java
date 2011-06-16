@@ -16,7 +16,7 @@ public interface ScreenSwitcher {
 	 * Shows the about screen instead of the current one.
 	 */
 	public void displayAboutScreen();
-	
+
 	/**
 	 * Shows the table screen (as a player) instead of the current one.
 	 */

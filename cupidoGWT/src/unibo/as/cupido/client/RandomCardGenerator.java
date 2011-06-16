@@ -1,8 +1,8 @@
 package unibo.as.cupido.client;
 
-import com.google.gwt.user.client.Random;
-
 import unibo.as.cupido.backendInterfaces.common.Card;
+
+import com.google.gwt.user.client.Random;
 
 /**
  * FIXME: Remove this class when the servlet is ready.
