@@ -15,11 +15,20 @@ public class ObservedGameStatus implements Serializable {
 
 	public PlayerStatus[] ogs;
 
+	/**
+	 * The index of the first player that dealt a card in the current trick.
+	 * When this is 0, the bottom player led the trick, when it's 1 the trick
+	 * was led by the left player, and so on for other players, in clockwise
+	 * order.
+	 * 
+	 * If there is currently no trick, this is -1. This can happen in four
+	 * cases: when some players are still missing in the table, when players are
+	 * passing cards, when the players have passed cards but no-one has dealt
+	 * the two of clubs yet, and when the game has ended.
+	 */
+	public int firstDealerInTrick;
+
 	public ObservedGameStatus() {
-
-	}
-
-	public ObservedGameStatus(PlayerStatus[] players) {
-		ogs = players;
+		ogs = new PlayerStatus[4];
 	}
 }
