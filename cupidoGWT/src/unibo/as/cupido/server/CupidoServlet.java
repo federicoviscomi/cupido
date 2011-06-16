@@ -1,6 +1,11 @@
+/*
+ * WARNING comment constructor method CupidoServlet() to test servlet without registry
+ */
 package unibo.as.cupido.server;
 
-
+/*
+ * FIXME: Do NOT remove unused import
+ */
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -10,11 +15,14 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import unibo.as.cupido.backendInterfaces.GlobalChatInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import net.zschech.gwt.comet.server.CometServlet;
@@ -56,22 +64,50 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	private static final long serialVersionUID = 1L;
 	/*
-	 * hostname and port of registry to locate the registry default is
-	 * 127.0.0.1:1099
-	 * GTM is the name GlobalTableManager use to register.
+	 * hostname and port of registry, default is 127.0.0.1:1099
+	 * GTM and GC are name for registry lookup
 	 * Values of GTM in defined in GlobalTableManagerInterface
+	 * Values of GC can be found in GlobalChatInterface
 	 */
 	private static final String registryHost = "127.0.0.1";
 	private static final int registryPort = 1099;
 	private static final String GTM = "globaltableserver";
+	private static final String GC = "globalChatName";
 	/*
-	 * Names used in httpSession attributes
+	 * Names used in httpSession and servlet-context attributes
 	 */
 	private static final String SNI = "servletNotificationInterface";
 	private static final String TI = "tableInterfaces";
 	private static final String USERNAME = "username";
 	private static final String ISAUTHENTICATED = "isAuthenticated";
+	private static final String GCI = "globalChatInterface";
+	private static final String GTMI = "globalTableManagerInterface";
 
+	/**
+	 * WARNING comments this method to test servlet without RMI registry
+	 * 
+	 * Saves registry lookups in servlet context
+	 * TODO call regisrty
+	 */
+	public CupidoServlet() {
+		/*
+		Registry registry;
+		GlobalChatInterface gci = null;
+		GlobalTableManagerInterface gtmi = null;
+		try {
+			registry = LocateRegistry.getRegistry(registryHost, registryPort);
+			gci = (GlobalChatInterface) registry.lookup(GC);
+			gtmi = (GlobalTableManagerInterface) registry.lookup(GTM);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		}
+		
+		getServletContext().setAttribute(GCI, gci);
+		getServletContext().setAttribute(GTMI, gtmi);
+		*/
+	}
 	/**
 	 * Implements here action to perform when notified by the table
 	 * 
@@ -151,10 +187,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		public void onSessionClosed();
 	}
 
-	public CupidoServlet() {
-
-	}
-
 	@Override
 	/*
 	 * refers to GlobalChat. Client poll this method
@@ -172,6 +204,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		return null;
 	}
 
+	/*
+	 * TODO implements me!
+	 * @see unibo.as.cupido.client.CupidoInterface#sendGlobalChatMessage(java.lang.String)
+	 */
 	@Override
 	public void sendGlobalChatMessage(String message) throws IllegalArgumentException, UserNotAuthenticatedException,
 	FatalException{
@@ -182,7 +218,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
 			throw new UserNotAuthenticatedException();
 		}
-		// TODO Auto-generated method stub
+		getServletContext().getAttribute(GCI);
+		// TODO invio messaggi
 
 	}
 
@@ -257,11 +294,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new UserNotAuthenticatedException();
 		}
 
-		Registry registry;
 		try {
-			registry = LocateRegistry.getRegistry(registryHost, registryPort);
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
-					.lookup(GTM);
+
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
+					.getAttribute(GTMI);
 			return gtm.getTableList();
 		} catch (RemoteException e) {
 			System.out
@@ -269,66 +305,59 @@ public class CupidoServlet extends RemoteServiceServlet implements
 							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
-		} catch (NotBoundException e) {
-			System.out
-					.println("Servlet: on getTableList() catched NotBoundException-> "
-							+ e.getMessage());
-			// e.printStackTrace();
-			throw new FatalException();
 		}
 	}
 
 	/**
-	 * Create a new table
-	 * FIXME: ottieni il punteggio dal DB
-	 * @throws MaxNumTableReachedException 
+	 * Create a new table FIXME: ottieni il punteggio dal DB
 	 * 
-	 * @throws RemoteException in case of internal errors
-	 * @throws AllLTMBusyException if catch AllLTMBusyException
+	 * @throws MaxNumTableReachedException
+	 * 
+	 * @throws RemoteException
+	 *             in case of internal errors
+	 * @throws AllLTMBusyException
+	 *             if catch AllLTMBusyException
 	 */
 	@Override
 	public InitialTableStatus createTable() throws MaxNumTableReachedException,
-	UserNotAuthenticatedException, FatalException {
+			UserNotAuthenticatedException, FatalException {
 		InitialTableStatus its = new InitialTableStatus();
 		try {
-			Registry registry = LocateRegistry.getRegistry(registryHost,registryPort);
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
-			.lookup(GTM);
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
+					.getAttribute(GTMI);
 
 			// Get or create the HTTP session for the browser
 			HttpSession httpSession = getThreadLocalRequest().getSession(false);
 			if (httpSession == null) {
 				return null;
 			}
-			if (! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+			if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 				throw new UserNotAuthenticatedException();
 			}
 			// Get or create the Comet session for the browser
-			CometSession cometSession = CometServlet.getCometSession(httpSession);
+			CometSession cometSession = CometServlet
+					.getCometSession(httpSession);
 			if (cometSession == null) {
 				return null;
 			}
 
-			ServletNotificationsInterface sni = getServletNotificationsInterface(httpSession, cometSession);
+			ServletNotificationsInterface sni = getServletNotificationsInterface(
+					httpSession, cometSession);
 			httpSession.setAttribute(SNI, sni);
 			httpSession.getAttribute(USERNAME);
 			TableInterface ti = gtm.createTable(USERNAME, sni);
 			httpSession.setAttribute(TI, ti);
 			UnicastRemoteObject.exportObject(sni);
 
-			//FIXME: retrieve point from DB
-			its.playerScores[0]=99;
+			// FIXME: retrieve point from DB
+			its.playerScores[0] = 99;
 
 		} catch (RemoteException e) {
-			System.out.println("Servlet: on createTable() catched RemoteException-> "
-					+ e.getMessage());
-			//e.printStackTrace();
+			System.out
+					.println("Servlet: on createTable() catched RemoteException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
 			throw new FatalException("GTM not reachable");
-		} catch (NotBoundException e) {
-			System.out.println("Servlet: on createTable() catched NotBoundException-> "
-					+ e.getMessage());
-			//e.printStackTrace();
-			throw new FatalException();
 		} catch (AllLTMBusyException e) {
 			throw new MaxNumTableReachedException();
 		}
@@ -356,82 +385,76 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	@Override
 	public InitialTableStatus joinTable(String ltmId, int tableId)
-			throws FullTableException, NoSuchTableException, NoSuchServerException,
-			DuplicateUserNameException, UserNotAuthenticatedException,
-			FatalException {
+			throws FullTableException, NoSuchTableException,
+			NoSuchServerException, DuplicateUserNameException,
+			UserNotAuthenticatedException, FatalException {
 		try {
 			HttpSession httpSession = getThreadLocalRequest().getSession(false);
 			if (httpSession == null) {
 				return null;
 			}
-			if(! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+			if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 				throw new UserNotAuthenticatedException();
 			}
 
 			CometSession cometSession = CometServlet
-			.getCometSession(httpSession);
+					.getCometSession(httpSession);
 			if (cometSession == null) {
 				httpSession.invalidate();
 				return null;
 			}
 
-			Registry registry = LocateRegistry.getRegistry(registryHost,
-					registryPort);
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
-			.lookup(GTM);
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
+					.getAttribute(GTMI);
 			LocalTableManagerInterface LTMinterf = gtm.getLTMInterface(ltmId);
 			TableInterface ti = LTMinterf.getTable(tableId);
 			httpSession.setAttribute(TI, ti);
 			return ti.joinTable((String) httpSession.getAttribute(USERNAME),
 					(ServletNotificationsInterface) httpSession
-					.getAttribute(SNI));
+							.getAttribute(SNI));
 
 		} catch (NoSuchTableException e) {
 			throw e;
 		} catch (FullTableException e) {
 			throw e;
-		} catch (DuplicateUserNameException e){
+		} catch (DuplicateUserNameException e) {
 			throw e;
 		} catch (RemoteException e) {
 			System.out
-			.println("Servlet: on joinTable() catched RemoteException-> "
-					+ e.getMessage());
+					.println("Servlet: on joinTable() catched RemoteException-> "
+							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
-		} catch (NotBoundException e) {
-			System.out
-			.println("Servlet: on joinTable() catched NotBoundException-> "
-					+ e.getMessage());
-			// e.printStackTrace();
-			throw new NoSuchServerException();
 		} catch (NoSuchLTMException e) {
 			System.out
-			.println("Servlet: on joinTable() catched NoSuchLTMException-> "
-					+ e.getMessage());
+					.println("Servlet: on joinTable() catched NoSuchLTMException-> "
+							+ e.getMessage());
 			// e.printStackTrace();
-			throw new IllegalArgumentException();
+			throw new NoSuchServerException();
 		} catch (IllegalArgumentException e) {
 			System.out
-			.println("Servlet: on joinTable() catched IllegalArgumentException-> "
-					+ e.getMessage());
+					.println("Servlet: on joinTable() catched IllegalArgumentException-> "
+							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
 		} catch (IllegalStateException e) {
 			System.out
-			.println("Servlet: on joinTable() catched IllegalStateException-> "
-					+ e.getMessage());
+					.println("Servlet: on joinTable() catched IllegalStateException-> "
+							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
 		} catch (SQLException e) {
 			System.out
-			.println("Servlet: on joinTable() catched SQLException-> "
-					+ e.getMessage());
+					.println("Servlet: on joinTable() catched SQLException-> "
+							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
 		} catch (NoSuchUserException e) {
+			// In questo caso lo username non è registrato nel DB
+			// vedi TableInterface.joinTable
 			System.out
-			.println("Servlet: on joinTable() catched NoSuchUserException-> "
-					+ e.getMessage());
+					.println("Servlet: on joinTable() catched NoSuchUserException-> "
+							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
 		}
@@ -452,17 +475,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 		LocalTableManagerInterface ltmi = null;
 		try {
-			Registry registry = LocateRegistry.getRegistry(registryHost,
-					registryPort);
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
-					.lookup(GTM);
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
+					.getAttribute(GTMI);
 			ltmi = gtm.getLTMInterface(server);
-		} catch (NotBoundException e) {
-			System.out
-					.println("Servlet: on viewTable() catched NotBoundException-> "
-							+ e.getMessage());
-			// e.printStackTrace();
-			throw new FatalException();
 		} catch (AccessException e) {
 			System.out
 					.println("Servlet: on viewTable() catched AccessException-> "
