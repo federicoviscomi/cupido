@@ -14,7 +14,6 @@ import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchServerException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
-import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException;
 
@@ -83,6 +82,8 @@ public interface CupidoInterface extends RemoteService {
 	 *             if table is no more available, but user can join other table
 	 * @throws DuplicateUserNameException
 	 *             if player is already playing or viewing the selected table
+	 * @throws NoSuchServerException
+	 *             if server does not exist
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 *             in case of internal serious error while joining the table,
@@ -90,7 +91,7 @@ public interface CupidoInterface extends RemoteService {
 	 */
 	public InitialTableStatus joinTable(String server, int tableId)
 			throws FullTableException, NoSuchTableException,
-			DuplicateUserNameException, UserNotAuthenticatedException,
+			DuplicateUserNameException, NoSuchServerException, UserNotAuthenticatedException,
 			FatalException;
 
 	/**
@@ -124,25 +125,28 @@ public interface CupidoInterface extends RemoteService {
 	 * The current player leaves the table
 	 * 
 	 * @throws UserNotAuthenticatedException
-	 * @throws PlayerNotFoundException
+	 * @throws NoSuchTableException
 	 *             if player is not playing or viewing a game
 	 * @throws FatalException
 	 */
-	void leaveTable() throws UserNotAuthenticatedException, PlayerNotFoundException, FatalException;
+	void leaveTable() throws UserNotAuthenticatedException, NoSuchTableException, FatalException;
 
 	/**
 	 * 
 	 * @param card
 	 *            Card to be played
 	 * @throws IllegalMoveException
-	 *             user can't play that card now or the player is not at the table
+	 *             user can't play that card now
+	 * @throws NoSuchTableException
+	 *             if user is not at the table
 	 * @throws IllegalArgumentException
 	 *             if player does not own the card, or card==null
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
 	void playCard(Card card) throws IllegalMoveException, FatalException,
-			IllegalArgumentException, UserNotAuthenticatedException;
+			NoSuchTableException, IllegalArgumentException,
+			UserNotAuthenticatedException;
 
 	/**
 	 * 
@@ -151,11 +155,15 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws IllegalStateException
 	 *             if the cards must not be passed now in the game
 	 * @throws IllegalArgumentException
-	 *             if cards is not a valid parameter or the user is not playing
+	 *             if cards is not a valid parameter or the player does not own
+	 *             those cards
+	 * @throws NoSuchTableException
+	 *             if user is not at the table
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void passCards(Card[] cards) throws IllegalStateException, IllegalArgumentException,
+	void passCards(Card[] cards) throws IllegalStateException,
+			IllegalArgumentException, NoSuchTableException,
 			UserNotAuthenticatedException, FatalException;
 
 	/**
@@ -171,12 +179,14 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws NotCreatorException
 	 *             if the user is not the table creator
 	 * @throws IllegalArgumentException
-	 *             if position value is not valid
+	 *             if position value is out of valid range
+	 * @throws NoSuchTableException
+	 * 			   if user is not at the table
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
 	void addBot(int position) throws PositionFullException, FullTableException,
-			NotCreatorException, IllegalArgumentException,
+			NotCreatorException, IllegalArgumentException, NoSuchTableException,
 			UserNotAuthenticatedException, FatalException;
 
 	/**
