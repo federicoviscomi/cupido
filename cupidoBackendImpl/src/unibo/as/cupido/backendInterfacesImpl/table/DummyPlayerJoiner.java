@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RemoteStub;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Semaphore;
+
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
@@ -14,12 +18,16 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
+import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
+import unibo.as.cupido.backendInterfacesImpl.table.bot.Bot;
+import unibo.as.cupido.backendInterfacesImpl.table.bot.CardPlayingThread;
 
-public class DummyPlayerJoiner implements Serializable,
+public class DummyPlayerJoiner implements Serializable, Bot,
 		ServletNotificationsInterface {
 
 	public static void main(String[] args) throws RemoteException {
 		DummyPlayerJoiner dummyPlayerJoiner = new DummyPlayerJoiner(args[0]);
+		// UnicastRemoteObject.exportObject(dummyPlayerJoiner);
 		dummyPlayerJoiner.joinATable();
 	}
 
@@ -28,6 +36,10 @@ public class DummyPlayerJoiner implements Serializable,
 	private InitialTableStatus initialTableStatus;
 	private TableInterface table;
 	private GlobalTableManagerInterface gtm;
+
+	private ArrayList<Card> cards;
+
+	private Semaphore playNextCardLock = new Semaphore(0);
 
 	public DummyPlayerJoiner(String userName) {
 		this.userName = userName;
@@ -75,6 +87,8 @@ public class DummyPlayerJoiner implements Serializable,
 		System.out.println("\nDummyPlayerJoiner " + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(cards) + "):" + initialTableStatus);
+		this.cards = new ArrayList<Card>(Arrays.asList(cards));
+		new CardPlayingThread(playNextCardLock, (Bot) this).start();
 	}
 
 	@Override
@@ -138,6 +152,24 @@ public class DummyPlayerJoiner implements Serializable,
 				initialTableStatus.opponents[i] = null;
 		}
 		System.out.print(initialTableStatus + "\n");
+	}
+
+	@Override
+	public void passCards() throws RemoteException {
+		Card[] cards = new Card[3];
+		for (int i = 0; i < 3; i++)
+			cards[i] = this.cards.remove(0);
+		table.passCards(userName, cards);
+	}
+
+	@Override
+	public void playNextCard() throws RemoteException {
+		try {
+			table.playCard(userName, cards.remove(0));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
