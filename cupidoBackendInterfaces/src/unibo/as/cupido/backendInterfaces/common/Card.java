@@ -37,4 +37,10 @@ public class Card implements Serializable {
 	public String toString() {
 		return "[" + suit + " " + value + "]";
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		Card otherCard = (Card) o;
+		return otherCard.suit.equals(suit) && otherCard.value == value;
+	}
 }

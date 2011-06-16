@@ -108,6 +108,8 @@ public interface TableInterface extends Remote {
 	 *             if a player name <code>userName</code> is already playing or
 	 *             viewing the table
 	 * @throws NoSuchUserException
+	 *             if the database contains no player named
+	 *             <code>userName</code>
 	 * @throws SQLException
 	 */
 	public InitialTableStatus joinTable(String userName,
