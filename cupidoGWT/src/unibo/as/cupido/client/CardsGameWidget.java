@@ -468,7 +468,11 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	/**
 	 * Reveal a covered card of the specified player as `card'. The card must
-	 * not be raised.
+	 * not be raised. If the player has multiple covered cards, the one with
+	 * higher z index is chosen.
+	 * 
+	 * The card is *not* moved to the correct position. Instead, the caller
+	 * must ensure that it will be at the right position even when uncovered.
 	 * 
 	 * NOTE: There must be no animations pending when this method is called.
 	 */
@@ -476,8 +480,6 @@ public class CardsGameWidget extends AbsolutePanel {
 
 		assert !runningAnimation;
 		assert !someAnimationsPending;
-
-		// Otherwise, search for a covered card.
 
 		CardWidget widget = null;
 
