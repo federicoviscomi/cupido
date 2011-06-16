@@ -2,6 +2,7 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
@@ -67,8 +68,10 @@ public class SingleTableManager implements TableInterface {
 		System.out.println();
 		InitialTableStatus initialTableStatus = playersManager
 				.getInitialTableStatus(position);
+
 		Bot bot = botManager.chooseBotStrategy(initialTableStatus, this,
 				"_bot." + userName + "." + position);
+		
 		viewers.notifyBotJoined(userName, position);
 		playersManager.addBot(userName, position, bot);
 		if (playersManager.playersCount() == 4)
@@ -143,7 +146,9 @@ public class SingleTableManager implements TableInterface {
 			throws IllegalArgumentException, RemoteException {
 		System.out.println("\n"
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + userName + ", " + cards + ")");
+				+ "(" + userName + ", " + Arrays.toString(cards) + ")");
+		//playersManager.print();
+		//cardsManager.print();
 		if (userName == null || cards == null || cards.length != 3)
 			throw new IllegalArgumentException();
 		int position = playersManager.getPlayerPosition(userName);

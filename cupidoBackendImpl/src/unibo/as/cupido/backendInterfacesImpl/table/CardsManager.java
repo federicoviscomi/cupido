@@ -212,10 +212,10 @@ public class CardsManager {
 		playedCardsCount = (playedCardsCount + 1) % 4 + 1;
 	}
 
-	private void print() {
+	void print() {
 		for (int i = 0; i < 4; i++) {
 			Collections.sort(cards[i], cardsComparator);
-			System.out.println((cards[i]));
+			System.out.println("\n" + cardPlayed[i] + ". " + (cards[i]));
 		}
 	}
 

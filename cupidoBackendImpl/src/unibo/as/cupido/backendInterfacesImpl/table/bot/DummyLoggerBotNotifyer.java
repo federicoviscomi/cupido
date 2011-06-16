@@ -25,7 +25,7 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 
 	private Semaphore playNextCardLock;
 	private CardPlayingThread cardPlayingThread;
-
+	
 	public DummyLoggerBotNotifyer(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, String userName) {
 		this.initialTableStatus = initialTableStatus;
@@ -57,7 +57,8 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 
 		if (turn != 0)
 			throw new Error();
-		this.cards = new ArrayList<Card>(Arrays.asList(cards));
+		this.cards = new ArrayList<Card>(4);
+		this.cards.addAll(Arrays.asList(cards));
 		cardPlayingThread.start();
 	}
 

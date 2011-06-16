@@ -123,7 +123,7 @@ public class DatabaseManager implements DatabaseInterface {
 
 	@Override
 	public ArrayList<Pair<String, Integer>> getTopRank(int size)
-			throws RemoteException, SQLException {
+			throws SQLException {
 		if (size <= 0)
 			throw new IllegalArgumentException();
 		// FIXME does this really work?
