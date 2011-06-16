@@ -9,9 +9,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
 import java.util.Collection;
 
+import unibo.as.cupido.backendInterfaces.GlobalChatInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
@@ -23,6 +23,7 @@ import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
+import unibo.as.cupido.backendInterfacesImpl.GlobalChatImlp;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
 
@@ -70,7 +71,11 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			registry.bind(GlobalTableManagerInterface.globalTableManagerName,
 					UnicastRemoteObject.exportObject(this));
 
+			registry.bind(GlobalChatInterface.globalChatName,
+					UnicastRemoteObject.exportObject(new GlobalChatImlp()));
+
 			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
 				public void run() {
 					try {
 						registry.unbind(GlobalTableManagerInterface.globalTableManagerName);

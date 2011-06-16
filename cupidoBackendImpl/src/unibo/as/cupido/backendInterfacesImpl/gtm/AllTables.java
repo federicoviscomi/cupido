@@ -32,7 +32,7 @@ public class AllTables {
 		ArrayList<TableInfoForClient> values = new ArrayList<TableInfoForClient>();
 		values.addAll(tifc.values());
 		return values;
-		//return tifc.values();
+		// return tifc.values();
 	}
 
 	public LocalTableManagerInterface getLTMInterface(String ltmId) {

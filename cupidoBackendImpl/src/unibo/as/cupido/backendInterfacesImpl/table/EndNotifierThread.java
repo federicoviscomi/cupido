@@ -12,6 +12,7 @@ public class EndNotifierThread extends Thread {
 		this.stm = stm;
 	}
 
+	@Override
 	public void run() {
 		try {
 			end.acquire();

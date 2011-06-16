@@ -1,9 +1,6 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-
 import java.io.Serializable;
-import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -15,23 +12,28 @@ import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
-import unibo.as.cupido.backendInterfacesImpl.gtm.GlobalTableManager;
 
-
-public class DummyPlayerCreator extends Thread implements Serializable,
+public class DummyPlayerCreator implements Serializable,
 		ServletNotificationsInterface {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8439829734552972246L;
+
+	public static void main(String[] args) throws Exception {
+		DummyPlayerCreator dummyPlayerCreator = new DummyPlayerCreator("Owner");
+		dummyPlayerCreator.createTable();
+		dummyPlayerCreator.addBot(0);
+	}
+
 	private final String userName;
 	private final InitialTableStatus initialTableStatus;
-
+	private TableInterface tableInterface;
+	private GlobalTableManagerInterface gtm;
 	public DummyPlayerCreator(String userName) {
 
 		this.userName = userName;
@@ -41,41 +43,33 @@ public class DummyPlayerCreator extends Thread implements Serializable,
 		initialTableStatus.whoIsBot = new boolean[3];
 		try {
 			Registry registry = LocateRegistry.getRegistry();
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
+			gtm = (GlobalTableManagerInterface) registry
 					.lookup(GlobalTableManagerInterface.globalTableManagerName);
-			TableInterface tableInterface = gtm.createTable(userName, this);
-			tableInterface.addBot(userName, 1);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (AllLTMBusyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (PositionFullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FullTableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotCreatorException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
-	@Override
-	public void run() {
+	private void addBot(int position) throws RemoteException,
+			IllegalArgumentException, IllegalStateException,
+			PositionFullException, FullTableException, NotCreatorException {
+		tableInterface.addBot(userName, 1);
+		position--;
+		initialTableStatus.opponents[position] = "_bot." + userName + "."
+				+ position;
+		initialTableStatus.playerScores[position] = 0;
+		initialTableStatus.whoIsBot[position] = true;
+		System.out.println(" " + userName + ", " + initialTableStatus);
+	}
 
+	private void createTable() {
+		try {
+			tableInterface = gtm.createTable(userName, this);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -89,7 +83,7 @@ public class DummyPlayerCreator extends Thread implements Serializable,
 
 	@Override
 	public void notifyGameStarted(Card[] cards) throws RemoteException {
-		System.out.println("\nDummyLoggerServletNotifier " + userName + ": "
+		System.out.println("\nDummyLoggerPlayeJoined " + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(cards) + "):" + initialTableStatus);
 	}
@@ -120,15 +114,26 @@ public class DummyPlayerCreator extends Thread implements Serializable,
 	@Override
 	public void notifyPlayerJoined(String name, boolean isBot, int point,
 			int position) throws RemoteException {
-		System.out.print("\n DummyLoggerServletNotifier " + userName + "."
+		System.out.print("\n DummyPlayerCreator inizio " + userName + "."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ", " + isBot + "," + point + "," + position
-				+ ")");
+				+ "): initial table status " + initialTableStatus);
+
+		if (name == null || position < 0 || position > 2)
+			throw new IllegalArgumentException();
+		if (initialTableStatus.opponents[position] != null)
+			throw new IllegalArgumentException("Unable to add player" + name
+					+ " beacuse ITS: " + initialTableStatus
+					+ " already contains a player in position " + position);
 
 		initialTableStatus.opponents[position] = name;
 		initialTableStatus.playerScores[position] = point;
 		initialTableStatus.whoIsBot[position] = isBot;
-		System.out.print(initialTableStatus + "\n");
+
+		System.out.print("\n DummyPlayerCreator fine " + userName + "."
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + name + ", " + isBot + "," + point + "," + position
+				+ "): initial table status " + initialTableStatus);
 	}
 
 	@Override

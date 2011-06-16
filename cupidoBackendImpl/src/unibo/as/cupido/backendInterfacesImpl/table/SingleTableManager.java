@@ -11,9 +11,7 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.Pair;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
-import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
 import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
@@ -24,7 +22,6 @@ import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 import unibo.as.cupido.backendInterfacesImpl.database.DatabaseManager;
-import unibo.as.cupido.backendInterfacesImpl.ltm.LocalTableManager;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.Bot;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.BotManager;
 
@@ -63,20 +60,25 @@ public class SingleTableManager implements TableInterface {
 	public synchronized void addBot(String userName, int position)
 			throws PositionFullException, RemoteException,
 			IllegalArgumentException, FullTableException, NotCreatorException,
-			IllegalStateException {
-		System.out.print("\n SingleTableManager."
+			IllegalStateException {		
+		System.out.print("\n\n\nSingleTableManager inizio ."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + userName + ", " + position + ")");
+				+ "(" + userName + ", " + position + ").\n Table status is: ");
+		playersManager.print();
+		System.out.println();
 		InitialTableStatus initialTableStatus = playersManager
 				.getInitialTableStatus(position);
-		System.out.println(" initial table status: " + initialTableStatus);
 		Bot bot = botManager.chooseBotStrategy(initialTableStatus, this,
-				"_bot." + userName);
+				"_bot." + userName + "." + position);
 		viewers.notifyBotJoined(userName, position);
 		playersManager.addBot(userName, position, bot);
 		if (playersManager.playersCount() == 4)
 			start.release();
+		System.out.print("\nSingleTableManager fine ."
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + userName + ", " + position + ").\n Table status is:");
 		playersManager.print();
+		System.out.println();
 	}
 
 	@Override
@@ -85,9 +87,12 @@ public class SingleTableManager implements TableInterface {
 			NoSuchTableException, RemoteException, IllegalArgumentException,
 			IllegalStateException, DuplicateUserNameException, SQLException,
 			NoSuchUserException {
-		System.out.print("\n SingleTableManager."
+		System.out.print("\n\n\n SingleTableManager inizio ."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + userName + ", " + snf + ")");
+				+ "(" + userName + ", " + snf + "). \n Table status is:");
+		playersManager.print();
+		System.out.println();
+		
 		if (userName == null || snf == null)
 			throw new IllegalArgumentException();
 		int score = databaseManager.getPlayerScore(userName);
@@ -95,7 +100,12 @@ public class SingleTableManager implements TableInterface {
 		viewers.notifyPlayerJoined(userName, score, position);
 		if (playersManager.playersCount() == 4)
 			start.release();
+		
+		System.out.print("\n\n\n SingleTableManager fine ."
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + userName + ", " + snf + "). \n Table status is:");
 		playersManager.print();
+		System.out.println();
 		return playersManager.getInitialTableStatus(position);
 	}
 
@@ -182,10 +192,10 @@ public class SingleTableManager implements TableInterface {
 		if (viewerName == null || snf == null)
 			throw new IllegalArgumentException();
 		viewers.addViewer(viewerName, snf);
-		PlayerStatus[] playerStatus = new PlayerStatus[4];
-		playersManager.addPlayersInformationForViewers(playerStatus);
-		cardsManager.addCardsInformationForViewers(playerStatus);
-		return new ObservedGameStatus(playerStatus);
+		ObservedGameStatus observedGameStatus = new ObservedGameStatus();
+		playersManager.addPlayersInformationForViewers(observedGameStatus);
+		cardsManager.addCardsInformationForViewers(observedGameStatus);
+		return observedGameStatus;
 	}
 
 }

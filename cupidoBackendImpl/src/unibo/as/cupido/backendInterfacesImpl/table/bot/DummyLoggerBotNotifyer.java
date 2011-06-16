@@ -3,8 +3,6 @@ package unibo.as.cupido.backendInterfacesImpl.table.bot;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import unibo.as.cupido.backendInterfaces.TableInterface;
@@ -12,7 +10,6 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
-import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
 
 public class DummyLoggerBotNotifyer extends AbstractBot {
@@ -36,6 +33,8 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 		this.userName = userName;
 		playNextCardLock = new Semaphore(0);
 		cardPlayingThread = new CardPlayingThread(playNextCardLock, this);
+		System.out.println("\nDummyLoggerBotNotifyer constructor " + userName
+				+ ". " + initialTableStatus);
 	}
 
 	@Override
@@ -98,10 +97,10 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	@Override
 	public void notifyPlayerJoined(String name, boolean isBot, int point,
 			int position) throws RemoteException {
-		System.out.print("\n DummyLoggerBotNotifier " + userName + "."
+		System.out.println("\n DummyLoggerBotNotifier inizio " + userName + "."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ", " + isBot + "," + point + "," + position
-				+ ")");
+				+ ")\n table status " + initialTableStatus);
 		if (name == null || position < 0 || position > 2)
 			throw new IllegalArgumentException();
 		if (initialTableStatus.opponents[position] != null)
@@ -111,7 +110,11 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 		initialTableStatus.opponents[position] = name;
 		initialTableStatus.playerScores[position] = position;
 		initialTableStatus.whoIsBot[position] = isBot;
-		System.out.println(initialTableStatus);
+
+		System.out.println("\n DummyLoggerBotNotifier fine " + userName + "."
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + name + ", " + isBot + "," + point + "," + position
+				+ ")\n table status " + initialTableStatus);
 	}
 
 	@Override
@@ -129,6 +132,14 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 	}
 
 	@Override
+	public void passCards() throws RemoteException {
+		Card[] cardsToPass = new Card[3];
+		for (int i = 0; i < 3; i++)
+			cardsToPass[i] = cards.remove(0);
+		singleTableManager.passCards(userName, cardsToPass);
+	}
+
+	@Override
 	public void playNextCard() {
 		try {
 			playedCard[0] = cards.remove(0);
@@ -143,13 +154,5 @@ public class DummyLoggerBotNotifyer extends AbstractBot {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void passCards() throws RemoteException {
-		Card[] cardsToPass = new Card[3];
-		for (int i = 0; i < 3; i++)
-			cardsToPass[i] = cards.remove(0);
-		singleTableManager.passCards(userName, cardsToPass);
 	}
 }

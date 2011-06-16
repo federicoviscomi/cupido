@@ -38,6 +38,15 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	private static final String LOCALTABLEMANAGER_CONFIGURATION_FILE = "localTableManager.config";
 
+	public static void main(String[] args){
+		try {
+			new LocalTableManager();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	private GlobalTableManagerInterface gtmRemote;
 
 	/**
@@ -58,7 +67,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	private Map<Integer, TableInterface> allTables;
 
 	private String localAddress;
-
+	
 	public LocalTableManager() throws RemoteException {
 
 		// reads configuration file
@@ -99,6 +108,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 			final LocalTableManager ltm = this;
 			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
 				public void run() {
 					try {
 						gtmRemote.notifyLocalTableManagerShutdown(ltm);

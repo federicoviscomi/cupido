@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Random;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.Card.Suit;
 import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
@@ -48,6 +49,7 @@ public class CardsManager {
 	private int turn = 0;
 	/** stores round points of every player */
 	private int[] points = new int[4];
+
 	/**
 	 * <code>true</code> if some player correctly played an hearts at some point
 	 * in the game. <code>false</code> otherwise
@@ -74,10 +76,18 @@ public class CardsManager {
 		firstPlaying = whoHasTwoOfClubs();
 	}
 
-	public void addCardsInformationForViewers(PlayerStatus[] playerStatus) {
+	public void addCardsInformationForViewers(
+			ObservedGameStatus observedGameStatus) {
 		for (int i = 0; i < 4; i++) {
-			playerStatus[i].numOfCardsInHand = cards[i].size();
-			playerStatus[i].playedCard = cardPlayed[i];
+			observedGameStatus.ogs[i].numOfCardsInHand = cards[i].size();
+			observedGameStatus.ogs[i].playedCard = cardPlayed[i];
+		}
+		if (observedGameStatus.firstDealerInTrick != -1) {
+			if (!allPlayerPassedCards()) {
+				observedGameStatus.firstDealerInTrick = -1;
+			} else {
+				observedGameStatus.firstDealerInTrick = firstPlaying;
+			}
 		}
 	}
 

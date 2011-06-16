@@ -12,6 +12,7 @@ public class StartNotifierThread extends Thread {
 		this.stm = stm;
 	}
 
+	@Override
 	public void run() {
 		try {
 			start.acquire();
