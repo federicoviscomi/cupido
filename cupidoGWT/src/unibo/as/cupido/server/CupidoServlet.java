@@ -108,7 +108,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		getServletContext().setAttribute(GTMI, gtmi);
 		*/
 	}
-	/**
+	
+	/*
 	 * Implements here action to perform when notified by the table
 	 * 
 	 * @param hSession
@@ -215,7 +216,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	/*
 	 * TODO: IllegalArgumentException in never thrown because input is never checked
-	 * TODO: choice legal messages
+	 * TODO: choose legal messages
 	 * @see unibo.as.cupido.client.CupidoInterface#sendGlobalChatMessage(java.lang.String)
 	 */
 	@Override
@@ -235,32 +236,51 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				gci.sendMessage(m);
 			} catch (RemoteException e) {
 				System.out
-						.println("Servlet: on viewLastMessages() catched RemoteException-> "
+						.println("Servlet: on sendGlobalChatMessage() catched RemoteException-> "
 								+ e.getMessage());
 				// e.printStackTrace();
 				throw new FatalException();
 			}
 	}
 
+	/*
+	 * TODO: IllegalArgumentExceptions never thrown TODO: choose legal messages
+	 * 
+	 * @see
+	 * unibo.as.cupido.client.CupidoInterface#sendLocalChatMessage(java.lang
+	 * .String)
+	 */
 	@Override
 	public void sendLocalChatMessage(String message)
 			throws IllegalArgumentException, UserNotAuthenticatedException,
-			FatalException {
+			FatalException, NoSuchTableException {
 
-		// FIXME: This implementation does *not* really work, it is only meant
-		// for debugging purposes.
-		// It only displays the user's own messages.
-
-		CometSession cometSession = (CometSession) getServletContext()
-				.getAttribute("cometSession");
-		String username = (String) getServletContext().getAttribute("username");
-
-		System.out.println("Servlet: Sending back the message to the client.");
-		NewLocalChatMessage x = new NewLocalChatMessage();
-		x.message = message;
-
-		x.user = username;
-		cometSession.enqueue(x);
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null) {
+			return;
+		}
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
+			throw new UserNotAuthenticatedException();
+		}
+		TableInterface ti = (TableInterface) httpSession.getAttribute(TI);
+		if (ti == null) {
+			System.out.println("Servlet: on playCard() ti == null");
+			// player is not at table
+			throw new NoSuchTableException();
+		}
+		try {
+			ChatMessage m = new ChatMessage(
+					(String) httpSession.getAttribute(USERNAME), message);
+			ti.sendMessage(m);
+		} catch (RemoteException e) {
+			System.out
+					.println("Servlet: on sendLocalChatMessage() catched RemoteException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		} catch (NoSuchUserException e) {
+			throw new NoSuchTableException();
+		}
 	}
 
 	@Override
@@ -345,7 +365,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
 					.getAttribute(GTMI);
 
-			// Get or create the HTTP session for the browser
 			HttpSession httpSession = getThreadLocalRequest().getSession(false);
 			if (httpSession == null) {
 				return null;
@@ -353,7 +372,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 				throw new UserNotAuthenticatedException();
 			}
-			// Get or create the Comet session for the browser
+
 			CometSession cometSession = CometServlet
 					.getCometSession(httpSession);
 			if (cometSession == null) {
