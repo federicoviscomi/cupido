@@ -44,28 +44,37 @@ import unibo.as.cupido.shared.cometNotification.PlayerLeft;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+/**
+ * must check before call other component's:
+ * - if user are authenticated
+ * - if user are at a table or not
+ * @author Lorenzo Belli
+ *
+ */
 public class CupidoServlet extends RemoteServiceServlet implements
 		CupidoInterface {
 
 	private static final long serialVersionUID = 1L;
 	/*
-	 * hostname and port of registry to locate GlobalTableManagerInterface
-	 * default is 127.0.0.1:1099
-	 * values of GTM in defined in GlobalTableManagerInterface
+	 * hostname and port of registry to locate the registry default is
+	 * 127.0.0.1:1099
+	 * GTM is the name GlobalTableManager use to register.
+	 * Values of GTM in defined in GlobalTableManagerInterface
 	 */
-	private static final String registryHost= "127.0.0.1";
+	private static final String registryHost = "127.0.0.1";
 	private static final int registryPort = 1099;
-	private static final String GTM= "globaltableserver";
+	private static final String GTM = "globaltableserver";
 	/*
 	 * Names used in httpSession attributes
 	 */
-	private static final String SNI	= "servletNotificationInterface";
-	private static final String TI	= "tableInterfaces";
+	private static final String SNI = "servletNotificationInterface";
+	private static final String TI = "tableInterfaces";
 	private static final String USERNAME = "username";
 	private static final String ISAUTHENTICATED = "isAuthenticated";
-	
+
 	/**
 	 * Implements here action to perform when notified by the table
+	 * 
 	 * @param hSession
 	 * @param ctSession
 	 * @return
@@ -215,7 +224,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public boolean registerUser(String username, String password) throws FatalException{
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -239,30 +248,34 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public Collection<TableInfoForClient> getTableList()
 			throws UserNotAuthenticatedException, FatalException {
-		
+
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		if (httpSession == null) {
 			return null;
 		}
-		if(! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 			throw new UserNotAuthenticatedException();
 		}
 
 		Registry registry;
 		try {
-			registry = LocateRegistry.getRegistry(registryHost,registryPort);
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry.lookup(GTM);
+			registry = LocateRegistry.getRegistry(registryHost, registryPort);
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
+					.lookup(GTM);
 			return gtm.getTableList();
 		} catch (RemoteException e) {
-			System.out.println("Servlet: on getTableList() catched RemoteException-> "+e.getMessage());
-			//e.printStackTrace();
+			System.out
+					.println("Servlet: on getTableList() catched RemoteException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
 		} catch (NotBoundException e) {
-			System.out.println("Servlet: on getTableList() catched NotBoundException-> "+e.getMessage());
-			//e.printStackTrace();
+			System.out
+					.println("Servlet: on getTableList() catched NotBoundException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
 		}
-
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/**
@@ -324,26 +337,29 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * @param server
-	 *            the id of the LTM (aka ltmId)
+	 * 
+	 * @param ltmId
 	 * @param tableId
-	 *            id of the table, unique in the server
+	 * @return InitialTableStatus state of the match not yet started
 	 * @throws FullTableException
-	 *             if catch FullTableException
+	 *             if game already have 4 players
+	 * @throws NoSuchTableException
+	 *             if table is no more available, but user can join other table
 	 * @throws DuplicateUserNameException
 	 *             if player is already playing or viewing the selected table
-	 * @throws NoSuchTableException
-	 *             if catch NoSuchTableException or DuplicateUserNameException
+	 * @throws NoSuchServerException
+	 *             if server does not exist
+	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
-	 *             otherwise
+	 *             in case of internal serious error while joining the table,
+	 *             probably future action will not be performed
 	 */
 	@Override
-	public InitialTableStatus joinTable(String server, int tableId)
-			throws FullTableException, NoSuchTableException,
+	public InitialTableStatus joinTable(String ltmId, int tableId)
+			throws FullTableException, NoSuchTableException, NoSuchServerException,
 			DuplicateUserNameException, UserNotAuthenticatedException,
 			FatalException {
 		try {
-			// Get or create the HTTP session for the browser
 			HttpSession httpSession = getThreadLocalRequest().getSession(false);
 			if (httpSession == null) {
 				return null;
@@ -352,7 +368,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				throw new UserNotAuthenticatedException();
 			}
 
-			// Get or create the Comet session for the browser
 			CometSession cometSession = CometServlet
 			.getCometSession(httpSession);
 			if (cometSession == null) {
@@ -364,7 +379,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					registryPort);
 			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) registry
 			.lookup(GTM);
-			LocalTableManagerInterface LTMinterf = gtm.getLTMInterface(server);
+			LocalTableManagerInterface LTMinterf = gtm.getLTMInterface(ltmId);
 			TableInterface ti = LTMinterf.getTable(tableId);
 			httpSession.setAttribute(TI, ti);
 			return ti.joinTable((String) httpSession.getAttribute(USERNAME),
@@ -388,12 +403,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			.println("Servlet: on joinTable() catched NotBoundException-> "
 					+ e.getMessage());
 			// e.printStackTrace();
+			throw new NoSuchServerException();
 		} catch (NoSuchLTMException e) {
 			System.out
 			.println("Servlet: on joinTable() catched NoSuchLTMException-> "
 					+ e.getMessage());
 			// e.printStackTrace();
-			throw new FatalException();
+			throw new IllegalArgumentException();
 		} catch (IllegalArgumentException e) {
 			System.out
 			.println("Servlet: on joinTable() catched IllegalArgumentException-> "
@@ -419,7 +435,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			// e.printStackTrace();
 			throw new FatalException();
 		}
-		return null;
 	}
 
 	@Override
@@ -487,34 +502,36 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	@Override
 	public void leaveTable() throws UserNotAuthenticatedException,
-			PlayerNotFoundException, FatalException {
+			NoSuchTableException, FatalException {
 		HttpSession httpSession = getThreadLocalRequest().getSession();
 		if (httpSession == null) {
 			return;
 		}
-		if(! (Boolean)httpSession.getAttribute(ISAUTHENTICATED)){
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 			throw new UserNotAuthenticatedException();
 		}
-		TableInterface ti= (TableInterface) httpSession.getAttribute(TI);
-		if (ti == null){
-			throw new PlayerNotFoundException();
+		TableInterface ti = (TableInterface) httpSession.getAttribute(TI);
+		if (ti == null) {
+			throw new NoSuchTableException();
 		}
-		
+
 		try {
 			ti.leaveTable(USERNAME);
 		} catch (RemoteException e) {
-			System.out.println("Servlet: onLeaveTable catched RemoteException ->");
+			System.out
+					.println("Servlet: onLeaveTable catched RemoteException ->"
+							+ e.getMessage());
+			// e.printStackTrace();
 			throw new FatalException();
-			//e.printStackTrace();
-		} catch (PlayerNotFoundException e){
-			throw e;
+		} catch (PlayerNotFoundException e) {
+			throw new NoSuchTableException();
 		}
 		httpSession.removeAttribute(TI);
 	}
 
 	@Override
 	public void playCard(Card card) throws IllegalMoveException,
-			FatalException, IllegalArgumentException,
+			FatalException, IllegalArgumentException, NoSuchTableException,
 			UserNotAuthenticatedException {
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		if (httpSession == null) {
@@ -527,14 +544,17 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		if (ti == null) {
 			System.out.println("Servlet: on playCard() ti == null");
 			// player is not at table
-			throw new IllegalMoveException();
+			throw new NoSuchTableException();
 		}
 
 		try {
 			ti.playCard((String) httpSession.getAttribute(USERNAME), card);
 		} catch (RemoteException e) {
-			throw new FatalException();
+			System.out
+					.println("Servlet: on playCard() catched RemoteException ->"
+							+ e.getMessage());
 			// e.printStackTrace();
+			throw new FatalException();
 		} catch (IllegalArgumentException e) {
 			throw e;
 		} catch (IllegalMoveException e) {
@@ -544,17 +564,74 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	@Override
 	public void passCards(Card[] cards) throws IllegalStateException,
-			IllegalArgumentException, UserNotAuthenticatedException,
-			FatalException {
-		// TODO Auto-generated method stub
+			IllegalArgumentException, NoSuchTableException,
+			UserNotAuthenticatedException, FatalException {
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null) {
+			return;
+		}
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
+			throw new UserNotAuthenticatedException();
+		}
+		TableInterface ti = (TableInterface) httpSession.getAttribute(TI);
+		if (ti == null) {
+			System.out.println("Servlet: on passCards() ti == null");
+			throw new NoSuchTableException();
+		}
+		try {
+			ti.passCards((String) httpSession.getAttribute(USERNAME), cards);
+		} catch (IllegalArgumentException e) {
+			throw e;
+		} catch (IllegalStateException e) {
+			throw e;
+		} catch (RemoteException e) {
+			System.out
+					.println("Servlet: on playCard() catched RemoteException ->"
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		}
 	}
 
 	@Override
 	public void addBot(int position) throws PositionFullException,
 			FullTableException, NotCreatorException, IllegalArgumentException,
-			UserNotAuthenticatedException, FatalException {
-		// TODO Auto-generated method stub
+			UserNotAuthenticatedException, FatalException, NoSuchTableException {
+		
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null) {
+			return;
+		}
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
+			throw new UserNotAuthenticatedException();
+		}
+		TableInterface ti = (TableInterface) httpSession.getAttribute(TI);
+		if (ti == null) {
+			throw new NoSuchTableException();
+		}
+		try {
+			ti.addBot((String) httpSession.getAttribute(USERNAME), position);
 
+		} catch (PositionFullException e) {
+			throw e;
+		} catch (IllegalArgumentException e) {
+			throw e;
+		} catch (FullTableException e) {
+			throw e;
+		} catch (NotCreatorException e) {
+			throw e;
+		} catch (RemoteException e) {
+			System.out
+					.println("Servlet: on addBot() catched RemoteException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+		} catch (IllegalStateException e) {
+			System.out
+					.println("Servlet: on addBot() catched RemoteException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new NoSuchTableException();
+		}
 	}
 
 	/**
