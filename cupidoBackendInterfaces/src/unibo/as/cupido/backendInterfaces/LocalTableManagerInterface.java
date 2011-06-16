@@ -38,10 +38,13 @@ public interface LocalTableManagerInterface extends Remote {
 	 * 
 	 * @return a remote reference to the component who manages the table
 	 *         <code>tableId</code>
-	 * @throws NoSuchTableException if tableId is invalid
-	 * @throws RemoteException in case of internal error
+	 * @throws NoSuchTableException
+	 *             if tableId is invalid
+	 * @throws RemoteException
+	 *             in case of internal error
 	 */
-	public TableInterface getTable(int tableId) throws RemoteException, NoSuchTableException;
+	public TableInterface getTable(int tableId) throws RemoteException,
+			NoSuchTableException;
 
 	/**
 	 * Called by the GTM to notify his shutdown

@@ -1,6 +1,10 @@
 package unibo.as.cupido.backendInterfaces.common;
 
-public class TableDescriptor {
+import java.io.Serializable;
+
+public class TableDescriptor implements Serializable {
+	private static final long serialVersionUID = 5666914154950723508L;
+
 	public int id;
 
 	public String ltmId;

@@ -68,4 +68,16 @@ public class BotFewTricks extends AbstractBot {
 
 	}
 
+	@Override
+	public void passCards() throws RemoteException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void playNextCard() throws RemoteException {
+		// TODO Auto-generated method stub
+
+	}
+
 }

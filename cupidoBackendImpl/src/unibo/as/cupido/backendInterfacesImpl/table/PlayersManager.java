@@ -8,7 +8,7 @@ import unibo.as.cupido.backendInterfaces.TableInterface.Positions;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
+import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
@@ -55,8 +55,7 @@ public class PlayersManager {
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
 			int score) throws SQLException, NoSuchUserException {
-		players[Positions.OWNER.ordinal()] = new PlayerInfo(owner, false,
-				score, snf);
+		players[0] = new PlayerInfo(owner, false, score, snf);
 	}
 
 	public void addBot(String userName, int position,
@@ -75,12 +74,17 @@ public class PlayersManager {
 					+ players[Positions.OWNER.ordinal()] + ". Current user: "
 					+ userName);
 
-		/* notify every players but the one who is adding the bot */
-		for (PlayerInfo pi : players) {
-			if (pi != null && !pi.name.equals(userName)) {
+		/*
+		 * notify every players but the one who is adding the bot and the bot
+		 * itself
+		 */
+		for (int i = 1; i < 4; i++) {
+			if (i != position && players[i] != null
+					&& !players[i].name.equals(userName)) {
 				try {
-					pi.sni.notifyPlayerJoined("_bot." + userName, true, 0,
-							position);
+					this.print();
+					players[i].sni.notifyPlayerJoined("_bot." + userName + "."
+							+ position, true, 0, ((position - i) % 4) - 1);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -88,7 +92,8 @@ public class PlayersManager {
 			}
 		}
 
-		players[position] = new PlayerInfo("_bot." + userName, true, 0, bot);
+		players[position] = new PlayerInfo("_bot." + userName + "." + position,
+				true, 0, bot);
 		playersCount++;
 	}
 
@@ -105,12 +110,30 @@ public class PlayersManager {
 		while ((players[position] != null) && (position < 4))
 			position++;
 
-		/* notify every players but the one who is joining */
+		if (position == 4)
+			throw new FullTableException();
+
+		/* check for duplicate user name or servlet notification interface */
 		for (PlayerInfo pi : players) {
 			if (pi != null) {
+				if (pi.name.equals(playerName)) {
+					throw new IllegalArgumentException("Duplicate player name");
+				}
+				if (pi.sni.equals(sni)) {
+					throw new IllegalArgumentException(
+							"Duplicate servlet notification interface");
+				}
+			}
+		}
+
+		/* notify every players but the one who is joining */
+		for (int i = 0; i < 4; i++) {
+			if (players[i] != null) {
 				try {
-					pi.sni.notifyPlayerJoined(playerName, false, score,
-							position);
+					System.err.println("\nnotifing joind player " + playerName
+							+ " to player " + i + " " + players[i].name);
+					players[i].sni.notifyPlayerJoined(playerName, false, score,
+							((position - i) % 4) - 1);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -124,14 +147,17 @@ public class PlayersManager {
 
 	}
 
-	public void addPlayersInformationForViewers(PlayerStatus[] playerStatus) {
+	public void addPlayersInformationForViewers(
+			ObservedGameStatus observedGameStatus) {
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null) {
-				playerStatus[i].name = players[i].name;
-				playerStatus[i].isBot = players[i].isBot;
-				playerStatus[i].score = players[i].score;
+				observedGameStatus.playerStatus[i].name = players[i].name;
+				observedGameStatus.playerStatus[i].isBot = players[i].isBot;
+				observedGameStatus.playerStatus[i].score = players[i].score;
 			}
 		}
+		if (playersCount < 4)
+			observedGameStatus.firstDealerInTrick = -1;
 	}
 
 	InitialTableStatus getInitialTableStatus(int position) {
@@ -215,6 +241,12 @@ public class PlayersManager {
 
 	public int playersCount() {
 		return playersCount;
+	}
+
+	public void print() {
+		for (PlayerInfo pi : players) {
+			System.out.print(pi);
+		}
 	}
 
 	public void removePlayer(String playerName) throws PlayerNotFoundException {

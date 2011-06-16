@@ -262,7 +262,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		// Fill movableWidgets.cards and cardRoles, using gameStatus and
 		// bottomPlayerCards.
 		for (int player = 0; player < 4; player++) {
-			PlayerStatus playerStatus = gameStatus.ogs[player];
+			PlayerStatus playerStatus = gameStatus.playerStatus[player];
 
 			PlayerData playerData = new PlayerData();
 			playerData.isBot = playerStatus.isBot;

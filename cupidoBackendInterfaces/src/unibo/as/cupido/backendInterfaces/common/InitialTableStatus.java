@@ -40,4 +40,18 @@ public class InitialTableStatus implements Serializable {
 		this.playerScores = playerScores;
 		this.whoIsBot = whoIsBot;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		for (int i = 0; i < 3; i++) {
+			sb.append("[" + opponents[i] + ", " + playerScores[i] + ", "
+					+ whoIsBot[i] + "]");
+			if (i != 2)
+				sb.append(", ");
+		}
+		sb.append("]");
+		return sb.toString();
+	}
 }

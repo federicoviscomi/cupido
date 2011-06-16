@@ -1,6 +1,9 @@
 package unibo.as.cupido.backendInterfaces.common;
 
-public class TableInfoForClient {
+import java.io.Serializable;
+
+public class TableInfoForClient implements Serializable {
+	private static final long serialVersionUID = -3002842357423083821L;
 	public String owner;
 	public int freePosition;
 	public TableDescriptor tableDescriptor;
