@@ -2,6 +2,7 @@ package unibo.as.cupido.backendInterfacesImpl.database;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -17,7 +18,24 @@ public class DatabaseManager implements DatabaseInterface {
 
 	public static void main(String[] args) throws SQLException,
 			DuplicateUserNameException, NoSuchUserException {
-		new DatabaseManager().test();
+		new DatabaseManager().print();
+	}
+
+	private void print() {
+		try {
+			ResultSet all = statement.executeQuery("SELECT * FROM User");
+			ResultSetMetaData metaData = all.getMetaData();
+			System.out.format("\n%16.16s %8.8s %8.8s\n", "NAME",
+					"PASSWORD", "SCORES");
+			while (all.next()) {
+				System.out.format("%16.16s %8.8s %8.8s\n", all.getString(1),
+						all.getString(2), all.getInt(3));
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private String userDB = "root";

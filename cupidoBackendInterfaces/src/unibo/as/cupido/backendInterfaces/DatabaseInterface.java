@@ -53,7 +53,7 @@ import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 CREATE TABLE `cupido`.`User` (
   `name` VARCHAR(16)  NOT NULL,
   `password` CHAR(8) UNICODE NOT NULL,
-  `score` INTEGER UNSIGNED NOT NULL DEFAULT 0,
+  `score` INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (`name`),
   INDEX `scoreIndex`(`score`, `name`)
 )

@@ -2,6 +2,7 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface.Positions;
@@ -9,15 +10,34 @@ import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
+import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
+import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 
 public class PlayersManager {
 
-	static class PlayerInfo {
+	private static class NonRemoteBotInfo {
+
+		private final String botName;
+		private final ServletNotificationsInterfaceNotRemote bot;
+
+		public NonRemoteBotInfo(String userName,
+				ServletNotificationsInterfaceNotRemote bot) {
+			this.botName = userName;
+			this.bot = bot;
+		}
+
+		@Override
+		public String toString() {
+			return "[" + botName + ", " + bot + "]";
+		}
+	}
+
+	private static class PlayerInfo {
 		/**
 		 * <code>true</code> if this player is a bot; <code>false</code>
 		 * otherwise
@@ -51,6 +71,7 @@ public class PlayersManager {
 	}
 
 	private PlayerInfo[] players = new PlayerInfo[4];
+	private NonRemoteBotInfo[] nonRemoteBotsInfo = new NonRemoteBotInfo[4];
 	private int playersCount = 1;
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
@@ -58,7 +79,7 @@ public class PlayersManager {
 		players[0] = new PlayerInfo(owner, false, score, snf);
 	}
 
-	public void addBot(String userName, int position,
+	private void addBot(String userName, int position,
 			ServletNotificationsInterface bot) throws FullTableException,
 			IllegalArgumentException, PositionFullException,
 			NotCreatorException {
@@ -84,7 +105,8 @@ public class PlayersManager {
 				try {
 					this.print();
 					players[i].sni.notifyPlayerJoined("_bot." + userName + "."
-							+ position, true, 0, ((position - i) % 4) - 1);
+							+ position, true, 0,
+							toRelativePosition(position, i));
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -97,9 +119,80 @@ public class PlayersManager {
 		playersCount++;
 	}
 
+	public void addNonRemoteBot(String userName, int position,
+			ServletNotificationsInterfaceNotRemote bot)
+			throws FullTableException, PositionFullException,
+			NotCreatorException {
+		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(userName, bot);
+
+		if (playersCount > 4)
+			throw new FullTableException();
+		if (position < 1 || position > 3 || userName == null)
+			throw new IllegalArgumentException();
+		if (players[position] != null)
+			throw new PositionFullException();
+		if (!userName.equals(players[Positions.OWNER.ordinal()].name))
+			throw new NotCreatorException("Creator: "
+					+ players[Positions.OWNER.ordinal()] + ". Current user: "
+					+ userName);
+
+		/*
+		 * notify every players but the one who is adding the bot and the bot
+		 * itself
+		 */
+		for (int i = 1; i < 4; i++) {
+			if (i != position) {
+				if (players[i] != null) {
+					try {
+						System.err.println("\nnotifing joined bot " + userName
+								+ " at " + position + " to player "
+								+ players[i].name + " at " + i
+								+ ". relative position is "
+								+ toRelativePosition(position, i));
+						players[i].sni.notifyPlayerJoined("_bot." + userName
+								+ "." + position, true, 0,
+								toRelativePosition(position, i));
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				if (nonRemoteBotsInfo[i] != null) {
+					System.err.println("\nnotifing joined bot " + userName
+							+ " at " + position + " to player "
+							+ nonRemoteBotsInfo[i].botName + " at " + i
+							+ ". relative position is "
+							+ toRelativePosition(position, i));
+					nonRemoteBotsInfo[i].bot.notifyPlayerJoined("_bot."
+							+ userName + "." + position, true, 0,
+							toRelativePosition(position, i));
+				}
+			}
+		}
+
+		nonRemoteBotsInfo[position] = new NonRemoteBotInfo("_bot." + userName
+				+ "." + position, bot);
+		// players[position] = new PlayerInfo("_bot." + userName + "." +
+		// position, true, 0, null);
+		playersCount++;
+
+	}
+
+	/* the notification is to be sent to 2 */
+	private int toRelativePosition(int absolutePosition1, int absolutePosition2) {
+		int res;
+		if (absolutePosition2 < absolutePosition1)
+			res = (absolutePosition1 - absolutePosition2) - 1;
+		else
+			res = (4 - absolutePosition2) + absolutePosition1 - 1;
+		// System.err.println(" abs1 " + absolutePosition1 + " abs2 "+
+		// absolutePosition2 + " res " + res);
+		return res;
+	}
+
 	public int addPlayer(String playerName, ServletNotificationsInterface sni,
 			int score) throws FullTableException, SQLException,
-			NoSuchUserException {
+			NoSuchUserException, DuplicateUserNameException {
 
 		if (playerName == null)
 			throw new IllegalArgumentException();
@@ -114,29 +207,43 @@ public class PlayersManager {
 			throw new FullTableException();
 
 		/* check for duplicate user name or servlet notification interface */
-		for (PlayerInfo pi : players) {
-			if (pi != null) {
-				if (pi.name.equals(playerName)) {
+		for (int i = 0; i < 4; i++) {
+			if (players[i] != null) {
+				if (players[i].name.equals(playerName))
+					throw new DuplicateUserNameException();
+			}
+			if (nonRemoteBotsInfo[i] != null) {
+				if (nonRemoteBotsInfo[i].botName.equals(playerName))
 					throw new IllegalArgumentException("Duplicate player name");
-				}
-				if (pi.sni.equals(sni)) {
-					throw new IllegalArgumentException(
-							"Duplicate servlet notification interface");
-				}
 			}
 		}
 
 		/* notify every players but the one who is joining */
 		for (int i = 0; i < 4; i++) {
-			if (players[i] != null) {
-				try {
-					System.err.println("\nnotifing joind player " + playerName
-							+ " to player " + i + " " + players[i].name);
-					players[i].sni.notifyPlayerJoined(playerName, false, score,
-							((position - i) % 4) - 1);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			if (i != position) {
+				if (players[i] != null) {
+					try {
+						System.err.println("\nnotifing joined player "
+								+ playerName + " at " + position
+								+ " to player " + players[i].name + " at " + i
+								+ ". relative position is "
+								+ toRelativePosition(position, i));
+						players[i].sni.notifyPlayerJoined(playerName, false,
+								score, toRelativePosition(position, i));
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				if (nonRemoteBotsInfo[i] != null) {
+					System.err.println("\nnotifing joined bot " + playerName
+							+ " at " + position + " to player "
+							+ players[i].name + " at " + i
+							+ ". relative position is "
+							+ toRelativePosition(position, i));
+					nonRemoteBotsInfo[i].bot.notifyPlayerJoined("_bot."
+							+ playerName + "." + position, false, score,
+							toRelativePosition(position, i));
 				}
 			}
 		}
@@ -184,29 +291,43 @@ public class PlayersManager {
 	}
 
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-		for (PlayerInfo pi : players)
-			try {
-				pi.sni.notifyGameEnded(matchPoints, playersTotalPoint);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		for (int i = 0; i < 4; i++) {
+			if (players[i] != null) {
+				try {
+					players[i].sni.notifyGameEnded(matchPoints,
+							playersTotalPoint);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+			if (nonRemoteBotsInfo[i] != null) {
+				nonRemoteBotsInfo[i].bot.notifyGameEnded(matchPoints,
+						playersTotalPoint);
+			}
+		}
 	}
 
 	public void notifyGameStarted(Card[][] cards) {
 		for (int i = 0; i < 4; i++) {
-			try {
-				players[i].sni.notifyGameStarted(cards[i]);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (players[i] != null) {
+				try {
+
+					players[i].sni.notifyGameStarted(cards[i]);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if (nonRemoteBotsInfo[i] != null) {
+				nonRemoteBotsInfo[i].bot.notifyGameStarted(cards[i]);
 			}
 		}
 	}
 
 	public void notifyNewLocalChatMessage(ChatMessage message) {
 		for (PlayerInfo pi : players) {
-			if (!pi.name.equals(message.userName)) {
+			if (pi != null && !pi.name.equals(message.userName)) {
 				try {
 					pi.sni.notifyLocalChatMessage(message);
 				} catch (RemoteException e) {
@@ -217,9 +338,14 @@ public class PlayersManager {
 		}
 	}
 
+	/** send a notification to player in absolute position <code>position</code> */
 	public void notifyPassedCards(int position, Card[] cards) {
 		try {
-			players[position].sni.notifyPassedCards(cards);
+			if (players[position] != null) {
+				players[position].sni.notifyPassedCards(cards);
+			} else {
+				nonRemoteBotsInfo[position].bot.notifyPassedCards(cards);
+			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -227,14 +353,20 @@ public class PlayersManager {
 	}
 
 	public void notifyPlayedCard(String userName, Card card) {
-		for (PlayerInfo pi : players) {
-			if (!pi.name.equals(userName)) {
+		for (int i = 0; i < 4; i++) {
+			if (players[i] != null && !players[i].name.equals(userName)) {
 				try {
-					pi.sni.notifyPlayedCard(card, getPlayerPosition(userName));
+					players[i].sni.notifyPlayedCard(card,
+							getPlayerPosition(userName));
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			}
+			if (nonRemoteBotsInfo[i] != null
+					&& !nonRemoteBotsInfo[i].botName.equals(userName)) {
+				nonRemoteBotsInfo[i].bot.notifyPlayedCard(card,
+						getPlayerPosition(userName));
 			}
 		}
 	}
@@ -244,9 +376,14 @@ public class PlayersManager {
 	}
 
 	public void print() {
-		for (PlayerInfo pi : players) {
-			System.out.print(pi);
+		for (int i = 0; i < 4; i++) {
+			if (players[i] != null) {
+				System.out.print(players[i]);
+			} else {
+				System.out.print(nonRemoteBotsInfo[i]);
+			}
 		}
+
 	}
 
 	public void removePlayer(String playerName) throws PlayerNotFoundException {
@@ -258,12 +395,17 @@ public class PlayersManager {
 		playersCount--;
 		players[position] = null;
 
-		for (PlayerInfo pi : players) {
-			try {
-				pi.sni.notifyPlayerLeft(playerName);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		for (int i = 0; i < 4; i++) {
+			if (players[i] != null) {
+				try {
+					players[i].sni.notifyPlayerLeft(playerName);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if (nonRemoteBotsInfo[i] != null) {
+				nonRemoteBotsInfo[i].bot.notifyPlayerLeft(playerName);
 			}
 		}
 	}
@@ -275,12 +417,14 @@ public class PlayersManager {
 				min = point;
 		int[] newScore = new int[4];
 		for (int i = 0; i < 4; i++) {
-			if (matchPoints[i] == min) {
-				players[i].score += 4;
-			} else {
-				players[i].score -= 1;
+			if (players[i] != null) {
+				if (matchPoints[i] == min) {
+					players[i].score += 4;
+				} else {
+					players[i].score -= 1;
+				}
+				newScore[i] = players[i].score;
 			}
-			newScore[i] = players[i].score;
 		}
 		return newScore;
 	}

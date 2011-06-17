@@ -23,7 +23,7 @@ import unibo.as.cupido.backendInterfaces.exception.AllLTMBusyException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
-import unibo.as.cupido.backendInterfacesImpl.GlobalChatImlp;
+import unibo.as.cupido.backendInterfacesImpl.GlobalChatImpl;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm;
 import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
 
@@ -72,7 +72,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 					UnicastRemoteObject.exportObject(this));
 
 			registry.bind(GlobalChatInterface.globalChatName,
-					UnicastRemoteObject.exportObject(new GlobalChatImlp()));
+					UnicastRemoteObject.exportObject(new GlobalChatImpl()));
 
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override

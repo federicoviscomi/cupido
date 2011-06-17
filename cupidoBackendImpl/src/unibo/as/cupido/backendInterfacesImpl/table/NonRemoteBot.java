@@ -1,6 +1,5 @@
-package unibo.as.cupido.backendInterfacesImpl.table.bot;
+package unibo.as.cupido.backendInterfacesImpl.table;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
@@ -9,51 +8,42 @@ import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
+import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 
-public class AbstractBot implements Bot {
+public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 
-	protected final String userName;
-	protected TableInterface singleTableManager;
-	protected InitialTableStatus initialTableStatus;
-	protected ArrayList<Card> cards;
-	protected Card[] playedCard = new Card[4];
-	protected int point;
-	private final Semaphore playNextCardLock = new Semaphore(0);
-	private final Semaphore passCardLock = new Semaphore(0);
-	private final CardPlayingThread cardPlayingThread;
+	private final int position;
+	private final String userName;
+	private final TableInterface singleTableManager;
+	private final InitialTableStatus initialTableStatus;
+	private ArrayList<Card> cards;
+	private Card[] playedCard = new Card[4];
+	private int point;
+	private final Semaphore playNextCardLock;
+	private final Semaphore passCardsLock;
+	private final NonRemoteBotCardPlayingThread cardPlayingThread;
 	/**
 	 * </code>firstDealer == 0</code> means this player is the first dealer.
 	 * Otherwise first dealer is the player in position
 	 * </code>firstDealer-1</code> relative to this player
 	 */
 	protected int firstDealer = -1;
-	
 
-	public AbstractBot(InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager, String userName) {
+	public NonRemoteBot(String userName, int position,
+			InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager) {
+		this.userName = userName;
+		// TODO Auto-generated constructor stub
+		this.position = position;
+		playNextCardLock = new Semaphore(0);
+		passCardsLock = new Semaphore(0);
+		cardPlayingThread = new NonRemoteBotCardPlayingThread(playNextCardLock,
+				passCardsLock, this, "_bot." + userName + "." + position);
+		cardPlayingThread.start();
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
-		this.userName = userName;
-		cardPlayingThread = new CardPlayingThread(playNextCardLock,
-				passCardLock, this, userName);
-		cardPlayingThread.start();
-		System.out.println("abstarct bot constructor " + userName + ". "
+		System.out.println("\n constructor " + userName + ". "
 				+ initialTableStatus);
-	}
-
-	public AbstractBot(String userName) {
-		this(null, null, userName);
-	}
-
-	@Override
-	public void addBot(int i) throws RemoteException {
-		throw new UnsupportedOperationException("method not implemented yet");
-	}
-
-	@Override
-	public void createTable() throws RemoteException {
-		throw new UnsupportedOperationException("method not implemented yet");
 	}
 
 	@Override
@@ -79,14 +69,7 @@ public class AbstractBot implements Bot {
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			firstDealer = 0;
 		}
-		passCardLock.release();
-	}
-
-	@Override
-	public synchronized void notifyLocalChatMessage(ChatMessage message) {
-		System.out.println("\n" + userName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + message + ")");
+		passCardsLock.release();
 	}
 
 	@Override
@@ -123,11 +106,11 @@ public class AbstractBot implements Bot {
 				+ "(" + name + ", " + isBot + "," + point + "," + position
 				+ ")\n table status " + initialTableStatus);
 		if (name == null || position < 0 || position > 2)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("illegal position " + position
+					+ ". " + name + " " + isBot);
 		if (initialTableStatus.opponents[position] != null)
-			throw new IllegalArgumentException("Unable to add player " + name
-					+ " in player " + userName + " beacuse ITS: "
-					+ initialTableStatus
+			throw new IllegalArgumentException("Unable to add player" + name
+					+ " beacuse ITS: " + initialTableStatus
 					+ " already contains a player in position " + position);
 		initialTableStatus.opponents[position] = name;
 		initialTableStatus.playerScores[position] = position;
@@ -153,7 +136,6 @@ public class AbstractBot implements Bot {
 		System.out.println(initialTableStatus);
 	}
 
-	@Override
 	public synchronized void passCards() {
 		Card[] cardsToPass = new Card[3];
 		for (int i = 0; i < 3; i++)
@@ -166,7 +148,6 @@ public class AbstractBot implements Bot {
 		}
 	}
 
-	@Override
 	public synchronized void playNextCard() {
 		try {
 			if (cards.remove(CardsManager.twoOfClubs)) {
