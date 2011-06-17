@@ -174,9 +174,4 @@ public class DummyLoggerBotNotifyer implements Bot {
 		}
 	}
 
-	public synchronized void startPlayingThread(Bot bot) {
-		cardPlayingThread = new CardPlayingThread(playNextCardLock, this);
-		cardPlayingThread.start();
-	}
-
 }

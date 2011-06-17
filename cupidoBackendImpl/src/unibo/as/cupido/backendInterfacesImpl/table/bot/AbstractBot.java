@@ -19,22 +19,24 @@ public class AbstractBot implements Bot {
 	protected ArrayList<Card> cards;
 	protected Card[] playedCard = new Card[4];
 	protected int point;
-	protected final Semaphore playNextCardLock;
-	protected final CardPlayingThread cardPlayingThread;
+	private final Semaphore playNextCardLock = new Semaphore(0);
+	private final Semaphore passCardLock = new Semaphore(0);
+	private final CardPlayingThread cardPlayingThread;
 	/**
 	 * </code>firstDealer == 0</code> means this player is the first dealer.
 	 * Otherwise first dealer is the player in position
 	 * </code>firstDealer-1</code> relative to this player
 	 */
 	protected int firstDealer = -1;
+	
 
 	public AbstractBot(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, String userName) {
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;
-		playNextCardLock = new Semaphore(0);
-		cardPlayingThread = new CardPlayingThread(playNextCardLock, this);
+		cardPlayingThread = new CardPlayingThread(playNextCardLock,
+				passCardLock, this, userName);
 		cardPlayingThread.start();
 		System.out.println("abstarct bot constructor " + userName + ". "
 				+ initialTableStatus);
@@ -77,7 +79,7 @@ public class AbstractBot implements Bot {
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			firstDealer = 0;
 		}
-		playNextCardLock.release();
+		passCardLock.release();
 	}
 
 	@Override
@@ -124,7 +126,8 @@ public class AbstractBot implements Bot {
 			throw new IllegalArgumentException();
 		if (initialTableStatus.opponents[position] != null)
 			throw new IllegalArgumentException("Unable to add player " + name
-					+" in player " + userName + " beacuse ITS: " + initialTableStatus
+					+ " in player " + userName + " beacuse ITS: "
+					+ initialTableStatus
 					+ " already contains a player in position " + position);
 		initialTableStatus.opponents[position] = name;
 		initialTableStatus.playerScores[position] = position;

@@ -156,7 +156,7 @@ public class PlayersManager {
 				if (nonRemoteBotsInfo[i] != null) {
 					System.err.println("\nnotifing joined bot " + userName
 							+ " at " + position + " to player "
-							+ players[i].name + " at " + i
+							+ nonRemoteBotsInfo[i].botName + " at " + i
 							+ ". relative position is "
 							+ toRelativePosition(position, i));
 					nonRemoteBotsInfo[i].bot.notifyPlayerJoined("_bot."
@@ -334,6 +334,7 @@ public class PlayersManager {
 		}
 	}
 
+	/** send a notification to player in absolute position <code>position</code>*/
 	public void notifyPassedCards(int position, Card[] cards) {
 		try {
 			if (players[position] != null) {

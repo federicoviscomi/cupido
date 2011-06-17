@@ -228,7 +228,7 @@ public class CardsManager {
 	 * @param position
 	 *            the position of the player who passes cards
 	 * @param passedCards
-	 *            the cards passerd by the player
+	 *            the cards passed by the player
 	 * @throws IllegalArgumentException
 	 *             if player does not own the card he wants to pass
 	 */
@@ -236,7 +236,10 @@ public class CardsManager {
 			throws IllegalArgumentException {
 		for (int i = 0; i < 3; i++) {
 			if (!cards[position].remove(passedCards[i]))
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Player " + position
+						+ " wants to pass cards "
+						+ Arrays.toString(passedCards) + " but he owns "
+						+ Arrays.toString(cards[position].toArray()));
 		}
 		allPassedCards[position] = passedCards;
 		if (allPlayerPassedCards()) {

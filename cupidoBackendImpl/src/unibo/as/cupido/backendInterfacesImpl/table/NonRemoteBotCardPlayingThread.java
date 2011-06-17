@@ -8,20 +8,22 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 
 	private final NonRemoteBot bot;
 	private final Semaphore playNextCardLock;
+	private final Semaphore passCardsLock;
 	private boolean endedGame = false;
 
 	public NonRemoteBotCardPlayingThread(Semaphore playNextCardLock,
-			NonRemoteBot bot) {
+			Semaphore passCardsLock, NonRemoteBot bot, String botName) {
+		super("NonRemoteBotCardPlayingThread " + botName);
 		this.playNextCardLock = playNextCardLock;
+		this.passCardsLock = passCardsLock;
 		this.bot = bot;
-		// System.err.println("\n:\n0 sdfaaaaaakkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk\n "+
-		// this);
 	}
 
 	@Override
 	public void run() {
 		try {
-			playNextCardLock.acquire();
+			passCardsLock.acquire();
+			Thread.sleep(1000);
 			bot.passCards();
 			System.err.println("\n:\n1");
 			while (!endedGame) {

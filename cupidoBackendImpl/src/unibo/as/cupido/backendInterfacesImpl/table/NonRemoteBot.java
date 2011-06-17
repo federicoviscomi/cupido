@@ -20,6 +20,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 	private Card[] playedCard = new Card[4];
 	private int point;
 	private final Semaphore playNextCardLock;
+	private final Semaphore passCardsLock;
 	private final NonRemoteBotCardPlayingThread cardPlayingThread;
 	/**
 	 * </code>firstDealer == 0</code> means this player is the first dealer.
@@ -34,10 +35,10 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		this.userName = userName;
 		// TODO Auto-generated constructor stub
 		this.position = position;
-
 		playNextCardLock = new Semaphore(0);
+		passCardsLock = new Semaphore(0);
 		cardPlayingThread = new NonRemoteBotCardPlayingThread(playNextCardLock,
-				this);
+				passCardsLock, this, "_bot." + userName + "." + position);
 		cardPlayingThread.start();
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
@@ -68,9 +69,8 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			firstDealer = 0;
 		}
-		playNextCardLock.release();
+		passCardsLock.release();
 	}
-
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
@@ -93,7 +93,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + card + ", " + playerPosition + ")");
 		playedCard[playerPosition] = card;
-		if (playerPosition == 3) {
+		if (playerPosition == 2) {
 			playNextCardLock.release();
 		}
 	}
@@ -135,7 +135,6 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		initialTableStatus.opponents[position] = null;
 		System.out.println(initialTableStatus);
 	}
-
 
 	public synchronized void passCards() {
 		Card[] cardsToPass = new Card[3];

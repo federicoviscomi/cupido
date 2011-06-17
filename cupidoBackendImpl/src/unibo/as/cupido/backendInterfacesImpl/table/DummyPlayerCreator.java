@@ -26,11 +26,11 @@ public class DummyPlayerCreator extends AbstractBot implements Serializable,
 
 		bot.createTable();
 		// 1 refers to absolute position
-		// bot.addBot(1);
-		// Thread.sleep(1000);
-		// bot.addBot(2);
-		// Thread.sleep(1000);
-		// bot.addBot(3);
+		bot.addBot(1);
+		//Thread.sleep(1000);
+		bot.addBot(2);
+		//Thread.sleep(1000);
+		bot.addBot(3);
 	}
 
 	private GlobalTableManagerInterface gtm;

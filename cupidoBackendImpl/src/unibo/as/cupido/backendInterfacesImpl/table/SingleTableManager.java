@@ -48,8 +48,8 @@ public class SingleTableManager implements TableInterface {
 	private final GlobalTableManagerInterface gtm;
 
 	public SingleTableManager(ServletNotificationsInterface snf,
-			TableInfoForClient table, GlobalTableManagerInterface gtm) throws RemoteException, SQLException,
-			NoSuchUserException {
+			TableInfoForClient table, GlobalTableManagerInterface gtm)
+			throws RemoteException, SQLException, NoSuchUserException {
 		this.table = table;
 		this.gtm = gtm;
 		playersManager = new PlayersManager(table.owner, snf,
@@ -168,6 +168,10 @@ public class SingleTableManager implements TableInterface {
 	@Override
 	public synchronized void passCards(String userName, Card[] cards)
 			throws IllegalArgumentException, RemoteException {
+		/*
+		 * NOTE: userName is name of the player who passes cards. Not name of
+		 * the player who receives the cards!
+		 */
 		System.out.println("\n"
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + userName + ", " + Arrays.toString(cards) + ")");

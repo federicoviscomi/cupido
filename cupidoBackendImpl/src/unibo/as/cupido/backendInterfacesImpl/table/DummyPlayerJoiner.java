@@ -24,19 +24,9 @@ public class DummyPlayerJoiner extends AbstractBot {
 	public static void main(String[] args) throws RemoteException,
 			IllegalArgumentException, IllegalStateException,
 			NoSuchLTMException, NoSuchTableException, FullTableException,
-			SQLException, NoSuchUserException {
-		String[] names = { "Cane", "Gatto", "Topo" };
-		// DuplicateUserNameException e = null;
-		for (int i = 0; i < names.length; i++) {
-			try {
-				DummyPlayerJoiner dummyPlayerJoiner = new DummyPlayerJoiner(
-						names[i]);
-				dummyPlayerJoiner.joinATable();
-				return;
-			} catch (DuplicateUserNameException e1) {
-				System.err.println("duplicate user name " + names[i]);
-			}
-		}
+			SQLException, NoSuchUserException, DuplicateUserNameException {
+		DummyPlayerJoiner dummyPlayerJoiner = new DummyPlayerJoiner(args[0]);
+		dummyPlayerJoiner.joinATable();
 	}
 
 	private GlobalTableManagerInterface gtm;
