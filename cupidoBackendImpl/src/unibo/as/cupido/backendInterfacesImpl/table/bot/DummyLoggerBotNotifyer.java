@@ -1,8 +1,6 @@
 package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteStub;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
@@ -15,17 +13,8 @@ import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
 
 public class DummyLoggerBotNotifyer implements Bot {
 
-	public DummyLoggerBotNotifyer(InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager, String userName) {
-		this.initialTableStatus = initialTableStatus;
-		this.singleTableManager = singleTableManager;
-		this.userName = userName;
-		playNextCardLock = new Semaphore(0);
-		System.out.println("\n constructor " + userName + ". "
-				+ initialTableStatus);
-	}
-
 	protected final String userName;
+
 	protected TableInterface singleTableManager;
 	protected InitialTableStatus initialTableStatus;
 	protected ArrayList<Card> cards;
@@ -39,6 +28,28 @@ public class DummyLoggerBotNotifyer implements Bot {
 	 * </code>firstDealer-1</code> relative to this player
 	 */
 	protected int firstDealer = -1;
+
+	public DummyLoggerBotNotifyer(InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager, String userName) {
+		this.initialTableStatus = initialTableStatus;
+		this.singleTableManager = singleTableManager;
+		this.userName = userName;
+		playNextCardLock = new Semaphore(0);
+		System.out.println("\n constructor " + userName + ". "
+				+ initialTableStatus);
+	}
+
+	@Override
+	public void addBot(int i) throws RemoteException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void createTable() throws RemoteException {
+		// TODO Auto-generated method stub
+
+	}
 
 	@Override
 	public synchronized void notifyGameEnded(int[] matchPoints,
@@ -60,9 +71,7 @@ public class DummyLoggerBotNotifyer implements Bot {
 		System.err.flush();
 		this.cards = new ArrayList<Card>(4);
 		this.cards.addAll(Arrays.asList(cards));
-		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			firstDealer = 0;
-		}
+
 		playNextCardLock.release();
 	}
 
@@ -81,6 +90,7 @@ public class DummyLoggerBotNotifyer implements Bot {
 		this.cards.addAll(Arrays.asList(cards));
 		for (Card card : this.cards) {
 			if (card.equals(CardsManager.twoOfClubs)) {
+				firstDealer = 0;
 				System.err.println("\n:\n:\n:\n:");
 				playNextCardLock.release();
 				return;
@@ -167,18 +177,6 @@ public class DummyLoggerBotNotifyer implements Bot {
 	public synchronized void startPlayingThread(Bot bot) {
 		cardPlayingThread = new CardPlayingThread(playNextCardLock, this);
 		cardPlayingThread.start();
-	}
-
-	@Override
-	public void createTable() throws RemoteException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void addBot(int i) throws RemoteException {
-		// TODO Auto-generated method stub
-
 	}
 
 }

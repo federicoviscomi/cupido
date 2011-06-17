@@ -1,6 +1,8 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
@@ -16,14 +18,15 @@ import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
 import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.FullTableException;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
+import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 import unibo.as.cupido.backendInterfacesImpl.database.DatabaseManager;
-import unibo.as.cupido.backendInterfacesImpl.table.bot.Bot;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.BotManager;
+import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 
 /**
  * TODO missing all game status stuff
@@ -39,15 +42,16 @@ public class SingleTableManager implements TableInterface {
 	private final PlayersManager playersManager;
 	private final TableInfoForClient table;
 	private final ViewersSwarm viewers = new ViewersSwarm();
-
 	private final Integer turns = new Integer(0);
-	private Semaphore start;
-	private Semaphore end;
+	private final Semaphore start;
+	private final Semaphore end;
+	private final GlobalTableManagerInterface gtm;
 
 	public SingleTableManager(ServletNotificationsInterface snf,
-			TableInfoForClient table, GlobalTableManagerInterface gtm)
-			throws RemoteException, SQLException, NoSuchUserException {
+			TableInfoForClient table, GlobalTableManagerInterface gtm) throws RemoteException, SQLException,
+			NoSuchUserException {
 		this.table = table;
+		this.gtm = gtm;
 		playersManager = new PlayersManager(table.owner, snf,
 				databaseManager.getPlayerScore(table.owner));
 		start = new Semaphore(0);
@@ -66,16 +70,36 @@ public class SingleTableManager implements TableInterface {
 				+ "(" + userName + ", " + position + ").\n Table status is: ");
 		playersManager.print();
 		System.out.println();
-		InitialTableStatus initialTableStatus = playersManager
-				.getInitialTableStatus(position);
 
-		Bot bot = botManager.chooseBotStrategy(initialTableStatus, this,
-				"_bot." + userName + "." + position);
+		// DummyLoggerBotNotifyer dummyLoggerBotNotifyer = new
+		// DummyLoggerBotNotifyer(initialTableStatus, this, "_bot." + userName +
+		// "." + position);
+		// Bot bot = (Bot)
+		// UnicastRemoteObject.exportObject(dummyLoggerBotNotifyer);
+		// dummyLoggerBotNotifyer.startPlayingThread(bot);
 
-		viewers.notifyBotJoined(userName, position);
-		playersManager.addBot(userName, position, bot);
-		if (playersManager.playersCount() == 4)
-			start.release();
+		try {
+			InitialTableStatus initialTableStatus = playersManager
+					.getInitialTableStatus(position);
+
+			NonRemoteBot bot = new NonRemoteBot(userName, position,
+					initialTableStatus, gtm.getLTMInterface(
+							table.tableDescriptor.ltmId).getTable(
+							table.tableDescriptor.id));
+			viewers.notifyBotJoined(userName, position);
+			// playersManager.addBot(userName, position, bot);
+			playersManager.addNonRemoteBot(userName, position, bot);
+			if (playersManager.playersCount() == 4)
+				start.release();
+
+		} catch (NoSuchTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchLTMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		System.out.print("\nSingleTableManager fine ."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + userName + ", " + position + ").\n Table status is:");

@@ -1,7 +1,6 @@
 package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
 import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
@@ -11,13 +10,9 @@ public class BotManager {
 	public Bot chooseBotStrategy(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, String botName)
 			throws RemoteException {
-		DummyLoggerBotNotifyer dummyLoggerBotNotifyer = new DummyLoggerBotNotifyer(
-				initialTableStatus, singleTableManager, botName);
-		Bot bot = (Bot) UnicastRemoteObject.exportObject(dummyLoggerBotNotifyer);
-		dummyLoggerBotNotifyer.startPlayingThread(bot);
-		return bot;
+		return null;
 	}
-	
+
 	/**
 	 * If a player got all points (26) then he "shot the moon". The 26 points
 	 * isn't added to his score, but to everyone else's. How to pass
