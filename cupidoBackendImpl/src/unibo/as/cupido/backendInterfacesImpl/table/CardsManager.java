@@ -7,8 +7,8 @@ import java.util.Comparator;
 import java.util.Random;
 
 import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.common.Card.Suit;
+import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
 import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
 
 public class CardsManager {
@@ -152,7 +152,7 @@ public class CardsManager {
 
 	private void passCards() {
 		for (int i = 0; i < 4; i++) {
-			cards[i].addAll(Arrays.asList(allPassedCards[(i - 1) % 4]));
+			cards[i].addAll(Arrays.asList(allPassedCards[(i + 3) % 4]));
 		}
 	}
 
@@ -228,15 +228,26 @@ public class CardsManager {
 	 * @param position
 	 *            the position of the player who passes cards
 	 * @param passedCards
-	 *            the cards passerd by the player
+	 *            the cards passed by the player
 	 * @throws IllegalArgumentException
 	 *             if player does not own the card he wants to pass
 	 */
 	public void setCardPassing(int position, Card[] passedCards)
 			throws IllegalArgumentException {
 		for (int i = 0; i < 3; i++) {
-			if (!cards[position].remove(passedCards[i]))
-				throw new IllegalArgumentException();
+			if (!cards[position].remove(passedCards[i])) {
+				// Arrays.sort(passedCards, cardsComparator);
+				// Card[] toArray = cards[position].toArray(new
+				// Card[cards[position].size()]);
+				// Arrays.sort(toArray, cardsComparator);
+				// throw new IllegalArgumentException("Player " + position+
+				// " wants to pass cards "+ Arrays.toString(passedCards) +
+				// " but he owns "+ Arrays.toString(toArray));
+				throw new IllegalArgumentException("Player " + position
+						+ " wants to pass cards "
+						+ Arrays.toString(passedCards) + " but he owns "
+						+ Arrays.toString(cards[position].toArray()));
+			}
 		}
 		allPassedCards[position] = passedCards;
 		if (allPlayerPassedCards()) {

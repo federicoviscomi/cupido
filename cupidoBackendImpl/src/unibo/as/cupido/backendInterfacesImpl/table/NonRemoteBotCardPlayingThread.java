@@ -1,19 +1,21 @@
-package unibo.as.cupido.backendInterfacesImpl.table.bot;
+package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.util.concurrent.Semaphore;
 
-public class CardPlayingThread extends Thread {
+import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 
-	private final Bot bot;
+public class NonRemoteBotCardPlayingThread extends Thread {
+
+	private final NonRemoteBot bot;
 	private final Semaphore playNextCardLock;
 	private final Semaphore passCardsLock;
 	private boolean endedGame = false;
 
-	public CardPlayingThread(Semaphore playNextCardLock, Semaphore passCards,
-			Bot bot, String botName) {
-		super("CardPlayingThread " + botName);
+	public NonRemoteBotCardPlayingThread(Semaphore playNextCardLock,
+			Semaphore passCardsLock, NonRemoteBot bot, String botName) {
+		super("NonRemoteBotCardPlayingThread " + botName);
 		this.playNextCardLock = playNextCardLock;
-		this.passCardsLock = passCards;
+		this.passCardsLock = passCardsLock;
 		this.bot = bot;
 	}
 
@@ -21,13 +23,12 @@ public class CardPlayingThread extends Thread {
 	public void run() {
 		try {
 			passCardsLock.acquire();
-			//Thread.sleep(1000);
+			Thread.sleep(1000);
 			bot.passCards();
 			System.err.println("\n:\n1");
 			while (!endedGame) {
 				System.err.println("\n:\n2");
 				playNextCardLock.acquire();
-				//Thread.sleep(1000);
 				System.err.println("\n:\n3");
 				bot.playNextCard();
 			}
