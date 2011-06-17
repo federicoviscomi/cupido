@@ -10,5 +10,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/cupidoBackendInterfaces"/>
 	<classpathentry kind="lib" path="gwt-comet-1.2.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="mysql-connector-java-5.1.16-bin.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

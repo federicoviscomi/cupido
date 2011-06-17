@@ -28,7 +28,7 @@ public class CupidoSessionListener implements HttpSessionListener {
 		if (!(untypedListener instanceof SessionClosedListener))
 			return;
 		SessionClosedListener listener = (SessionClosedListener) untypedListener;
-		listener.onSessionClosed();
+		listener.onSessionClosed(x.getSession());
 	}
 
 }
