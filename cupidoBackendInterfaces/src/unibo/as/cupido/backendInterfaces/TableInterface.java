@@ -200,8 +200,11 @@ public interface TableInterface extends Remote {
 	 * 
 	 * @param message
 	 *            holds name of user and message sent by user
+	 * @throws NoSuchUserException
+	 *             if user message.userName is not playing or viewing the table
 	 */
-	void sendMessage(ChatMessage message) throws RemoteException;
+	void sendMessage(ChatMessage message) throws NoSuchUserException,
+			RemoteException;
 
 	/**
 	 * Add a viewer <code>userName</code>to this table. This can be called any

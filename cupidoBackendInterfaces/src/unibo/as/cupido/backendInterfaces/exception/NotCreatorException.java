@@ -8,7 +8,7 @@ package unibo.as.cupido.backendInterfaces.exception;
  * 
  */
 public class NotCreatorException extends Exception {
-
+	private static final long serialVersionUID = 1L;
 	public NotCreatorException(){
 	}
 	public NotCreatorException(String string) {

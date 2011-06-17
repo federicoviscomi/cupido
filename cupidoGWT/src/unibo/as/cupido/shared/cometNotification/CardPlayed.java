@@ -8,7 +8,7 @@ public class CardPlayed implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	Card card;
+	public Card card;
 
 	/*
 	 * if you are playing playerPosition = 0 is the player are you
@@ -18,6 +18,6 @@ public class CardPlayed implements Serializable {
 	 * 
 	 * the others are clockwise
 	 */
-	int playerPosition;
+	public int playerPosition;
 
 }

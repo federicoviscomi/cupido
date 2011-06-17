@@ -1,28 +1,32 @@
-package unibo.as.cupido.backendInterfacesImpl.database;
+/**
+ * 
+ */
+package unibo.as.cupido.server;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import unibo.as.cupido.backendInterfaces.DatabaseInterface;
 import unibo.as.cupido.backendInterfaces.common.Pair;
 import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 
+
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
-public class DatabaseManager implements DatabaseInterface {
+
+public class DatabaseManager implements DatabaseInterface{
 
 	public static void main(String[] args) throws SQLException,
 			DuplicateUserNameException, NoSuchUserException {
 		new DatabaseManager().test();
 	}
 
-	private String userDB = "root";
-	private String passDB = "cupido";
-	private String host = "localhost";
+	private final String userDB = "root";
+	private final String passDB = "cupido";
+	private final String host = "localhost";
 	// TODO handle statement.close() problem
 	private Statement statement;
 	private Connection connection;
@@ -37,10 +41,10 @@ public class DatabaseManager implements DatabaseInterface {
 					+ ".");
 			statement = (Statement) connection.createStatement();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Servlet: catched ClassNotFoundException ->");
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Servlet: catched SQLException ->");
 			e.printStackTrace();
 		}
 
@@ -48,17 +52,18 @@ public class DatabaseManager implements DatabaseInterface {
 
 	@Override
 	public void addNewUser(String userName, String password)
-			throws SQLException, DuplicateUserNameException {
+			throws SQLException, DuplicateUserNameException, IllegalArgumentException {
 		if (userName == null || password == null)
 			throw new IllegalArgumentException();
-		if (this.contains(userName))
+		if (this.isRegistered(userName))
 			throw new DuplicateUserNameException(userName);
 		// TODO is there any way to exploit return value of
-		// statement.executeUpdate in order not to use this.contains?
+		// statement.executeUpdate in order not to use this.isRegistered?
 		statement.executeUpdate("INSERT INTO User VALUE ('" + userName + "', '"
 				+ password + "', 0);");
 	}
-
+	
+	
 	@Override
 	public void close() {
 		try {
@@ -73,7 +78,14 @@ public class DatabaseManager implements DatabaseInterface {
 		}
 	}
 
-	private boolean contains(String userName) throws SQLException {
+	/**
+	 * Equal to: isUserRegistered(String userName)
+	 * @param userName
+	 * @return
+	 * @throws SQLException
+	 */
+	@Override
+	public boolean isRegistered(String userName) throws SQLException {
 		return statement.executeQuery(
 				"SELECT name FROM User WHERE name = '" + userName + "'").next();
 	}
@@ -109,7 +121,7 @@ public class DatabaseManager implements DatabaseInterface {
 			NoSuchUserException {
 		if (userName == null)
 			throw new IllegalArgumentException();
-		if (!this.contains(userName))
+		if (!this.isRegistered(userName))
 			throw new NoSuchUserException(userName);
 		ResultSet res = statement
 				.executeQuery("SELECT score FROM User WHERE name = '"
@@ -151,7 +163,7 @@ public class DatabaseManager implements DatabaseInterface {
 
 		// FIXME does this really works?
 
-		if (!this.contains(userName))
+		if (!this.isRegistered(userName))
 			throw new NoSuchUserException(userName);
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet chunk = statement
@@ -167,7 +179,7 @@ public class DatabaseManager implements DatabaseInterface {
 			NoSuchUserException {
 		if (userName == null || password == null)
 			throw new IllegalArgumentException();
-		if (!this.contains(userName))
+		if (!this.isRegistered(userName))
 			throw new NoSuchUserException(userName);
 		ResultSet res = statement
 				.executeQuery("SELECT * FROM User WHERE name = '" + userName
@@ -210,7 +222,7 @@ public class DatabaseManager implements DatabaseInterface {
 			NoSuchUserException {
 		if (userName == null)
 			throw new IllegalArgumentException();
-		if (!this.contains(userName))
+		if (!this.isRegistered(userName))
 			throw new NoSuchUserException(userName);
 		statement.executeUpdate("UPDATE User SET score = " + score
 				+ " WHERE name = '" + userName + "';");
