@@ -14,5 +14,5 @@ public class CardPassed implements Serializable {
 	/*
 	 * Card.lenght is always 3
 	 */
-	Card[] cards;
+	public Card[] cards;
 }
