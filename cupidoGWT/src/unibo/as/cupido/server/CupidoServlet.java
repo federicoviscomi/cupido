@@ -380,7 +380,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	@Override
 	public void registerUser(String username, String password) throws FatalException, DuplicateUserNameException{
-		
+		/*
 		DatabaseInterface dbi = (DatabaseInterface) getServletContext().getAttribute(DBI);
 		try {
 			dbi.addNewUser(username, password);
@@ -393,7 +393,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		} catch (DuplicateUserNameException e) {
 			throw e;
 		}
-
+		*/
 	}
 
 	@Override
