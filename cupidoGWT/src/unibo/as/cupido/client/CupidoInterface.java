@@ -42,12 +42,23 @@ public interface CupidoInterface extends RemoteService {
 	 * 
 	 * @param password
 	 * @return
+	 * @throws DuplicateUserNameException
+	 *             If this username was already used.
 	 * @throws FatalException
 	 */
 	public boolean registerUser(String username, String password)
-			throws FatalException;
+			throws DuplicateUserNameException, FatalException;
 
-	public boolean isUserRegistered(String username) throws FatalException;
+	/**
+	 * 
+	 * @param username
+	 * @return
+	 * @throws IllegalArgumentException
+	 *             If the parameter is null.
+	 * @throws FatalException
+	 */
+	public boolean isUserRegistered(String username)
+			throws IllegalArgumentException, FatalException;
 
 	public void logout();
 
