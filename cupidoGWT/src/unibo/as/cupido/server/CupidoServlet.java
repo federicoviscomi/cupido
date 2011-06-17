@@ -379,8 +379,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 * comment this method for fake registration
 	 */
 	@Override
-	public boolean registerUser(String username, String password) throws FatalException{
-		/*
+	public void registerUser(String username, String password) throws FatalException, DuplicateUserNameException{
+		
 		DatabaseInterface dbi = (DatabaseInterface) getServletContext().getAttribute(DBI);
 		try {
 			dbi.addNewUser(username, password);
@@ -391,21 +391,18 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			e.printStackTrace();
 			throw new FatalException();
 		} catch (DuplicateUserNameException e) {
-			return false;
-			//throw e;
+			throw e;
 		}
-		*/
-		return true;
+
 	}
 
 	@Override
-	public boolean isUserRegistered(String username) throws FatalException{
+	public boolean isUserRegistered(String username) throws IllegalArgumentException, FatalException{
 		DatabaseInterface dbi = (DatabaseInterface) getServletContext().getAttribute(DBI);
 		try {
 			return dbi.isRegistered(username);
 		} catch (IllegalArgumentException e) {
-			// throw e;
-			return false;
+			throw e;
 		} catch (SQLException e) {
 			System.out.println("Servlet: on isUserRegistered() catched SQLException ->");
 			e.printStackTrace();
