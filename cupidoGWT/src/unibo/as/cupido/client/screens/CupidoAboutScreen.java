@@ -9,9 +9,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class CupidoAboutScreen extends VerticalPanel {
+public class CupidoAboutScreen extends VerticalPanel implements Screen {
 
-	public CupidoAboutScreen(final ScreenSwitcher screenSwitcher) {
+	public CupidoAboutScreen(final ScreenSwitcher screenSwitcher, final String username) {
 		setHeight((Cupido.height - 80) + "px");
 		setWidth((Cupido.width - 120) + "px");
 
@@ -39,9 +39,13 @@ public class CupidoAboutScreen extends VerticalPanel {
 		button.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayMainMenuScreen();
+				screenSwitcher.displayMainMenuScreen(username);
 			}
 		});
 		add(button);
+	}
+
+	@Override
+	public void prepareRemoval() {
 	}
 }

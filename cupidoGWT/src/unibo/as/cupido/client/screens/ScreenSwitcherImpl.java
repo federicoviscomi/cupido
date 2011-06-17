@@ -15,18 +15,17 @@ import unibo.as.cupido.client.CupidoInterfaceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher {
 
-	Widget currentScreen = null;
+	Widget currentScreenWidget = null;
+	Screen currentScreen = null;
 
 	// This is used to check that no screen switches occur while switching
 	// screen.
 	boolean switchingScreen = false;
-
-	// / This is null when the user is not logged in.
-	String username = null;
 
 	CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
 
@@ -85,11 +84,11 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 						.getModuleBaseURL() + "comet", serializer,
 						cometListener);
 				cometClient.start();
-
+				
 				System.out.println("Client: Comet client started ("
 						+ GWT.getModuleBaseURL() + "comet).");
 
-				displayMainMenuScreen();
+				displayLoginScreen();
 			}
 		});
 	}
@@ -97,88 +96,122 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 	private void removeCurrentScreen() {
 		if (currentScreen == null)
 			return;
-		if (currentScreen instanceof CupidoMainMenuScreen)
-			// Update the `username' field on login and logout.
-			username = ((CupidoMainMenuScreen) currentScreen).getUsername();
-		remove(currentScreen);
+		currentScreen.prepareRemoval();
+		remove(currentScreenWidget);
 	}
 
 	@Override
-	public void displayMainMenuScreen() {
+	public void displayLoginScreen() {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		currentScreen = new CupidoMainMenuScreen(this, username);
-		add(currentScreen, 0, 0);
+		LoginScreen screen = new LoginScreen(this, cupidoService);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
+
+		switchingScreen = false;
+		
+	}
+
+	@Override
+	public void displayRegistrationScreen() {
+		assert !switchingScreen;
+		switchingScreen = true;
+
+		removeCurrentScreen();
+		RegistrationScreen screen = new RegistrationScreen(this, cupidoService);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
+
+		switchingScreen = false;
+		
+	}
+	
+	@Override
+	public void displayMainMenuScreen(String username) {
+		assert !switchingScreen;
+		switchingScreen = true;
+
+		removeCurrentScreen();
+		CupidoMainMenuScreen screen = new CupidoMainMenuScreen(this, username, cupidoService);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
 	}
 
 	@Override
-	public void displayScoresScreen() {
+	public void displayScoresScreen(String username) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		assert username != null;
-		remove(currentScreen);
-		currentScreen = new CupidoScoresScreen(this);
-		add(currentScreen, 0, 0);
+		CupidoScoresScreen screen = new CupidoScoresScreen(this);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
 	}
 
 	@Override
-	public void displayAboutScreen() {
+	public void displayAboutScreen(String username) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		assert username != null;
-		remove(currentScreen);
-		currentScreen = new CupidoAboutScreen(this);
-		add(currentScreen, 0, 0);
+		CupidoAboutScreen screen = new CupidoAboutScreen(this, username);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
 	}
 
 	@Override
-	public void displayTableScreen() {
+	public void displayTableScreen(String username) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		assert username != null;
-		currentScreen = new CupidoTableScreen(this, username, cupidoService,
+		CupidoTableScreen screen = new CupidoTableScreen(this, username, cupidoService,
 				cometListener);
-		add(currentScreen, 0, 0);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
 	}
 
 	@Override
-	public void displayObservedTableScreen() {
+	public void displayObservedTableScreen(String username) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		assert username != null;
-		currentScreen = new CupidoObservedTableScreen(this, username,
+		CupidoObservedTableScreen screen = new CupidoObservedTableScreen(this, username,
 				cupidoService, cometListener);
-		add(currentScreen, 0, 0);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
 	}
 
 	@Override
-	public void displayGeneralErrorScreen(Exception e) {
+	public void displayGeneralErrorScreen(Throwable e) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		currentScreen = new CupidoGeneralErrorScreen(this, e);
-		add(currentScreen, 0, 0);
+		CupidoGeneralErrorScreen screen = new CupidoGeneralErrorScreen(this, e);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
 	}
@@ -188,8 +221,10 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		currentScreen = new CupidoLoadingScreen();
-		add(currentScreen, 0, 0);
+		CupidoLoadingScreen screen = new CupidoLoadingScreen();
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
 	}

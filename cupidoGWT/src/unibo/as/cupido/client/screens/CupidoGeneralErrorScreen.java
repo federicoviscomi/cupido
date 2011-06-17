@@ -7,9 +7,9 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
-public class CupidoGeneralErrorScreen extends AbsolutePanel {
+public class CupidoGeneralErrorScreen extends AbsolutePanel implements Screen {
 
-	public CupidoGeneralErrorScreen(ScreenSwitcher screenSwitcher, Exception e) {
+	public CupidoGeneralErrorScreen(ScreenSwitcher screenSwitcher, Throwable e) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
@@ -35,4 +35,7 @@ public class CupidoGeneralErrorScreen extends AbsolutePanel {
 		add(panel, 0, 0);
 	}
 
+	@Override
+	public void prepareRemoval() {
+	}
 }

@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 
-public class CupidoScoresScreen extends AbsolutePanel {
+public class CupidoScoresScreen extends AbsolutePanel implements Screen {
 
 	public CupidoScoresScreen(ScreenSwitcher screenSwitcher) {
 		setHeight(Cupido.height + "px");
@@ -15,4 +15,7 @@ public class CupidoScoresScreen extends AbsolutePanel {
 		add(label, 300, 320);
 	}
 
+	@Override
+	public void prepareRemoval() {
+	}
 }

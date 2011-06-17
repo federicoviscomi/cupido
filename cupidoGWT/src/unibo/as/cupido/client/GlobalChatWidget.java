@@ -1,5 +1,9 @@
 package unibo.as.cupido.client;
 
+import java.util.List;
+
+import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.client.GlobalChatWidget.ChatListener;
 import unibo.as.cupido.client.screens.CupidoMainMenuScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -23,10 +27,16 @@ public class GlobalChatWidget extends AbsolutePanel {
 	private TextBox messageField;
 	private PushButton sendButton;
 	private String username;
+	private ChatListener listener;
+	
+	public interface ChatListener {
+		public void sendMessage(String message);
+	}
 
-	public GlobalChatWidget(final String username) {
+	public GlobalChatWidget(final String username, ChatListener listener) {
 
 		this.username = username;
+		this.listener = listener;
 
 		int bottomRowHeight = 30;
 
@@ -72,24 +82,27 @@ public class GlobalChatWidget extends AbsolutePanel {
 	}
 
 	protected void sendMessage() {
-		// FIXME: This is a place-holder implementation.
-		// Rewrite this method when the servlet is ready.
 		if (messageField.getText().equals(""))
 			return;
 
-		String messages = messageList.getHTML();
-
-		SafeHtmlBuilder x = new SafeHtmlBuilder();
-		x.appendHtmlConstant("<p><b>");
-		x.appendEscaped(username);
-		x.appendHtmlConstant("</b>: ");
-		x.appendEscaped(messageField.getText());
-		x.appendHtmlConstant("</p>");
-		messages = messages + x.toSafeHtml().asString();
-		messageList.setHTML(messages);
-		messagesPanel.scrollToBottom();
-
+		listener.sendMessage(messageField.getText());
+		
 		messageField.setText("");
 		messageField.setFocus(true);
+	}
+
+	public void setLastMessages(ChatMessage[] messages) {
+		SafeHtmlBuilder x = new SafeHtmlBuilder();
+		
+		for (ChatMessage message : messages) {
+			x.appendHtmlConstant("<p><b>");
+			x.appendEscaped(message.userName);
+			x.appendHtmlConstant("</b>: ");
+			x.appendEscaped(message.message);
+			x.appendHtmlConstant("</p>");
+		}
+		
+		messageList.setHTML(x.toSafeHtml().asString());
+		messagesPanel.scrollToBottom();
 	}
 }

@@ -33,6 +33,8 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 * The (ordered) list of cards dealt in the current trick.
 	 */
 	private List<Card> dealtCards = new ArrayList<Card>();
+	
+	private String username;
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
@@ -40,6 +42,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenSwitcher screenSwitcher,
 			InitialTableStatus initialTableStatus, Card[] cards, String username) {
+		this.username = username;
 		this.screenSwitcher = screenSwitcher;
 
 		for (String opponent : initialTableStatus.opponents)
@@ -214,7 +217,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void exit() {
-		screenSwitcher.displayMainMenuScreen();
+		screenSwitcher.displayMainMenuScreen(username);
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		add(beforeGameWidget, 0, 0);
 	}
 
-	public void startGame(String username) {
+	public void startGame(final String username) {
 
 		remove(beforeGameWidget);
 
@@ -101,7 +101,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		observedGameStatus.playerStatus[3].score = 1234;
 
 		stateManager = new ViewerStateManagerImpl(tableSize, screenSwitcher,
-				observedGameStatus);
+				observedGameStatus, username);
 
 		final VerticalPanel controllerPanel = new VerticalPanel();
 		controllerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
@@ -112,7 +112,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayMainMenuScreen();
+				screenSwitcher.displayMainMenuScreen(username);
 			}
 		});
 		controllerPanel.add(exitButton);

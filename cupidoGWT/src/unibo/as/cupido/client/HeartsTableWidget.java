@@ -51,7 +51,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		add(beforeGameWidget, 0, 0);
 	}
 
-	public void startGame(String username) {
+	public void startGame(final String username) {
 
 		remove(beforeGameWidget);
 
@@ -93,7 +93,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayMainMenuScreen();
+				screenSwitcher.displayMainMenuScreen(username);
 			}
 		});
 		controllerPanel.add(exitButton);

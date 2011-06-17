@@ -14,7 +14,7 @@ import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
-public class CupidoObservedTableScreen extends AbsolutePanel {
+public class CupidoObservedTableScreen extends AbsolutePanel implements Screen {
 
 	/**
 	 * The width of the chat sidebar.
@@ -90,5 +90,9 @@ public class CupidoObservedTableScreen extends AbsolutePanel {
 			}
 
 		});
+	}
+
+	@Override
+	public void prepareRemoval() {
 	}
 }

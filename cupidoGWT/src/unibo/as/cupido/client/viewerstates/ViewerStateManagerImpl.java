@@ -19,6 +19,8 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	private CardsGameWidget cardsGameWidget;
 	private int firstPlayerInTrick = -1;
 	private int remainingTricks;
+	
+	String username;
 
 	/**
 	 * Some information about the players. The first element refers to the
@@ -35,8 +37,9 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 * Initialize the state manager. The current user is a viewer.
 	 */
 	public ViewerStateManagerImpl(int tableSize, ScreenSwitcher screenSwitcher,
-			ObservedGameStatus observedGameStatus) {
+			ObservedGameStatus observedGameStatus, String username) {
 
+		this.username = username;
 		this.screenSwitcher = screenSwitcher;
 		this.cardsGameWidget = new CardsGameWidget(tableSize,
 				observedGameStatus, null, new VerticalPanel(),
@@ -178,7 +181,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	@Override
 	public void exit() {
-		screenSwitcher.displayMainMenuScreen();
+		screenSwitcher.displayMainMenuScreen(username);
 	}
 
 	@Override

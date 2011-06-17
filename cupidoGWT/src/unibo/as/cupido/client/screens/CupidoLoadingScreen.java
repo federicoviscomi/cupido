@@ -5,7 +5,7 @@ import unibo.as.cupido.client.Cupido;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class CupidoLoadingScreen extends VerticalPanel {
+public class CupidoLoadingScreen extends VerticalPanel implements Screen {
 
 	public CupidoLoadingScreen() {
 		setHeight(Cupido.height + "px");
@@ -15,5 +15,9 @@ public class CupidoLoadingScreen extends VerticalPanel {
 		this.setVerticalAlignment(ALIGN_MIDDLE);
 
 		add(new HTML("Caricamento in corso, attendere..."));
+	}
+
+	@Override
+	public void prepareRemoval() {
 	}
 }
