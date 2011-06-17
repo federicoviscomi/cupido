@@ -1,6 +1,5 @@
 package unibo.as.cupido.backendInterfacesImpl.database;
 
-import java.rmi.RemoteException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
