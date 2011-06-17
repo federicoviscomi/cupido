@@ -1,10 +1,11 @@
 /*
  * WARNING put comment lines in constructor method CupidoServlet() to test Servlet without registry
+ * put comment lines in registerUser() for fake registration
  */
 package unibo.as.cupido.server;
 
 /*
- * FIXME: on development do NOT remove unused imports and variables
+ * FIXME: do NOT remove unused imports and variables
  */
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -21,8 +22,6 @@ import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import net.zschech.gwt.comet.server.CometServlet;
@@ -47,6 +46,12 @@ import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.client.CupidoInterface;
+import unibo.as.cupido.shared.cometNotification.CardPassed;
+import unibo.as.cupido.shared.cometNotification.CardPlayed;
+import unibo.as.cupido.shared.cometNotification.GameEnded;
+import unibo.as.cupido.shared.cometNotification.GameStarted;
+import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
+import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
 import unibo.as.cupido.shared.cometNotification.PlayerLeft;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -116,69 +121,103 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	
 	/*
 	 * Implements here action to perform when notified by the table
-	 * 
+	 * must create CometNotification classes
 	 * @param hSession
 	 * @param ctSession
 	 * @return
 	 */
-	private ServletNotificationsInterface getServletNotificationsInterface(final HttpSession hSession, final CometSession cSession){
+	private ServletNotificationsInterface getServletNotificationsInterface(
+			final HttpSession hSession, final CometSession cSession) {
 		return new ServletNotificationsInterface() {
 
-			private HttpSession httpSession=hSession;
-			private CometSession cometSession=cSession;
+			private HttpSession httpSession = hSession;
+			private CometSession cometSession = cSession;
 
-			/**
+			/*
 			 * Called by the table when a player left the game
 			 */
 			@Override
 			public void notifyPlayerLeft(String name) {
-				// Get the HTTP session for the browser
-				//FIXME come faccio a controllare che ritorni la httpSession giusta?
-				if (httpSession == null || cometSession==null) {
-					//Notifica playerLeft al tavolo
+				if (httpSession == null || cometSession == null) {
+					System.out.println("SerletNotInterf: session null");
 					return;
 				}
-
-				PlayerLeft playerLeft=new PlayerLeft(name);
-				cometSession.enqueue(playerLeft);
+				// Notifica playerLeft al client
+				cometSession.enqueue(new PlayerLeft(name));
 			}
 
 			@Override
-			public void notifyPlayerJoined(String name, boolean isBot, int point,
-					int position) {
-				// TODO Auto-generated method stub
-
+			public void notifyPlayerJoined(String name, boolean isBot,
+					int point, int position) {
+				if (httpSession == null || cometSession == null) {
+					System.out.println("SerletNotInterf: session null");
+					return;
+				}
+				NewPlayerJoined j = new NewPlayerJoined();
+				j.name = name;
+				j.isBot = isBot;
+				j.points = point;
+				j.position = position;
+				cometSession.enqueue(j);
 			}
 
 			@Override
 			public void notifyPlayedCard(Card card, int playerPosition) {
-				// TODO Auto-generated method stub
-
+				if (httpSession == null || cometSession == null) {
+					System.out.println("SerletNotInterf: session null");
+					return;
+				}
+				CardPlayed p = new CardPlayed();
+				p.card = card;
+				p.playerPosition = playerPosition;
+				cometSession.enqueue(p);
 			}
 
 			@Override
 			public void notifyPassedCards(Card[] cards) {
-				// TODO Auto-generated method stub
-
+				if (httpSession == null || cometSession == null) {
+					System.out.println("SerletNotInterf: session null");
+					return;
+				}
+				CardPassed p = new CardPassed();
+				p.cards = cards;
+				cometSession.enqueue(p);
 			}
 
 			@Override
 			public void notifyLocalChatMessage(ChatMessage message) {
-				System.out
-						.println("Servlet: received a notification from the backend. Sending it to the client...");
-				// cometSession.enqueue(message);
+				if (httpSession == null || cometSession == null) {
+					System.out.println("SerletNotInterf: session null");
+					return;
+				}
+				NewLocalChatMessage m = new NewLocalChatMessage();
+				m.message = message.message;
+				m.user = message.userName;
+				cometSession.enqueue(m);
 			}
 
 			@Override
 			public void notifyGameStarted(Card[] cards) {
-				// TODO Auto-generated method stub
-
+				if (httpSession == null || cometSession == null) {
+					System.out.println("SerletNotInterf: session null");
+					return;
+				}
+				GameStarted g = new GameStarted();
+				g.myCards = cards;
+				cometSession.enqueue(g);
 			}
 
 			@Override
-			public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-				// TODO Auto-generated method stub
-
+			public void notifyGameEnded(int[] matchPoints,
+					int[] playersTotalPoint) {
+				if (httpSession == null || cometSession == null) {
+					System.out.println("SerletNotInterf: session null");
+					return;
+				}
+				GameEnded g = new GameEnded();
+				g.matchPoints = matchPoints;
+				g.playersTotalPoints = playersTotalPoint;
+				cometSession.enqueue(g);
 			}
 		};
 	}
@@ -336,8 +375,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		return authenticated;
 	}
 
+	/*
+	 * comment this method for fake registration
+	 */
 	@Override
 	public boolean registerUser(String username, String password) throws FatalException{
+		/*
 		DatabaseInterface dbi = (DatabaseInterface) getServletContext().getAttribute(DBI);
 		try {
 			dbi.addNewUser(username, password);
@@ -351,6 +394,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			return false;
 			//throw e;
 		}
+		*/
 		return true;
 	}
 
