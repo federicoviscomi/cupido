@@ -6,11 +6,11 @@ import java.util.concurrent.ArrayBlockingQueue;
 import unibo.as.cupido.backendInterfaces.GlobalChatInterface;
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 
-public class GlobalChatImlp implements GlobalChatInterface {
+public class GlobalChatImpl implements GlobalChatInterface {
 
 	private ArrayBlockingQueue<ChatMessage> messages;
 
-	public GlobalChatImlp() {
+	public GlobalChatImpl() {
 		messages = new ArrayBlockingQueue<ChatMessage>(MESSAGE_NUMBER);
 	}
 

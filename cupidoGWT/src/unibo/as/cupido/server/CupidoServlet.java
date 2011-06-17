@@ -95,7 +95,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 * 
 	 */
 	public CupidoServlet() {
-		/*
 		Registry registry;
 		GlobalChatInterface gci = null;
 		GlobalTableManagerInterface gtmi = null;
@@ -116,7 +115,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	
 		DatabaseInterface dbi = new DatabaseManager();
 		getServletContext().setAttribute(DBI, dbi);
-		*/
 	}
 	
 	/*
