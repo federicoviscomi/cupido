@@ -104,7 +104,7 @@ public class DummyLoggerBotNotifyer implements Bot {
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + card + ", " + playerPosition + ")");
 		playedCard[playerPosition] = card;
-		if (playerPosition == 3) {
+		if (playerPosition == 2) {
 			playNextCardLock.release();
 		}
 	}

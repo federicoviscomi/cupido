@@ -31,6 +31,10 @@ public class PlayersManager {
 			this.bot = bot;
 		}
 
+		@Override
+		public String toString() {
+			return "[" + botName + ", " + bot + "]";
+		}
 	}
 
 	private static class PlayerInfo {
@@ -334,7 +338,7 @@ public class PlayersManager {
 		}
 	}
 
-	/** send a notification to player in absolute position <code>position</code>*/
+	/** send a notification to player in absolute position <code>position</code> */
 	public void notifyPassedCards(int position, Card[] cards) {
 		try {
 			if (players[position] != null) {
@@ -372,9 +376,14 @@ public class PlayersManager {
 	}
 
 	public void print() {
-		for (PlayerInfo pi : players) {
-			System.out.print(pi);
+		for (int i = 0; i < 4; i++) {
+			if (players[i] != null) {
+				System.out.print(players[i]);
+			} else {
+				System.out.print(nonRemoteBotsInfo[i]);
+			}
 		}
+
 	}
 
 	public void removePlayer(String playerName) throws PlayerNotFoundException {
