@@ -42,12 +42,11 @@ public interface CupidoInterface extends RemoteService {
 	 * @param username
 	 * 
 	 * @param password
-	 * @return
 	 * @throws DuplicateUserNameException
 	 *             If this username was already used.
 	 * @throws FatalException
 	 */
-	public boolean registerUser(String username, String password)
+	public void registerUser(String username, String password)
 			throws DuplicateUserNameException, FatalException;
 
 	/**

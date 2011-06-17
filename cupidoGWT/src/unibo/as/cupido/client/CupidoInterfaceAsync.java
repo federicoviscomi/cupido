@@ -17,7 +17,7 @@ public interface CupidoInterfaceAsync {
 	void isUserRegistered(String username, AsyncCallback<Boolean> callback);
 
 	void registerUser(String username, String password,
-			AsyncCallback<Boolean> callback);
+			AsyncCallback<Void> callback);
 
 	void login(String username, String password, AsyncCallback<Boolean> callback);
 
