@@ -183,7 +183,7 @@ public class DatabaseManager implements DatabaseInterface{
 			throw new NoSuchUserException(userName);
 		ResultSet res = statement
 				.executeQuery("SELECT * FROM User WHERE name = '" + userName
-						+ "', password ='" + password + "' LIMIT 1;");
+						+ "'AND password ='" + password + "' LIMIT 1;");
 		return res.next();
 	}
 
