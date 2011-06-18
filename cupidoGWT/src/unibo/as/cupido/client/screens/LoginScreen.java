@@ -85,7 +85,6 @@ public class LoginScreen extends VerticalPanel implements Screen {
 		add(bottomPanel);
 		
 		PushButton registerButton = new PushButton("Registrati");
-		registerButton.setWidth("100px");
 		registerButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -95,7 +94,6 @@ public class LoginScreen extends VerticalPanel implements Screen {
 		bottomPanel.add(registerButton);
 		
 		okButton = new PushButton("OK");
-		okButton.setWidth("100px");
 		okButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
