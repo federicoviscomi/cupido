@@ -25,6 +25,7 @@ public class GlobalChatImlp implements GlobalChatInterface {
 			messages.remove();
 		}
 		messages.add(message);
+		System.out.println("global chat message " + message);
 	}
 
 }
