@@ -1022,7 +1022,8 @@ public class CardsGameWidget extends AbsolutePanel {
 		List<Position> namePositions = new ArrayList<Position>();
 		{
 			// The z index of the players' names.
-			final int z = defaultZIndex + 100;
+			// Note that this is not 0 + defaultZIndex, just 0.
+			final int z = 0;
 
 			// Bottom player: fixed position.
 			namePositions.add(new Position(tableSize / 2, tableSize - 10
