@@ -75,7 +75,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	private static final String registryHost = "127.0.0.1";
 	private static final int registryPort = 1099;
-	private static final String GTMLookupName = "globaltableserver";
+	private static final String GTMLookupName = GlobalTableManagerInterface.globalTableManagerName;
 	private static final String GCLookupName = GlobalChatInterface.globalChatName;
 	/*
 	 * Names used in httpSession and servlet-context attributes
