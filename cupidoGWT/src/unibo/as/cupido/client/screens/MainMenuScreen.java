@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 
-public class CupidoMainMenuScreen extends AbsolutePanel implements Screen {
+public class MainMenuScreen extends AbsolutePanel implements Screen {
 	
 	// The interval between subsequent polls to the (global) chat, in
 	// milliseconds.
@@ -44,7 +44,7 @@ public class CupidoMainMenuScreen extends AbsolutePanel implements Screen {
 	 */
 	public static final int chatWidth = 300;
 
-	public CupidoMainMenuScreen(final ScreenSwitcher screenSwitcher,
+	public MainMenuScreen(final ScreenSwitcher screenSwitcher,
 			final String username, final CupidoInterfaceAsync cupidoService) {
 		this.screenSwitcher = screenSwitcher;
 		this.username = username;

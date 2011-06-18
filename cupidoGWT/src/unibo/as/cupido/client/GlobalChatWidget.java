@@ -4,7 +4,7 @@ import java.util.List;
 
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.client.GlobalChatWidget.ChatListener;
-import unibo.as.cupido.client.screens.CupidoMainMenuScreen;
+import unibo.as.cupido.client.screens.MainMenuScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -41,7 +41,7 @@ public class GlobalChatWidget extends AbsolutePanel {
 		int bottomRowHeight = 30;
 
 		messagesPanel = new ScrollPanel();
-		messagesPanel.setWidth((CupidoMainMenuScreen.chatWidth - 20) + "px");
+		messagesPanel.setWidth((MainMenuScreen.chatWidth - 20) + "px");
 		messagesPanel.setHeight((Cupido.height - bottomRowHeight) + "px");
 		add(messagesPanel, 10, 0);
 
@@ -55,7 +55,7 @@ public class GlobalChatWidget extends AbsolutePanel {
 
 		messageField = new TextBox();
 		messageField
-				.setWidth((CupidoMainMenuScreen.chatWidth - sendButtonWidth)
+				.setWidth((MainMenuScreen.chatWidth - sendButtonWidth)
 						+ "px");
 		messageField.addKeyUpHandler(new KeyUpHandler() {
 			@Override
@@ -76,7 +76,7 @@ public class GlobalChatWidget extends AbsolutePanel {
 		});
 		bottomRow.add(sendButton);
 
-		bottomRow.setWidth(CupidoMainMenuScreen.chatWidth + "px");
+		bottomRow.setWidth(MainMenuScreen.chatWidth + "px");
 		bottomRow.setHeight(bottomRowHeight + "px");
 		add(bottomRow, 0, (Cupido.height - bottomRowHeight));
 	}

@@ -9,9 +9,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class CupidoAboutScreen extends VerticalPanel implements Screen {
+public class AboutScreen extends VerticalPanel implements Screen {
 
-	public CupidoAboutScreen(final ScreenSwitcher screenSwitcher, final String username) {
+	public AboutScreen(final ScreenSwitcher screenSwitcher, final String username) {
 		setHeight((Cupido.height - 80) + "px");
 		setWidth((Cupido.width - 120) + "px");
 

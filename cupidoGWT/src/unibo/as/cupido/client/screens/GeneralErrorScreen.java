@@ -7,9 +7,9 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
-public class CupidoGeneralErrorScreen extends AbsolutePanel implements Screen {
+public class GeneralErrorScreen extends AbsolutePanel implements Screen {
 
-	public CupidoGeneralErrorScreen(ScreenSwitcher screenSwitcher, Throwable e) {
+	public GeneralErrorScreen(ScreenSwitcher screenSwitcher, Throwable e) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 

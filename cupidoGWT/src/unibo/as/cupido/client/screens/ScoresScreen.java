@@ -6,9 +6,9 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 
-public class CupidoScoresScreen extends AbsolutePanel implements Screen {
+public class ScoresScreen extends AbsolutePanel implements Screen {
 
-	public CupidoScoresScreen(ScreenSwitcher screenSwitcher) {
+	public ScoresScreen(ScreenSwitcher screenSwitcher) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 		Label label = new HTML("<b>Scores scteen (TODO)</b>");

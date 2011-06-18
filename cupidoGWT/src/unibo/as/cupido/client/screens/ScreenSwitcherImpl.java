@@ -136,7 +136,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		CupidoMainMenuScreen screen = new CupidoMainMenuScreen(this, username, cupidoService);
+		MainMenuScreen screen = new MainMenuScreen(this, username, cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -150,7 +150,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		CupidoScoresScreen screen = new CupidoScoresScreen(this);
+		ScoresScreen screen = new ScoresScreen(this);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -164,7 +164,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		CupidoAboutScreen screen = new CupidoAboutScreen(this, username);
+		AboutScreen screen = new AboutScreen(this, username);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -178,7 +178,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		CupidoTableScreen screen = new CupidoTableScreen(this, username, cupidoService,
+		TableScreen screen = new TableScreen(this, username, cupidoService,
 				cometListener);
 		currentScreen = screen;
 		currentScreenWidget = screen;
@@ -193,7 +193,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		CupidoObservedTableScreen screen = new CupidoObservedTableScreen(this, username,
+		ObservedTableScreen screen = new ObservedTableScreen(this, username,
 				cupidoService, cometListener);
 		currentScreen = screen;
 		currentScreenWidget = screen;
@@ -208,7 +208,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		CupidoGeneralErrorScreen screen = new CupidoGeneralErrorScreen(this, e);
+		GeneralErrorScreen screen = new GeneralErrorScreen(this, e);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -221,7 +221,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		CupidoLoadingScreen screen = new CupidoLoadingScreen();
+		LoadingScreen screen = new LoadingScreen();
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);

@@ -5,9 +5,9 @@ import unibo.as.cupido.client.Cupido;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class CupidoLoadingScreen extends VerticalPanel implements Screen {
+public class LoadingScreen extends VerticalPanel implements Screen {
 
-	public CupidoLoadingScreen() {
+	public LoadingScreen() {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
