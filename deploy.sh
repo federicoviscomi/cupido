@@ -13,6 +13,35 @@ rmic -d cupidoGWT/war/WEB-INF/classes -classpath "$CLASSPATH" 'unibo.as.cupido.b
 rmic -d cupidoGWT/war/WEB-INF/classes -classpath "$CLASSPATH" 'unibo.as.cupido.backendInterfacesImpl.gtm.GlobalTableManager'
 
 echo Running rmiregistry...
-COMMAND="rmiregistry -J-classpath -J$CLASSPATH"
-echo "$COMMAND"
-$COMMAND
+rmiregistry -J-classpath -J"$CLASSPATH" &
+
+RMIREGISTRY_PID="$!"
+PIDS="$!"
+
+sleep 1
+
+java -classpath "$CLASSPATH" unibo.as.cupido.backendInterfacesImpl.gtm.GlobalTableManager &
+
+PIDS="$PIDS $!"
+
+sleep 2
+
+java -classpath "$CLASSPATH" unibo.as.cupido.backendInterfacesImpl.ltm.LocalTableManager &
+
+PIDS="$PIDS $!"
+
+sleep 1
+
+echo "*****************************"
+echo "* All processes started.    *"
+echo "* Press Enter to kill them. *"
+echo "*****************************"
+
+read
+
+echo "Terminating child processes, please wait..."
+
+for pid in $PIDS
+do
+  kill -9 "$pid"
+done
