@@ -13,6 +13,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.TextBox;
@@ -27,7 +28,7 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	private PasswordTextBox passwordBox;
 	private PushButton okButton;
 
-	public LoginScreen(ScreenSwitcher screenSwitcher, CupidoInterfaceAsync cupidoService) {
+	public LoginScreen(final ScreenSwitcher screenSwitcher, CupidoInterfaceAsync cupidoService) {
 		
 		this.screenSwitcher = screenSwitcher;
 		this.cupidoService = cupidoService;
@@ -79,6 +80,20 @@ public class LoginScreen extends VerticalPanel implements Screen {
 
 		add(grid);
 		
+		HorizontalPanel bottomPanel = new HorizontalPanel();
+		bottomPanel.setSpacing(50);
+		add(bottomPanel);
+		
+		PushButton registerButton = new PushButton("Registrati");
+		registerButton.setWidth("100px");
+		registerButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				screenSwitcher.displayRegistrationScreen();
+			}
+		});
+		bottomPanel.add(registerButton);
+		
 		okButton = new PushButton("OK");
 		okButton.setWidth("100px");
 		okButton.addClickHandler(new ClickHandler() {
@@ -87,7 +102,8 @@ public class LoginScreen extends VerticalPanel implements Screen {
 				tryLogin();
 			}
 		});
-		add(okButton);
+		bottomPanel.add(okButton);
+		
 	}
 	
 	private void tryLogin() {
