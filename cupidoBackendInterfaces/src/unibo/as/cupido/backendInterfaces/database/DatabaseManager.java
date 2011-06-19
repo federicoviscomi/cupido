@@ -1,32 +1,48 @@
-/**
- * 
- */
-package unibo.as.cupido.server;
+package unibo.as.cupido.backendInterfaces.database;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import unibo.as.cupido.backendInterfaces.DatabaseInterface;
 import unibo.as.cupido.backendInterfaces.common.Pair;
 import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
 import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
 
-
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
-
-public class DatabaseManager implements DatabaseInterface{
+public class DatabaseManager implements DatabaseInterface {
 
 	public static void main(String[] args) throws SQLException,
 			DuplicateUserNameException, NoSuchUserException {
-		new DatabaseManager().test();
+		DatabaseManager databaseManager = new DatabaseManager();
+		//System.out.println(databaseManager.login("cane", "bau"));
 	}
 
-	private final String userDB = "root";
-	private final String passDB = "cupido";
-	private final String host = "localhost";
+	private void print() {
+		try {
+			ResultSet all = statement.executeQuery("SELECT * FROM User");
+			ResultSetMetaData metaData = all.getMetaData();
+			System.out.format("\n%16.16s %8.8s %8.8s\n",
+					metaData.getColumnName(1), metaData.getColumnName(2),
+					metaData.getColumnName(3));
+			while (all.next()) {
+				System.out.format("%16.16s %8.8s %8.8s\n", all.getString(1),
+						all.getString(2), all.getInt(3));
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private String userDB = "root";
+	private String passDB = "cupido";
+	private String host = "localhost";
 	// TODO handle statement.close() problem
 	private Statement statement;
 	private Connection connection;
@@ -41,10 +57,10 @@ public class DatabaseManager implements DatabaseInterface{
 					+ ".");
 			statement = (Statement) connection.createStatement();
 		} catch (ClassNotFoundException e) {
-			System.out.println("Servlet: catched ClassNotFoundException ->");
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			System.out.println("Servlet: catched SQLException ->");
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -52,18 +68,17 @@ public class DatabaseManager implements DatabaseInterface{
 
 	@Override
 	public void addNewUser(String userName, String password)
-			throws SQLException, DuplicateUserNameException, IllegalArgumentException {
+			throws SQLException, DuplicateUserNameException {
 		if (userName == null || password == null)
 			throw new IllegalArgumentException();
-		if (this.isRegistered(userName))
+		if (this.contains(userName))
 			throw new DuplicateUserNameException(userName);
 		// TODO is there any way to exploit return value of
-		// statement.executeUpdate in order not to use this.isRegistered?
+		// statement.executeUpdate in order not to use this.contains?
 		statement.executeUpdate("INSERT INTO User VALUE ('" + userName + "', '"
 				+ password + "', 0);");
 	}
-	
-	
+
 	@Override
 	public void close() {
 		try {
@@ -78,14 +93,8 @@ public class DatabaseManager implements DatabaseInterface{
 		}
 	}
 
-	/**
-	 * Equal to: isUserRegistered(String userName)
-	 * @param userName
-	 * @return
-	 * @throws SQLException
-	 */
 	@Override
-	public boolean isRegistered(String userName) throws SQLException {
+	public boolean contains(String userName) throws SQLException {
 		return statement.executeQuery(
 				"SELECT name FROM User WHERE name = '" + userName + "'").next();
 	}
@@ -121,7 +130,7 @@ public class DatabaseManager implements DatabaseInterface{
 			NoSuchUserException {
 		if (userName == null)
 			throw new IllegalArgumentException();
-		if (!this.isRegistered(userName))
+		if (!this.contains(userName))
 			throw new NoSuchUserException(userName);
 		ResultSet res = statement
 				.executeQuery("SELECT score FROM User WHERE name = '"
@@ -163,7 +172,7 @@ public class DatabaseManager implements DatabaseInterface{
 
 		// FIXME does this really works?
 
-		if (!this.isRegistered(userName))
+		if (!this.contains(userName))
 			throw new NoSuchUserException(userName);
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet chunk = statement
@@ -179,11 +188,11 @@ public class DatabaseManager implements DatabaseInterface{
 			NoSuchUserException {
 		if (userName == null || password == null)
 			throw new IllegalArgumentException();
-		if (!this.isRegistered(userName))
+		if (!this.contains(userName))
 			throw new NoSuchUserException(userName);
 		ResultSet res = statement
 				.executeQuery("SELECT * FROM User WHERE name = '" + userName
-						+ "'AND password ='" + password + "' LIMIT 1;");
+						+ "' AND password ='" + password + "' LIMIT 1;");
 		return res.next();
 	}
 
@@ -222,7 +231,7 @@ public class DatabaseManager implements DatabaseInterface{
 			NoSuchUserException {
 		if (userName == null)
 			throw new IllegalArgumentException();
-		if (!this.isRegistered(userName))
+		if (!this.contains(userName))
 			throw new NoSuchUserException(userName);
 		statement.executeUpdate("UPDATE User SET score = " + score
 				+ " WHERE name = '" + userName + "';");

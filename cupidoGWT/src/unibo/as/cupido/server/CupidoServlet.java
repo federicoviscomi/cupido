@@ -16,6 +16,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import unibo.as.cupido.backendInterfaces.DatabaseInterface;
 import unibo.as.cupido.backendInterfaces.GlobalChatInterface;
 import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
@@ -47,6 +48,7 @@ import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
 import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException;
+import unibo.as.cupido.backendInterfaces.database.DatabaseManager;
 import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.shared.cometNotification.CardPassed;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
@@ -444,7 +446,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
 				.getAttribute(DBI);
 		try {
-			return dbi.isRegistered(username);
+			return dbi.contains(username);
 		} catch (IllegalArgumentException e) {
 			throw e;
 		} catch (SQLException e) {

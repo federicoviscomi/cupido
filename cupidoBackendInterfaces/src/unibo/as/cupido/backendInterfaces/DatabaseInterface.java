@@ -1,7 +1,5 @@
 package unibo.as.cupido.backendInterfaces;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -103,6 +101,14 @@ public interface DatabaseInterface {
 	public boolean login(String userName, String password) throws SQLException,
 			IllegalArgumentException, NoSuchUserException;
 
+	/**
+	 * Return true if userName is in the database
+	 * @param userName
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean contains(String userName) throws SQLException;
+	
 	/**
 	 * Update score of user <code>userName</code>
 	 * 
