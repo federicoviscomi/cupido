@@ -43,6 +43,7 @@ public class PlayerConsoleUI {
 			"list all tables", "login USER_NAME PASSWORD", "", "", "");
 
 	public static void main(String[] args) throws Exception {
+		
 		new PlayerConsoleUI(
 				"/home/cane/workspace/test/createTableAndAddThreeBot")
 				.execute();
