@@ -16,6 +16,7 @@ public class StartNotifierThread extends Thread {
 	public void run() {
 		try {
 			start.acquire();
+			Thread.sleep(1000);
 			stm.notifyGameStarted();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block

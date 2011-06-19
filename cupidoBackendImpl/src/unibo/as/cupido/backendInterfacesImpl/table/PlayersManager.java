@@ -33,7 +33,7 @@ public class PlayersManager {
 
 		@Override
 		public String toString() {
-			return "[" + botName + ", " + bot + "]";
+			return "[is bot=true, name=" + botName + "]";
 		}
 	}
 
@@ -144,9 +144,9 @@ public class PlayersManager {
 			if (i != position) {
 				if (players[i] != null) {
 					try {
-						System.err.println("\nnotifing joined bot " + userName
-								+ " at " + position + " to player "
-								+ players[i].name + " at " + i
+						System.err.println("\nnotifing joined bot _bot."
+								+ userName + "." + position + " at " + position
+								+ " to player " + players[i].name + " at " + i
 								+ ". relative position is "
 								+ toRelativePosition(position, i));
 						players[i].sni.notifyPlayerJoined("_bot." + userName
@@ -158,10 +158,10 @@ public class PlayersManager {
 					}
 				}
 				if (nonRemoteBotsInfo[i] != null) {
-					System.err.println("\nnotifing joined bot " + userName
-							+ " at " + position + " to player "
-							+ nonRemoteBotsInfo[i].botName + " at " + i
-							+ ". relative position is "
+					System.err.println("\nnotifing joined bot _bot." + userName
+							+ "." + position + " at " + position
+							+ " to player " + nonRemoteBotsInfo[i].botName
+							+ " at " + i + ". relative position is "
 							+ toRelativePosition(position, i));
 					nonRemoteBotsInfo[i].bot.notifyPlayerJoined("_bot."
 							+ userName + "." + position, true, 0,
@@ -312,7 +312,6 @@ public class PlayersManager {
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null) {
 				try {
-
 					players[i].sni.notifyGameStarted(cards[i]);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
@@ -377,13 +376,13 @@ public class PlayersManager {
 
 	public void print() {
 		for (int i = 0; i < 4; i++) {
-			if (players[i] != null) {
-				System.out.print(players[i]);
-			} else {
-				System.out.print(nonRemoteBotsInfo[i]);
-			}
+			System.out.print(players[i]);
+			//if (players[i] != null) {System.out.print(players[i]);} else {System.out.print(nonRemoteBotsInfo[i]);}
 		}
-
+		System.out.print("\t");
+		for (int i = 0; i < 4; i++) {
+			System.out.print(nonRemoteBotsInfo[i]);
+		}
 	}
 
 	public void removePlayer(String playerName) throws PlayerNotFoundException {
