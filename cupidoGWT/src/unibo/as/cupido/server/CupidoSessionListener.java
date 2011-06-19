@@ -10,7 +10,10 @@ import unibo.as.cupido.server.CupidoServlet.SessionClosedListener;
  *
  */
 public class CupidoSessionListener implements HttpSessionListener {
-
+	/*
+	 * Name used in servlet context. Value of SCL can be found in CupidoServlet
+	 */
+	private static final String SCL = "sessionClosedListener";
 	@Override
 	public void sessionCreated(HttpSessionEvent e) {
 		System.out.println("DumbSessionListener: in sessionCreated().");
@@ -20,15 +23,15 @@ public class CupidoSessionListener implements HttpSessionListener {
 
 	@Override
 	public void sessionDestroyed(HttpSessionEvent x) {
-		System.out.println("Servlet: on CupidoSessionListener sessionDestroyed()");
-		Object untypedListener = x.getSession().getAttribute(
-				"sessionClosedListener");
+		Object untypedListener = x.getSession().getServletContext().getAttribute(
+				SCL);
 		if (untypedListener == null)
 			return;
 		if (!(untypedListener instanceof SessionClosedListener))
 			return;
 		SessionClosedListener listener = (SessionClosedListener) untypedListener;
 		listener.onSessionClosed(x.getSession());
+		System.out.println("CupidoSessionListener (Servlet): destroyed httpSession "+x.getSession().getId());
 	}
 
 }

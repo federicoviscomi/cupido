@@ -22,6 +22,8 @@ import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
 import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
 import unibo.as.cupido.backendInterfaces.TableInterface;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 import net.zschech.gwt.comet.server.CometServlet;
@@ -78,30 +80,86 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	private static final String GTMLookupName = GlobalTableManagerInterface.globalTableManagerName;
 	private static final String GCLookupName = GlobalChatInterface.globalChatName;
 	/*
-	 * Names used in httpSession and servlet-context attributes
+	 * Names used in httpSession attributes
 	 */
 	private static final String SNI = "servletNotificationInterface";
 	private static final String TI = "tableInterfaces";
 	private static final String USERNAME = "username";
 	private static final String ISAUTHENTICATED = "isAuthenticated";
+	/*
+	 * Names used in servlet context attributes
+	 */
 	private static final String GCI = "globalChatInterface";
 	private static final String GTMI = "globalTableManagerInterface";
 	private static final String DBI = "databaseInterface";
-	
-	/**
-	 * WARNING comments this method to test servlet without RMI registry and DB
-	 * 
+	private static final String SCL = "sessionClosedListener";
+
+	/*
 	 * Saves registry lookups in servlet context, and initialize DBmanager
 	 * 
+	 * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
 	 */
-	public CupidoServlet() {
+	@Override
+	public void init(ServletConfig config) {
+		try {
+			super.init(config);
+		} catch (ServletException e) {
+			System.out.println("Servlet: on init() catched ServletException->"
+					+ e.getMessage());
+			e.printStackTrace();
+		}
+
+		Registry registry;
+		GlobalChatInterface gci = null;
+		GlobalTableManagerInterface gtmi = null;
+		try {
+			registry = LocateRegistry.getRegistry(registryHost, registryPort);
+			gci = (GlobalChatInterface) registry.lookup(GCLookupName);
+			gtmi = (GlobalTableManagerInterface) registry.lookup(GTMLookupName);
+		} catch (RemoteException e) {
+			System.out.println("Servlet: on init() catched RemoteException->"
+					+ e.getMessage());
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			System.out.println("Servlet: on init() catched NotBoundException->"
+					+ e.getMessage());
+			e.printStackTrace();
+		}
+		getServletContext().setAttribute(GCI, gci);
+		getServletContext().setAttribute(GTMI, gtmi);
+		DatabaseInterface dbi = new DatabaseManager();
+		getServletContext().setAttribute(DBI, dbi);
+		// Istantiate a single sessionClosedListener in servlet context
+		getServletContext().setAttribute(SCL, new SessionClosedListener() {
+			@Override
+			public void onSessionClosed(HttpSession hSession) {
+				//System.out.println("Servlet: onSessionClosed() was called.");
+				// Notify player left at the table
+				TableInterface ti = (TableInterface) hSession.getAttribute(TI);
+				try {
+					if (ti != null)
+						ti.leaveTable((String) hSession.getAttribute(USERNAME));
+				} catch (RemoteException e) {
+					System.out
+							.println("Servlet: in SessionClosedListener catched RemoteException ->");
+					e.printStackTrace();
+				} catch (PlayerNotFoundException e) {
+					// Ignore
+					return;
+				}
+			}
+		});
+		System.out.println("Serlvet: SessionClosedListener inited.");
 	}
-	
+
 	/*
-	 * Implements here action to perform when notified by the table
-	 * must create CometNotification classes
+	 * Implements here action to perform when notified by the table must create
+	 * CometNotification classes
+	 * 
 	 * @param hSession
+	 * 
 	 * @param ctSession
+	 * 
 	 * @return
 	 */
 	private ServletNotificationsInterface getServletNotificationsInterface(
@@ -223,7 +281,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 			throw new UserNotAuthenticatedException();
 		}
-		GlobalChatInterface gci = (GlobalChatInterface) getThreadLocalRequest().getSession()
+		GlobalChatInterface gci = (GlobalChatInterface) getServletContext()
 				.getAttribute(GCI);
 		try {
 			return gci.getLastMessages();
@@ -237,32 +295,37 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/*
-	 * TODO: IllegalArgumentException in never thrown because input is never checked
-	 * TODO: choose legal messages
-	 * @see unibo.as.cupido.client.CupidoInterface#sendGlobalChatMessage(java.lang.String)
+	 * TODO: IllegalArgumentException in never thrown because input is never
+	 * checked TODO: choose legal messages
+	 * 
+	 * @see
+	 * unibo.as.cupido.client.CupidoInterface#sendGlobalChatMessage(java.lang
+	 * .String)
 	 */
 	@Override
-	public void sendGlobalChatMessage(String message) throws IllegalArgumentException, UserNotAuthenticatedException,
-	FatalException{
-			HttpSession httpSession = getThreadLocalRequest().getSession(false);
-			if (httpSession == null) {
-				return;
-			}
-			if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
-				throw new UserNotAuthenticatedException();
-			}
-			GlobalChatInterface gci = (GlobalChatInterface) getThreadLocalRequest().getSession()
-					.getAttribute(GCI);
-			try {
-				ChatMessage m= new ChatMessage((String) httpSession.getAttribute(USERNAME), message);
-				gci.sendMessage(m);
-			} catch (RemoteException e) {
-				System.out
-						.println("Servlet: on sendGlobalChatMessage() catched RemoteException-> "
-								+ e.getMessage());
-				// e.printStackTrace();
-				throw new FatalException();
-			}
+	public void sendGlobalChatMessage(String message)
+			throws IllegalArgumentException, UserNotAuthenticatedException,
+			FatalException {
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null) {
+			return;
+		}
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
+			throw new UserNotAuthenticatedException();
+		}
+		GlobalChatInterface gci = (GlobalChatInterface) getServletContext()
+				.getAttribute(GCI);
+		try {
+			ChatMessage m = new ChatMessage(
+					(String) httpSession.getAttribute(USERNAME), message);
+			gci.sendMessage(m);
+		} catch (RemoteException e) {
+			System.out
+					.println("Servlet: on sendGlobalChatMessage() catched RemoteException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		}
 	}
 
 	/*
@@ -307,47 +370,45 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	/*
 	 * Login errors are non-informative
-	 * @see unibo.as.cupido.client.CupidoInterface#login(java.lang.String, java.lang.String)
+	 * 
+	 * @see unibo.as.cupido.client.CupidoInterface#login(java.lang.String,
+	 * java.lang.String)
 	 */
 	@Override
-	public boolean login(String username, String password) throws FatalException {
-	
-		/* FAKE LOGIN
-		if (true){
-			HttpSession httpSession = getThreadLocalRequest().getSession(false);
-			if (httpSession != null){
-				httpSession.setAttribute(ISAUTHENTICATED, true);
-				httpSession.setAttribute(USERNAME, username);
-				return true;
-			}
-		}
-		return false;
-		*/
+	public boolean login(String username, String password)
+			throws FatalException {
+
+		/*
+		 * FAKE LOGIN if (true){ HttpSession httpSession =
+		 * getThreadLocalRequest().getSession(false); if (httpSession != null){
+		 * httpSession.setAttribute(ISAUTHENTICATED, true);
+		 * httpSession.setAttribute(USERNAME, username); return true; } } return
+		 * false;
+		 */
 		// comment lines down here to NOT check login with db
-		DatabaseInterface dbi = (DatabaseInterface) getThreadLocalRequest().getSession().getAttribute(DBI);
+		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
+				.getAttribute(DBI);
 		Boolean authenticated;
-		try{
+		try {
 			authenticated = dbi.login(username, password);
-		} catch(IllegalArgumentException e){
+		} catch (IllegalArgumentException e) {
 			return false;
-		} catch(NoSuchUserException e){
+		} catch (NoSuchUserException e) {
 			return false;
-		} catch(SQLException e){
-			System.out
-			.println("Servlet: on login() catched SQLException-> "
+		} catch (SQLException e) {
+			System.out.println("Servlet: on login() catched SQLException-> "
 					+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
 		}
-		if (authenticated){
+		if (authenticated) {
 			HttpSession httpSession = getThreadLocalRequest().getSession(false);
-			if (httpSession != null){
+			if (httpSession != null) {
 				httpSession.setAttribute(ISAUTHENTICATED, true);
 				httpSession.setAttribute(USERNAME, username);
 				return true;
 			}
-		}
-		else{
+		} else {
 			return false;
 		}
 		return authenticated;
@@ -357,32 +418,38 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 * comment this method for fake registration
 	 */
 	@Override
-	public void registerUser(String username, String password) throws FatalException, DuplicateUserNameException{
-		
-		DatabaseInterface dbi = (DatabaseInterface) getThreadLocalRequest().getSession().getAttribute(DBI);
+	public void registerUser(String username, String password)
+			throws FatalException, DuplicateUserNameException {
+
+		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
+				.getAttribute(DBI);
 		try {
 			dbi.addNewUser(username, password);
 		} catch (IllegalArgumentException e) {
 			throw new FatalException();
 		} catch (SQLException e) {
-			System.out.println("Servlet: on registerUser() catched SQLException ->");
+			System.out
+					.println("Servlet: on registerUser() catched SQLException ->");
 			e.printStackTrace();
 			throw new FatalException();
 		} catch (DuplicateUserNameException e) {
 			throw e;
 		}
-	
+
 	}
 
 	@Override
-	public boolean isUserRegistered(String username) throws IllegalArgumentException, FatalException{
-		DatabaseInterface dbi = (DatabaseInterface) getThreadLocalRequest().getSession().getAttribute(DBI);
+	public boolean isUserRegistered(String username)
+			throws IllegalArgumentException, FatalException {
+		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
+				.getAttribute(DBI);
 		try {
 			return dbi.isRegistered(username);
 		} catch (IllegalArgumentException e) {
 			throw e;
 		} catch (SQLException e) {
-			System.out.println("Servlet: on isUserRegistered() catched SQLException ->");
+			System.out
+					.println("Servlet: on isUserRegistered() catched SQLException ->");
 			e.printStackTrace();
 			throw new FatalException();
 		}
@@ -414,7 +481,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 		try {
 
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getThreadLocalRequest().getSession()
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
 					.getAttribute(GTMI);
 			return gtm.getTableList();
 		} catch (RemoteException e) {
@@ -441,7 +508,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			UserNotAuthenticatedException, FatalException {
 		InitialTableStatus its = new InitialTableStatus();
 		try {
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getThreadLocalRequest().getSession()
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
 					.getAttribute(GTMI);
 
 			HttpSession httpSession = getThreadLocalRequest().getSession(false);
@@ -521,7 +588,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				return null;
 			}
 
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getThreadLocalRequest().getSession()
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
 					.getAttribute(GTMI);
 			LocalTableManagerInterface LTMinterf = gtm.getLTMInterface(ltmId);
 			TableInterface ti = LTMinterf.getTable(tableId);
@@ -592,7 +659,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 		LocalTableManagerInterface ltmi = null;
 		try {
-			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getThreadLocalRequest().getSession()
+			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
 					.getAttribute(GTMI);
 			ltmi = gtm.getLTMInterface(server);
 		} catch (AccessException e) {
@@ -729,7 +796,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	public void addBot(int position) throws PositionFullException,
 			FullTableException, NotCreatorException, IllegalArgumentException,
 			UserNotAuthenticatedException, FatalException, NoSuchTableException {
-		
+
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		if (httpSession == null) {
 			return;
@@ -767,32 +834,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	@Override
 	public void openCometConnection() {
-
-		Registry registry;
-		GlobalChatInterface gci = null;
-		GlobalTableManagerInterface gtmi = null;
-		try {
-			registry = LocateRegistry.getRegistry(registryHost, registryPort);
-			gci = (GlobalChatInterface) registry.lookup(GCLookupName);
-			gtmi = (GlobalTableManagerInterface) registry.lookup(GTMLookupName);
-		} catch (RemoteException e) {
-			System.out.println("Servlet: on CupidoServlet() catched RemoteException->");
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			System.out.println("Servlet: on CupidoServlet() catched NotBoundException->");
-			e.printStackTrace();
-		}
-		
-		HttpSession session = getThreadLocalRequest().getSession();
-		session.setAttribute(GCI, gci);
-		session.setAttribute(GTMI, gtmi);
-	
-		DatabaseInterface dbi = new DatabaseManager();
-		session.setAttribute(DBI, dbi);
-		
 		System.out.println("Servlet: Opening a Comet connession...");
-
-		// Get the HTTP session for the browser
 		final HttpSession httpSession = getThreadLocalRequest()
 				.getSession(true);
 		if (httpSession == null) {
@@ -800,34 +842,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 		System.out
 				.println("Servlet: HttpSession opened " + httpSession.getId());
-		// TODO: istanzia us solo SessionClosedListener su ServletContext invece
-		// che uno per sessione
-		httpSession.setAttribute("sessionClosedListener",
-				new SessionClosedListener() {
-					@Override
-					public void onSessionClosed(HttpSession hSession) {
-						System.out
-								.println("Servlet: onSessionClosed() was called.");
-						// Notify player left at the table
-						TableInterface ti = (TableInterface) hSession
-								.getAttribute(TI);
-						if (ti == null)
-							return;
-						try {
-							ti.leaveTable((String) hSession
-									.getAttribute(USERNAME));
-						} catch (RemoteException e) {
-							System.out
-									.println("Servlet: in SessionClosedListener catched RemoteException ->");
-							e.printStackTrace();
-						} catch (PlayerNotFoundException e) {
-							// Ignore
-							return;
-						}
-
-					}
-				});
-
 		httpSession.setAttribute(ISAUTHENTICATED, Boolean.FALSE);
 		// Create the Comet session for the browser
 		CometServlet.getCometSession(httpSession);
@@ -835,7 +849,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * Invalidate httpSession
+	 * Invalidate httpSession.
 	 */
 	@Override
 	public void destroySession() {
