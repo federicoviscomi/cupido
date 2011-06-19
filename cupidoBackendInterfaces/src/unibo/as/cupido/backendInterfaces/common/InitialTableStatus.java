@@ -19,15 +19,15 @@ public class InitialTableStatus implements Serializable {
 
 	/**
 	 * playerScores.length is 3. playerScores[i] is the score of the opponent i
-	 * positions next to you in clockwise order. A <code>null</code> value
-	 * indicates that opponent does not exist yet.
+	 * positions next to you in clockwise order. If the opponent doesn't exist
+	 * yet, the value is unspecified.
 	 */
 	public int[] playerScores;
 
 	/**
 	 * whoIsBot.length is 3. whoIsBot[i] is the score of the opponent i
-	 * positions next to you in clockwise order. A <code>null</code> value
-	 * indicates that opponent does not exist yet
+	 * positions next to you in clockwise order. If the opponent doesn't exist
+	 * yet, the value is unspecified.
 	 */
 	public boolean[] whoIsBot;
 
