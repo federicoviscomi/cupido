@@ -159,9 +159,8 @@ public class SingleTableManager implements TableInterface {
 	}
 
 	public synchronized void notifyGameStarted() {
-		System.out.println("\n"
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "()");
+		// System.out.println("\n"+
+		// Thread.currentThread().getStackTrace()[1].getMethodName()+ "()");
 		playersManager.notifyGameStarted(cardsManager.getCards());
 	}
 

@@ -11,7 +11,7 @@ import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.AbstractBot;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.Bot;
 
-public class DummyPlayerCreator extends AbstractBot implements Serializable,
+public class DummyPlayerCreateTableAndAddThreeBots extends AbstractBot implements Serializable,
 		Bot, ServletNotificationsInterface {
 
 	/**
@@ -22,7 +22,7 @@ public class DummyPlayerCreator extends AbstractBot implements Serializable,
 	public static void main(String[] args) throws Exception {
 
 		Bot bot = (Bot) UnicastRemoteObject
-				.exportObject(new DummyPlayerCreator("Owner"));
+				.exportObject(new DummyPlayerCreateTableAndAddThreeBots("Owner"));
 
 		bot.createTable();
 		// 1 refers to absolute position
@@ -35,7 +35,7 @@ public class DummyPlayerCreator extends AbstractBot implements Serializable,
 
 	private GlobalTableManagerInterface gtm;
 
-	public DummyPlayerCreator(String userName) {
+	public DummyPlayerCreateTableAndAddThreeBots(String userName) {
 		super(userName);
 		initialTableStatus = new InitialTableStatus();
 		initialTableStatus.opponents = new String[3];
