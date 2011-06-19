@@ -396,20 +396,6 @@ public class CardsGameWidget extends AbsolutePanel {
 		this.listener = listener;
 	}
 
-	private static Map<CardWidget, CardRole> cloneCardRoles(
-			Map<CardWidget, CardRole> cardRoles) {
-		Map<CardWidget, CardRole> result = new HashMap<CardWidget, CardRole>();
-		for (Entry<CardWidget, CardRole> e : cardRoles.entrySet()) {
-			// Clone the role. The widget does not need to be cloned.
-			CardRole role = new CardRole();
-			role.player = e.getValue().player;
-			role.state = e.getValue().state;
-			role.isRaised = e.getValue().isRaised;
-			result.put(e.getKey(), role);
-		}
-		return result;
-	}
-
 	private static Position interpolatePosition(Position startPosition,
 			Position endPosition, double progress) {
 		Position position = new Position();
