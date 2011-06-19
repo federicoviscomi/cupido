@@ -19,34 +19,16 @@ public class DatabaseManager implements DatabaseInterface {
 	public static void main(String[] args) throws SQLException,
 			DuplicateUserNameException, NoSuchUserException {
 		DatabaseManager databaseManager = new DatabaseManager();
-		//System.out.println(databaseManager.login("cane", "bau"));
-	}
-
-	private void print() {
-		try {
-			ResultSet all = statement.executeQuery("SELECT * FROM User");
-			ResultSetMetaData metaData = all.getMetaData();
-			System.out.format("\n%16.16s %8.8s %8.8s\n",
-					metaData.getColumnName(1), metaData.getColumnName(2),
-					metaData.getColumnName(3));
-			while (all.next()) {
-				System.out.format("%16.16s %8.8s %8.8s\n", all.getString(1),
-						all.getString(2), all.getInt(3));
-			}
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// System.out.println(databaseManager.login("cane", "bau"));
 	}
 
 	private String userDB = "root";
+
 	private String passDB = "cupido";
 	private String host = "localhost";
 	// TODO handle statement.close() problem
 	private Statement statement;
 	private Connection connection;
-
 	public DatabaseManager() {
 		try {
 			Class.forName("org.gjt.mm.mysql.Driver");
@@ -193,6 +175,24 @@ public class DatabaseManager implements DatabaseInterface {
 				.executeQuery("SELECT * FROM User WHERE name = '" + userName
 						+ "' AND password ='" + password + "' LIMIT 1;");
 		return res.next();
+	}
+
+	private void print() {
+		try {
+			ResultSet all = statement.executeQuery("SELECT * FROM User");
+			ResultSetMetaData metaData = all.getMetaData();
+			System.out.format("\n%16.16s %8.8s %8.8s\n",
+					metaData.getColumnName(1), metaData.getColumnName(2),
+					metaData.getColumnName(3));
+			while (all.next()) {
+				System.out.format("%16.16s %8.8s %8.8s\n", all.getString(1),
+						all.getString(2), all.getInt(3));
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void test() throws SQLException, NoSuchUserException {

@@ -6,7 +6,6 @@ import java.util.concurrent.Semaphore;
 
 import unibo.as.cupido.backendInterfaces.TableInterface;
 import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 

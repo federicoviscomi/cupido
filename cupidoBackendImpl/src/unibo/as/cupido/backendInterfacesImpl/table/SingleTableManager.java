@@ -1,8 +1,6 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
@@ -26,7 +24,6 @@ import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
 import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
 import unibo.as.cupido.backendInterfacesImpl.database.DatabaseManager;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.BotManager;
-import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 
 /**
  * TODO missing all game status stuff
