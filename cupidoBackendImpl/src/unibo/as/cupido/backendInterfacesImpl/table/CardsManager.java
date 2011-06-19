@@ -114,7 +114,7 @@ public class CardsManager {
 		for (int i = 0; i < 52; i++) {
 			cards[i % 4].add(mazzo[i]);
 		}
-		for (int i = 0; i <4;i++){
+		for (int i = 0; i < 4; i++) {
 			Collections.sort(cards[i], cardsComparator);
 		}
 	}

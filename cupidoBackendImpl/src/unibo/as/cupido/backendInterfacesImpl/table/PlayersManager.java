@@ -2,8 +2,10 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
+import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface.Positions;
 import unibo.as.cupido.common.structures.Card;
@@ -16,7 +18,6 @@ import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
 import unibo.as.cupido.common.exception.PositionFullException;
-import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 
 public class PlayersManager {
 
@@ -176,18 +177,6 @@ public class PlayersManager {
 		// position, true, 0, null);
 		playersCount++;
 
-	}
-
-	/* the notification is to be sent to 2 */
-	private int toRelativePosition(int absolutePosition1, int absolutePosition2) {
-		int res;
-		if (absolutePosition2 < absolutePosition1)
-			res = (absolutePosition1 - absolutePosition2) - 1;
-		else
-			res = (4 - absolutePosition2) + absolutePosition1 - 1;
-		// System.err.println(" abs1 " + absolutePosition1 + " abs2 "+
-		// absolutePosition2 + " res " + res);
-		return res;
 	}
 
 	public int addPlayer(String playerName, ServletNotificationsInterface sni,
@@ -377,7 +366,8 @@ public class PlayersManager {
 	public void print() {
 		for (int i = 0; i < 4; i++) {
 			System.out.print(players[i]);
-			//if (players[i] != null) {System.out.print(players[i]);} else {System.out.print(nonRemoteBotsInfo[i]);}
+			// if (players[i] != null) {System.out.print(players[i]);} else
+			// {System.out.print(nonRemoteBotsInfo[i]);}
 		}
 		System.out.print("\t");
 		for (int i = 0; i < 4; i++) {
@@ -407,6 +397,18 @@ public class PlayersManager {
 				nonRemoteBotsInfo[i].bot.notifyPlayerLeft(playerName);
 			}
 		}
+	}
+
+	/* the notification is to be sent to 2 */
+	private int toRelativePosition(int absolutePosition1, int absolutePosition2) {
+		int res;
+		if (absolutePosition2 < absolutePosition1)
+			res = (absolutePosition1 - absolutePosition2) - 1;
+		else
+			res = (4 - absolutePosition2) + absolutePosition1 - 1;
+		// System.err.println(" abs1 " + absolutePosition1 + " abs2 "+
+		// absolutePosition2 + " res " + res);
+		return res;
 	}
 
 	public int[] updateScore(int[] matchPoints) {

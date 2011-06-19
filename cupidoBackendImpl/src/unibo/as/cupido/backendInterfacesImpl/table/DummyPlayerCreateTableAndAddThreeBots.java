@@ -11,8 +11,8 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.AbstractBot;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.Bot;
 
-public class DummyPlayerCreateTableAndAddThreeBots extends AbstractBot implements Serializable,
-		Bot, ServletNotificationsInterface {
+public class DummyPlayerCreateTableAndAddThreeBots extends AbstractBot
+		implements Serializable, Bot, ServletNotificationsInterface {
 
 	/**
 	 * 
@@ -27,9 +27,9 @@ public class DummyPlayerCreateTableAndAddThreeBots extends AbstractBot implement
 		bot.createTable();
 		// 1 refers to absolute position
 		bot.addBot(1);
-		//Thread.sleep(1000);
+		// Thread.sleep(1000);
 		bot.addBot(2);
-		//Thread.sleep(1000);
+		// Thread.sleep(1000);
 		bot.addBot(3);
 	}
 

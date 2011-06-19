@@ -13,11 +13,11 @@ import unibo.as.cupido.common.structures.Card.Suit;
  */
 public class CheckGameStatus {
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		Card a = new Card(2, Suit.CLUBS);
 		Card b = new Card(2, Suit.CLUBS);
 	}
-	
+
 	protected GameStatus gameStatus;
 
 	public CheckGameStatus() {

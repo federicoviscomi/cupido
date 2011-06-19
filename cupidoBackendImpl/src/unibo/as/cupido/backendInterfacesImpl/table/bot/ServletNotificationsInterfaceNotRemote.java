@@ -1,7 +1,7 @@
 package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import unibo.as.cupido.common.structures.Card;
-import unibo.as.cupido.common.structures.ChatMessage;
+
 
 public interface ServletNotificationsInterfaceNotRemote {
 
@@ -86,6 +86,5 @@ public interface ServletNotificationsInterfaceNotRemote {
 	 *            the name of the player who left the table @
 	 */
 	public void notifyPlayerLeft(String playerName);
-
 
 }

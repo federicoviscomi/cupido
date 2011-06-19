@@ -2,8 +2,6 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.util.concurrent.Semaphore;
 
-import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
-
 public class NonRemoteBotCardPlayingThread extends Thread {
 
 	private final NonRemoteBot bot;

@@ -28,7 +28,6 @@ public class AbstractBot implements Bot {
 	 * </code>firstDealer-1</code> relative to this player
 	 */
 	protected int firstDealer = -1;
-	
 
 	public AbstractBot(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, String userName) {

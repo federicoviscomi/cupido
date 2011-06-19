@@ -21,13 +21,13 @@ public class CardPlayingThread extends Thread {
 	public void run() {
 		try {
 			passCardsLock.acquire();
-			//Thread.sleep(1000);
+			// Thread.sleep(1000);
 			bot.passCards();
 			System.err.println("\n:\n1");
 			while (!endedGame) {
 				System.err.println("\n:\n2");
 				playNextCardLock.acquire();
-				//Thread.sleep(1000);
+				// Thread.sleep(1000);
 				System.err.println("\n:\n3");
 				bot.playNextCard();
 			}
