@@ -6,13 +6,7 @@ import unibo.as.cupido.client.playerstates.PlayerStateManager;
 import unibo.as.cupido.client.playerstates.PlayerStateManagerImpl;
 import unibo.as.cupido.client.screens.ScreenSwitcher;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class HeartsTableWidget extends AbsolutePanel {
 

@@ -15,7 +15,6 @@ import unibo.as.cupido.client.CupidoInterfaceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher {

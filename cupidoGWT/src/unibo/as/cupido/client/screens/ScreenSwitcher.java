@@ -1,7 +1,5 @@
 package unibo.as.cupido.client.screens;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 public interface ScreenSwitcher {
 	
 	/**

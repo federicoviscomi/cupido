@@ -6,8 +6,6 @@ import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import com.google.gwt.user.client.Window;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;

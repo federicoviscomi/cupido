@@ -7,7 +7,6 @@ import unibo.as.cupido.backendInterfaces.common.ChatMessage;
 import unibo.as.cupido.backendInterfaces.exception.FatalException;
 import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.client.Cupido;
-import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GlobalChatWidget;
 import unibo.as.cupido.client.GlobalChatWidget.ChatListener;
@@ -21,7 +20,6 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.Widget;
 
 public class MainMenuScreen extends AbsolutePanel implements Screen {
 	

@@ -1,9 +1,6 @@
 package unibo.as.cupido.client;
 
-import java.util.List;
-
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.client.GlobalChatWidget.ChatListener;
 import unibo.as.cupido.client.screens.MainMenuScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -26,7 +23,6 @@ public class GlobalChatWidget extends AbsolutePanel {
 	private HTML messageList;
 	private TextBox messageField;
 	private PushButton sendButton;
-	private String username;
 	private ChatListener listener;
 	
 	public interface ChatListener {
@@ -35,7 +31,6 @@ public class GlobalChatWidget extends AbsolutePanel {
 
 	public GlobalChatWidget(final String username, ChatListener listener) {
 
-		this.username = username;
 		this.listener = listener;
 
 		int bottomRowHeight = 30;
