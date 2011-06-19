@@ -20,4 +20,8 @@ public class LoadingScreen extends VerticalPanel implements Screen {
 	@Override
 	public void prepareRemoval() {
 	}
+
+	@Override
+	public void disableControls() {
+	}
 }

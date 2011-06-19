@@ -51,4 +51,6 @@ public interface ScreenSwitcher {
 	 * Shows the loading screen instead of the current one.
 	 */
 	public void displayLoadingScreen();
+	
+	public void disableControls();
 }

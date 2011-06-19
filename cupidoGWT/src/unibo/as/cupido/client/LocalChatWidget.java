@@ -108,4 +108,9 @@ public class LocalChatWidget extends AbsolutePanel {
 		messageList.setHTML(messages);
 		messagesPanel.scrollToBottom();
 	}
+	
+	public void disableControls() {
+		messageField.setEnabled(false);
+		sendButton.setEnabled(false);		
+	}
 }

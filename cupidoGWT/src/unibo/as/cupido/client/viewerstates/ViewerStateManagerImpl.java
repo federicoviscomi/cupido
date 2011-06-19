@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ViewerStateManagerImpl implements ViewerStateManager {
 
-	private Object currentState = null;
+	private ViewerState currentState = null;
 	private ScreenSwitcher screenSwitcher;
 	private CardsGameWidget cardsGameWidget;
 	private int firstPlayerInTrick = -1;
@@ -196,5 +196,10 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	@Override
 	public int getRemainingTricks() {
 		return remainingTricks;
+	}
+
+	@Override
+	public void disableControls() {
+		currentState.disableControls();
 	}
 }

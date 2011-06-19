@@ -86,6 +86,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	private GameEventListener listener;
 
 	private Widget cornerWidget = null;
+	
+	private boolean controlsDisabled = false;
 
 	/**
 	 * This class models the position of a widget on the table.
@@ -230,7 +232,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 		/**
 		 * This is called when the user clicks on a card, except during
-		 * animations.
+		 * animations and when controls are disabled.
 		 * 
 		 * @player: the player to whom the card belongs
 		 * @card: the card that was clicked, or `null' if a covered card was
@@ -355,6 +357,9 @@ public class CardsGameWidget extends AbsolutePanel {
 					public void onClick(ClickEvent event) {
 						if (runningAnimation)
 							// Clicking a card during an animation does nothing.
+							return;
+						
+						if (controlsDisabled)
 							return;
 
 						CardRole role = cardsGameWidget.cardRoles
@@ -1107,5 +1112,9 @@ public class CardsGameWidget extends AbsolutePanel {
 		cornerWidget.setWidth("200px");
 		cornerWidget.setHeight("200px");
 		add(cornerWidget, tableSize - 200, tableSize - 200);
+	}
+	
+	public void disableControls() {
+		
 	}
 }

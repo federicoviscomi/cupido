@@ -260,4 +260,16 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 	@Override
 	public void prepareRemoval() {
 	}
+
+	@Override
+	public void disableControls() {
+		usernameBox.setEnabled(false);
+		passwordBox.setEnabled(false);
+		passwordConfirmBox.setEnabled(false);
+
+		okButton.setEnabled(false);
+		abortButton.setEnabled(false);
+
+		checkUsernameAvailability.setEnabled(false);
+	}
 }

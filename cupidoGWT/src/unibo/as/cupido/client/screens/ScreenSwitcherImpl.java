@@ -228,4 +228,8 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 
 		switchingScreen = false;
 	}
+	
+	public void disableControls() {
+		currentScreen.disableControls();
+	}
 }

@@ -60,4 +60,6 @@ public interface PlayerStateManager {
 	public void transitionToGameEnded();
 
 	CardsGameWidget getWidget();
+
+	public void disableControls();
 }

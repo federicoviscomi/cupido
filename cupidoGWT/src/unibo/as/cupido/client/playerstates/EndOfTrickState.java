@@ -16,7 +16,9 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class EndOfTrickState {
+public class EndOfTrickState implements PlayerState {
+
+	private PushButton exitButton;
 
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand) {
@@ -29,7 +31,7 @@ public class EndOfTrickState {
 		text.setWordWrap(true);
 		panel.add(text);
 
-		final PushButton exitButton = new PushButton("Esci");
+		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -75,5 +77,10 @@ public class EndOfTrickState {
 							stateManager.transitionToGameEnded();
 					}
 				});
+	}
+
+	@Override
+	public void disableControls() {
+		exitButton.setEnabled(false);
 	}
 }

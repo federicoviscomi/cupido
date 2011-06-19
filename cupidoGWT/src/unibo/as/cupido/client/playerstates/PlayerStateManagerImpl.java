@@ -15,12 +15,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class PlayerStateManagerImpl implements PlayerStateManager {
 
-	private Object currentState = null;
+	private PlayerState currentState = null;
 	private ScreenSwitcher screenSwitcher;
 	private CardsGameWidget cardsGameWidget;
 	private int firstPlayerInTrick = -1;
 
-	// FIXME: This is guaranteed to be correct for players only.
 	boolean heartsBroken = false;
 
 	/**
@@ -232,5 +231,10 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	@Override
 	public boolean areHeartsBroken() {
 		return heartsBroken;
+	}
+	
+	@Override
+	public void disableControls() {
+		currentState.disableControls();
 	}
 }

@@ -220,4 +220,13 @@ public class BeforeGameWidget extends AbsolutePanel {
 			assert false;
 		}
 	}
+	
+	public void disableControls() {
+		if (leftButton != null)
+			leftButton.setEnabled(false);
+		if (topButton != null)
+			topButton.setEnabled(false);
+		if (rightButton != null)
+			rightButton.setEnabled(false);
+	}
 }

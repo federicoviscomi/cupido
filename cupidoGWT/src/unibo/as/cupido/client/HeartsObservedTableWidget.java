@@ -19,10 +19,12 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 	private ScreenSwitcher screenSwitcher;
 	private BeforeGameWidget beforeGameWidget;
-	private CardsGameWidget cardsGameWidget;
+	private CardsGameWidget cardsGameWidget = null;
 	private int tableSize;
 
 	private ViewerStateManager stateManager;
+	
+	private boolean controlsDisabled = false;
 
 	/**
 	 * 
@@ -55,6 +57,9 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 	public void startGame(final String username) {
 
+		if (controlsDisabled)
+			return;
+		
 		remove(beforeGameWidget);
 
 		// FIXME: Initialize the widget with the correct values.
@@ -103,21 +108,17 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		stateManager = new ViewerStateManagerImpl(tableSize, screenSwitcher,
 				observedGameStatus, username);
 
-		final VerticalPanel controllerPanel = new VerticalPanel();
-		controllerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		controllerPanel
-				.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-
-		final PushButton exitButton = new PushButton("Esci dal gioco");
-		exitButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				screenSwitcher.displayMainMenuScreen(username);
-			}
-		});
-		controllerPanel.add(exitButton);
-
 		cardsGameWidget = stateManager.getWidget();
 		add(cardsGameWidget, 0, 0);
+	}
+	
+	public void disableControls() {
+		if (beforeGameWidget != null)
+			beforeGameWidget.disableControls();
+		if (cardsGameWidget != null) {
+			cardsGameWidget.disableControls();
+			stateManager.disableControls();
+		}
+		controlsDisabled = true;
 	}
 }

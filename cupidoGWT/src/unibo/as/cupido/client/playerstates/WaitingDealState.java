@@ -18,7 +18,12 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class WaitingDealState {
+public class WaitingDealState implements PlayerState {
+
+	// FIXME: Remove this button when the servlet is ready.
+	private PushButton continueButton;
+	
+	private PushButton exitButton;
 
 	public WaitingDealState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand) {
@@ -50,7 +55,7 @@ public class WaitingDealState {
 		panel.add(text);
 
 		// FIXME: Remove this button when the servlet is ready.
-		final PushButton continueButton = new PushButton("[DEBUG] Continua");
+		continueButton = new PushButton("[DEBUG] Continua");
 		continueButton.setWidth("80px");
 		continueButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -83,7 +88,7 @@ public class WaitingDealState {
 		});
 		panel.add(continueButton);
 
-		final PushButton exitButton = new PushButton("Esci");
+		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -112,5 +117,11 @@ public class WaitingDealState {
 					boolean isRaised) {
 			}
 		});
+	}
+
+	@Override
+	public void disableControls() {
+		continueButton.setEnabled(false);
+		exitButton.setEnabled(false);
 	}
 }

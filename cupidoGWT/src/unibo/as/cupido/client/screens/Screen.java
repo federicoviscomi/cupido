@@ -6,4 +6,6 @@ public interface Screen {
 	 * switching to another screen.
 	 */
 	public void prepareRemoval();
+
+	public void disableControls();
 }

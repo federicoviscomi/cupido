@@ -27,6 +27,7 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	private TextBox usernameBox;
 	private PasswordTextBox passwordBox;
 	private PushButton okButton;
+	private PushButton registerButton;
 
 	public LoginScreen(final ScreenSwitcher screenSwitcher, CupidoInterfaceAsync cupidoService) {
 		
@@ -84,7 +85,7 @@ public class LoginScreen extends VerticalPanel implements Screen {
 		bottomPanel.setSpacing(50);
 		add(bottomPanel);
 		
-		PushButton registerButton = new PushButton("Registrati");
+		registerButton = new PushButton("Registrati");
 		registerButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -130,5 +131,13 @@ public class LoginScreen extends VerticalPanel implements Screen {
 
 	@Override
 	public void prepareRemoval() {
+	}
+
+	@Override
+	public void disableControls() {
+		usernameBox.setEnabled(false);
+		passwordBox.setEnabled(false);
+		okButton.setEnabled(false);
+		registerButton.setEnabled(false);
 	}
 }

@@ -11,6 +11,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class AboutScreen extends VerticalPanel implements Screen {
 
+	private PushButton menuButton;
+
 	public AboutScreen(final ScreenSwitcher screenSwitcher, final String username) {
 		setHeight((Cupido.height - 80) + "px");
 		setWidth((Cupido.width - 120) + "px");
@@ -34,18 +36,23 @@ public class AboutScreen extends VerticalPanel implements Screen {
 
 		add(new HTML(message));
 
-		PushButton button = new PushButton("Torna al menu");
-		button.setWidth("100px");
-		button.addClickHandler(new ClickHandler() {
+		menuButton = new PushButton("Torna al menu");
+		menuButton.setWidth("100px");
+		menuButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				screenSwitcher.displayMainMenuScreen(username);
 			}
 		});
-		add(button);
+		add(menuButton);
 	}
 
 	@Override
 	public void prepareRemoval() {
+	}
+
+	@Override
+	public void disableControls() {
+		menuButton.setEnabled(false);
 	}
 }

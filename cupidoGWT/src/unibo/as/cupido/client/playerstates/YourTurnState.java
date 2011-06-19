@@ -16,7 +16,9 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class YourTurnState {
+public class YourTurnState implements PlayerState {
+
+	private PushButton exitButton;
 
 	public YourTurnState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand) {
@@ -29,7 +31,7 @@ public class YourTurnState {
 		text.setWordWrap(true);
 		panel.add(text);
 
-		final PushButton exitButton = new PushButton("Esci");
+		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -155,5 +157,10 @@ public class YourTurnState {
 		if (card.suit == Card.Suit.SPADES && card.value == 12)
 			return true;
 		return false;
+	}
+
+	@Override
+	public void disableControls() {
+		exitButton.setEnabled(false);
 	}
 }

@@ -13,7 +13,9 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class GameEndedState {
+public class GameEndedState implements ViewerState {
+
+	private PushButton exitButton;
 
 	public GameEndedState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
@@ -27,7 +29,7 @@ public class GameEndedState {
 		text.setWordWrap(true);
 		panel.add(text);
 
-		final PushButton exitButton = new PushButton("Esci");
+		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -54,5 +56,10 @@ public class GameEndedState {
 					boolean isRaised) {
 			}
 		});
+	}
+
+	@Override
+	public void disableControls() {
+		exitButton.setEnabled(false);
 	}
 }

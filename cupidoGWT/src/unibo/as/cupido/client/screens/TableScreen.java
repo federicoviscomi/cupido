@@ -20,6 +20,8 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	 * The width of the chat sidebar.
 	 */
 	public static final int chatWidth = 200;
+	private HeartsTableWidget tableWidget;
+	private LocalChatWidget chatWidget;
 
 	public TableScreen(ScreenSwitcher screenSwitcher, String username,
 			final CupidoInterfaceAsync cupidoService,
@@ -28,11 +30,11 @@ public class TableScreen extends AbsolutePanel implements Screen {
 		setWidth(Cupido.width + "px");
 
 		assert Cupido.height == Cupido.width - chatWidth;
-		HeartsTableWidget tableWidget = new HeartsTableWidget(Cupido.height,
+		tableWidget = new HeartsTableWidget(Cupido.height,
 				username, screenSwitcher);
 		add(tableWidget, 0, 0);
 
-		final LocalChatWidget chatWidget = new LocalChatWidget(username,
+		chatWidget = new LocalChatWidget(username,
 				new LocalChatWidget.MessageSender() {
 					@Override
 					public void sendMessage(String message) {
@@ -94,5 +96,10 @@ public class TableScreen extends AbsolutePanel implements Screen {
 
 	@Override
 	public void prepareRemoval() {
+	}
+	
+	public void disableControls() {
+		tableWidget.disableControls();
+		chatWidget.disableControls();
 	}
 }

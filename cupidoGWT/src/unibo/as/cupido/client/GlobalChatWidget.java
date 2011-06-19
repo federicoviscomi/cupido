@@ -105,4 +105,9 @@ public class GlobalChatWidget extends AbsolutePanel {
 		messageList.setHTML(x.toSafeHtml().asString());
 		messagesPanel.scrollToBottom();
 	}
+	
+	public void disableControls() {
+		messageField.setEnabled(false);
+		sendButton.setEnabled(false);
+	}
 }

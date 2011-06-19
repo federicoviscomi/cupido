@@ -19,13 +19,15 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class CardPassingState {
+public class CardPassingState implements PlayerState {
 
 	List<Card> raisedCards = new ArrayList<Card>();
 	/**
 	 * Whether the user has already confirmed to pass the selected cards.
 	 */
 	boolean confirmed = false;
+	private PushButton okButton;
+	private PushButton exitButton;
 
 	public CardPassingState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand) {
@@ -39,7 +41,7 @@ public class CardPassingState {
 		text.setWordWrap(true);
 		cornerWidget.add(text);
 
-		final PushButton okButton = new PushButton("OK");
+		okButton = new PushButton("OK");
 		okButton.setEnabled(false);
 		okButton.setWidth("80px");
 		okButton.addClickHandler(new ClickHandler() {
@@ -90,7 +92,7 @@ public class CardPassingState {
 		});
 		cornerWidget.add(okButton);
 
-		final PushButton exitButton = new PushButton("Esci");
+		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -142,5 +144,11 @@ public class CardPassingState {
 						});
 			}
 		});
+	}
+	
+	@Override
+	public void disableControls() {
+		okButton.setEnabled(false);
+		exitButton.setEnabled(false);
 	}
 }

@@ -16,7 +16,9 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class FirstDealerState {
+public class FirstDealerState implements PlayerState {
+
+	private PushButton exitButton;
 
 	public FirstDealerState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand) {
@@ -30,7 +32,7 @@ public class FirstDealerState {
 		text.setWordWrap(true);
 		panel.add(text);
 
-		final PushButton exitButton = new PushButton("Esci");
+		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -76,5 +78,10 @@ public class FirstDealerState {
 						});
 			}
 		});
+	}
+
+	@Override
+	public void disableControls() {
+		exitButton.setEnabled(false);
 	}
 }

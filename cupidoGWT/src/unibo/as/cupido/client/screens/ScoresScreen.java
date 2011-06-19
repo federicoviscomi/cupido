@@ -18,4 +18,8 @@ public class ScoresScreen extends AbsolutePanel implements Screen {
 	@Override
 	public void prepareRemoval() {
 	}
+
+	@Override
+	public void disableControls() {
+	}
 }

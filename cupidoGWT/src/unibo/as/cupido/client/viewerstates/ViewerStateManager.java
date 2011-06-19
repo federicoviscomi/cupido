@@ -56,4 +56,6 @@ public interface ViewerStateManager {
 	public void transitionToGameEnded();
 
 	public void transitionToWaitingDeal();
+	
+	public void disableControls();
 }
