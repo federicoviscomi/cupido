@@ -2,8 +2,8 @@ package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import java.rmi.RemoteException;
 
-import unibo.as.cupido.backendInterfaces.TableInterface;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
+import unibo.as.cupido.common.interfaces.TableInterface;
+import unibo.as.cupido.common.structures.InitialTableStatus;
 
 public class BotManager {
 

@@ -2,7 +2,7 @@ package unibo.as.cupido.client;
 
 import java.util.List;
 
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.client.GlobalChatWidget.ChatListener;
 import unibo.as.cupido.client.screens.MainMenuScreen;
 

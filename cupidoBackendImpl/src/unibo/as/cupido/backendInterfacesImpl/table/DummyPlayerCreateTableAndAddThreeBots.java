@@ -5,9 +5,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
+import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.AbstractBot;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.Bot;
 

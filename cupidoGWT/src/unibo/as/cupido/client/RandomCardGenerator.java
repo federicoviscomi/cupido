@@ -1,6 +1,6 @@
 package unibo.as.cupido.client;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.user.client.Random;
 

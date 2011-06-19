@@ -5,21 +5,21 @@ package unibo.as.cupido.client;
 
 import java.util.Collection;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
-import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
-import unibo.as.cupido.backendInterfaces.exception.FatalException;
-import unibo.as.cupido.backendInterfaces.exception.FullTableException;
-import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
-import unibo.as.cupido.backendInterfaces.exception.MaxNumTableReachedException;
-import unibo.as.cupido.backendInterfaces.exception.NoSuchServerException;
-import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
-import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
-import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
-import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.TableInfoForClient;
+import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.FatalException;
+import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.IllegalMoveException;
+import unibo.as.cupido.common.exception.MaxNumTableReachedException;
+import unibo.as.cupido.common.exception.NoSuchServerException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.NotCreatorException;
+import unibo.as.cupido.common.exception.PositionFullException;
+import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;

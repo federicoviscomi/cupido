@@ -3,8 +3,8 @@ package unibo.as.cupido.backendInterfacesImpl;
 import java.rmi.RemoteException;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import unibo.as.cupido.backendInterfaces.GlobalChatInterface;
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.common.interfaces.GlobalChatInterface;
+import unibo.as.cupido.common.structures.ChatMessage;
 
 public class GlobalChatImpl implements GlobalChatInterface {
 

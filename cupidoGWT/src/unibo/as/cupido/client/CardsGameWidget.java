@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.PlayerStatus;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

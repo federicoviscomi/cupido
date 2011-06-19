@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ChatMessage;
 
 /***
  * Keeps track of a viewers of a table

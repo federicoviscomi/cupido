@@ -2,7 +2,7 @@ package unibo.as.cupido.shared.cometNotification;
 
 import java.io.Serializable;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.common.structures.Card;
 
 /*
  * this notification isn's sent to viewers

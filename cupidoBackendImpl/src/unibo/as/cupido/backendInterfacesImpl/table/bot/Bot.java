@@ -3,7 +3,7 @@ package unibo.as.cupido.backendInterfacesImpl.table.bot;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 
 public interface Bot extends ServletNotificationsInterface, Remote {
 

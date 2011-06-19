@@ -2,11 +2,11 @@ package unibo.as.cupido.client;
 
 import java.util.Collection;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

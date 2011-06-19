@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
-import unibo.as.cupido.backendInterfaces.TableInterface;
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
+import unibo.as.cupido.common.interfaces.TableInterface;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 
 public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {

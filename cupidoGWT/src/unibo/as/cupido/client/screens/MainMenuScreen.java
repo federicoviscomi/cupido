@@ -1,8 +1,8 @@
 package unibo.as.cupido.client.screens;
 
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.exception.FatalException;
-import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.exception.FatalException;
+import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.client.CupidoInterfaceAsync;

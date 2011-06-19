@@ -1,7 +1,7 @@
 package unibo.as.cupido.client;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.Card.Suit;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.Card.Suit;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;

@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="jargs.jar"/>
 	<classpathentry kind="lib" path="mysql-connector-java-5.1.16-bin.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cupidoGWT"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/cupidoBackendInterfaces"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/cupidoCommon"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
