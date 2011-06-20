@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.table.bot;
+package unibo.as.cupido.backendInterfacesImpl.table.playerUI;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

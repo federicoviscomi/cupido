@@ -1,4 +1,5 @@
-package unibo.as.cupido.backendInterfacesImpl.table;
+package unibo.as.cupido.backendInterfacesImpl.table.bot;
+
 
 public class NonRemoteBotCardPlayingThread extends Thread {
 

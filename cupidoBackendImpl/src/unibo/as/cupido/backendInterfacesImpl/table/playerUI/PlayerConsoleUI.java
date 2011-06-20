@@ -1,4 +1,5 @@
-package unibo.as.cupido.backendInterfacesImpl.table.bot;
+package unibo.as.cupido.backendInterfacesImpl.table.playerUI;
+
 
 import jargs.gnu.CmdLineParser;
 import jargs.gnu.CmdLineParser.IllegalOptionValueException;
@@ -55,7 +56,7 @@ public class PlayerConsoleUI {
 	private final PrintWriter out;
 	private boolean logged = false;
 	private Bot botNotification;
-	private AbstractBot abstractBot;
+	private RemoteBot abstractBot;
 
 	public PlayerConsoleUI() throws Exception {
 		this(new BufferedReader(new InputStreamReader(System.in)),
@@ -164,7 +165,7 @@ public class PlayerConsoleUI {
 				logged = true;
 				playerName = command[1];
 				// TODO
-				abstractBot = new AbstractBot(new InitialTableStatus(
+				abstractBot = new RemoteBot(new InitialTableStatus(
 						new String[3], new int[3], new boolean[3]), null,
 						playerName);
 				botNotification = (Bot) UnicastRemoteObject

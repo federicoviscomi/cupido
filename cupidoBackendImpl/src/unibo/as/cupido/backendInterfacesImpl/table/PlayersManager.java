@@ -3,7 +3,7 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 
-import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
+import unibo.as.cupido.backendInterfacesImpl.table.bot.BotNotificationInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface.Positions;
 import unibo.as.cupido.common.structures.Card;
@@ -22,10 +22,10 @@ public class PlayersManager {
 	private static class NonRemoteBotInfo {
 
 		final String botName;
-		final ServletNotificationsInterfaceNotRemote bot;
+		final BotNotificationInterface bot;
 
 		public NonRemoteBotInfo(String botName,
-				ServletNotificationsInterfaceNotRemote bot) {
+				BotNotificationInterface bot) {
 			if (botName == null || bot == null)
 				throw new IllegalArgumentException("null bot name or interface");
 			this.botName = botName;
@@ -128,7 +128,7 @@ public class PlayersManager {
 	}
 
 	public void addNonRemoteBot(String userName, int position,
-			ServletNotificationsInterfaceNotRemote bot)
+			BotNotificationInterface bot)
 			throws FullTableException, PositionFullException,
 			NotCreatorException {
 

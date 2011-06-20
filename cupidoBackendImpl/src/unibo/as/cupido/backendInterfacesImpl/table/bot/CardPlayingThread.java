@@ -3,6 +3,8 @@ package unibo.as.cupido.backendInterfacesImpl.table.bot;
 import java.io.Serializable;
 import java.util.concurrent.Semaphore;
 
+import unibo.as.cupido.backendInterfacesImpl.table.playerUI.Bot;
+
 public class CardPlayingThread extends Thread implements Serializable{
 
 	/**

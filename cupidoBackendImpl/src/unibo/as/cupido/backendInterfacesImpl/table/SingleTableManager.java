@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
+import unibo.as.cupido.backendInterfacesImpl.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;

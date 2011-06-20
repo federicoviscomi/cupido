@@ -1,15 +1,15 @@
-package unibo.as.cupido.backendInterfacesImpl.table;
+package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
-import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
+import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
-public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
+public class NonRemoteBot implements BotNotificationInterface {
 
 	private final String botName;
 	private final TableInterface singleTableManager;

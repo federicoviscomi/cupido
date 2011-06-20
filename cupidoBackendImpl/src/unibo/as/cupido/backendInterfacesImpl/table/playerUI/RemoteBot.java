@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.table.bot;
+package unibo.as.cupido.backendInterfacesImpl.table.playerUI;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -12,7 +12,7 @@ import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
 
-public class AbstractBot implements Bot, Serializable {
+public class RemoteBot implements Bot, Serializable {
 
 	/**
 	 * 
@@ -31,7 +31,7 @@ public class AbstractBot implements Bot, Serializable {
 
 	private Object lock = new Object();
 
-	public AbstractBot(InitialTableStatus initialTableStatus,
+	public RemoteBot(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, String userName) {
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
