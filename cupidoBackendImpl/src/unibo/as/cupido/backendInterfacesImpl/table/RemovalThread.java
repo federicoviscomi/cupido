@@ -2,37 +2,46 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
-
+import java.util.Iterator;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
 
 public class RemovalThread extends Thread {
 
 	private final SingleTableManager singleTableManager;
 	private final ArrayList<Integer> removal;
-	private final Semaphore lock;
 
 	public RemovalThread(SingleTableManager singleTableManager) {
 		this.singleTableManager = singleTableManager;
 		removal = new ArrayList<Integer>();
-		lock = new Semaphore(0);
 	}
 
-	public synchronized void addRemoval(int i) {
-		removal.add(i);
+	public void addRemoval(int position) {
+		synchronized (removal) {
+			removal.add(position);
+		}
 	}
 
-	public synchronized void remove() {
-		lock.release();
+	public void remove() {
+		synchronized (removal) {
+			if (removal.size() > 0)
+				removal.notify();
+		}
 	}
 
 	@Override
-	public synchronized void run() {
+	public void run() {
 		try {
 			while (true) {
-				lock.acquire();
-				for (int i : removal)
-					singleTableManager.leaveTable(i);
+				synchronized (removal) {
+					while (removal.size() == 0) {
+						removal.wait();
+					}
+					Iterator<Integer> iterator = removal.iterator();
+					while (iterator.hasNext()) {
+						singleTableManager.leaveTable(iterator.next());
+						iterator.remove();
+					}
+				}
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block

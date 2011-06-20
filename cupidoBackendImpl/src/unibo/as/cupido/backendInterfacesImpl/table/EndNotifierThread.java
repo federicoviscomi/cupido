@@ -1,25 +1,34 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-import java.util.concurrent.Semaphore;
-
 public class EndNotifierThread extends Thread {
 
 	private final SingleTableManager stm;
-	private final Semaphore end;
+	private final Object lock = new Object();
+	private boolean gameEnded = false;
 
-	public EndNotifierThread(Semaphore end, SingleTableManager stm) {
-		this.end = end;
+	public EndNotifierThread(SingleTableManager stm) {
 		this.stm = stm;
 	}
 
 	@Override
 	public void run() {
 		try {
-			end.acquire();
+			synchronized (lock) {
+				while (!gameEnded) {
+					lock.wait();
+				}
+			}
 			stm.notifyGameEnded();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	public void setGameEnded() {
+		synchronized (lock) {
+			gameEnded = true;
+			lock.notify();
 		}
 	}
 }

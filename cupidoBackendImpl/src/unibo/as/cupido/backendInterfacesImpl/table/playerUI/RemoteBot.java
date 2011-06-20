@@ -1,58 +1,57 @@
-package unibo.as.cupido.backendInterfacesImpl.table.bot;
+package unibo.as.cupido.backendInterfacesImpl.table.playerUI;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.Semaphore;
 
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
 
-public class AbstractBot implements Bot, Serializable {
+public class RemoteBot implements Bot, Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5795667604185475447L;
-	protected final String userName;
-	protected TableInterface singleTableManager;
-	protected InitialTableStatus initialTableStatus;
-	protected ArrayList<Card> cards;
-	protected Card[] playedCard = new Card[4];
-	protected int point;
-	private final Semaphore playNextCardLock = new Semaphore(0);
-	private final Semaphore passCardLock = new Semaphore(0);
-	private final CardPlayingThread cardPlayingThread;
-	/**
-	 * </code>firstDealer == 0</code> means this player is the first dealer.
-	 * Otherwise first dealer is the player in position
-	 * </code>firstDealer-1</code> relative to this player
-	 */
-	protected int firstDealer = -1;
+	final String userName;
+	TableInterface singleTableManager;
+	InitialTableStatus initialTableStatus;
+	ArrayList<Card> cards;
+	Card[] playedCard = new Card[4];
+	int point;
+	private int turn = 0;
+	private int playedCardCount = 0;
+	private int firstDealer = -1;
 
-	public AbstractBot(InitialTableStatus initialTableStatus,
+	private boolean ableToPlay = false;
+	private boolean ableToPass = false;
+
+	private Object lock = new Object();
+
+	public RemoteBot(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, String userName) {
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;
-		cardPlayingThread = new CardPlayingThread(playNextCardLock,
-				passCardLock, this, userName);
-		cardPlayingThread.start();
+
 		System.out.println("abstarct bot constructor " + userName + ". "
 				+ initialTableStatus);
 	}
 
-	public AbstractBot(String userName) {
-		this(null, null, userName);
-	}
-
 	@Override
-	public void addBot(int i) throws RemoteException {
-		throw new UnsupportedOperationException("method not implemented yet");
+	public void addBot(int position) throws RemoteException {
+		if (position < 0 || position > 2
+				|| initialTableStatus.opponents[position] != null)
+			throw new IllegalArgumentException("illegal position " + position
+					+ " " + initialTableStatus.opponents[position]);
+		initialTableStatus.opponents[position] = "_bot." + userName + "."
+				+ position;
+		initialTableStatus.whoIsBot[position] = true;
 	}
 
 	@Override
@@ -67,8 +66,7 @@ public class AbstractBot implements Bot, Serializable {
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
-		cardPlayingThread.setEndedGame();
-		playNextCardLock.release();
+
 	}
 
 	@Override
@@ -81,9 +79,11 @@ public class AbstractBot implements Bot, Serializable {
 		this.cards = new ArrayList<Card>(4);
 		this.cards.addAll(Arrays.asList(cards));
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			firstDealer = 0;
+			synchronized (lock) {
+				ableToPass = true;
+				lock.notify();
+			}
 		}
-		passCardLock.release();
 	}
 
 	@Override
@@ -99,10 +99,18 @@ public class AbstractBot implements Bot, Serializable {
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(cards) + ")");
 		this.cards.addAll(Arrays.asList(cards));
+		synchronized (lock) {
+			if (!ableToPass) {
+				ableToPass = true;
+				lock.notify();
+			}
+		}
 		for (Card card : this.cards) {
 			if (card.equals(CardsManager.twoOfClubs)) {
-				System.err.println("\n:\n:\n:\n:");
-				playNextCardLock.release();
+				synchronized (lock) {
+					ableToPlay = true;
+					lock.notify();
+				}
 				return;
 			}
 		}
@@ -110,12 +118,34 @@ public class AbstractBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		System.out.println("\n" + userName + ": "
+		System.out.println("\nRemoteBot inizio" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + card + ", " + playerPosition + ")");
+				+ "(" + card + ", " + playerPosition + ") played:"
+				+ Arrays.toString(playedCard) + " count:" + playedCardCount
+				+ " turn:" + turn + " first:" + firstDealer);
+
+		if (firstDealer == -1) {
+			firstDealer = playerPosition;
+		}
 		playedCard[playerPosition] = card;
+		playedCardCount++;
+		if (playedCardCount == 4) {
+			firstDealer = CardsManager.whoWins(playedCard, firstDealer);
+		} else if (playedCardCount == 5) {
+			playedCardCount = 1;
+			turn++;
+		}
+		System.out.println("\nRemoteBot fine" + userName + ": "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + card + ", " + playerPosition + ") played:"
+				+ Arrays.toString(playedCard) + " count:" + playedCardCount
+				+ " turn:" + turn + " first:" + firstDealer);
+
 		if (playerPosition == 2) {
-			playNextCardLock.release();
+			synchronized (lock) {
+				ableToPlay = true;
+				lock.notify();
+			}
 		}
 	}
 
@@ -158,31 +188,67 @@ public class AbstractBot implements Bot, Serializable {
 	}
 
 	@Override
-	public synchronized void passCards() {
-		Card[] cardsToPass = new Card[3];
-		for (int i = 0; i < 3; i++)
-			cardsToPass[i] = cards.remove(0);
+	public void passCards() {
 		try {
-			singleTableManager.passCards(userName, cardsToPass);
-		} catch (Exception e) {
+			synchronized (lock) {
+				while (!ableToPass) {
+					lock.wait();
+				}
+				Card[] cardsToPass = new Card[3];
+				for (int i = 0; i < 3; i++)
+					cardsToPass[i] = cards.remove(0);
+				try {
+					singleTableManager.passCards(userName, cardsToPass);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
+
 	}
 
 	@Override
-	public synchronized void playNextCard() {
+	public void playNextCard() {
 		try {
-			if (cards.remove(CardsManager.twoOfClubs)) {
-				playedCard[0] = CardsManager.twoOfClubs;
-			} else {
-				playedCard[0] = cards.remove(0);
+			synchronized (lock) {
+				while (!ableToPlay) {
+					lock.wait();
+				}
+				ableToPlay = false;
+				System.err.println("play next card start. played:"
+						+ Arrays.toString(playedCard) + " count:"
+						+ playedCardCount + " turn:" + turn);
+				if (cards.remove(CardsManager.twoOfClubs)) {
+					playedCard[3] = CardsManager.twoOfClubs;
+				} else {
+					if (playedCardCount != 4) {
+						Suit firstSuit = playedCard[firstDealer].suit;
+						for (int i = 0; i < cards.size(); i++)
+							if (cards.get(i).suit == firstSuit)
+								playedCard[3] = cards.remove(i);
+					} else {
+						playedCard[3] = cards.remove(0);
+					}
+				}
+				singleTableManager.playCard(userName, playedCard[3]);
+				playedCardCount++;
+				if (playedCardCount == 5) {
+					playedCardCount = 1;
+					turn++;
+				}
+				System.err.println("play next card end. played:"
+						+ Arrays.toString(playedCard) + " count:"
+						+ playedCardCount + " turn:" + turn);
 			}
-			singleTableManager.playCard(userName, playedCard[0]);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 
 }
