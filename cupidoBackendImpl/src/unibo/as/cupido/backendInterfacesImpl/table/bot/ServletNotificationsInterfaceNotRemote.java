@@ -2,7 +2,6 @@ package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
 import unibo.as.cupido.common.structures.Card;
 
-
 public interface ServletNotificationsInterfaceNotRemote {
 
 	/**

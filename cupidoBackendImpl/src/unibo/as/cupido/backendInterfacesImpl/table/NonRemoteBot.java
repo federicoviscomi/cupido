@@ -7,7 +7,6 @@ import java.util.concurrent.Semaphore;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
-import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
 public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {

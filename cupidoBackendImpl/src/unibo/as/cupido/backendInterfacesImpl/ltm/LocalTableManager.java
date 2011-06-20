@@ -135,6 +135,8 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	@Override
 	public Pair<TableInterface, TableInfoForClient> createTable(String owner,
 			ServletNotificationsInterface snf) throws RemoteException {
+		if (owner == null || snf == null)
+			throw new IllegalArgumentException(owner + " " + snf);
 		try {
 			TableInfoForClient newTable = new TableInfoForClient(owner, 3,
 					new TableDescriptor(localAddress + this.toString(), nextId));

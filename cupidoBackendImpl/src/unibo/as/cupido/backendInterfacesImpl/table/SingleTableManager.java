@@ -45,6 +45,8 @@ public class SingleTableManager implements TableInterface {
 	public SingleTableManager(ServletNotificationsInterface snf,
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
 			throws RemoteException, SQLException, NoSuchUserException {
+		if (snf == null || table == null || gtm == null)
+			throw new IllegalArgumentException(snf + " " + table + " " + gtm);
 		this.table = table;
 		this.gtm = gtm;
 		playersManager = new PlayersManager(table.owner, snf,
@@ -129,6 +131,11 @@ public class SingleTableManager implements TableInterface {
 		playersManager.print();
 		System.out.println();
 		return playersManager.getInitialTableStatus(position);
+	}
+
+	public synchronized void leaveTable(Integer i) throws RemoteException,
+			PlayerNotFoundException {
+		this.leaveTable(playersManager.getPlayerName(i));
 	}
 
 	@Override
@@ -223,10 +230,6 @@ public class SingleTableManager implements TableInterface {
 		playersManager.addPlayersInformationForViewers(observedGameStatus);
 		cardsManager.addCardsInformationForViewers(observedGameStatus);
 		return observedGameStatus;
-	}
-
-	public synchronized void leaveTable(Integer i) throws RemoteException, PlayerNotFoundException {
-		this.leaveTable(playersManager.getPlayerName(i));
 	}
 
 }

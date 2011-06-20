@@ -3,9 +3,6 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 
-import java.util.ArrayList;
-import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
-
 import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface.Positions;
@@ -84,6 +81,8 @@ public class PlayersManager {
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
 			int score, RemovalThread removalThread) throws SQLException,
 			NoSuchUserException {
+		if (owner == null || snf == null || removalThread == null)
+			throw new IllegalArgumentException();
 		players[0] = new PlayerInfo(owner, false, score, snf);
 		this.removalThread = removalThread;
 	}
@@ -289,6 +288,12 @@ public class PlayersManager {
 		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
 	}
 
+	public String getPlayerName(int i) {
+		if (players[i] != null)
+			return players[i].name;
+		return nonRemoteBotsInfo[i].botName;
+	}
+
 	public int getPlayerPosition(String playerName) {
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null && players[i].name.equals(playerName))
@@ -446,12 +451,6 @@ public class PlayersManager {
 			}
 		}
 		return newScore;
-	}
-
-	public String getPlayerName(int i) {
-		if (players[i] != null)
-			return players[i].name;
-		return nonRemoteBotsInfo[i].botName;
 	}
 
 }

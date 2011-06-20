@@ -22,12 +22,12 @@ public class RemovalThread extends Thread {
 		removal.add(i);
 	}
 
-	public synchronized  void remove() {
+	public synchronized void remove() {
 		lock.release();
 	}
 
 	@Override
-	public synchronized  void run() {
+	public synchronized void run() {
 		try {
 			while (true) {
 				lock.acquire();

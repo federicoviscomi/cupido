@@ -8,18 +8,13 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-
 import unibo.as.cupido.backendInterfacesImpl.ltm.LocalTableManager;
-import unibo.as.cupido.backendInterfacesImpl.ltm.LocalTableManagerCommandInterpreterUI;
-import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm;
+import unibo.as.cupido.backendInterfacesImpl.table.NonRemoteBot;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
@@ -41,7 +36,7 @@ public class PlayerConsoleUI {
 			"list all tables", "login USER_NAME PASSWORD", "", "", "");
 
 	public static void main(String[] args) throws Exception {
-		
+
 		new PlayerConsoleUI(
 				"/home/cane/workspace/test/createTableAndAddThreeBot")
 				.execute();
@@ -119,7 +114,7 @@ public class PlayerConsoleUI {
 					error = true;
 					out.println("\nsintax error\n " + USAGE);
 				}
-			} while (error);	
+			} while (error);
 			if (command[0].equals("exit")) {
 				exit(0);
 			} else if (!logged && !command[0].equals("login")) {
@@ -143,7 +138,8 @@ public class PlayerConsoleUI {
 				out.println("successfully logged in " + playerName);
 			} else if (command[0].equals("create")) {
 				try {
-					tableInterface = gtm.createTable(playerName, sni);
+					tableInterface = gtm.createTable(playerName,
+							new AbstractBot(playerName));
 				} catch (AllLTMBusyException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
