@@ -529,23 +529,40 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 			ServletNotificationsInterface sni = getServletNotificationsInterface(
 					httpSession, cometSession);
-			httpSession.setAttribute(SNI, sni);
-			httpSession.getAttribute(USERNAME);
-			TableInterface ti = gtm.createTable(USERNAME, sni);
-			httpSession.setAttribute(TI, ti);
 			UnicastRemoteObject.exportObject(sni);
-
-			// FIXME: retrieve point from DB
-			its.playerScores[0] = 99;
-
+			httpSession.setAttribute(SNI, sni);
+			String username = (String) httpSession.getAttribute(USERNAME);
+			TableInterface ti = gtm.createTable(username, sni);
+			httpSession.setAttribute(TI, ti);
+			DatabaseInterface dbi = (DatabaseInterface) getServletContext()
+					.getAttribute(DBI);
+			its.playerScores[0] = dbi.getPlayerScore(username);
 		} catch (RemoteException e) {
 			System.out
 					.println("Servlet: on createTable() catched RemoteException-> "
 							+ e.getMessage());
-			// e.printStackTrace();
 			throw new FatalException("GTMLookupName not reachable");
+			// e.printStackTrace();
 		} catch (AllLTMBusyException e) {
 			throw new MaxNumTableReachedException();
+		} catch (IllegalArgumentException e) {
+			System.out
+					.println("Servlet: on createTable catched IllegalArgumentException ->"
+							+ e.getMessage());
+			throw new FatalException();
+			// e.printStackTrace();
+		} catch (SQLException e) {
+			System.out
+					.println("Servlet: on createTable catched SQLException ->"
+							+ e.getMessage());
+			throw new FatalException();
+			// e.printStackTrace();
+		} catch (NoSuchUserException e) {
+			System.out
+					.println("Servlet: on createTable catched NoSuchUserException ->"
+							+ e.getMessage());
+			throw new FatalException();
+			// e.printStackTrace();
 		}
 
 		return its;
