@@ -24,13 +24,26 @@ public class WaitingFirstDealState implements PlayerState {
 	
 	private PushButton exitButton;
 
+	private HTML text;
+
+	private CardsGameWidget cardsGameWidget;
+
+	private PlayerStateManager stateManager;
+
+	private List<Card> hand;
+
 	public WaitingFirstDealState(final CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, final List<Card> hand) {
+			final PlayerStateManager stateManager, List<Card> hand) {
+		
+		this.cardsGameWidget = cardsGameWidget;
+		this.stateManager = stateManager;
+		this.hand = hand;
+		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		final HTML text = new HTML(
+		text = new HTML(
 				"Attendi che il giocatore che ha il due di picche lo giochi.");
 		text.setWidth("120px");
 		text.setWordWrap(true);
@@ -46,25 +59,8 @@ public class WaitingFirstDealState implements PlayerState {
 				// instead.
 				final int player = Random.nextInt(3) + 1;
 				Card card = new Card(2, Card.Suit.CLUBS);
-
-				text.setText("");
-
-				stateManager.addDealtCard(player, card);
-
-				cardsGameWidget.revealCoveredCard(player, card);
-
-				cardsGameWidget.dealCard(player, card);
-				cardsGameWidget.runPendingAnimations(2000,
-						new GWTAnimation.AnimationCompletedListener() {
-
-							@Override
-							public void onComplete() {
-								if (player == 3)
-									stateManager.transitionToYourTurn(hand);
-								else
-									stateManager.transitionToWaitingDeal(hand);
-							}
-						});
+				
+				handleCardPlayed(card, player);
 			}
 		});
 		panel.add(continueButton);
@@ -104,5 +100,51 @@ public class WaitingFirstDealState implements PlayerState {
 	public void disableControls() {
 		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleCardPassed(Card[] cards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleCardPlayed(Card card, final int playerPosition) {
+		text.setText("");
+
+		stateManager.addDealtCard(playerPosition, card);
+
+		cardsGameWidget.revealCoveredCard(playerPosition, card);
+
+		cardsGameWidget.dealCard(playerPosition, card);
+		cardsGameWidget.runPendingAnimations(2000,
+				new GWTAnimation.AnimationCompletedListener() {
+
+					@Override
+					public void onComplete() {
+						if (playerPosition == 3)
+							stateManager.transitionToYourTurn(hand);
+						else
+							stateManager.transitionToWaitingDeal(hand);
+					}
+				});
+	}
+
+	@Override
+	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleGameStarted(Card[] myCards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handlePlayerLeft(String player) {
+		// TODO Auto-generated method stub
+		
 	}
 }

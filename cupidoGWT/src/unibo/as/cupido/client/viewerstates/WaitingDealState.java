@@ -23,8 +23,16 @@ public class WaitingDealState implements ViewerState {
 	
 	private PushButton exitButton;
 
+	private ViewerStateManager stateManager;
+
+	private CardsGameWidget cardsGameWidget;
+
 	public WaitingDealState(final CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
+		
+		this.cardsGameWidget = cardsGameWidget;
+		this.stateManager = stateManager;
+		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -59,22 +67,8 @@ public class WaitingDealState implements ViewerState {
 				// FIXME: This data should come from the servlet.
 				int player = currentPlayer;
 				Card card = RandomCardGenerator.generateCard();
-
-				stateManager.addDealtCard(player, card);
-
-				cardsGameWidget.revealCoveredCard(player, card);
-
-				cardsGameWidget.dealCard(player, card);
-				cardsGameWidget.runPendingAnimations(2000,
-						new GWTAnimation.AnimationCompletedListener() {
-							@Override
-							public void onComplete() {
-								if (stateManager.getDealtCards().size() == 4)
-									stateManager.transitionToEndOfTrick();
-								else
-									stateManager.transitionToWaitingDeal();
-							}
-						});
+				
+				handleCardPlayed(card, player);
 			}
 		});
 		panel.add(continueButton);
@@ -114,5 +108,43 @@ public class WaitingDealState implements ViewerState {
 	public void disableControls() {
 		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleCardPlayed(Card card, int playerPosition) {
+		stateManager.addDealtCard(playerPosition, card);
+
+		cardsGameWidget.revealCoveredCard(playerPosition, card);
+
+		cardsGameWidget.dealCard(playerPosition, card);
+		cardsGameWidget.runPendingAnimations(2000,
+				new GWTAnimation.AnimationCompletedListener() {
+					@Override
+					public void onComplete() {
+						if (stateManager.getDealtCards().size() == 4)
+							stateManager.transitionToEndOfTrick();
+						else
+							stateManager.transitionToWaitingDeal();
+					}
+				});		
+	}
+
+	@Override
+	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleNewPlayerJoined(String name, boolean isBot, int points,
+			int position) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handlePlayerLeft(String player) {
+		// TODO Auto-generated method stub
+		
 	}
 }

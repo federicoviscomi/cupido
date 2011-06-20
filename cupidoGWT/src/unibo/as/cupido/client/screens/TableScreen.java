@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.zschech.gwt.comet.client.CometListener;
 import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoCometListener;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
@@ -24,14 +25,14 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	private HeartsTableWidget tableWidget;
 	private LocalChatWidget chatWidget;
 
-	public TableScreen(ScreenSwitcher screenSwitcher, String username,
-			final CupidoInterfaceAsync cupidoService) {
+	public TableScreen(ScreenSwitcher screenSwitcher, String username, boolean isOwner,
+			InitialTableStatus initialTableStatus, final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
 		assert Cupido.height == Cupido.width - chatWidth;
 		tableWidget = new HeartsTableWidget(Cupido.height,
-				username, screenSwitcher);
+				username, initialTableStatus, isOwner, screenSwitcher);
 		add(tableWidget, 0, 0);
 
 		chatWidget = new LocalChatWidget(username,

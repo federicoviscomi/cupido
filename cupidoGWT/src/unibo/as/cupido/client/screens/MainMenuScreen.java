@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.backendInterfaces.exception.FatalException;
+import unibo.as.cupido.backendInterfaces.exception.MaxNumTableReachedException;
 import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
@@ -15,6 +17,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -67,12 +70,30 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		Label label = new HTML("<b>Main menu screen (TODO)</b>");
 		add(label, 200, 320);
 
-		PushButton tableButton = new PushButton("Vai alla schermata Tavolo");
+		PushButton tableButton = new PushButton("Crea un nuovo tavolo");
 		buttons.add(tableButton);
 		tableButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayTableScreen(username);
+				disableControls();
+				cupidoService.createTable(new AsyncCallback<InitialTableStatus>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						try {
+							throw caught;
+						} catch (MaxNumTableReachedException e) {
+							screenSwitcher.displayMainMenuScreen(username);
+							Window.alert("\310 stato raggiunto il numero massimo di tavoli supportati. Riprova pi\371 tardi.");
+						} catch (Throwable e) {
+							screenSwitcher.displayGeneralErrorScreen(caught);						
+						}
+					}
+
+					@Override
+					public void onSuccess(InitialTableStatus initialTableStatus) {
+						screenSwitcher.displayTableScreen(username, true, initialTableStatus);
+					}
+				});
 			}
 		});
 		add(tableButton, 200, 400);

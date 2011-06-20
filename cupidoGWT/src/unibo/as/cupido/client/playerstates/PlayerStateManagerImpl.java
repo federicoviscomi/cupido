@@ -237,4 +237,29 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	public void disableControls() {
 		currentState.disableControls();
 	}
+
+	@Override
+	public void handleCardPassed(Card[] cards) {
+		currentState.handleCardPassed(cards);
+	}
+
+	@Override
+	public void handleCardPlayed(Card card, int playerPosition) {
+		currentState.handleCardPlayed(card, playerPosition);
+	}
+
+	@Override
+	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		currentState.handleGameEnded(matchPoints, playersTotalPoints);
+	}
+
+	@Override
+	public void handleGameStarted(Card[] myCards) {
+		currentState.handleGameStarted(myCards);
+	}
+
+	@Override
+	public void handlePlayerLeft(String player) {
+		currentState.handlePlayerLeft(player);
+	}
 }

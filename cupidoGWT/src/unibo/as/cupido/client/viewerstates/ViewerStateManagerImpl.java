@@ -202,4 +202,25 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	public void disableControls() {
 		currentState.disableControls();
 	}
+
+	@Override
+	public void handleCardPlayed(Card card, int playerPosition) {
+		currentState.handleCardPlayed(card, playerPosition);
+	}
+
+	@Override
+	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		currentState.handleGameEnded(matchPoints, playersTotalPoints);
+	}
+
+	@Override
+	public void handleNewPlayerJoined(String name, boolean isBot, int points,
+			int position) {
+		currentState.handleNewPlayerJoined(name, isBot, points, position);
+	}
+
+	@Override
+	public void handlePlayerLeft(String player) {
+		currentState.handlePlayerLeft(player);
+	}
 }

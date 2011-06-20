@@ -58,4 +58,13 @@ public interface ViewerStateManager {
 	public void transitionToWaitingDeal();
 	
 	public void disableControls();
+
+	public void handleCardPlayed(Card card, int playerPosition);
+
+	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
+
+	public void handleNewPlayerJoined(String name, boolean isBot, int points,
+			int position);
+
+	public void handlePlayerLeft(String player);
 }

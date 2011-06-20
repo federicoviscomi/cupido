@@ -6,6 +6,7 @@ import java.util.List;
 import net.zschech.gwt.comet.client.CometClient;
 import net.zschech.gwt.comet.client.CometListener;
 import net.zschech.gwt.comet.client.CometSerializer;
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.Cupido.CupidoCometSerializer;
 import unibo.as.cupido.client.CupidoCometListener;
@@ -204,12 +205,12 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 	}
 
 	@Override
-	public void displayTableScreen(String username) {
+	public void displayTableScreen(String username, boolean isOwner, InitialTableStatus initialTableStatus) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		TableScreen screen = new TableScreen(this, username, cupidoService);
+		TableScreen screen = new TableScreen(this, username, isOwner, initialTableStatus, cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);

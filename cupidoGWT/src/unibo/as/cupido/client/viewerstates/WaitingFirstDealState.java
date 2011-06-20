@@ -20,9 +20,15 @@ public class WaitingFirstDealState implements ViewerState {
 	// FIXME: Remove this button when the servlet is ready.
 	private PushButton continueButton;
 	private PushButton exitButton;
+	private ViewerStateManager stateManager;
+	private CardsGameWidget cardsGameWidget;
 
-	public WaitingFirstDealState(final CardsGameWidget cardsGameWidget,
+	public WaitingFirstDealState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
+		
+		this.cardsGameWidget = cardsGameWidget;
+		this.stateManager = stateManager;
+		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -43,18 +49,8 @@ public class WaitingFirstDealState implements ViewerState {
 				Card card = new Card();
 				card.suit = Card.Suit.CLUBS;
 				card.value = 2;
-
-				stateManager.addDealtCard(player, card);
-
-				cardsGameWidget.revealCoveredCard(player, card);
-				cardsGameWidget.dealCard(player, card);
-				cardsGameWidget.runPendingAnimations(2000,
-						new GWTAnimation.AnimationCompletedListener() {
-							@Override
-							public void onComplete() {
-								stateManager.transitionToWaitingDeal();
-							}
-						});
+				
+				handleCardPlayed(card, player);
 			}
 		});
 		panel.add(continueButton);
@@ -95,5 +91,39 @@ public class WaitingFirstDealState implements ViewerState {
 	public void disableControls() {
 		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleCardPlayed(Card card, int playerPosition) {
+		stateManager.addDealtCard(playerPosition, card);
+
+		cardsGameWidget.revealCoveredCard(playerPosition, card);
+		cardsGameWidget.dealCard(playerPosition, card);
+		cardsGameWidget.runPendingAnimations(2000,
+				new GWTAnimation.AnimationCompletedListener() {
+					@Override
+					public void onComplete() {
+						stateManager.transitionToWaitingDeal();
+					}
+				});
+	}
+
+	@Override
+	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleNewPlayerJoined(String name, boolean isBot, int points,
+			int position) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handlePlayerLeft(String player) {
+		// TODO Auto-generated method stub
+		
 	}
 }

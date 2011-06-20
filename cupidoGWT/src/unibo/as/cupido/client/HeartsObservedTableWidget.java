@@ -116,34 +116,20 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		controlsDisabled = true;
 	}
 
-	public void handleCardPassed(Card[] cards) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public void handleCardPlayed(Card card, int playerPosition) {
-		// TODO Auto-generated method stub
-		
+		stateManager.handleCardPlayed(card, playerPosition);
 	}
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void handleGameStarted(Card[] myCards) {
-		// TODO Auto-generated method stub
-		
+		stateManager.handleGameEnded(matchPoints, playersTotalPoints);
 	}
 
 	public void handleNewPlayerJoined(String name, boolean isBot, int points,
 			int position) {
-		// TODO Auto-generated method stub
-		
+		stateManager.handleNewPlayerJoined(name, isBot, points, position);
 	}
 
 	public void handlePlayerLeft(String player) {
-		// TODO Auto-generated method stub
-		
+		stateManager.handlePlayerLeft(player);
 	}
 }

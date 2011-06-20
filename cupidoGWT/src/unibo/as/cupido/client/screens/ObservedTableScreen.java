@@ -65,7 +65,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 			
 			@Override
 			public void onCardPassed(Card[] cards) {
-				tableWidget.handleCardPassed(cards);
+				System.out.println("Client: ObservedTableScreen: warning: received a CardPassed notification while observing a table, it was ingored.");
 			}
 			
 			@Override
@@ -80,7 +80,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 			
 			@Override
 			public void onGameStarted(Card[] myCards) {
-				tableWidget.handleGameStarted(myCards);
+				System.out.println("Client: ObservedTableScreen: warning: received a GameStarted notification while observing a table, it was ingored.");
 			}
 			
 			@Override

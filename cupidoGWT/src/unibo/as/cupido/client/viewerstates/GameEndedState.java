@@ -62,4 +62,29 @@ public class GameEndedState implements ViewerState {
 	public void disableControls() {
 		exitButton.setEnabled(false);
 	}
+
+	@Override
+	public void handleCardPlayed(Card card, int playerPosition) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleNewPlayerJoined(String name, boolean isBot, int points,
+			int position) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handlePlayerLeft(String player) {
+		// TODO Auto-generated method stub
+		
+	}
 }

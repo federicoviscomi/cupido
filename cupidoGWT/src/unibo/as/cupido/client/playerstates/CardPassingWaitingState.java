@@ -26,8 +26,19 @@ public class CardPassingWaitingState implements PlayerState {
 	
 	private PushButton exitButton;
 
+	private CardsGameWidget cardsGameWidget;
+
+	private PlayerStateManager stateManager;
+
+	private List<Card> hand;
+
 	public CardPassingWaitingState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand) {
+
+		this.cardsGameWidget = cardsGameWidget;
+		this.stateManager = stateManager;
+		this.hand = hand;
+		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -48,41 +59,12 @@ public class CardPassingWaitingState implements PlayerState {
 				text.setText("");
 
 				// FIXME: Remove this. This data should come from the servlet.
-				List<Card> passedCards = new ArrayList<Card>();
-				passedCards.add(RandomCardGenerator.generateCard());
-				passedCards.add(RandomCardGenerator.generateCard());
-				passedCards.add(RandomCardGenerator.generateCard());
-
-				hand.addAll(passedCards);
-
-				Collections.sort(passedCards,
-						CardsGameWidget.getCardComparator());
-
-				for (int i = 0; i < 3; i++)
-					cardsGameWidget.revealCoveredCard(0,
-							passedCards.get(3 - i - 1));
-
-				for (Card card : passedCards)
-					cardsGameWidget.pickCard(0, card);
-
-				cardsGameWidget.runPendingAnimations(2000,
-						new GWTAnimation.AnimationCompletedListener() {
-							@Override
-							public void onComplete() {
-								boolean found = false;
-								for (Card card : hand)
-									if (card.suit == Card.Suit.CLUBS
-											&& card.value == 2) {
-										found = true;
-										break;
-									}
-								if (found)
-									stateManager.transitionToFirstDealer(hand);
-								else
-									stateManager
-											.transitionToWaitingFirstDeal(hand);
-							}
-						});
+				Card[] passedCards = new Card[3];
+				passedCards[0] = RandomCardGenerator.generateCard();
+				passedCards[1] = RandomCardGenerator.generateCard();
+				passedCards[2] = RandomCardGenerator.generateCard();
+				
+				handleCardPassed(passedCards);
 			}
 		});
 		panel.add(continueButton);
@@ -123,5 +105,68 @@ public class CardPassingWaitingState implements PlayerState {
 	public void disableControls() {
 		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleCardPassed(Card[] passedCards) {
+		List<Card> cards = new ArrayList<Card>();
+		
+		for (Card card : passedCards)
+			cards.add(card);
+		
+		hand.addAll(cards);
+
+		Collections.sort(cards,
+				CardsGameWidget.getCardComparator());
+
+		for (int i = 0; i < 3; i++)
+			cardsGameWidget.revealCoveredCard(0,
+					cards.get(3 - i - 1));
+
+		for (Card card : passedCards)
+			cardsGameWidget.pickCard(0, card);
+
+		cardsGameWidget.runPendingAnimations(2000,
+				new GWTAnimation.AnimationCompletedListener() {
+					@Override
+					public void onComplete() {
+						boolean found = false;
+						for (Card card : hand)
+							if (card.suit == Card.Suit.CLUBS
+									&& card.value == 2) {
+								found = true;
+								break;
+							}
+						if (found)
+							stateManager.transitionToFirstDealer(hand);
+						else
+							stateManager
+									.transitionToWaitingFirstDeal(hand);
+					}
+				});
+	}
+
+	@Override
+	public void handleCardPlayed(Card card, int playerPosition) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleGameStarted(Card[] myCards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handlePlayerLeft(String player) {
+		// TODO Auto-generated method stub
+		
 	}
 }

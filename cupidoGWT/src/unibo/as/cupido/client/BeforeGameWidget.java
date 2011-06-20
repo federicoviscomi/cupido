@@ -229,4 +229,20 @@ public class BeforeGameWidget extends AbsolutePanel {
 		if (rightButton != null)
 			rightButton.setEnabled(false);
 	}
+
+	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void handleNewPlayerJoined(String name, boolean isBot, int points,
+			int position) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void handlePlayerLeft(String player) {
+		// TODO Auto-generated method stub
+		
+	}
 }

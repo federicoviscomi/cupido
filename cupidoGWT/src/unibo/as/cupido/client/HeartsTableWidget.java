@@ -23,16 +23,18 @@ public class HeartsTableWidget extends AbsolutePanel {
 	 * @param tableSize
 	 *            The size of the table (width and height) in pixels.
 	 * @param username
+	 * @param initialTableStatus 
+	 * @param isOwner 
 	 */
 	public HeartsTableWidget(int tableSize, final String username,
-			final ScreenSwitcher screenSwitcher) {
+			InitialTableStatus initialTableStatus, boolean isOwner, final ScreenSwitcher screenSwitcher) {
 		this.tableSize = tableSize;
 		this.screenSwitcher = screenSwitcher;
 
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
-
-		beforeGameWidget = new BeforeGameWidget(tableSize, "pippo", 1234, true,
+				
+		beforeGameWidget = new BeforeGameWidget(tableSize, username, initialTableStatus.playerScores[0], isOwner,
 				new BeforeGameWidget.Callback() {
 					private int numPlayers = 1;
 
@@ -98,33 +100,51 @@ public class HeartsTableWidget extends AbsolutePanel {
 	}
 
 	public void handleCardPassed(Card[] cards) {
-		// TODO Auto-generated method stub
-		
+		if (cardsGameWidget == null) {
+			System.out.println("Client: HeartsTableWidget: warning: CardPassed received before the game start, it was ignored.");
+		} else {
+			stateManager.handleCardPassed(cards);
+		}
 	}
 
 	public void handleCardPlayed(Card card, int playerPosition) {
-		// TODO Auto-generated method stub
-		
+		if (cardsGameWidget == null) {
+			System.out.println("Client: HeartsTableWidget: warning: CardPlayed received before the game start, it was ignored.");
+		} else {
+			stateManager.handleCardPlayed(card, playerPosition);
+		}
 	}
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		// TODO Auto-generated method stub
-		
+		if (cardsGameWidget == null) {
+			beforeGameWidget.handleGameEnded(matchPoints, playersTotalPoints);
+		} else {
+			stateManager.handleGameEnded(matchPoints, playersTotalPoints);
+		}
 	}
 
 	public void handleGameStarted(Card[] myCards) {
-		// TODO Auto-generated method stub
-		
+		if (cardsGameWidget == null) {
+			System.out.println("Client: HeartsTableWidget: warning: GameStarted received before the game start, it was ignored.");
+		} else {
+			stateManager.handleGameStarted(myCards);
+		}
 	}
 
 	public void handleNewPlayerJoined(String name, boolean isBot, int points,
 			int position) {
-		// TODO Auto-generated method stub
-		
+		if (cardsGameWidget == null) {
+			beforeGameWidget.handleNewPlayerJoined(name, isBot, points, position);
+		} else {
+			System.out.println("Client: HeartsTableWidget: warning: NewPlayerJoined received after the game start, it was ignored.");
+		}
 	}
 
 	public void handlePlayerLeft(String player) {
-		// TODO Auto-generated method stub
-		
+		if (cardsGameWidget == null) {
+			beforeGameWidget.handlePlayerLeft(player);
+		} else {
+			stateManager.handlePlayerLeft(player);
+		}
 	}
 }

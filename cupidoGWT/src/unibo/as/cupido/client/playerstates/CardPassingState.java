@@ -151,4 +151,34 @@ public class CardPassingState implements PlayerState {
 		okButton.setEnabled(false);
 		exitButton.setEnabled(false);
 	}
+
+	@Override
+	public void handleCardPassed(Card[] cards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleCardPlayed(Card card, int playerPosition) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleGameStarted(Card[] myCards) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handlePlayerLeft(String player) {
+		// TODO Auto-generated method stub
+		
+	}
 }

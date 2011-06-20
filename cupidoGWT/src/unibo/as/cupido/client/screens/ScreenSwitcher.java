@@ -1,6 +1,8 @@
 package unibo.as.cupido.client.screens;
 
 
+import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
+
 public interface ScreenSwitcher {
 	
 	/**
@@ -30,8 +32,9 @@ public interface ScreenSwitcher {
 
 	/**
 	 * Shows the table screen (as a player) instead of the current one.
+	 * @param inititalTableStatus 
 	 */
-	public void displayTableScreen(String username);
+	public void displayTableScreen(String username, boolean isOwner, InitialTableStatus inititalTableStatus);
 
 	/**
 	 * Shows the table screen (as a viewer) instead of the current one.
