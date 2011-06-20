@@ -28,20 +28,22 @@ public class CardsManager {
 	public static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
 
 	public static int whoWins(final Card[] playedCard, final int firstDealer) {
-		return Arrays.asList(playedCard).indexOf(
-				Collections.max(Arrays.asList(playedCard),
-						new Comparator<Card>() {
-							@Override
-							public int compare(Card o1, Card o2) {
-								int firstSuit = playedCard[firstDealer].suit
-										.ordinal();
-								return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14
-										: o1.value))
-										- ((o2.suit.ordinal() == firstSuit ? 1
-												: 0) * (o2.value == 1 ? 14
-												: o2.value));
-							}
-						}));
+		Comparator<Card> comparator = new Comparator<Card>() {
+			@Override
+			public int compare(Card o1, Card o2) {
+				int firstSuit = playedCard[firstDealer].suit.ordinal();
+				return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14
+						: o1.value))
+						- ((o2.suit.ordinal() == firstSuit ? 1 : 0) * (o2.value == 1 ? 14
+								: o2.value));
+			}
+		};
+		int maxPosition = firstDealer;
+		for (int i = 0; i < 4; i++) {
+			if (comparator.compare(playedCard[i], playedCard[maxPosition]) > 0)
+				maxPosition = i;
+		}
+		return maxPosition;
 	}
 
 	/** stores the cards passed by each player */
@@ -190,13 +192,12 @@ public class CardsManager {
 			}
 		}
 		if (playerPosition != firstDealerInTurn
-				&& !card.suit.equals(cardPlayed[firstDealerInTurn].suit)) {
+				&& card.suit != cardPlayed[firstDealerInTurn].suit) {
 			for (Card currentPlayerCard : cards[playerPosition]) {
-				if (currentPlayerCard.suit
-						.equals(cardPlayed[firstDealerInTurn].suit)) {
-					throw new IllegalMoveException("The player "
-							+ playerPosition + " must play a card of suit "
-							+ cardPlayed[firstDealerInTurn].suit);
+				if (currentPlayerCard.suit == cardPlayed[firstDealerInTurn].suit) {
+					throw new IllegalMoveException("\nPlayer " + playerPosition
+							+ " must play a card of suit "
+							+ cardPlayed[firstDealerInTurn].suit + "\n ");
 				}
 			}
 		}
@@ -215,6 +216,7 @@ public class CardsManager {
 			}
 		}
 		cardPlayed[playerPosition] = card;
+		playedCardsCount++;
 		if (playedCardsCount == 4) {
 			/* decide who takes this hand cards and calculate this hand points */
 			int maxPosition = firstDealerInTurn;
@@ -230,9 +232,8 @@ public class CardsManager {
 				}
 			}
 			turn++;
-
+			playedCardsCount = 0;
 		}
-		playedCardsCount = (playedCardsCount + 1) % 5;
 	}
 
 	void print() {

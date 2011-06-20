@@ -42,7 +42,6 @@ public class PlayerConsoleUI {
 			"--arbitrary", "play an arbitrary card");
 
 	public static void main(String[] args) throws Exception {
-
 		new PlayerConsoleUI(
 				"/home/cane/workspace/cupido/cupidoBackendImpl/test/createTableAndAddThreeBot")
 				.execute();
@@ -164,17 +163,16 @@ public class PlayerConsoleUI {
 			} else if (command[0].equals("login")) {
 				logged = true;
 				playerName = command[1];
-				// TODO
-				remoteBot = new RemoteBot(new InitialTableStatus(
-						new String[3], new int[3], new boolean[3]), null,
-						playerName);
+				// TODO really check the database
+				remoteBot = new RemoteBot(new InitialTableStatus(new String[3],
+						new int[3], new boolean[3]), null, playerName);
 				botNotification = (Bot) UnicastRemoteObject
 						.exportObject(remoteBot);
 				out.println("successfully logged in " + playerName);
 			} else if (command[0].equals("create")) {
 				try {
-					remoteBot.singleTableManager = gtm.createTable(
-							playerName, botNotification);
+					remoteBot.singleTableManager = gtm.createTable(playerName,
+							botNotification);
 				} catch (AllLTMBusyException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

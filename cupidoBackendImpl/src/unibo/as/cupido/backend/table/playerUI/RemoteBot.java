@@ -68,10 +68,11 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyGameStarted(Card[] cards) {
-		System.err.println("\n" + userName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + Arrays.toString(cards) + "). initial table status "
-				+ initialTableStatus);
+		// \nnotify
+		// ORIGIN->DESTINATION_TYPE(DESTINATION_NAME):NOTIFICATION_TYPE:(NOTIFICATION_VALUES)
+		// OPTIONAL_STATUS_INFORMATION\n
+		System.err.println("\nnotify SingleTableManager->RemoteBot(" + userName
+				+ "):game started:(" + Arrays.toString(cards) + ")\n");
 		System.err.flush();
 		this.cards = new ArrayList<Card>(4);
 		this.cards.addAll(Arrays.asList(cards));
@@ -92,9 +93,11 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
-		System.out.println("\n" + userName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + Arrays.toString(cards) + ")");
+		// \nnotify
+		// ORIGIN->DESTINATION_TYPE(DESTINATION_NAME):NOTIFICATION_TYPE:(NOTIFICATION_VALUES)
+		// OPTIONAL_STATUS_INFORMATION\n
+		System.err.println("\nnotify SingleTableManager->RemoteBot(" + userName
+				+ "):passed cards:(" + Arrays.toString(cards) + ")\n");
 		this.cards.addAll(Arrays.asList(cards));
 		synchronized (lock) {
 			if (!ableToPass) {
@@ -116,11 +119,13 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		System.out.println("\nRemoteBot inizio" + userName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + card + ", " + playerPosition + ") played:"
-				+ Arrays.toString(playedCard) + " count:" + playedCardCount
-				+ " turn:" + turn + " first:" + firstDealer);
+		// \nnotify
+		// ORIGIN->DESTINATION_TYPE(DESTINATION_NAME):NOTIFICATION_TYPE:(NOTIFICATION_VALUES)
+		// OPTIONAL_STATUS_INFORMATION\n
+		System.err.println("\nnotify first SingleTableManager->RemoteBot("
+				+ userName + "):played card:(" + card + ", " + playerPosition
+				+ ") played:" + Arrays.toString(playedCard) + " count:"
+				+ playedCardCount + " turn:" + turn + " first:" + firstDealer);
 
 		if (firstDealer == -1) {
 			firstDealer = playerPosition;
@@ -129,22 +134,31 @@ public class RemoteBot implements Bot, Serializable {
 		playedCardCount++;
 		if (playedCardCount == 4) {
 			firstDealer = CardsManager.whoWins(playedCard, firstDealer);
-		} else if (playedCardCount == 5) {
-			playedCardCount = 1;
+			playedCardCount = 0;
+			playedCard[1] = playedCard[2] = playedCard[3] = playedCard[0] = null;
 			turn++;
-		}
-		System.out.println("\nRemoteBot fine" + userName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + card + ", " + playerPosition + ") played:"
-				+ Arrays.toString(playedCard) + " count:" + playedCardCount
-				+ " turn:" + turn + " first:" + firstDealer);
-
-		if (playerPosition == 2) {
-			synchronized (lock) {
-				ableToPlay = true;
-				lock.notify();
+			if (firstDealer == 3) {
+				synchronized (lock) {
+					ableToPlay = true;
+					lock.notify();
+				}
+			}
+		} else {
+			if (playerPosition == 2) {
+				synchronized (lock) {
+					ableToPlay = true;
+					lock.notify();
+				}
 			}
 		}
+
+		// \nnotify
+		// ORIGIN->DESTINATION_TYPE(DESTINATION_NAME):NOTIFICATION_TYPE:(NOTIFICATION_VALUES)
+		// OPTIONAL_STATUS_INFORMATION\n
+		System.err.println("\nnotify secon SingleTableManager->RemoteBot("
+				+ userName + "):played card:(" + card + ", " + playerPosition
+				+ ") played:" + Arrays.toString(playedCard) + " count:"
+				+ playedCardCount + " turn:" + turn + " first:" + firstDealer);
 	}
 
 	@Override
@@ -164,9 +178,6 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyPlayerLeft(String name) {
-		System.out.print("\n" + userName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + name + ")");
 		int position = 0;
 		while (!name.equals(initialTableStatus.opponents[position]))
 			position++;
@@ -215,7 +226,7 @@ public class RemoteBot implements Bot, Serializable {
 				if (cards.remove(CardsManager.twoOfClubs)) {
 					playedCard[3] = CardsManager.twoOfClubs;
 				} else {
-					if (playedCardCount != 4) {
+					if (playedCardCount != 0) {
 						Suit firstSuit = playedCard[firstDealer].suit;
 						for (int i = 0; i < cards.size(); i++)
 							if (cards.get(i).suit == firstSuit)
@@ -226,10 +237,16 @@ public class RemoteBot implements Bot, Serializable {
 				}
 				singleTableManager.playCard(userName, playedCard[3]);
 				playedCardCount++;
-				if (playedCardCount == 5) {
-					playedCardCount = 1;
+				if (playedCardCount == 4) {
+					firstDealer = CardsManager.whoWins(playedCard, firstDealer);
+					playedCardCount = 0;
 					turn++;
-				}
+					if (firstDealer == 3) {
+						ableToPlay = true;
+						lock.notify();
+					}
+				} 
+
 				System.err.println("play next card end. played:"
 						+ Arrays.toString(playedCard) + " count:"
 						+ playedCardCount + " turn:" + turn + " first:"
