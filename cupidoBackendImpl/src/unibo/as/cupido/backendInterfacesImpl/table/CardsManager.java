@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
@@ -24,14 +25,14 @@ public class CardsManager {
 		}
 	};
 
+	final Semaphore[] passLocks = { new Semaphore(0), new Semaphore(0),
+			new Semaphore(0), new Semaphore(0) };
+	final Semaphore[] playLocks = { new Semaphore(0), new Semaphore(0),
+			new Semaphore(0), new Semaphore(0) };
+
 	/** the two of clubs */
 	public static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
 	public static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
-
-	public static void main(String args[]) {
-		new CardsManager().print();
-	}
-
 	/** stores the cards passed by each player */
 	private Card[][] allPassedCards = new Card[4][];
 	/** stores the cards played in the current turn */
@@ -43,7 +44,7 @@ public class CardsManager {
 	/** counts the number of card played in the current turn */
 	private int playedCardsCount;
 	/** position of player who plays first in the current turn */
-	private int firstPlaying;
+	private int firstDealerInTurn;
 	/** the number of turn made in this hand */
 	private int turn = 0;
 	/** stores round points of every player */
@@ -62,7 +63,7 @@ public class CardsManager {
 	private final Comparator<Card> winnerComparator = new Comparator<Card>() {
 		@Override
 		public int compare(Card o1, Card o2) {
-			int firstSuit = cardPlayed[firstPlaying].suit.ordinal();
+			int firstSuit = cardPlayed[firstDealerInTurn].suit.ordinal();
 			return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14
 					: o1.value))
 					- ((o2.suit.ordinal() == firstSuit ? 1 : 0) * (o2.value == 1 ? 14
@@ -72,7 +73,6 @@ public class CardsManager {
 
 	public CardsManager() {
 		dealCards();
-		firstPlaying = whoHasTwoOfClubs();
 	}
 
 	public void addCardsInformationForViewers(
@@ -88,7 +88,7 @@ public class CardsManager {
 			} else if (turn == 0 && playedCardsCount == 0) {
 				observedGameStatus.firstDealerInTrick = -1;
 			} else {
-				observedGameStatus.firstDealerInTrick = firstPlaying;
+				observedGameStatus.firstDealerInTrick = firstDealerInTurn;
 			}
 		}
 	}
@@ -156,7 +156,10 @@ public class CardsManager {
 	private void passCards() {
 		for (int i = 0; i < 4; i++) {
 			cards[i].addAll(Arrays.asList(allPassedCards[(i + 3) % 4]));
+			if (cards[i].contains(twoOfClubs))
+				firstDealerInTurn = i;
 		}
+		playLocks[firstDealerInTurn].release();
 	}
 
 	public void playCard(int playerPosition, Card card)
@@ -171,26 +174,27 @@ public class CardsManager {
 						"First turn card played has to be two of clubs");
 			}
 		}
-		if (playerPosition != firstPlaying
-				&& !card.suit.equals(cardPlayed[firstPlaying].suit)) {
+		if (playerPosition != firstDealerInTurn
+				&& !card.suit.equals(cardPlayed[firstDealerInTurn].suit)) {
 			for (Card currentPlayerCard : cards[playerPosition]) {
 				if (currentPlayerCard.suit
-						.equals(cardPlayed[firstPlaying].suit)) {
+						.equals(cardPlayed[firstDealerInTurn].suit)) {
 					throw new IllegalMoveException("The player "
 							+ playerPosition + " must play a card of suit "
-							+ cardPlayed[firstPlaying].suit);
+							+ cardPlayed[firstDealerInTurn].suit);
 				}
 			}
 		}
 		if (!brokenHearted) {
 			if (card.suit.equals(Card.Suit.HEARTS)) {
-				if (playerPosition == firstPlaying) {
-					for (Card currentPlayerCard : cards[firstPlaying]) {
+				if (playerPosition == firstDealerInTurn) {
+					for (Card currentPlayerCard : cards[firstDealerInTurn]) {
 						if (!currentPlayerCard.suit.equals(Suit.HEARTS)) {
 							throw new IllegalMoveException(
 									"Cannot play heart rigth now");
 						}
 					}
+
 				}
 				brokenHearted = true;
 			}
@@ -198,7 +202,7 @@ public class CardsManager {
 		cardPlayed[playerPosition] = card;
 		if (playedCardsCount == 4) {
 			/* decide who takes this hand cards and calculate this hand points */
-			int maxPosition = firstPlaying;
+			int maxPosition = firstDealerInTurn;
 			for (int i = 0; i < 4; i++) {
 				if (winnerComparator.compare(cardPlayed[i],
 						cardPlayed[maxPosition]) > 0)
@@ -211,8 +215,10 @@ public class CardsManager {
 				}
 			}
 			turn++;
+
 		}
-		playedCardsCount = (playedCardsCount + 1) % 4 + 1;
+		playLocks[(firstDealerInTurn + playedCardsCount + 1) % 4].release();
+		playedCardsCount = (playedCardsCount + 1) % 5;
 	}
 
 	void print() {
@@ -248,6 +254,8 @@ public class CardsManager {
 		allPassedCards[position] = passedCards;
 		if (allPlayerPassedCards()) {
 			this.passCards();
+		} else {
+			passLocks[position + 1].release();
 		}
 	}
 
@@ -260,6 +268,14 @@ public class CardsManager {
 				return i;
 		}
 		return -1;
+	}
+
+	public int firstDealer() {
+		return firstDealerInTurn;
+	}
+
+	public void gameStarted() {
+		passLocks[0].release();
 	}
 
 }

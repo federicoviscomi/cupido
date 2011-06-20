@@ -17,7 +17,6 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
 	private int point;
-	private final Semaphore playNextCardLock;
 	private final NonRemoteBotCardPlayingThread cardPlayingThread;
 	/**
 	 * </code>firstDealer == 0</code> means this player is the first dealer.
@@ -26,18 +25,15 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 	 */
 	protected int firstDealer = -1;
 	private boolean alreadyGotCards = false;
-	private final Semaphore passLock;
 
 	public NonRemoteBot(String botName, InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager, Semaphore passLock) {
+			TableInterface singleTableManager, Semaphore passLock,
+			Semaphore playLocks) {
 		this.botName = botName;
-		this.passLock = passLock;
-		// TODO Auto-generated constructor stub
-		playNextCardLock = new Semaphore(0);
-		cardPlayingThread = new NonRemoteBotCardPlayingThread(playNextCardLock,
+		this.initialTableStatus = initialTableStatus;
+		cardPlayingThread = new NonRemoteBotCardPlayingThread(playLocks,
 				passLock, this, botName);
 		cardPlayingThread.start();
-		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		System.out.println("\n nonremotebot constructor " + botName + " "
 				+ initialTableStatus);
@@ -50,8 +46,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
-		cardPlayingThread.setEndedGame();
-		playNextCardLock.release();
+		cardPlayingThread.interrupt();
 	}
 
 	@Override
@@ -78,13 +73,6 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 					+ botName);
 		alreadyGotCards = true;
 		this.cards.addAll(Arrays.asList(cards));
-		for (Card card : this.cards) {
-			if (card.equals(CardsManager.twoOfClubs)) {
-				System.err.println("\n:\n:\n:\n:");
-				playNextCardLock.release();
-				return;
-			}
-		}
 	}
 
 	@Override
@@ -93,9 +81,6 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + card + ", " + playerPosition + ")");
 		playedCard[playerPosition] = card;
-		if (playerPosition == 2) {
-			playNextCardLock.release();
-		}
 	}
 
 	@Override

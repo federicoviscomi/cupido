@@ -8,7 +8,6 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 	private final NonRemoteBot bot;
 	private final Semaphore playNextCardLock;
 	private final Semaphore passCardsLock;
-	private boolean endedGame = false;
 
 	public NonRemoteBotCardPlayingThread(Semaphore playNextCardLock,
 			Semaphore passCardsLock, NonRemoteBot bot, String botName) {
@@ -28,7 +27,7 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 			int a = (new Random().nextInt(10)) / 10;
 			Thread.sleep(100 * a);
 			System.err.println("\n:\n1");
-			while (!endedGame) {
+			for (int i = 0; i < 13; i++) {
 				System.err.println("\n:\n2");
 				playNextCardLock.acquire();
 				System.err.println("\n:\n3");
@@ -38,10 +37,6 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public void setEndedGame() {
-		endedGame = true;
 	}
 
 }

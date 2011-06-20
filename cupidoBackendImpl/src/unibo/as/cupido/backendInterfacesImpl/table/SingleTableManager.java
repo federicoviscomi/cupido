@@ -32,7 +32,7 @@ import unibo.as.cupido.common.exception.PositionFullException;
  */
 public class SingleTableManager implements TableInterface {
 
-	private final CardsManager cardsManager = new CardsManager();
+	private final CardsManager cardsManager;
 	private final DatabaseManager databaseManager = new DatabaseManager();
 	private final PlayersManager playersManager;
 	private final TableInfoForClient table;
@@ -41,8 +41,6 @@ public class SingleTableManager implements TableInterface {
 	private final Semaphore start;
 	private final Semaphore end;
 	private final GlobalTableManagerInterface gtm;
-	private final Semaphore[] passLocks = { new Semaphore(0), new Semaphore(0),
-			new Semaphore(0), new Semaphore(0) };
 
 	public SingleTableManager(ServletNotificationsInterface snf,
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
@@ -58,6 +56,7 @@ public class SingleTableManager implements TableInterface {
 		end = new Semaphore(0);
 		new StartNotifierThread(start, this).start();
 		new EndNotifierThread(end, this).start();
+		cardsManager = new CardsManager();
 	}
 
 	@Override
@@ -85,7 +84,8 @@ public class SingleTableManager implements TableInterface {
 
 			NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus,
 					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
-							table.tableDescriptor.id), passLocks[position]);
+							table.tableDescriptor.id),
+					cardsManager.passLocks[position], cardsManager.playLocks[position]);
 			viewers.notifyBotJoined(botName, position);
 
 			playersManager.addNonRemoteBot(userName, position, bot);
@@ -167,7 +167,7 @@ public class SingleTableManager implements TableInterface {
 		// System.out.println("\n"+
 		// Thread.currentThread().getStackTrace()[1].getMethodName()+ "()");
 		playersManager.notifyGameStarted(cardsManager.getCards());
-		passLocks[0].release();
+		cardsManager.gameStarted();
 	}
 
 	@Override
@@ -187,8 +187,8 @@ public class SingleTableManager implements TableInterface {
 					+ Arrays.toString(cards));
 		int position = playersManager.getPlayerPosition(userName);
 		cardsManager.setCardPassing(position, cards);
-		playersManager.notifyPassedCards((position + 1) % 4, cards);
-		passLocks[(position + 1) % 4].release();
+		int receiver = (position + 1) % 4;
+		playersManager.notifyPassedCards(receiver, cards);
 	}
 
 	@Override
