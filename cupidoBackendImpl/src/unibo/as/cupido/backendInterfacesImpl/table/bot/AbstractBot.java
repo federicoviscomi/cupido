@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
-import javax.management.openmbean.OpenDataException;
-
-import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
@@ -28,28 +25,21 @@ public class AbstractBot implements Bot, Serializable {
 	Card[] playedCard = new Card[4];
 	int point;
 
-	/**
-	 * </code>firstDealer == 0</code> means this player is the first dealer.
-	 * Otherwise first dealer is the player in position
-	 * </code>firstDealer-1</code> relative to this player
-	 */
-	protected int firstDealer = -1;
+	private final Semaphore passCardsLock;
+	private boolean ableToPlay = Boolean.FALSE;
+	private boolean ableToPass = Boolean.FALSE;
+
+	private Object lock = new Object();
 
 	public AbstractBot(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, String userName) {
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;
-
+		this.passCardsLock = new Semaphore(0);
+		// this.playCardsLock = new Semaphore(0);
 		System.out.println("abstarct bot constructor " + userName + ". "
 				+ initialTableStatus);
-	}
-
-	public AbstractBot(String userName) {
-		this(new InitialTableStatus(new String[3], new int[3], new boolean[3]),
-				null, userName);
-		for (int i = 0; i < 3; i++)
-			initialTableStatus.opponents[i] = null;
 	}
 
 	@Override
@@ -88,9 +78,11 @@ public class AbstractBot implements Bot, Serializable {
 		this.cards = new ArrayList<Card>(4);
 		this.cards.addAll(Arrays.asList(cards));
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			firstDealer = 0;
+			synchronized (lock) {
+				ableToPass = true;
+				lock.notify();
+			}
 		}
-
 	}
 
 	@Override
@@ -106,10 +98,18 @@ public class AbstractBot implements Bot, Serializable {
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(cards) + ")");
 		this.cards.addAll(Arrays.asList(cards));
+		synchronized (lock) {
+			if (!ableToPass) {
+				ableToPass = true;
+				lock.notify();
+			}
+		}
 		for (Card card : this.cards) {
 			if (card.equals(CardsManager.twoOfClubs)) {
-				System.err.println("\n:\n:\n:\n:");
-
+				synchronized (lock) {
+					ableToPlay = true;
+					lock.notify();
+				}
 				return;
 			}
 		}
@@ -122,7 +122,10 @@ public class AbstractBot implements Bot, Serializable {
 				+ "(" + card + ", " + playerPosition + ")");
 		playedCard[playerPosition] = card;
 		if (playerPosition == 2) {
-		
+			synchronized (lock) {
+				ableToPlay = true;
+				lock.notify();
+			}
 		}
 	}
 
@@ -165,31 +168,49 @@ public class AbstractBot implements Bot, Serializable {
 	}
 
 	@Override
-	public synchronized void passCards() {
-		Card[] cardsToPass = new Card[3];
-		for (int i = 0; i < 3; i++)
-			cardsToPass[i] = cards.remove(0);
+	public void passCards() {
 		try {
-			singleTableManager.passCards(userName, cardsToPass);
-		} catch (Exception e) {
+			synchronized (lock) {
+				while (!ableToPass) {
+					lock.wait();
+				}
+				Card[] cardsToPass = new Card[3];
+				for (int i = 0; i < 3; i++)
+					cardsToPass[i] = cards.remove(0);
+				try {
+					singleTableManager.passCards(userName, cardsToPass);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
+
 	}
 
 	@Override
-	public synchronized void playNextCard() {
+	public void playNextCard() {
 		try {
-			if (cards.remove(CardsManager.twoOfClubs)) {
-				playedCard[0] = CardsManager.twoOfClubs;
-			} else {
-				playedCard[0] = cards.remove(0);
+			synchronized (lock) {
+				while (!ableToPlay) {
+					lock.wait();
+				}
+				ableToPlay = false;
+				if (cards.remove(CardsManager.twoOfClubs)) {
+					playedCard[0] = CardsManager.twoOfClubs;
+				} else {
+					playedCard[0] = cards.remove(0);
+				}
+				singleTableManager.playCard(userName, playedCard[0]);
 			}
-			singleTableManager.playCard(userName, playedCard[0]);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 
 }

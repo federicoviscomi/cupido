@@ -1,10 +1,12 @@
 login cane bau
 create
 addbot 1
+sleep 1000
 addbot 2
+sleep 1000
 addbot 3
-sleep 2000
+sleep 1000
 pass -a
-sleep 2000
+sleep 1000
 play -a
 sleep 2000

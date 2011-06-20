@@ -27,12 +27,10 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 	private boolean alreadyGotCards = false;
 
 	public NonRemoteBot(String botName, InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager, Semaphore passLock,
-			Semaphore playLocks) {
+			TableInterface singleTableManager) {
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
-		cardPlayingThread = new NonRemoteBotCardPlayingThread(playLocks,
-				passLock, this, botName);
+		cardPlayingThread = new NonRemoteBotCardPlayingThread(this, botName);
 		cardPlayingThread.start();
 		this.singleTableManager = singleTableManager;
 		System.out.println("\n nonremotebot constructor " + botName + " "
@@ -59,7 +57,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		this.cards = new ArrayList<Card>(4);
 		this.cards.addAll(Arrays.asList(cards));
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			firstDealer = 0;
+			cardPlayingThread.setAbleToPass();
 		}
 	}
 
@@ -73,6 +71,10 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 					+ botName);
 		alreadyGotCards = true;
 		this.cards.addAll(Arrays.asList(cards));
+		cardPlayingThread.setAbleToPass();
+		if (this.cards.contains(CardsManager.twoOfClubs)) {
+			cardPlayingThread.setAbleToPlay();
+		}
 	}
 
 	@Override
@@ -81,6 +83,9 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + card + ", " + playerPosition + ")");
 		playedCard[playerPosition] = card;
+		if (playerPosition == 2){
+			cardPlayingThread.setAbleToPlay();
+		}
 	}
 
 	@Override

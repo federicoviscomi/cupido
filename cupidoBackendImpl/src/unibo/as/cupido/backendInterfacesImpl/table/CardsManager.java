@@ -274,7 +274,7 @@ public class CardsManager {
 		return firstDealerInTurn;
 	}
 
-	public void gameStarted() {
+	void startGame() {
 		passLocks[0].release();
 	}
 

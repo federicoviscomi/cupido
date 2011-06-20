@@ -14,27 +14,21 @@ import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.server.RemoteStub;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.Semaphore;
-
 import unibo.as.cupido.backendInterfacesImpl.ltm.LocalTableManager;
-import unibo.as.cupido.backendInterfacesImpl.table.NonRemoteBot;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
-import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
 public class PlayerConsoleUI {
 	private static final String FORMAT = "%-20.20s %-3.3s %-10.10s %-30.30s\n";
+
 	private static final String USAGE = String.format(FORMAT + FORMAT + FORMAT
 			+ FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT, "COMMAND",
 			"OPT", "LONG_OPT", "DESCRIPTION", "create", "", "",
@@ -43,7 +37,8 @@ public class PlayerConsoleUI {
 			"--cards", "list this player cards", "list", "-t", "--tables",
 			"list all tables", "login NAME PASSWORD", "", "", "", "pass", "-a",
 			"--arbitrary", "pass arbitrary cards", "pass CARD1 CARD2 CARD3",
-			"-c", "--card", "pass specified cards");
+			"-c", "--card", "pass specified cards", "play", "-a",
+			"--arbitrary", "play an arbitrary card");
 
 	public static void main(String[] args) throws Exception {
 
@@ -89,13 +84,14 @@ public class PlayerConsoleUI {
 
 	public void execute() throws IOException {
 		CmdLineParser parser = new CmdLineParser();
-		CmdLineParser.Option cardsOption = parser.addBooleanOption('c', "cards");
+		CmdLineParser.Option cardsOption = parser
+				.addBooleanOption('c', "cards");
 		CmdLineParser.Option listPlayersOption = parser.addBooleanOption('p',
 				"players");
 		CmdLineParser.Option listTablesOption = parser.addBooleanOption('t',
 				"tables");
-		CmdLineParser.Option arbitraryCardsOption = parser.addBooleanOption('a',
-				"arbitrary");
+		CmdLineParser.Option arbitraryCardsOption = parser.addBooleanOption(
+				'a', "arbitrary");
 
 		String nextCommandLine;
 
@@ -107,6 +103,7 @@ public class PlayerConsoleUI {
 				out.print("\n#: ");
 				nextCommandLine = in.readLine();
 				out.println(nextCommandLine);
+				
 				if (nextCommandLine == null) {
 					exit(0);
 				}
@@ -149,10 +146,19 @@ public class PlayerConsoleUI {
 						: true);
 				if (arbitraryCards) {
 					abstractBot.passCards();
-				} else if (specifiedCards){
+				} else if (specifiedCards) {
 					throw new UnsupportedOperationException();
 				} else {
 					out.println("\nmissing option");
+				}
+			} else if (command[0].equals("play")) {
+				boolean arbitraryCards = (parser
+						.getOptionValue(arbitraryCardsOption) == null ? false
+						: true);
+				if (arbitraryCards) {
+					abstractBot.playNextCard();
+				} else {
+					throw new UnsupportedOperationException();
 				}
 			} else if (command[0].equals("login")) {
 				logged = true;

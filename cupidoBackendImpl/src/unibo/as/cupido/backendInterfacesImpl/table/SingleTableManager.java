@@ -70,13 +70,6 @@ public class SingleTableManager implements TableInterface {
 		playersManager.print();
 		System.out.println();
 
-		// DummyLoggerBotNotifyer dummyLoggerBotNotifyer = new
-		// DummyLoggerBotNotifyer(initialTableStatus, this, "_bot." + userName +
-		// "." + position);
-		// Bot bot = (Bot)
-		// UnicastRemoteObject.exportObject(dummyLoggerBotNotifyer);
-		// dummyLoggerBotNotifyer.startPlayingThread(bot);
-
 		try {
 			String botName = "_bot." + userName + "." + position;
 			InitialTableStatus initialTableStatus = playersManager
@@ -84,8 +77,7 @@ public class SingleTableManager implements TableInterface {
 
 			NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus,
 					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
-							table.tableDescriptor.id),
-					cardsManager.passLocks[position], cardsManager.playLocks[position]);
+							table.tableDescriptor.id));
 			viewers.notifyBotJoined(botName, position);
 
 			playersManager.addNonRemoteBot(userName, position, bot);
@@ -163,11 +155,18 @@ public class SingleTableManager implements TableInterface {
 		viewers.notifyGameEnded(matchPoints, playersTotalPoint);
 	}
 
-	public synchronized void notifyGameStarted() {
-		// System.out.println("\n"+
-		// Thread.currentThread().getStackTrace()[1].getMethodName()+ "()");
+	synchronized void notifyGameStarted() {
+		System.out.println("\nSingleTableManager."
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "()1");
 		playersManager.notifyGameStarted(cardsManager.getCards());
-		cardsManager.gameStarted();
+		System.out.println("\nSingleTableManager."
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "()2");
+		cardsManager.startGame();
+		System.out.println("\nSingleTableManager."
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "()3");
 	}
 
 	@Override
