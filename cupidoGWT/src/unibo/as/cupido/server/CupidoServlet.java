@@ -706,6 +706,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					.getCometSession(httpSession);
 			ServletNotificationsInterface sni = getServletNotificationsInterface(
 					httpSession, cometSession);
+			UnicastRemoteObject.exportObject(sni);
 			httpSession.setAttribute(SNI, sni);
 			return ti.viewTable((String) httpSession.getAttribute(USERNAME),
 					sni);
