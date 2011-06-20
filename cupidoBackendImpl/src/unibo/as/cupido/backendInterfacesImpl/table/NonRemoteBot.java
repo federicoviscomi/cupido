@@ -42,8 +42,8 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		cardPlayingThread.start();
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
-		System.out.println("\n constructor " + userName + ". "
-				+ initialTableStatus);
+		System.out.println("\n nonremotebot constructor _bot." + userName
+				+ ". " + position + " " + initialTableStatus);
 	}
 
 	@Override

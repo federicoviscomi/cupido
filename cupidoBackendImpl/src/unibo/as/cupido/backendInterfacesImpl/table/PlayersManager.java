@@ -3,6 +3,7 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 
+import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
 import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
@@ -23,12 +24,14 @@ public class PlayersManager {
 
 	private static class NonRemoteBotInfo {
 
-		private final String botName;
-		private final ServletNotificationsInterfaceNotRemote bot;
+		final String botName;
+		final ServletNotificationsInterfaceNotRemote bot;
 
-		public NonRemoteBotInfo(String userName,
+		public NonRemoteBotInfo(String botName,
 				ServletNotificationsInterfaceNotRemote bot) {
-			this.botName = userName;
+			if (botName == null || bot == null)
+				throw new IllegalArgumentException("null bot name or interface");
+			this.botName = botName;
 			this.bot = bot;
 		}
 
@@ -43,22 +46,24 @@ public class PlayersManager {
 		 * <code>true</code> if this player is a bot; <code>false</code>
 		 * otherwise
 		 */
-		final boolean isBot;
+		private final boolean isBot;
 
 		/** this player name */
-		String name;
+		private final String name;
 
 		/**
 		 * player global score. Not points! This field is meaningful if and only
-		 * if <code>isBot == true</code>
+		 * if <code>isBot == false</code>
 		 */
-		int score;
+		private int score;
 
 		/** the servlet notification interface for this player */
-		final ServletNotificationsInterface sni;
+		private final ServletNotificationsInterface sni;
 
 		public PlayerInfo(String name, boolean isBot, int score,
 				ServletNotificationsInterface sni) {
+			if (name == null || sni == null)
+				throw new IllegalArgumentException(name + " " + sni);
 			this.name = name;
 			this.isBot = isBot;
 			this.score = score;
@@ -74,10 +79,13 @@ public class PlayersManager {
 	private PlayerInfo[] players = new PlayerInfo[4];
 	private NonRemoteBotInfo[] nonRemoteBotsInfo = new NonRemoteBotInfo[4];
 	private int playersCount = 1;
+	private final RemovalThread removalThread;
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
-			int score) throws SQLException, NoSuchUserException {
+			int score, RemovalThread removalThread) throws SQLException,
+			NoSuchUserException {
 		players[0] = new PlayerInfo(owner, false, score, snf);
+		this.removalThread = removalThread;
 	}
 
 	private void addBot(String userName, int position,
@@ -154,8 +162,9 @@ public class PlayersManager {
 								+ "." + position, true, 0,
 								toRelativePosition(position, i));
 					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.err.println(" " + players[i].name
+								+ " is unreachable. Removing from table");
+						removalThread.addRemoval(i);
 					}
 				}
 				if (nonRemoteBotsInfo[i] != null) {
@@ -176,7 +185,7 @@ public class PlayersManager {
 		// players[position] = new PlayerInfo("_bot." + userName + "." +
 		// position, true, 0, null);
 		playersCount++;
-
+		removalThread.remove();
 	}
 
 	public int addPlayer(String playerName, ServletNotificationsInterface sni,
@@ -222,6 +231,7 @@ public class PlayersManager {
 					} catch (RemoteException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						removalThread.addRemoval(i);
 					}
 				}
 				if (nonRemoteBotsInfo[i] != null) {
@@ -239,8 +249,8 @@ public class PlayersManager {
 
 		players[position] = new PlayerInfo(playerName, false, score, sni);
 		playersCount++;
+		removalThread.remove();
 		return position;
-
 	}
 
 	public void addPlayersInformationForViewers(
@@ -261,12 +271,20 @@ public class PlayersManager {
 		int[] playerPoints = new int[3];
 		boolean[] whoIsBot = new boolean[3];
 		for (int i = 0; i < 3; i++) {
-			PlayerInfo nextOpponent = players[(position + i + 1) % 4];
-			if (nextOpponent != null) {
+			int next = (position + i + 1) % 4;
+
+			if (players[next] != null) {
+				PlayerInfo nextOpponent = players[next];
 				opponents[i] = nextOpponent.name;
 				playerPoints[i] = nextOpponent.score;
-				whoIsBot[i] = nextOpponent.isBot;
+				whoIsBot[i] = false;
+			} else if (nonRemoteBotsInfo[next] != null) {
+				NonRemoteBotInfo nextOpponent = nonRemoteBotsInfo[next];
+				opponents[i] = nextOpponent.botName;
+				playerPoints[i] = 0;
+				whoIsBot[i] = true;
 			}
+
 		}
 		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
 	}
@@ -428,6 +446,12 @@ public class PlayersManager {
 			}
 		}
 		return newScore;
+	}
+
+	public String getPlayerName(int i) {
+		if (players[i] != null)
+			return players[i].name;
+		return nonRemoteBotsInfo[i].botName;
 	}
 
 }

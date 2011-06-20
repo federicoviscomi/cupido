@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
-
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
@@ -25,8 +24,6 @@ import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
 import unibo.as.cupido.common.exception.PositionFullException;
 
-import unibo.as.cupido.backendInterfacesImpl.table.bot.BotManager;
-
 /**
  * TODO missing all game status stuff
  * 
@@ -36,7 +33,6 @@ import unibo.as.cupido.backendInterfacesImpl.table.bot.BotManager;
 public class SingleTableManager implements TableInterface {
 
 	private final CardsManager cardsManager = new CardsManager();
-	private final BotManager botManager = new BotManager();
 	private final DatabaseManager databaseManager = new DatabaseManager();
 	private final PlayersManager playersManager;
 	private final TableInfoForClient table;
@@ -52,7 +48,8 @@ public class SingleTableManager implements TableInterface {
 		this.table = table;
 		this.gtm = gtm;
 		playersManager = new PlayersManager(table.owner, snf,
-				databaseManager.getPlayerScore(table.owner));
+				databaseManager.getPlayerScore(table.owner), new RemovalThread(
+						this));
 		start = new Semaphore(0);
 		end = new Semaphore(0);
 		new StartNotifierThread(start, this).start();
@@ -226,6 +223,10 @@ public class SingleTableManager implements TableInterface {
 		playersManager.addPlayersInformationForViewers(observedGameStatus);
 		cardsManager.addCardsInformationForViewers(observedGameStatus);
 		return observedGameStatus;
+	}
+
+	public synchronized void leaveTable(Integer i) throws RemoteException, PlayerNotFoundException {
+		this.leaveTable(playersManager.getPlayerName(i));
 	}
 
 }

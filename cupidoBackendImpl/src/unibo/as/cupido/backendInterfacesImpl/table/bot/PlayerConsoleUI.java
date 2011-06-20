@@ -119,10 +119,7 @@ public class PlayerConsoleUI {
 					error = true;
 					out.println("\nsintax error\n " + USAGE);
 				}
-			} while (error);
-
-			
-			
+			} while (error);	
 			if (command[0].equals("exit")) {
 				exit(0);
 			} else if (!logged && !command[0].equals("login")) {
