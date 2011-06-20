@@ -54,15 +54,18 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 				new CardsGameWidget.GameEventListener() {
 					@Override
 					public void onAnimationStart() {
+						currentState.handleAnimationStart();
 					}
 
 					@Override
 					public void onAnimationEnd() {
+						currentState.handleAnimationEnd();
 					}
 
 					@Override
 					public void onCardClicked(int player, Card card,
 							State state, boolean isRaised) {
+						// Nothing to do, viewers are not expected to click on cards.
 					}
 				});
 
@@ -108,29 +111,31 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		else
 			transitionToWaitingDeal();
 	}
+	
+	private void transitionTo(ViewerState newState) {
+		currentState = newState;
+		currentState.activate();
+		sendPendingNotifications();
+	}
 
 	@Override
 	public void transitionToEndOfTrick() {
-		currentState = new EndOfTrickState(cardsGameWidget, this);
-		sendPendingNotifications();
+		transitionTo(new EndOfTrickState(cardsGameWidget, this));
 	}
 
 	@Override
 	public void transitionToWaitingFirstDeal() {
-		currentState = new WaitingFirstDealState(cardsGameWidget, this);
-		sendPendingNotifications();
+		transitionTo(new WaitingFirstDealState(cardsGameWidget, this));
 	}
 
 	@Override
 	public void transitionToGameEnded() {
-		currentState = new GameEndedState(cardsGameWidget, this);
-		sendPendingNotifications();
+		transitionTo(new GameEndedState(cardsGameWidget, this));
 	}
 
 	@Override
 	public void transitionToWaitingDeal() {
-		currentState = new WaitingDealState(cardsGameWidget, this);
-		sendPendingNotifications();
+		transitionTo(new WaitingDealState(cardsGameWidget, this));
 	}
 
 	@Override

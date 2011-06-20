@@ -96,15 +96,18 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				new CardsGameWidget.GameEventListener() {
 					@Override
 					public void onAnimationStart() {
+						currentState.handleAnimationStart();
 					}
 
 					@Override
 					public void onAnimationEnd() {
+						currentState.handleAnimationEnd();
 					}
 
 					@Override
 					public void onCardClicked(int player, Card card,
 							State state, boolean isRaised) {
+						currentState.handleCardClicked(player, card, state, isRaised);
 					}
 				});
 
@@ -123,53 +126,51 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 		transitionToCardPassing(handCards);
 	}
+	
+	private void transitionTo(PlayerState newState) {
+		currentState = newState;
+		currentState.activate();
+		sendPendingNotifications();
+	}
 
 	@Override
 	public void transitionToCardPassing(List<Card> hand) {
-		currentState = new CardPassingState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		transitionTo(new CardPassingState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToCardPassingWaiting(List<Card> hand) {
-		currentState = new CardPassingWaitingState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		transitionTo(new CardPassingWaitingState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToEndOfTrick(List<Card> hand) {
-		currentState = new EndOfTrickState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		transitionTo(new EndOfTrickState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToFirstDealer(List<Card> hand) {
-		currentState = new FirstDealerState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		transitionTo(new FirstDealerState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToWaitingDeal(List<Card> hand) {
-		currentState = new WaitingDealState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		transitionTo(new WaitingDealState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToWaitingFirstDeal(List<Card> hand) {
-		currentState = new WaitingFirstDealState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		transitionTo(new WaitingFirstDealState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToYourTurn(List<Card> hand) {
-		currentState = new YourTurnState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		transitionTo(new YourTurnState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToGameEnded() {
-		currentState = new GameEndedState(cardsGameWidget, this);
-		sendPendingNotifications();
+		transitionTo(new GameEndedState(cardsGameWidget, this));
 	}
 
 	@Override

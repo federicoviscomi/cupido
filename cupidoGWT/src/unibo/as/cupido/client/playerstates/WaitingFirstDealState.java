@@ -32,7 +32,7 @@ public class WaitingFirstDealState implements PlayerState {
 
 	private List<Card> hand;
 
-	public WaitingFirstDealState(final CardsGameWidget cardsGameWidget,
+	public WaitingFirstDealState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand) {
 		
 		this.cardsGameWidget = cardsGameWidget;
@@ -76,30 +76,33 @@ public class WaitingFirstDealState implements PlayerState {
 		panel.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(panel);
-		cardsGameWidget.setListener(new GameEventListener() {
-			@Override
-			public void onAnimationStart() {
-				continueButton.setEnabled(false);
-				exitButton.setEnabled(false);
-			}
-
-			@Override
-			public void onAnimationEnd() {
-				continueButton.setEnabled(true);
-				exitButton.setEnabled(true);
-			}
-
-			@Override
-			public void onCardClicked(int player, Card card, State state,
-					boolean isRaised) {
-			}
-		});
+	}
+	
+	@Override
+	public void activate() {
 	}
 
 	@Override
 	public void disableControls() {
 		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
+	}
+	
+	@Override
+	public void handleAnimationStart() {
+		continueButton.setEnabled(false);
+		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleAnimationEnd() {
+		continueButton.setEnabled(true);
+		exitButton.setEnabled(true);
+	}
+
+	@Override
+	public void handleCardClicked(int player, Card card, State state,
+			boolean isRaised) {
 	}
 
 	@Override

@@ -84,24 +84,10 @@ public class WaitingDealState implements ViewerState {
 		panel.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(panel);
-		cardsGameWidget.setListener(new GameEventListener() {
-			@Override
-			public void onAnimationStart() {
-				continueButton.setEnabled(false);
-				exitButton.setEnabled(false);
-			}
-
-			@Override
-			public void onAnimationEnd() {
-				continueButton.setEnabled(true);
-				exitButton.setEnabled(true);
-			}
-
-			@Override
-			public void onCardClicked(int player, Card card, State state,
-					boolean isRaised) {
-			}
-		});
+	}
+	
+	@Override
+	public void activate() {
 	}
 
 	@Override
@@ -110,6 +96,18 @@ public class WaitingDealState implements ViewerState {
 		exitButton.setEnabled(false);
 	}
 
+	@Override
+	public void handleAnimationStart() {
+		continueButton.setEnabled(false);
+		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleAnimationEnd() {
+		continueButton.setEnabled(true);
+		exitButton.setEnabled(true);
+	}
+	
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		stateManager.addDealtCard(playerPosition, card);

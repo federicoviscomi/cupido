@@ -386,16 +386,6 @@ public class CardsGameWidget extends AbsolutePanel {
 		previousTableLayout = tableLayout;
 	}
 
-	/**
-	 * Sets the listener to `listener'. The old listener will not receive new
-	 * events.
-	 * 
-	 * @param listener
-	 */
-	public void setListener(GameEventListener listener) {
-		this.listener = listener;
-	}
-
 	private static Position interpolatePosition(Position startPosition,
 			Position endPosition, double progress) {
 		Position position = new Position();

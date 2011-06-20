@@ -19,9 +19,17 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class EndOfTrickState implements PlayerState {
 
 	private PushButton exitButton;
+	private PlayerStateManager stateManager;
+	private CardsGameWidget cardsGameWidget;
+	private List<Card> hand;
 
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand) {
+		
+		this.cardsGameWidget = cardsGameWidget;
+		this.stateManager = stateManager;
+		this.hand = hand;
+		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -42,23 +50,11 @@ public class EndOfTrickState implements PlayerState {
 		panel.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(panel);
-		cardsGameWidget.setListener(new GameEventListener() {
-			@Override
-			public void onAnimationStart() {
-				exitButton.setEnabled(false);
-			}
+	}
 
-			@Override
-			public void onAnimationEnd() {
-				exitButton.setEnabled(true);
-			}
-
-			@Override
-			public void onCardClicked(int player, Card card, State state,
-					boolean isRaised) {
-			}
-		});
-
+	@Override
+	public void activate() {
+			
 		stateManager.goToNextTrick();
 
 		final int player = stateManager.getFirstPlayerInTrick();
@@ -77,6 +73,21 @@ public class EndOfTrickState implements PlayerState {
 							stateManager.transitionToGameEnded();
 					}
 				});
+	}
+	
+	@Override
+	public void handleAnimationStart() {
+		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleAnimationEnd() {
+		exitButton.setEnabled(true);
+	}
+
+	@Override
+	public void handleCardClicked(int player, Card card, State state,
+			boolean isRaised) {
 	}
 
 	@Override

@@ -32,8 +32,8 @@ public class CardPassingWaitingState implements PlayerState {
 
 	private List<Card> hand;
 
-	public CardPassingWaitingState(final CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, final List<Card> hand) {
+	public CardPassingWaitingState(CardsGameWidget cardsGameWidget,
+			final PlayerStateManager stateManager, List<Card> hand) {
 
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
@@ -80,25 +80,10 @@ public class CardPassingWaitingState implements PlayerState {
 		panel.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(panel);
-
-		cardsGameWidget.setListener(new GameEventListener() {
-			@Override
-			public void onAnimationStart() {
-				continueButton.setEnabled(false);
-				exitButton.setEnabled(false);
-			}
-
-			@Override
-			public void onAnimationEnd() {
-				continueButton.setEnabled(true);
-				exitButton.setEnabled(true);
-			}
-
-			@Override
-			public void onCardClicked(int player, Card card, State state,
-					boolean isRaised) {
-			}
-		});
+	}
+	
+	@Override
+	public void activate() {
 	}
 
 	@Override
@@ -107,6 +92,23 @@ public class CardPassingWaitingState implements PlayerState {
 		exitButton.setEnabled(false);
 	}
 
+	@Override
+	public void handleAnimationStart() {
+		continueButton.setEnabled(false);
+		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleAnimationEnd() {
+		continueButton.setEnabled(true);
+		exitButton.setEnabled(true);
+	}
+
+	@Override
+	public void handleCardClicked(int player, Card card, State state,
+			boolean isRaised) {
+	}
+	
 	@Override
 	public boolean handleCardPassed(Card[] passedCards) {
 		List<Card> cards = new ArrayList<Card>();

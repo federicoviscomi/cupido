@@ -19,9 +19,19 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class YourTurnState implements PlayerState {
 
 	private PushButton exitButton;
+	private PlayerStateManager stateManager;
+	private CardsGameWidget cardsGameWidget;
 
-	public YourTurnState(final CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, final List<Card> hand) {
+	private boolean dealtCard = false;
+	private List<Card> hand;
+
+	public YourTurnState(CardsGameWidget cardsGameWidget,
+			final PlayerStateManager stateManager, List<Card> hand) {
+		
+		this.cardsGameWidget = cardsGameWidget;
+		this.stateManager = stateManager;
+		this.hand = hand;
+		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -42,51 +52,10 @@ public class YourTurnState implements PlayerState {
 		panel.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(panel);
-		cardsGameWidget.setListener(new GameEventListener() {
-
-			boolean dealtCard = false;
-
-			@Override
-			public void onAnimationStart() {
-				exitButton.setEnabled(false);
-			}
-
-			@Override
-			public void onAnimationEnd() {
-				exitButton.setEnabled(true);
-			}
-
-			@Override
-			public void onCardClicked(int player, Card card, State state,
-					boolean isRaised) {
-				if (dealtCard)
-					return;
-				if (player != 0)
-					return;
-
-				if (!canDealCard(card, stateManager.getDealtCards(), hand,
-						stateManager.areHeartsBroken()))
-					return;
-
-				dealtCard = true;
-
-				hand.remove(card);
-
-				stateManager.addDealtCard(player, card);
-
-				cardsGameWidget.dealCard(player, card);
-				cardsGameWidget.runPendingAnimations(2000,
-						new GWTAnimation.AnimationCompletedListener() {
-							@Override
-							public void onComplete() {
-								if (stateManager.getDealtCards().size() == 4)
-									stateManager.transitionToEndOfTrick(hand);
-								else
-									stateManager.transitionToWaitingDeal(hand);
-							}
-						});
-			}
-		});
+	}
+	
+	@Override
+	public void activate() {
 	}
 
 	private static boolean canDealCard(Card card, List<Card> dealtCards,
@@ -164,6 +133,47 @@ public class YourTurnState implements PlayerState {
 		exitButton.setEnabled(false);
 	}
 
+	@Override
+	public void handleAnimationStart() {
+		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleAnimationEnd() {
+		exitButton.setEnabled(true);
+	}
+
+	@Override
+	public void handleCardClicked(int player, Card card, State state,
+			boolean isRaised) {
+		if (dealtCard)
+			return;
+		if (player != 0)
+			return;
+
+		if (!canDealCard(card, stateManager.getDealtCards(), hand,
+				stateManager.areHeartsBroken()))
+			return;
+
+		dealtCard = true;
+
+		hand.remove(card);
+
+		stateManager.addDealtCard(player, card);
+
+		cardsGameWidget.dealCard(player, card);
+		cardsGameWidget.runPendingAnimations(2000,
+				new GWTAnimation.AnimationCompletedListener() {
+					@Override
+					public void onComplete() {
+						if (stateManager.getDealtCards().size() == 4)
+							stateManager.transitionToEndOfTrick(hand);
+						else
+							stateManager.transitionToWaitingDeal(hand);
+					}
+				});
+	}
+	
 	@Override
 	public boolean handleCardPassed(Card[] cards) {
 		// TODO Auto-generated method stub

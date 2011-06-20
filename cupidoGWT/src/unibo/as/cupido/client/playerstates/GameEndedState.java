@@ -40,27 +40,30 @@ public class GameEndedState implements PlayerState {
 		panel.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(panel);
-		cardsGameWidget.setListener(new GameEventListener() {
-			@Override
-			public void onAnimationStart() {
-				exitButton.setEnabled(false);
-			}
-
-			@Override
-			public void onAnimationEnd() {
-				exitButton.setEnabled(true);
-			}
-
-			@Override
-			public void onCardClicked(int player, Card card, State state,
-					boolean isRaised) {
-			}
-		});
+	}
+	
+	@Override
+	public void activate() {
 	}
 
 	@Override
 	public void disableControls() {
 		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleAnimationStart() {
+		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleAnimationEnd() {
+		exitButton.setEnabled(true);
+	}
+
+	@Override
+	public void handleCardClicked(int player, Card card, State state,
+			boolean isRaised) {
 	}
 
 	@Override

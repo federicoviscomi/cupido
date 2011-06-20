@@ -28,9 +28,13 @@ public class CardPassingState implements PlayerState {
 	boolean confirmed = false;
 	private PushButton okButton;
 	private PushButton exitButton;
+	private CardsGameWidget cardsGameWidget;
 
 	public CardPassingState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand) {
+		
+		this.cardsGameWidget = cardsGameWidget;
+		
 		VerticalPanel cornerWidget = new VerticalPanel();
 		cornerWidget.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		cornerWidget
@@ -103,53 +107,56 @@ public class CardPassingState implements PlayerState {
 		cornerWidget.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(cornerWidget);
-		cardsGameWidget.setListener(new GameEventListener() {
-			@Override
-			public void onAnimationStart() {
-				okButton.setEnabled(false);
-				exitButton.setEnabled(false);
-			}
-
-			@Override
-			public void onAnimationEnd() {
-				okButton.setEnabled(!confirmed && raisedCards.size() == 3);
-				exitButton.setEnabled(!confirmed);
-			}
-
-			@Override
-			public void onCardClicked(int player, Card card, State state,
-					boolean isRaised) {
-				if (state == State.DEALT)
-					return;
-				if (player != 0 || card == null)
-					return;
-
-				if (isRaised) {
-					boolean found = raisedCards.remove(card);
-					assert found;
-					cardsGameWidget.lowerRaisedCard(0, card);
-				} else {
-					if (raisedCards.size() == 3)
-						// Never raise more than 3 cards at once.
-						return;
-					raisedCards.add(card);
-					cardsGameWidget.raiseCard(0, card);
-				}
-
-				cardsGameWidget.runPendingAnimations(200,
-						new GWTAnimation.AnimationCompletedListener() {
-							@Override
-							public void onComplete() {
-							}
-						});
-			}
-		});
+	}
+	
+	@Override
+	public void activate() {
 	}
 	
 	@Override
 	public void disableControls() {
 		okButton.setEnabled(false);
 		exitButton.setEnabled(false);
+	}
+	
+	@Override
+	public void handleAnimationStart() {
+		okButton.setEnabled(false);
+		exitButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleAnimationEnd() {
+		okButton.setEnabled(!confirmed && raisedCards.size() == 3);
+		exitButton.setEnabled(!confirmed);
+	}
+
+	@Override
+	public void handleCardClicked(int player, Card card, State state,
+			boolean isRaised) {
+		if (state == State.DEALT)
+			return;
+		if (player != 0 || card == null)
+			return;
+
+		if (isRaised) {
+			boolean found = raisedCards.remove(card);
+			assert found;
+			cardsGameWidget.lowerRaisedCard(0, card);
+		} else {
+			if (raisedCards.size() == 3)
+				// Never raise more than 3 cards at once.
+				return;
+			raisedCards.add(card);
+			cardsGameWidget.raiseCard(0, card);
+		}
+
+		cardsGameWidget.runPendingAnimations(200,
+				new GWTAnimation.AnimationCompletedListener() {
+					@Override
+					public void onComplete() {
+					}
+				});
 	}
 
 	@Override
