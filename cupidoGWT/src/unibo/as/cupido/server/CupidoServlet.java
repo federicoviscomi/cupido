@@ -256,6 +256,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				g.matchPoints = matchPoints;
 				g.playersTotalPoints = playersTotalPoint;
 				cometSession.enqueue(g);
+				httpSession.removeAttribute(TI);
+				httpSession.removeAttribute(SNI);
 			}
 		};
 	}
@@ -749,6 +751,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new NoSuchTableException();
 		}
 		httpSession.removeAttribute(TI);
+		httpSession.removeAttribute(SNI);
 	}
 
 	@Override
