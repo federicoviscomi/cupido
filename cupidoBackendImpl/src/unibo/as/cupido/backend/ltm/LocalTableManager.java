@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.ltm;
+package unibo.as.cupido.backend.ltm;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -25,7 +25,7 @@ import unibo.as.cupido.common.structures.Pair;
 import unibo.as.cupido.common.structures.TableDescriptor;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.common.exception.NoSuchUserException;
-import unibo.as.cupido.backendInterfacesImpl.table.SingleTableManager;
+import unibo.as.cupido.backend.table.SingleTableManager;
 
 /**
  * 

@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.ltm;
+package unibo.as.cupido.backend.ltm;
 
 import jargs.gnu.CmdLineParser;
 

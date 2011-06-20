@@ -1,9 +1,9 @@
-package unibo.as.cupido.backendInterfacesImpl.table;
+package unibo.as.cupido.backend.table;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 
-import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
+import unibo.as.cupido.backend.table.bot.BotNotificationInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface.Positions;
 import unibo.as.cupido.common.structures.Card;
@@ -22,10 +22,9 @@ public class PlayersManager {
 	private static class NonRemoteBotInfo {
 
 		final String botName;
-		final ServletNotificationsInterfaceNotRemote bot;
+		final BotNotificationInterface bot;
 
-		public NonRemoteBotInfo(String botName,
-				ServletNotificationsInterfaceNotRemote bot) {
+		public NonRemoteBotInfo(String botName, BotNotificationInterface bot) {
 			if (botName == null || bot == null)
 				throw new IllegalArgumentException("null bot name or interface");
 			this.botName = botName;
@@ -85,6 +84,7 @@ public class PlayersManager {
 			throw new IllegalArgumentException();
 		players[0] = new PlayerInfo(owner, false, score, snf);
 		this.removalThread = removalThread;
+		removalThread.start();
 	}
 
 	private void addBot(String userName, int position,
@@ -128,10 +128,8 @@ public class PlayersManager {
 	}
 
 	public void addNonRemoteBot(String userName, int position,
-			ServletNotificationsInterfaceNotRemote bot)
-			throws FullTableException, PositionFullException,
-			NotCreatorException {
-		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(userName, bot);
+			BotNotificationInterface bot) throws FullTableException,
+			PositionFullException, NotCreatorException {
 
 		if (playersCount > 4)
 			throw new FullTableException();
@@ -143,6 +141,7 @@ public class PlayersManager {
 			throw new NotCreatorException("Creator: "
 					+ players[Positions.OWNER.ordinal()] + ". Current user: "
 					+ userName);
+		String botName = "_bot." + userName + "." + position;
 
 		/*
 		 * notify every players but the one who is adding the bot and the bot
@@ -152,8 +151,7 @@ public class PlayersManager {
 			if (i != position) {
 				if (players[i] != null) {
 					try {
-						System.err.println("\nnotifing joined bot _bot."
-								+ userName + "." + position + " at " + position
+						System.err.println("\nnotifing joined bot " + botName
 								+ " to player " + players[i].name + " at " + i
 								+ ". relative position is "
 								+ toRelativePosition(position, i));
@@ -167,8 +165,7 @@ public class PlayersManager {
 					}
 				}
 				if (nonRemoteBotsInfo[i] != null) {
-					System.err.println("\nnotifing joined bot _bot." + userName
-							+ "." + position + " at " + position
+					System.err.println("\nnotifing joined bot " + botName
 							+ " to player " + nonRemoteBotsInfo[i].botName
 							+ " at " + i + ". relative position is "
 							+ toRelativePosition(position, i));
@@ -179,10 +176,7 @@ public class PlayersManager {
 			}
 		}
 
-		nonRemoteBotsInfo[position] = new NonRemoteBotInfo("_bot." + userName
-				+ "." + position, bot);
-		// players[position] = new PlayerInfo("_bot." + userName + "." +
-		// position, true, 0, null);
+		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(botName, bot);
 		playersCount++;
 		removalThread.remove();
 	}
@@ -298,6 +292,9 @@ public class PlayersManager {
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null && players[i].name.equals(playerName))
 				return i;
+			if (nonRemoteBotsInfo[i] != null
+					&& nonRemoteBotsInfo[i].botName.equals(playerName))
+				return i;
 		}
 		return -1;
 	}
@@ -364,11 +361,12 @@ public class PlayersManager {
 	}
 
 	public void notifyPlayedCard(String userName, Card card) {
+		int position = getPlayerPosition(userName);
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null && !players[i].name.equals(userName)) {
 				try {
 					players[i].sni.notifyPlayedCard(card,
-							getPlayerPosition(userName));
+							toRelativePosition(position, i));
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -377,7 +375,7 @@ public class PlayersManager {
 			if (nonRemoteBotsInfo[i] != null
 					&& !nonRemoteBotsInfo[i].botName.equals(userName)) {
 				nonRemoteBotsInfo[i].bot.notifyPlayedCard(card,
-						getPlayerPosition(userName));
+						toRelativePosition(position, i));
 			}
 		}
 	}

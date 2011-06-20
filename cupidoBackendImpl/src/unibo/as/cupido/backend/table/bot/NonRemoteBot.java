@@ -1,64 +1,50 @@
-package unibo.as.cupido.backendInterfacesImpl.table;
+package unibo.as.cupido.backend.table.bot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.Semaphore;
 
-import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
+import unibo.as.cupido.backend.table.CardsManager;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
-public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
+public class NonRemoteBot implements BotNotificationInterface {
 
-	private final int position;
-	private final String userName;
+	private final String botName;
 	private final TableInterface singleTableManager;
 	private final InitialTableStatus initialTableStatus;
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
 	private int point;
-	private final Semaphore playNextCardLock;
-	private final Semaphore passCardsLock;
 	private final NonRemoteBotCardPlayingThread cardPlayingThread;
-	/**
-	 * </code>firstDealer == 0</code> means this player is the first dealer.
-	 * Otherwise first dealer is the player in position
-	 * </code>firstDealer-1</code> relative to this player
-	 */
-	protected int firstDealer = -1;
+	private int turn = 0;
+	private int playedCardCount = 0;
+	private int firstDealer = -1;
+	private boolean alreadyGotCards = false;
 
-	public NonRemoteBot(String userName, int position,
-			InitialTableStatus initialTableStatus,
+	public NonRemoteBot(String botName, InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager) {
-		this.userName = userName;
-		// TODO Auto-generated constructor stub
-		this.position = position;
-		playNextCardLock = new Semaphore(0);
-		passCardsLock = new Semaphore(0);
-		cardPlayingThread = new NonRemoteBotCardPlayingThread(playNextCardLock,
-				passCardsLock, this, "_bot." + userName + "." + position);
-		cardPlayingThread.start();
+		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
+		cardPlayingThread = new NonRemoteBotCardPlayingThread(this, botName);
+		cardPlayingThread.start();
 		this.singleTableManager = singleTableManager;
-		System.out.println("\n nonremotebot constructor _bot." + userName
-				+ ". " + position + " " + initialTableStatus);
 	}
 
 	@Override
 	public synchronized void notifyGameEnded(int[] matchPoints,
 			int[] playersTotalPoint) {
-		System.out.println("\n" + userName + ": "
+		System.out.println("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
-		cardPlayingThread.setEndedGame();
-		playNextCardLock.release();
+		cardPlayingThread.interrupt();
 	}
 
 	@Override
 	public synchronized void notifyGameStarted(Card[] cards) {
-		System.err.println("\n" + userName + ": "
+		System.err.println("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(cards) + "). initial table status "
 				+ initialTableStatus);
@@ -66,44 +52,59 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		this.cards = new ArrayList<Card>(4);
 		this.cards.addAll(Arrays.asList(cards));
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			firstDealer = 0;
+			cardPlayingThread.setAbleToPass();
 		}
-		passCardsLock.release();
 	}
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
-		System.out.println("\n" + userName + ": "
+		System.out.println("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(cards) + ")");
+		if (alreadyGotCards)
+			throw new IllegalArgumentException("passing cards twice to player "
+					+ botName);
+		alreadyGotCards = true;
 		this.cards.addAll(Arrays.asList(cards));
-		for (Card card : this.cards) {
-			if (card.equals(CardsManager.twoOfClubs)) {
-				System.err.println("\n:\n:\n:\n:");
-				playNextCardLock.release();
-				return;
-			}
+		cardPlayingThread.setAbleToPass();
+		if (this.cards.contains(CardsManager.twoOfClubs)) {
+			cardPlayingThread.setAbleToPlay();
+			firstDealer = 3;
 		}
 	}
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		System.out.println("\n" + userName + ": "
+		System.out.println("\nNonRemoteBot inizio" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + card + ", " + playerPosition + ")");
+				+ "(" + card + ", " + playerPosition + ") played:"
+				+ Arrays.toString(playedCard) + " count:" + playedCardCount
+				+ " turn:" + turn + " first:" + firstDealer);
+		if (firstDealer == -1) {
+			firstDealer = playerPosition;
+		}
 		playedCard[playerPosition] = card;
+		playedCardCount++;
+		if (playedCardCount == 4) {
+			firstDealer = CardsManager.whoWins(playedCard, firstDealer);
+		} else if (playedCardCount == 5) {
+			playedCardCount = 1;
+			turn++;
+		}
+		System.out.println("\nNonRemoteBot fine" + botName + ": "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + card + ", " + playerPosition + ") played:"
+				+ Arrays.toString(playedCard) + " count:" + playedCardCount
+				+ " turn:" + turn + " first:" + firstDealer);
 		if (playerPosition == 2) {
-			playNextCardLock.release();
+			cardPlayingThread.setAbleToPlay();
 		}
 	}
 
 	@Override
 	public synchronized void notifyPlayerJoined(String name, boolean isBot,
 			int point, int position) {
-		System.out.println("\n AbstractBot inizio " + userName + "."
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + name + ", " + isBot + "," + point + "," + position
-				+ ")\n table status " + initialTableStatus);
+
 		if (name == null || position < 0 || position > 2)
 			throw new IllegalArgumentException("illegal position " + position
 					+ ". " + name + " " + isBot);
@@ -114,16 +115,11 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		initialTableStatus.opponents[position] = name;
 		initialTableStatus.playerScores[position] = position;
 		initialTableStatus.whoIsBot[position] = isBot;
-
-		System.out.println("\n AbstractBot fine " + userName + "."
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + name + ", " + isBot + "," + point + "," + position
-				+ ")\n table status " + initialTableStatus);
 	}
 
 	@Override
 	public synchronized void notifyPlayerLeft(String name) {
-		System.out.print("\n" + userName + ": "
+		System.out.print("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ")");
 		int position = 0;
@@ -140,7 +136,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		for (int i = 0; i < 3; i++)
 			cardsToPass[i] = cards.remove(0);
 		try {
-			singleTableManager.passCards(userName, cardsToPass);
+			singleTableManager.passCards(botName, cardsToPass);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -149,16 +145,33 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 
 	public synchronized void playNextCard() {
 		try {
+			System.err.println("play next card start. played:"
+					+ Arrays.toString(playedCard) + " count:" + playedCardCount
+					+ " turn:" + turn + " first:" + firstDealer);
 			if (cards.remove(CardsManager.twoOfClubs)) {
-				playedCard[0] = CardsManager.twoOfClubs;
+				playedCard[3] = CardsManager.twoOfClubs;
 			} else {
-				playedCard[0] = cards.remove(0);
+				if (playedCardCount != 4) {
+					Suit firstSuit = playedCard[firstDealer].suit;
+					for (int i = 0; i < cards.size(); i++)
+						if (cards.get(i).suit == firstSuit)
+							playedCard[3] = cards.remove(i);
+				} else {
+					playedCard[3] = cards.remove(0);
+				}
 			}
-			singleTableManager.playCard(userName, playedCard[0]);
+			singleTableManager.playCard(botName, playedCard[3]);
+			playedCardCount++;
+			if (playedCardCount == 5) {
+				playedCardCount = 1;
+				turn++;
+			}
+			System.err.println("play next card end. played:"
+					+ Arrays.toString(playedCard) + " count:" + playedCardCount
+					+ " turn:" + turn + " first:" + firstDealer);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
 }

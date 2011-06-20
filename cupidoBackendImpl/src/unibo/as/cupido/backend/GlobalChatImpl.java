@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl;
+package unibo.as.cupido.backend;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.ArrayBlockingQueue;
