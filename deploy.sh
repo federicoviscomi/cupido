@@ -8,14 +8,14 @@ echo Removing stubs...
 find . -name '*_Stub.class' -delete
 
 echo Generating new stubs...
-CLASSPATH="cupidoGWT/war/WEB-INF/classes:cupidoBackendImpl/bin:cupidoCommon/bin"
+CLASSPATH="cupidoGWT/war/WEB-INF/classes:cupidoBackendImpl/bin:cupidoCommon/bin:cupidoGWT/war/WEB-INF/lib/mysql-connector-java-5.1.16-bin.jar"
 rmic -d cupidoGWT/war/WEB-INF/classes -classpath "$CLASSPATH" 'unibo.as.cupido.server.CupidoServlet$2'
-# rmic -d cupidoBackendImpl/bin -classpath "$CLASSPATH" 'unibo.as.cupido.server.CupidoServlet$1'
 rmic -d cupidoBackendImpl/bin -classpath "$CLASSPATH" 'unibo.as.cupido.backendInterfacesImpl.gtm.GlobalTableManager'
 rmic -d cupidoBackendImpl/bin -classpath "$CLASSPATH" 'unibo.as.cupido.backendInterfacesImpl.ltm.LocalTableManager'
 rmic -d cupidoBackendImpl/bin -classpath "$CLASSPATH" 'unibo.as.cupido.backendInterfacesImpl.GlobalChatImpl'
 rmic -d cupidoGWT/war/WEB-INF/classes -classpath "$CLASSPATH" 'unibo.as.cupido.backendInterfacesImpl.GlobalChatImpl'
 rmic -d cupidoGWT/war/WEB-INF/classes -classpath "$CLASSPATH" 'unibo.as.cupido.backendInterfacesImpl.gtm.GlobalTableManager'
+rmic -d cupidoGWT/war/WEB-INF/classes -classpath "$CLASSPATH" 'unibo.as.cupido.backendInterfacesImpl.table.SingleTableManager'
 
 echo Running rmiregistry...
 rmiregistry -J-classpath -J"$CLASSPATH" &
