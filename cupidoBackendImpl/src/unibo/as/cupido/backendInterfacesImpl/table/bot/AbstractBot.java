@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
+import javax.management.openmbean.OpenDataException;
+
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
@@ -18,15 +21,13 @@ public class AbstractBot implements Bot, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 5795667604185475447L;
-	protected final String userName;
-	protected TableInterface singleTableManager;
-	protected InitialTableStatus initialTableStatus;
-	protected ArrayList<Card> cards;
-	protected Card[] playedCard = new Card[4];
-	protected int point;
-	private final Semaphore playNextCardLock = new Semaphore(0);
-	private final Semaphore passCardLock = new Semaphore(0);
-	private final CardPlayingThread cardPlayingThread;
+	final String userName;
+	TableInterface singleTableManager;
+	InitialTableStatus initialTableStatus;
+	ArrayList<Card> cards;
+	Card[] playedCard = new Card[4];
+	int point;
+
 	/**
 	 * </code>firstDealer == 0</code> means this player is the first dealer.
 	 * Otherwise first dealer is the player in position
@@ -39,20 +40,27 @@ public class AbstractBot implements Bot, Serializable {
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;
-		cardPlayingThread = new CardPlayingThread(playNextCardLock,
-				passCardLock, this, userName);
-		cardPlayingThread.start();
+
 		System.out.println("abstarct bot constructor " + userName + ". "
 				+ initialTableStatus);
 	}
 
 	public AbstractBot(String userName) {
-		this(null, null, userName);
+		this(new InitialTableStatus(new String[3], new int[3], new boolean[3]),
+				null, userName);
+		for (int i = 0; i < 3; i++)
+			initialTableStatus.opponents[i] = null;
 	}
 
 	@Override
-	public void addBot(int i) throws RemoteException {
-		throw new UnsupportedOperationException("method not implemented yet");
+	public void addBot(int position) throws RemoteException {
+		if (position < 0 || position > 2
+				|| initialTableStatus.opponents[position] != null)
+			throw new IllegalArgumentException("illegal position " + position
+					+ " " + initialTableStatus.opponents[position]);
+		initialTableStatus.opponents[position] = "_bot." + userName + "."
+				+ position;
+		initialTableStatus.whoIsBot[position] = true;
 	}
 
 	@Override
@@ -67,8 +75,7 @@ public class AbstractBot implements Bot, Serializable {
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
-		cardPlayingThread.setEndedGame();
-		playNextCardLock.release();
+
 	}
 
 	@Override
@@ -83,7 +90,7 @@ public class AbstractBot implements Bot, Serializable {
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			firstDealer = 0;
 		}
-		passCardLock.release();
+
 	}
 
 	@Override
@@ -102,7 +109,7 @@ public class AbstractBot implements Bot, Serializable {
 		for (Card card : this.cards) {
 			if (card.equals(CardsManager.twoOfClubs)) {
 				System.err.println("\n:\n:\n:\n:");
-				playNextCardLock.release();
+
 				return;
 			}
 		}
@@ -115,7 +122,7 @@ public class AbstractBot implements Bot, Serializable {
 				+ "(" + card + ", " + playerPosition + ")");
 		playedCard[playerPosition] = card;
 		if (playerPosition == 2) {
-			playNextCardLock.release();
+		
 		}
 	}
 

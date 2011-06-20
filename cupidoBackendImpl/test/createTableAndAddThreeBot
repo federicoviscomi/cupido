@@ -1,0 +1,10 @@
+login cane bau
+create
+addbot 1
+addbot 2
+addbot 3
+sleep 2000
+pass -a
+sleep 2000
+play -a
+sleep 2000

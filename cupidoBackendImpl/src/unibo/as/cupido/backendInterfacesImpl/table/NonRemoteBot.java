@@ -11,15 +11,13 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 
 public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 
-	private final int position;
-	private final String userName;
+	private final String botName;
 	private final TableInterface singleTableManager;
 	private final InitialTableStatus initialTableStatus;
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
 	private int point;
 	private final Semaphore playNextCardLock;
-	private final Semaphore passCardsLock;
 	private final NonRemoteBotCardPlayingThread cardPlayingThread;
 	/**
 	 * </code>firstDealer == 0</code> means this player is the first dealer.
@@ -27,28 +25,28 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 	 * </code>firstDealer-1</code> relative to this player
 	 */
 	protected int firstDealer = -1;
+	private boolean alreadyGotCards = false;
+	private final Semaphore passLock;
 
-	public NonRemoteBot(String userName, int position,
-			InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager) {
-		this.userName = userName;
+	public NonRemoteBot(String botName, InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager, Semaphore passLock) {
+		this.botName = botName;
+		this.passLock = passLock;
 		// TODO Auto-generated constructor stub
-		this.position = position;
 		playNextCardLock = new Semaphore(0);
-		passCardsLock = new Semaphore(0);
 		cardPlayingThread = new NonRemoteBotCardPlayingThread(playNextCardLock,
-				passCardsLock, this, "_bot." + userName + "." + position);
+				passLock, this, botName);
 		cardPlayingThread.start();
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
-		System.out.println("\n nonremotebot constructor _bot." + userName
-				+ ". " + position + " " + initialTableStatus);
+		System.out.println("\n nonremotebot constructor " + botName + " "
+				+ initialTableStatus);
 	}
 
 	@Override
 	public synchronized void notifyGameEnded(int[] matchPoints,
 			int[] playersTotalPoint) {
-		System.out.println("\n" + userName + ": "
+		System.out.println("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
@@ -58,7 +56,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 
 	@Override
 	public synchronized void notifyGameStarted(Card[] cards) {
-		System.err.println("\n" + userName + ": "
+		System.err.println("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(cards) + "). initial table status "
 				+ initialTableStatus);
@@ -68,14 +66,17 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			firstDealer = 0;
 		}
-		passCardsLock.release();
 	}
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
-		System.out.println("\n" + userName + ": "
+		System.out.println("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(cards) + ")");
+		if (alreadyGotCards)
+			throw new IllegalArgumentException("passing cards twice to player "
+					+ botName);
+		alreadyGotCards = true;
 		this.cards.addAll(Arrays.asList(cards));
 		for (Card card : this.cards) {
 			if (card.equals(CardsManager.twoOfClubs)) {
@@ -88,7 +89,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		System.out.println("\n" + userName + ": "
+		System.out.println("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + card + ", " + playerPosition + ")");
 		playedCard[playerPosition] = card;
@@ -100,7 +101,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 	@Override
 	public synchronized void notifyPlayerJoined(String name, boolean isBot,
 			int point, int position) {
-		System.out.println("\n AbstractBot inizio " + userName + "."
+		System.out.println("\n AbstractBot inizio " + botName + "."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ", " + isBot + "," + point + "," + position
 				+ ")\n table status " + initialTableStatus);
@@ -115,7 +116,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		initialTableStatus.playerScores[position] = position;
 		initialTableStatus.whoIsBot[position] = isBot;
 
-		System.out.println("\n AbstractBot fine " + userName + "."
+		System.out.println("\n AbstractBot fine " + botName + "."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ", " + isBot + "," + point + "," + position
 				+ ")\n table status " + initialTableStatus);
@@ -123,7 +124,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 
 	@Override
 	public synchronized void notifyPlayerLeft(String name) {
-		System.out.print("\n" + userName + ": "
+		System.out.print("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ")");
 		int position = 0;
@@ -140,7 +141,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 		for (int i = 0; i < 3; i++)
 			cardsToPass[i] = cards.remove(0);
 		try {
-			singleTableManager.passCards(userName, cardsToPass);
+			singleTableManager.passCards(botName, cardsToPass);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -154,7 +155,7 @@ public class NonRemoteBot implements ServletNotificationsInterfaceNotRemote {
 			} else {
 				playedCard[0] = cards.remove(0);
 			}
-			singleTableManager.playCard(userName, playedCard[0]);
+			singleTableManager.playCard(botName, playedCard[0]);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

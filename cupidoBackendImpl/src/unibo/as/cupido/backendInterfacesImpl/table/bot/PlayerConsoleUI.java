@@ -10,9 +10,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.server.RemoteStub;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Semaphore;
+
 import unibo.as.cupido.backendInterfacesImpl.ltm.LocalTableManager;
 import unibo.as.cupido.backendInterfacesImpl.table.NonRemoteBot;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
@@ -27,66 +34,69 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
 public class PlayerConsoleUI {
-	private static final String FORMAT = "%-7.7s %-3.3s %-10.10s %-20.20s\n";
+	private static final String FORMAT = "%-20.20s %-3.3s %-10.10s %-30.30s\n";
 	private static final String USAGE = String.format(FORMAT + FORMAT + FORMAT
-			+ FORMAT + FORMAT, "COMMAND", "OPT", "LONG_OPT", "DESCRIPTION",
-			"create", "", "", "craete a new table", "exit", "", "", "", "list",
-			"-p", "--players", "list all player in the table", "list", "-c",
+			+ FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT, "COMMAND",
+			"OPT", "LONG_OPT", "DESCRIPTION", "create", "", "",
+			"create a new table", "exit", "", "", "", "list", "-p",
+			"--players", "list all player in the table", "list", "-c",
 			"--cards", "list this player cards", "list", "-t", "--tables",
-			"list all tables", "login USER_NAME PASSWORD", "", "", "");
+			"list all tables", "login NAME PASSWORD", "", "", "", "pass", "-a",
+			"--arbitrary", "pass arbitrary cards", "pass CARD1 CARD2 CARD3",
+			"-c", "--card", "pass specified cards");
 
 	public static void main(String[] args) throws Exception {
 
 		new PlayerConsoleUI(
-				"/home/cane/workspace/test/createTableAndAddThreeBot")
+				"/home/cane/workspace/cupido/cupidoBackendImpl/test/createTableAndAddThreeBot")
 				.execute();
 	}
 
 	private LocalTableManager localTableManager = null;
 	private final GlobalTableManagerInterface gtm;
-	private TableInterface tableInterface;
 	private String playerName;
-	private ServletNotificationsInterface sni;
 	private TableInfoForClient table;
-	private InitialTableStatus initialTableStatus;
-	private ArrayList<Card> cards;
-	private Card[] roundCards;
 	private final BufferedReader in;
 	private final PrintWriter out;
 	private boolean logged = false;
+	private Bot botNotification;
+	private AbstractBot abstractBot;
 
 	public PlayerConsoleUI() throws Exception {
-		gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
-				.lookup(GlobalTableManagerInterface.globalTableManagerName);
-		in = new BufferedReader(new InputStreamReader(System.in));
-		out = new PrintWriter(System.out);
+		this(new BufferedReader(new InputStreamReader(System.in)),
+				new PrintWriter(System.out));
 	}
 
 	public PlayerConsoleUI(String inputFileName) throws Exception {
-		gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
-				.lookup(GlobalTableManagerInterface.globalTableManagerName);
-		in = new BufferedReader(new InputStreamReader(new FileInputStream(
-				inputFileName)));
-		out = new PrintWriter(System.out);
+		this(new BufferedReader(new InputStreamReader(new FileInputStream(
+				inputFileName))), new PrintWriter(System.out));
 	}
 
 	public PlayerConsoleUI(String inputFileName, String outputFileName)
 			throws Exception {
+		this(new BufferedReader(new InputStreamReader(new FileInputStream(
+				inputFileName))), new PrintWriter(new FileOutputStream(
+				outputFileName)));
+	}
+
+	public PlayerConsoleUI(BufferedReader in, PrintWriter out)
+			throws AccessException, RemoteException, NotBoundException {
+		this.in = in;
+		this.out = out;
 		gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
 				.lookup(GlobalTableManagerInterface.globalTableManagerName);
-		in = new BufferedReader(new InputStreamReader(new FileInputStream(
-				inputFileName)));
-		out = new PrintWriter(new FileOutputStream(outputFileName));
 	}
 
 	public void execute() throws IOException {
 		CmdLineParser parser = new CmdLineParser();
-		CmdLineParser.Option listCardsOption = parser.addStringOption('c',
-				"cards");
-		CmdLineParser.Option listPlayersOption = parser.addStringOption('p',
+		CmdLineParser.Option cardsOption = parser.addBooleanOption('c', "cards");
+		CmdLineParser.Option listPlayersOption = parser.addBooleanOption('p',
 				"players");
-		CmdLineParser.Option listTablesOption = parser.addStringOption('t',
+		CmdLineParser.Option listTablesOption = parser.addBooleanOption('t',
 				"tables");
+		CmdLineParser.Option arbitraryCardsOption = parser.addBooleanOption('a',
+				"arbitrary");
+
 		String nextCommandLine;
 
 		while (true) {
@@ -105,14 +115,14 @@ public class PlayerConsoleUI {
 					command = parser.getRemainingArgs();
 					if (command.length < 1) {
 						error = true;
-						out.println("\nsintax error\n " + USAGE);
+						out.println("\n1 sintax error\n " + USAGE);
 					}
 				} catch (IllegalOptionValueException e) {
 					error = true;
-					out.println("\nsintax error\n " + USAGE);
+					out.println("\n2 sintax error\n " + USAGE);
 				} catch (UnknownOptionException e) {
 					error = true;
-					out.println("\nsintax error\n " + USAGE);
+					out.println("\n3 sintax error\n " + USAGE);
 				}
 			} while (error);
 			if (command[0].equals("exit")) {
@@ -131,15 +141,33 @@ public class PlayerConsoleUI {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			} else if (command[0].equals("pass")) {
+				boolean specifiedCards = (parser.getOptionValue(cardsOption) == null ? false
+						: true);
+				boolean arbitraryCards = (parser
+						.getOptionValue(arbitraryCardsOption) == null ? false
+						: true);
+				if (arbitraryCards) {
+					abstractBot.passCards();
+				} else if (specifiedCards){
+					throw new UnsupportedOperationException();
+				} else {
+					out.println("\nmissing option");
+				}
 			} else if (command[0].equals("login")) {
 				logged = true;
 				playerName = command[1];
 				// TODO
+				abstractBot = new AbstractBot(new InitialTableStatus(
+						new String[3], new int[3], new boolean[3]), null,
+						playerName);
+				botNotification = (Bot) UnicastRemoteObject
+						.exportObject(abstractBot);
 				out.println("successfully logged in " + playerName);
 			} else if (command[0].equals("create")) {
 				try {
-					tableInterface = gtm.createTable(playerName,
-							new AbstractBot(playerName));
+					abstractBot.singleTableManager = gtm.createTable(
+							playerName, botNotification);
 				} catch (AllLTMBusyException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -149,22 +177,26 @@ public class PlayerConsoleUI {
 						: true);
 				boolean listPlayers = (parser.getOptionValue(listPlayersOption) == null ? false
 						: true);
-				boolean listCards = (parser.getOptionValue(listCardsOption) == null ? false
+				boolean listCards = (parser.getOptionValue(cardsOption) == null ? false
 						: true);
 				if (listTables) {
 					out.println(Arrays.toString(gtm.getTableList().toArray(
 							new TableInfoForClient[1])));
 				} else if (listPlayers) {
-					out.println(initialTableStatus);
+					out.println(abstractBot.initialTableStatus);
 				} else if (listCards) {
 					out.print("\n"
-							+ Arrays.toString(cards.toArray(new Card[13]))
-							+ ". \nround cards: " + Arrays.toString(roundCards));
+							+ Arrays.toString(abstractBot.cards
+									.toArray(new Card[13]))
+							+ ". \nround cards: "
+							+ Arrays.toString(abstractBot.playedCard));
 				}
 			} else if (command[0].equals("addbot")) {
 				try {
-					tableInterface.addBot(playerName,
-							Integer.parseInt(command[1]));
+					int position = Integer.parseInt(command[1]);
+					abstractBot.singleTableManager.addBot(playerName, position);
+					position--;
+					abstractBot.addBot(position);
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -198,7 +230,7 @@ public class PlayerConsoleUI {
 		}
 		out.close();
 		try {
-			if (tableInterface != null) {
+			if (abstractBot.singleTableManager != null) {
 				gtm.notifyTableDestruction(table.tableDescriptor,
 						localTableManager);
 			}

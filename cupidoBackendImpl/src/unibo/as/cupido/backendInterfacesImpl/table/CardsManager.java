@@ -239,13 +239,6 @@ public class CardsManager {
 			throws IllegalArgumentException {
 		for (int i = 0; i < 3; i++) {
 			if (!cards[position].remove(passedCards[i])) {
-				// Arrays.sort(passedCards, cardsComparator);
-				// Card[] toArray = cards[position].toArray(new
-				// Card[cards[position].size()]);
-				// Arrays.sort(toArray, cardsComparator);
-				// throw new IllegalArgumentException("Player " + position+
-				// " wants to pass cards "+ Arrays.toString(passedCards) +
-				// " but he owns "+ Arrays.toString(toArray));
 				throw new IllegalArgumentException("Player " + position
 						+ " wants to pass cards "
 						+ Arrays.toString(passedCards) + " but he owns "

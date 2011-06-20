@@ -131,7 +131,6 @@ public class PlayersManager {
 			ServletNotificationsInterfaceNotRemote bot)
 			throws FullTableException, PositionFullException,
 			NotCreatorException {
-		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(userName, bot);
 
 		if (playersCount > 4)
 			throw new FullTableException();
@@ -143,6 +142,7 @@ public class PlayersManager {
 			throw new NotCreatorException("Creator: "
 					+ players[Positions.OWNER.ordinal()] + ". Current user: "
 					+ userName);
+		String botName = "_bot." + userName + "." + position;
 
 		/*
 		 * notify every players but the one who is adding the bot and the bot
@@ -152,8 +152,7 @@ public class PlayersManager {
 			if (i != position) {
 				if (players[i] != null) {
 					try {
-						System.err.println("\nnotifing joined bot _bot."
-								+ userName + "." + position + " at " + position
+						System.err.println("\nnotifing joined bot " + botName
 								+ " to player " + players[i].name + " at " + i
 								+ ". relative position is "
 								+ toRelativePosition(position, i));
@@ -167,8 +166,7 @@ public class PlayersManager {
 					}
 				}
 				if (nonRemoteBotsInfo[i] != null) {
-					System.err.println("\nnotifing joined bot _bot." + userName
-							+ "." + position + " at " + position
+					System.err.println("\nnotifing joined bot " + botName
 							+ " to player " + nonRemoteBotsInfo[i].botName
 							+ " at " + i + ". relative position is "
 							+ toRelativePosition(position, i));
@@ -179,10 +177,7 @@ public class PlayersManager {
 			}
 		}
 
-		nonRemoteBotsInfo[position] = new NonRemoteBotInfo("_bot." + userName
-				+ "." + position, bot);
-		// players[position] = new PlayerInfo("_bot." + userName + "." +
-		// position, true, 0, null);
+		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(botName, bot);
 		playersCount++;
 		removalThread.remove();
 	}
@@ -297,6 +292,9 @@ public class PlayersManager {
 	public int getPlayerPosition(String playerName) {
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null && players[i].name.equals(playerName))
+				return i;
+			if (nonRemoteBotsInfo[i] != null
+					&& nonRemoteBotsInfo[i].botName.equals(playerName))
 				return i;
 		}
 		return -1;

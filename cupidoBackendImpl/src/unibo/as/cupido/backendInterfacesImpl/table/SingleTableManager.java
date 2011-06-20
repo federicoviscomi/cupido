@@ -41,6 +41,8 @@ public class SingleTableManager implements TableInterface {
 	private final Semaphore start;
 	private final Semaphore end;
 	private final GlobalTableManagerInterface gtm;
+	private final Semaphore[] passLocks = { new Semaphore(0), new Semaphore(0),
+			new Semaphore(0), new Semaphore(0) };
 
 	public SingleTableManager(ServletNotificationsInterface snf,
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
@@ -77,15 +79,15 @@ public class SingleTableManager implements TableInterface {
 		// dummyLoggerBotNotifyer.startPlayingThread(bot);
 
 		try {
+			String botName = "_bot." + userName + "." + position;
 			InitialTableStatus initialTableStatus = playersManager
 					.getInitialTableStatus(position);
 
-			NonRemoteBot bot = new NonRemoteBot(userName, position,
-					initialTableStatus, gtm.getLTMInterface(
-							table.tableDescriptor.ltmId).getTable(
-							table.tableDescriptor.id));
-			viewers.notifyBotJoined(userName, position);
-			// playersManager.addBot(userName, position, bot);
+			NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus,
+					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
+							table.tableDescriptor.id), passLocks[position]);
+			viewers.notifyBotJoined(botName, position);
+
 			playersManager.addNonRemoteBot(userName, position, bot);
 			if (playersManager.playersCount() == 4)
 				start.release();
@@ -165,6 +167,7 @@ public class SingleTableManager implements TableInterface {
 		// System.out.println("\n"+
 		// Thread.currentThread().getStackTrace()[1].getMethodName()+ "()");
 		playersManager.notifyGameStarted(cardsManager.getCards());
+		passLocks[0].release();
 	}
 
 	@Override
@@ -174,16 +177,18 @@ public class SingleTableManager implements TableInterface {
 		 * NOTE: userName is name of the player who passes cards. Not name of
 		 * the player who receives the cards!
 		 */
-		System.out.println("\n"
+		System.out.println("\n SingleTableManager."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + userName + ", " + Arrays.toString(cards) + ")");
 		// playersManager.print();
 		// cardsManager.print();
 		if (userName == null || cards == null || cards.length != 3)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(userName + " "
+					+ Arrays.toString(cards));
 		int position = playersManager.getPlayerPosition(userName);
 		cardsManager.setCardPassing(position, cards);
 		playersManager.notifyPassedCards((position + 1) % 4, cards);
+		passLocks[(position + 1) % 4].release();
 	}
 
 	@Override
