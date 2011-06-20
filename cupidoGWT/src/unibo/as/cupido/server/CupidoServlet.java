@@ -611,9 +611,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			LocalTableManagerInterface LTMinterf = gtm.getLTMInterface(ltmId);
 			TableInterface ti = LTMinterf.getTable(tableId);
 			httpSession.setAttribute(TI, ti);
+			ServletNotificationsInterface sni = getServletNotificationsInterface(
+					httpSession, cometSession);
+			UnicastRemoteObject.exportObject(sni);
+			httpSession.setAttribute(SNI, sni);
 			return ti.joinTable((String) httpSession.getAttribute(USERNAME),
-					(ServletNotificationsInterface) httpSession
-							.getAttribute(SNI));
+					sni);
 
 		} catch (NoSuchTableException e) {
 			throw e;
