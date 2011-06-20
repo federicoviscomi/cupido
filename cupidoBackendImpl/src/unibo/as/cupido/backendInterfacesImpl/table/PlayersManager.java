@@ -85,6 +85,7 @@ public class PlayersManager {
 			throw new IllegalArgumentException();
 		players[0] = new PlayerInfo(owner, false, score, snf);
 		this.removalThread = removalThread;
+		removalThread.start();
 	}
 
 	private void addBot(String userName, int position,
@@ -362,11 +363,12 @@ public class PlayersManager {
 	}
 
 	public void notifyPlayedCard(String userName, Card card) {
+		int position = getPlayerPosition(userName);
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null && !players[i].name.equals(userName)) {
 				try {
 					players[i].sni.notifyPlayedCard(card,
-							getPlayerPosition(userName));
+							 toRelativePosition(position, i));
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -375,7 +377,7 @@ public class PlayersManager {
 			if (nonRemoteBotsInfo[i] != null
 					&& !nonRemoteBotsInfo[i].botName.equals(userName)) {
 				nonRemoteBotsInfo[i].bot.notifyPlayedCard(card,
-						getPlayerPosition(userName));
+						toRelativePosition(position, i));
 			}
 		}
 	}

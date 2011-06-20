@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
-import java.util.concurrent.Semaphore;
-
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
@@ -25,14 +23,10 @@ public class CardsManager {
 		}
 	};
 
-	final Semaphore[] passLocks = { new Semaphore(0), new Semaphore(0),
-			new Semaphore(0), new Semaphore(0) };
-	final Semaphore[] playLocks = { new Semaphore(0), new Semaphore(0),
-			new Semaphore(0), new Semaphore(0) };
-
 	/** the two of clubs */
 	public static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
 	public static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
+
 	/** stores the cards passed by each player */
 	private Card[][] allPassedCards = new Card[4][];
 	/** stores the cards played in the current turn */
@@ -120,7 +114,7 @@ public class CardsManager {
 	}
 
 	public boolean gameEnded() {
-		return turn == 13;
+		return turn == 12 && playedCardsCount == 4;
 	}
 
 	public Card[][] getCards() {
@@ -159,7 +153,6 @@ public class CardsManager {
 			if (cards[i].contains(twoOfClubs))
 				firstDealerInTurn = i;
 		}
-		playLocks[firstDealerInTurn].release();
 	}
 
 	public void playCard(int playerPosition, Card card)
@@ -217,7 +210,6 @@ public class CardsManager {
 			turn++;
 
 		}
-		playLocks[(firstDealerInTurn + playedCardsCount + 1) % 4].release();
 		playedCardsCount = (playedCardsCount + 1) % 5;
 	}
 
@@ -254,8 +246,6 @@ public class CardsManager {
 		allPassedCards[position] = passedCards;
 		if (allPlayerPassedCards()) {
 			this.passCards();
-		} else {
-			passLocks[position + 1].release();
 		}
 	}
 
@@ -274,8 +264,21 @@ public class CardsManager {
 		return firstDealerInTurn;
 	}
 
-	void startGame() {
-		passLocks[0].release();
+	public static int whoWins(final Card[] playedCard, final int firstDealer) {
+		return Arrays.asList(playedCard).indexOf(
+				Collections.max(Arrays.asList(playedCard),
+						new Comparator<Card>() {
+							@Override
+							public int compare(Card o1, Card o2) {
+								int firstSuit = playedCard[firstDealer].suit
+										.ordinal();
+								return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14
+										: o1.value))
+										- ((o2.suit.ordinal() == firstSuit ? 1
+												: 0) * (o2.value == 1 ? 14
+												: o2.value));
+							}
+						}));
 	}
 
 }

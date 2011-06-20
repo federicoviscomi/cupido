@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.Semaphore;
 
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
 
 public class RemoteBot implements Bot, Serializable {
@@ -24,10 +24,12 @@ public class RemoteBot implements Bot, Serializable {
 	ArrayList<Card> cards;
 	Card[] playedCard = new Card[4];
 	int point;
+	private int turn = 0;
+	private int playedCardCount = 0;
+	private int firstDealer = -1;
 
-	private final Semaphore passCardsLock;
-	private boolean ableToPlay = Boolean.FALSE;
-	private boolean ableToPass = Boolean.FALSE;
+	private boolean ableToPlay = false;
+	private boolean ableToPass = false;
 
 	private Object lock = new Object();
 
@@ -36,8 +38,7 @@ public class RemoteBot implements Bot, Serializable {
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;
-		this.passCardsLock = new Semaphore(0);
-		// this.playCardsLock = new Semaphore(0);
+
 		System.out.println("abstarct bot constructor " + userName + ". "
 				+ initialTableStatus);
 	}
@@ -117,10 +118,29 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		System.out.println("\n" + userName + ": "
+		System.out.println("\nRemoteBot inizio" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + card + ", " + playerPosition + ")");
+				+ "(" + card + ", " + playerPosition + ") played:"
+				+ Arrays.toString(playedCard) + " count:" + playedCardCount
+				+ " turn:" + turn + " first:" + firstDealer);
+
+		if (firstDealer == -1) {
+			firstDealer = playerPosition;
+		}
 		playedCard[playerPosition] = card;
+		playedCardCount++;
+		if (playedCardCount == 4) {
+			firstDealer = CardsManager.whoWins(playedCard, firstDealer);
+		} else if (playedCardCount == 5) {
+			playedCardCount = 1;
+			turn++;
+		}
+		System.out.println("\nRemoteBot fine" + userName + ": "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + card + ", " + playerPosition + ") played:"
+				+ Arrays.toString(playedCard) + " count:" + playedCardCount
+				+ " turn:" + turn + " first:" + firstDealer);
+	
 		if (playerPosition == 2) {
 			synchronized (lock) {
 				ableToPlay = true;
@@ -199,12 +219,30 @@ public class RemoteBot implements Bot, Serializable {
 					lock.wait();
 				}
 				ableToPlay = false;
+				System.err.println("play next card start. played:"
+						+ Arrays.toString(playedCard) + " count:"
+						+ playedCardCount + " turn:" + turn);
 				if (cards.remove(CardsManager.twoOfClubs)) {
-					playedCard[0] = CardsManager.twoOfClubs;
+					playedCard[3] = CardsManager.twoOfClubs;
 				} else {
-					playedCard[0] = cards.remove(0);
+					if (playedCardCount != 4) {
+						Suit firstSuit = playedCard[firstDealer].suit;
+						for (int i = 0; i < cards.size(); i++)
+							if (cards.get(i).suit == firstSuit)
+								playedCard[3] = cards.remove(i);
+					} else {
+						playedCard[3] = cards.remove(0);
+					}
 				}
-				singleTableManager.playCard(userName, playedCard[0]);
+				singleTableManager.playCard(userName, playedCard[3]);
+				playedCardCount++;
+				if (playedCardCount == 5) {
+					playedCardCount = 1;
+					turn++;
+				}
+				System.err.println("play next card end. played:"
+						+ Arrays.toString(playedCard) + " count:"
+						+ playedCardCount + " turn:" + turn);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

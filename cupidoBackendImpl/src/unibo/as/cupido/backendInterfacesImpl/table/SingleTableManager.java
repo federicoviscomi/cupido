@@ -3,8 +3,6 @@ package unibo.as.cupido.backendInterfacesImpl.table;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.concurrent.Semaphore;
-
 import unibo.as.cupido.backendInterfacesImpl.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
@@ -39,9 +37,9 @@ public class SingleTableManager implements TableInterface {
 	private final TableInfoForClient table;
 	private final ViewersSwarm viewers = new ViewersSwarm();
 	private final Integer turns = new Integer(0);
-	private final Semaphore start;
-	private final Semaphore end;
 	private final GlobalTableManagerInterface gtm;
+	private final StartNotifierThread startNotifierThread;
+	private final EndNotifierThread endNotifierThread;
 
 	public SingleTableManager(ServletNotificationsInterface snf,
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
@@ -53,10 +51,10 @@ public class SingleTableManager implements TableInterface {
 		playersManager = new PlayersManager(table.owner, snf,
 				databaseManager.getPlayerScore(table.owner), new RemovalThread(
 						this));
-		start = new Semaphore(0);
-		end = new Semaphore(0);
-		new StartNotifierThread(start, this).start();
-		new EndNotifierThread(end, this).start();
+		startNotifierThread = new StartNotifierThread(this);
+		startNotifierThread.start();
+		endNotifierThread = new EndNotifierThread(this);
+		endNotifierThread.start();
 		cardsManager = new CardsManager();
 	}
 
@@ -82,8 +80,9 @@ public class SingleTableManager implements TableInterface {
 			viewers.notifyBotJoined(botName, position);
 
 			playersManager.addNonRemoteBot(userName, position, bot);
-			if (playersManager.playersCount() == 4)
-				start.release();
+			if (playersManager.playersCount() == 4) {
+				startNotifierThread.setGameStarted();
+			}
 
 		} catch (NoSuchTableException e) {
 			// TODO Auto-generated catch block
@@ -117,8 +116,9 @@ public class SingleTableManager implements TableInterface {
 		int score = databaseManager.getPlayerScore(userName);
 		int position = playersManager.addPlayer(userName, snf, score);
 		viewers.notifyPlayerJoined(userName, score, position);
-		if (playersManager.playersCount() == 4)
-			start.release();
+		if (playersManager.playersCount() == 4) {
+			startNotifierThread.setGameStarted();
+		}
 
 		System.out.print("\n\n\n SingleTableManager fine ."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
@@ -164,10 +164,6 @@ public class SingleTableManager implements TableInterface {
 		System.out.println("\nSingleTableManager."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "()2");
-		cardsManager.startGame();
-		System.out.println("\nSingleTableManager."
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "()3");
 	}
 
 	@Override
@@ -204,8 +200,9 @@ public class SingleTableManager implements TableInterface {
 		cardsManager.playCard(playerPosition, card);
 		playersManager.notifyPlayedCard(userName, card);
 		viewers.notifyPlayedCard(playerPosition, card);
-		if (cardsManager.gameEnded())
-			end.release();
+		if (cardsManager.gameEnded()) {
+			endNotifierThread.setGameEnded();
+		}
 	}
 
 	@Override
