@@ -1,6 +1,6 @@
 package unibo.as.cupido.client.viewerstates;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.common.structures.Card;
 
 public interface ViewerState {
 

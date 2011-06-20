@@ -1,8 +1,8 @@
 package unibo.as.cupido.client;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.PlayerStatus;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.client.screens.ScreenSwitcher;
 import unibo.as.cupido.client.viewerstates.ViewerStateManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManagerImpl;

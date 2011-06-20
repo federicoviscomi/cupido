@@ -1,18 +1,23 @@
 package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
-import unibo.as.cupido.backendInterfaces.TableInterface;
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
+import unibo.as.cupido.common.interfaces.TableInterface;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
 
-public class AbstractBot implements Bot {
+public class AbstractBot implements Bot, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5795667604185475447L;
 	protected final String userName;
 	protected TableInterface singleTableManager;
 	protected InitialTableStatus initialTableStatus;
@@ -28,7 +33,6 @@ public class AbstractBot implements Bot {
 	 * </code>firstDealer-1</code> relative to this player
 	 */
 	protected int firstDealer = -1;
-	
 
 	public AbstractBot(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, String userName) {

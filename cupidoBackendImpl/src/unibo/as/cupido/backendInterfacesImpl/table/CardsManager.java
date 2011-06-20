@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.Card.Suit;
-import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.Card.Suit;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.exception.IllegalMoveException;
 
 public class CardsManager {
 
@@ -113,6 +113,9 @@ public class CardsManager {
 				new Random(System.currentTimeMillis()));
 		for (int i = 0; i < 52; i++) {
 			cards[i % 4].add(mazzo[i]);
+		}
+		for (int i = 0; i < 4; i++) {
+			Collections.sort(cards[i], cardsComparator);
 		}
 	}
 

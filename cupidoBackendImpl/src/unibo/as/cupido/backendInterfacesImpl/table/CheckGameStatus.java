@@ -1,9 +1,9 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-import unibo.as.cupido.backendInterfaces.TableInterface;
-import unibo.as.cupido.backendInterfaces.TableInterface.GameStatus;
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.Card.Suit;
+import unibo.as.cupido.common.interfaces.TableInterface;
+import unibo.as.cupido.common.interfaces.TableInterface.GameStatus;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.Card.Suit;
 
 /**
  * Just check and stores game status as specified by {@link TableInterface}
@@ -13,11 +13,11 @@ import unibo.as.cupido.backendInterfaces.common.Card.Suit;
  */
 public class CheckGameStatus {
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		Card a = new Card(2, Suit.CLUBS);
 		Card b = new Card(2, Suit.CLUBS);
 	}
-	
+
 	protected GameStatus gameStatus;
 
 	public CheckGameStatus() {

@@ -13,10 +13,11 @@
 
   <!-- Other module inherits                                      -->
   <inherits name="net.zschech.gwt.comet.Comet" />
-  <inherits name='unibo.as.cupido.backendInterfaces.common'/>
-  <inherits name='unibo.as.cupido.backendInterfaces.exception'/>
+  <inherits name='unibo.as.cupido.common.exception'/><inherits
+  	name="unibo.as.cupido.common.structures">
+</inherits>
 
-  <!-- Specify the app entry point class.                         -->
+	<!-- Specify the app entry point class.                         -->
   <entry-point class='unibo.as.cupido.client.Cupido'/>
 
   <!-- Specify the paths for translatable code                    -->

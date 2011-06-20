@@ -1,9 +1,14 @@
 package unibo.as.cupido.backendInterfacesImpl.table.bot;
 
+import java.io.Serializable;
 import java.util.concurrent.Semaphore;
 
-public class CardPlayingThread extends Thread {
+public class CardPlayingThread extends Thread implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2723913430471809762L;
 	private final Bot bot;
 	private final Semaphore playNextCardLock;
 	private final Semaphore passCardsLock;
@@ -21,13 +26,13 @@ public class CardPlayingThread extends Thread {
 	public void run() {
 		try {
 			passCardsLock.acquire();
-			//Thread.sleep(1000);
+			// Thread.sleep(1000);
 			bot.passCards();
 			System.err.println("\n:\n1");
 			while (!endedGame) {
 				System.err.println("\n:\n2");
 				playNextCardLock.acquire();
-				//Thread.sleep(1000);
+				// Thread.sleep(1000);
 				System.err.println("\n:\n3");
 				bot.playNextCard();
 			}

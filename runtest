@@ -1,0 +1,5 @@
+#!/bin/bash
+
+CLASSPATH="cupidoGWT/war/WEB-INF/classes:cupidoBackendImpl/bin:cupidoCommon/bin:cupidoBackendImpl/jargs.jar"
+
+java -classpath "$CLASSPATH" unibo.as.cupido.backendInterfacesImpl.table.bot.PlayerConsoleUI

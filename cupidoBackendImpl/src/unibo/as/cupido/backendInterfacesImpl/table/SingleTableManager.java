@@ -1,32 +1,28 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
-import unibo.as.cupido.backendInterfaces.TableInterface;
-import unibo.as.cupido.backendInterfaces.common.Card;
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.common.ObservedGameStatus;
-import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
-import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
-import unibo.as.cupido.backendInterfaces.exception.FullTableException;
-import unibo.as.cupido.backendInterfaces.exception.IllegalMoveException;
-import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMException;
-import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
-import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
-import unibo.as.cupido.backendInterfaces.exception.NotCreatorException;
-import unibo.as.cupido.backendInterfaces.exception.PlayerNotFoundException;
-import unibo.as.cupido.backendInterfaces.exception.PositionFullException;
-import unibo.as.cupido.backendInterfacesImpl.database.DatabaseManager;
-import unibo.as.cupido.backendInterfacesImpl.table.bot.BotManager;
-import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInterfaceNotRemote;
+import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.interfaces.TableInterface;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.TableInfoForClient;
+import unibo.as.cupido.common.database.DatabaseManager;
+import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.IllegalMoveException;
+import unibo.as.cupido.common.exception.NoSuchLTMException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.NoSuchUserException;
+import unibo.as.cupido.common.exception.NotCreatorException;
+import unibo.as.cupido.common.exception.PlayerNotFoundException;
+import unibo.as.cupido.common.exception.PositionFullException;
 
 /**
  * TODO missing all game status stuff
@@ -37,7 +33,6 @@ import unibo.as.cupido.backendInterfacesImpl.table.bot.ServletNotificationsInter
 public class SingleTableManager implements TableInterface {
 
 	private final CardsManager cardsManager = new CardsManager();
-	private final BotManager botManager = new BotManager();
 	private final DatabaseManager databaseManager = new DatabaseManager();
 	private final PlayersManager playersManager;
 	private final TableInfoForClient table;
@@ -50,10 +45,13 @@ public class SingleTableManager implements TableInterface {
 	public SingleTableManager(ServletNotificationsInterface snf,
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
 			throws RemoteException, SQLException, NoSuchUserException {
+		if (snf == null || table == null || gtm == null)
+			throw new IllegalArgumentException(snf + " " + table + " " + gtm);
 		this.table = table;
 		this.gtm = gtm;
 		playersManager = new PlayersManager(table.owner, snf,
-				databaseManager.getPlayerScore(table.owner));
+				databaseManager.getPlayerScore(table.owner), new RemovalThread(
+						this));
 		start = new Semaphore(0);
 		end = new Semaphore(0);
 		new StartNotifierThread(start, this).start();
@@ -135,6 +133,11 @@ public class SingleTableManager implements TableInterface {
 		return playersManager.getInitialTableStatus(position);
 	}
 
+	public synchronized void leaveTable(Integer i) throws RemoteException,
+			PlayerNotFoundException {
+		this.leaveTable(playersManager.getPlayerName(i));
+	}
+
 	@Override
 	public synchronized void leaveTable(String userName)
 			throws RemoteException, PlayerNotFoundException {
@@ -159,9 +162,8 @@ public class SingleTableManager implements TableInterface {
 	}
 
 	public synchronized void notifyGameStarted() {
-		System.out.println("\n"
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "()");
+		// System.out.println("\n"+
+		// Thread.currentThread().getStackTrace()[1].getMethodName()+ "()");
 		playersManager.notifyGameStarted(cardsManager.getCards());
 	}
 

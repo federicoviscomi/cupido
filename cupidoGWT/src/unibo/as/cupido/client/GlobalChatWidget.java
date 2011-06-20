@@ -1,6 +1,6 @@
 package unibo.as.cupido.client;
 
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
+import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.client.screens.MainMenuScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;

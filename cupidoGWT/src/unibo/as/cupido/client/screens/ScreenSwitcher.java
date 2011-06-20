@@ -1,7 +1,7 @@
 package unibo.as.cupido.client.screens;
 
+import unibo.as.cupido.common.structures.InitialTableStatus;
 
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
 
 public interface ScreenSwitcher {
 	

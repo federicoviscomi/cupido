@@ -6,15 +6,15 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
-import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
-import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
-import unibo.as.cupido.backendInterfaces.exception.FullTableException;
-import unibo.as.cupido.backendInterfaces.exception.NoSuchLTMException;
-import unibo.as.cupido.backendInterfaces.exception.NoSuchTableException;
-import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
+import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.structures.TableInfoForClient;
+import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.NoSuchLTMException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfacesImpl.table.bot.AbstractBot;
 
 public class DummyPlayerJoiner extends AbstractBot {

@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
-import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
+import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
+import unibo.as.cupido.common.structures.TableDescriptor;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 
 public class AllTables {
 

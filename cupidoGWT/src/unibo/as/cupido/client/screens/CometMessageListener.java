@@ -1,6 +1,6 @@
 package unibo.as.cupido.client.screens;
 
-import unibo.as.cupido.backendInterfaces.common.Card;
+import unibo.as.cupido.common.structures.Card;
 
 /**
  * This is meant as a base class for classes that handle messages received through

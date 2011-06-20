@@ -17,14 +17,14 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.RejectedExecutionException;
 
-import unibo.as.cupido.backendInterfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.LocalTableManagerInterface;
-import unibo.as.cupido.backendInterfaces.ServletNotificationsInterface;
-import unibo.as.cupido.backendInterfaces.TableInterface;
-import unibo.as.cupido.backendInterfaces.common.Pair;
-import unibo.as.cupido.backendInterfaces.common.TableDescriptor;
-import unibo.as.cupido.backendInterfaces.common.TableInfoForClient;
-import unibo.as.cupido.backendInterfaces.exception.NoSuchUserException;
+import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.interfaces.TableInterface;
+import unibo.as.cupido.common.structures.Pair;
+import unibo.as.cupido.common.structures.TableDescriptor;
+import unibo.as.cupido.common.structures.TableInfoForClient;
+import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.backendInterfacesImpl.table.SingleTableManager;
 
 /**
@@ -135,6 +135,8 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	@Override
 	public Pair<TableInterface, TableInfoForClient> createTable(String owner,
 			ServletNotificationsInterface snf) throws RemoteException {
+		if (owner == null || snf == null)
+			throw new IllegalArgumentException(owner + " " + snf);
 		try {
 			TableInfoForClient newTable = new TableInfoForClient(owner, 3,
 					new TableDescriptor(localAddress + this.toString(), nextId));

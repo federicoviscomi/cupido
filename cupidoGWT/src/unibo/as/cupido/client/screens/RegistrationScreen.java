@@ -1,7 +1,7 @@
 package unibo.as.cupido.client.screens;
 
-import unibo.as.cupido.backendInterfaces.exception.DuplicateUserNameException;
-import unibo.as.cupido.backendInterfaces.exception.FatalException;
+import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import com.google.gwt.user.client.Window;

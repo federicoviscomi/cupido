@@ -3,11 +3,12 @@ package unibo.as.cupido.client.screens;
 import java.util.ArrayList;
 import java.util.List;
 
-import unibo.as.cupido.backendInterfaces.common.ChatMessage;
-import unibo.as.cupido.backendInterfaces.common.InitialTableStatus;
-import unibo.as.cupido.backendInterfaces.exception.FatalException;
-import unibo.as.cupido.backendInterfaces.exception.MaxNumTableReachedException;
-import unibo.as.cupido.backendInterfaces.exception.UserNotAuthenticatedException;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.exception.FatalException;
+import unibo.as.cupido.common.exception.MaxNumTableReachedException;
+import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
+
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GlobalChatWidget;
