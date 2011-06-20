@@ -496,8 +496,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * Create a new table FIXME: ottieni il punteggio dal DB
-	 * 
+	 * Create a new table
 	 * @throws MaxNumTableReachedException
 	 * 
 	 * @throws RemoteException
