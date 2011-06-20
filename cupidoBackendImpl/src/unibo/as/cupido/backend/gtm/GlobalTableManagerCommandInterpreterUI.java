@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.gtm;
+package unibo.as.cupido.backend.gtm;
 
 import jargs.gnu.CmdLineParser;
 import jargs.gnu.CmdLineParser.Option;
@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 
 import unibo.as.cupido.common.structures.TableInfoForClient;
-import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
+import unibo.as.cupido.backend.table.LTMSwarm.Triple;
 
 /**
  * 

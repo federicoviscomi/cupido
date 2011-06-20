@@ -1,9 +1,10 @@
-package unibo.as.cupido.backendInterfacesImpl.table;
+package unibo.as.cupido.backend.table;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import unibo.as.cupido.backendInterfacesImpl.table.bot.NonRemoteBot;
+
+import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;

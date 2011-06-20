@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.table;
+package unibo.as.cupido.backend.table;
 
 public class StartNotifierThread extends Thread {
 

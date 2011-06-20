@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.table.playerUI;
+package unibo.as.cupido.backend.table.playerUI;
 
 import jargs.gnu.CmdLineParser;
 import jargs.gnu.CmdLineParser.IllegalOptionValueException;
@@ -16,7 +16,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
-import unibo.as.cupido.backendInterfacesImpl.ltm.LocalTableManager;
+
+import unibo.as.cupido.backend.ltm.LocalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;

@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.gtm;
+package unibo.as.cupido.backend.gtm;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -23,9 +23,9 @@ import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
-import unibo.as.cupido.backendInterfacesImpl.GlobalChatImpl;
-import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm;
-import unibo.as.cupido.backendInterfacesImpl.table.LTMSwarm.Triple;
+import unibo.as.cupido.backend.GlobalChatImpl;
+import unibo.as.cupido.backend.table.LTMSwarm;
+import unibo.as.cupido.backend.table.LTMSwarm.Triple;
 
 /**
  * 

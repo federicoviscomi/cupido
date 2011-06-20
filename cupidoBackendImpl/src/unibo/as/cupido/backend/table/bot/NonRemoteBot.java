@@ -1,8 +1,9 @@
-package unibo.as.cupido.backendInterfacesImpl.table.bot;
+package unibo.as.cupido.backend.table.bot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
+
+import unibo.as.cupido.backend.table.CardsManager;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;

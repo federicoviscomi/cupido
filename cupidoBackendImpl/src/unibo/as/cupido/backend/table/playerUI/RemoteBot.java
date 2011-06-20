@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.table.playerUI;
+package unibo.as.cupido.backend.table.playerUI;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -10,7 +10,7 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.Card.Suit;
-import unibo.as.cupido.backendInterfacesImpl.table.CardsManager;
+import unibo.as.cupido.backend.table.CardsManager;
 
 public class RemoteBot implements Bot, Serializable {
 

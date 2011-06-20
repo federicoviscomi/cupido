@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.table;
+package unibo.as.cupido.backend.table;
 
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.interfaces.TableInterface.GameStatus;

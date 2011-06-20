@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.gtm;
+package unibo.as.cupido.backend.gtm;
 
 import java.util.ArrayList;
 import java.util.Collection;

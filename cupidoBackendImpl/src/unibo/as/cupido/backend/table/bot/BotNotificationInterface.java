@@ -1,4 +1,4 @@
-package unibo.as.cupido.backendInterfacesImpl.table.bot;
+package unibo.as.cupido.backend.table.bot;
 
 import unibo.as.cupido.common.structures.Card;
 
