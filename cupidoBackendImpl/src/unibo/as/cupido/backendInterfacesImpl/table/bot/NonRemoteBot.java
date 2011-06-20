@@ -29,8 +29,6 @@ public class NonRemoteBot implements BotNotificationInterface {
 		cardPlayingThread = new NonRemoteBotCardPlayingThread(this, botName);
 		cardPlayingThread.start();
 		this.singleTableManager = singleTableManager;
-		System.out.println("\n nonremotebot constructor " + botName + " "
-				+ initialTableStatus);
 	}
 
 	@Override
@@ -70,7 +68,7 @@ public class NonRemoteBot implements BotNotificationInterface {
 		cardPlayingThread.setAbleToPass();
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			cardPlayingThread.setAbleToPlay();
-			firstDealer = 4;
+			firstDealer = 3;
 		}
 	}
 
@@ -105,10 +103,7 @@ public class NonRemoteBot implements BotNotificationInterface {
 	@Override
 	public synchronized void notifyPlayerJoined(String name, boolean isBot,
 			int point, int position) {
-		System.out.println("\n AbstractBot inizio " + botName + "."
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + name + ", " + isBot + "," + point + "," + position
-				+ ")\n table status " + initialTableStatus);
+
 		if (name == null || position < 0 || position > 2)
 			throw new IllegalArgumentException("illegal position " + position
 					+ ". " + name + " " + isBot);
@@ -119,11 +114,6 @@ public class NonRemoteBot implements BotNotificationInterface {
 		initialTableStatus.opponents[position] = name;
 		initialTableStatus.playerScores[position] = position;
 		initialTableStatus.whoIsBot[position] = isBot;
-
-		System.out.println("\n AbstractBot fine " + botName + "."
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + name + ", " + isBot + "," + point + "," + position
-				+ ")\n table status " + initialTableStatus);
 	}
 
 	@Override
@@ -156,7 +146,7 @@ public class NonRemoteBot implements BotNotificationInterface {
 		try {
 			System.err.println("play next card start. played:"
 					+ Arrays.toString(playedCard) + " count:" + playedCardCount
-					+ " turn:" + turn);
+					+ " turn:" + turn + " first:" + firstDealer);
 			if (cards.remove(CardsManager.twoOfClubs)) {
 				playedCard[3] = CardsManager.twoOfClubs;
 			} else {
@@ -177,7 +167,7 @@ public class NonRemoteBot implements BotNotificationInterface {
 			}
 			System.err.println("play next card end. played:"
 					+ Arrays.toString(playedCard) + " count:" + playedCardCount
-					+ " turn:" + turn);
+					+ " turn:" + turn + " first:" + firstDealer);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

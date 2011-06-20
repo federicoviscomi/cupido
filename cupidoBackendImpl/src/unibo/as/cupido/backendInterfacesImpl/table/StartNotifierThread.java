@@ -17,14 +17,11 @@ public class StartNotifierThread extends Thread {
 				while (!gameStarted)
 					lock.wait();
 			}
-			System.err.println("StartNotifierThread 3");
 			stm.notifyGameStarted();
-			System.err.println("StartNotifierThread 4");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.err.println("StartNotifierThread 5");
 	}
 
 	public void setGameStarted() {

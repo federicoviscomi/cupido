@@ -23,18 +23,14 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 					lock.wait();
 				}
 			}
-			System.err.println("\n:\n0");
 			bot.passCards();
-			System.err.println("\n:\n1");
 			for (int i = 0; i < 13; i++) {
-				System.err.println("\n:\n2");
 				synchronized (lock) {
 					while (!ableToPlay) {
 						lock.wait();
 					}
 					ableToPlay = false;
 				}
-				System.err.println("\n:\n3");
 				bot.playNextCard();
 			}
 		} catch (Exception e) {

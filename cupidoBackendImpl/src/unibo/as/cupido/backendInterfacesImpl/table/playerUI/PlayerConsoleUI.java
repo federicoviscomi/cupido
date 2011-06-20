@@ -55,7 +55,7 @@ public class PlayerConsoleUI {
 	private final PrintWriter out;
 	private boolean logged = false;
 	private Bot botNotification;
-	private RemoteBot abstractBot;
+	private RemoteBot remoteBot;
 
 	public PlayerConsoleUI() throws Exception {
 		this(new BufferedReader(new InputStreamReader(System.in)),
@@ -145,7 +145,7 @@ public class PlayerConsoleUI {
 						.getOptionValue(arbitraryCardsOption) == null ? false
 						: true);
 				if (arbitraryCards) {
-					abstractBot.passCards();
+					remoteBot.passCards();
 				} else if (specifiedCards) {
 					throw new UnsupportedOperationException();
 				} else {
@@ -156,7 +156,7 @@ public class PlayerConsoleUI {
 						.getOptionValue(arbitraryCardsOption) == null ? false
 						: true);
 				if (arbitraryCards) {
-					abstractBot.playNextCard();
+					remoteBot.playNextCard();
 				} else {
 					throw new UnsupportedOperationException();
 				}
@@ -164,15 +164,15 @@ public class PlayerConsoleUI {
 				logged = true;
 				playerName = command[1];
 				// TODO
-				abstractBot = new RemoteBot(new InitialTableStatus(
+				remoteBot = new RemoteBot(new InitialTableStatus(
 						new String[3], new int[3], new boolean[3]), null,
 						playerName);
 				botNotification = (Bot) UnicastRemoteObject
-						.exportObject(abstractBot);
+						.exportObject(remoteBot);
 				out.println("successfully logged in " + playerName);
 			} else if (command[0].equals("create")) {
 				try {
-					abstractBot.singleTableManager = gtm.createTable(
+					remoteBot.singleTableManager = gtm.createTable(
 							playerName, botNotification);
 				} catch (AllLTMBusyException e) {
 					// TODO Auto-generated catch block
@@ -189,20 +189,20 @@ public class PlayerConsoleUI {
 					out.println(Arrays.toString(gtm.getTableList().toArray(
 							new TableInfoForClient[1])));
 				} else if (listPlayers) {
-					out.println(abstractBot.initialTableStatus);
+					out.println(remoteBot.initialTableStatus);
 				} else if (listCards) {
 					out.print("\n"
-							+ Arrays.toString(abstractBot.cards
+							+ Arrays.toString(remoteBot.cards
 									.toArray(new Card[13]))
 							+ ". \nround cards: "
-							+ Arrays.toString(abstractBot.playedCard));
+							+ Arrays.toString(remoteBot.playedCard));
 				}
 			} else if (command[0].equals("addbot")) {
 				try {
 					int position = Integer.parseInt(command[1]);
-					abstractBot.singleTableManager.addBot(playerName, position);
+					remoteBot.singleTableManager.addBot(playerName, position);
 					position--;
-					abstractBot.addBot(position);
+					remoteBot.addBot(position);
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -236,7 +236,7 @@ public class PlayerConsoleUI {
 		}
 		out.close();
 		try {
-			if (abstractBot.singleTableManager != null) {
+			if (remoteBot.singleTableManager != null) {
 				gtm.notifyTableDestruction(table.tableDescriptor,
 						localTableManager);
 			}

@@ -38,9 +38,6 @@ public class RemoteBot implements Bot, Serializable {
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;
-
-		System.out.println("abstarct bot constructor " + userName + ". "
-				+ initialTableStatus);
 	}
 
 	@Override
@@ -111,6 +108,7 @@ public class RemoteBot implements Bot, Serializable {
 					ableToPlay = true;
 					lock.notify();
 				}
+				firstDealer = 3;
 				return;
 			}
 		}
@@ -152,10 +150,6 @@ public class RemoteBot implements Bot, Serializable {
 	@Override
 	public synchronized void notifyPlayerJoined(String name, boolean isBot,
 			int point, int position) {
-		System.out.println("\n AbstractBot inizio " + userName + "."
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + name + ", " + isBot + "," + point + "," + position
-				+ ")\n table status " + initialTableStatus);
 		if (name == null || position < 0 || position > 2)
 			throw new IllegalArgumentException();
 		if (initialTableStatus.opponents[position] != null)
@@ -166,11 +160,6 @@ public class RemoteBot implements Bot, Serializable {
 		initialTableStatus.opponents[position] = name;
 		initialTableStatus.playerScores[position] = position;
 		initialTableStatus.whoIsBot[position] = isBot;
-
-		System.out.println("\n AbstractBot fine " + userName + "."
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + name + ", " + isBot + "," + point + "," + position
-				+ ")\n table status " + initialTableStatus);
 	}
 
 	@Override
@@ -221,7 +210,8 @@ public class RemoteBot implements Bot, Serializable {
 				ableToPlay = false;
 				System.err.println("play next card start. played:"
 						+ Arrays.toString(playedCard) + " count:"
-						+ playedCardCount + " turn:" + turn);
+						+ playedCardCount + " turn:" + turn + " first:"
+						+ firstDealer);
 				if (cards.remove(CardsManager.twoOfClubs)) {
 					playedCard[3] = CardsManager.twoOfClubs;
 				} else {
@@ -242,7 +232,8 @@ public class RemoteBot implements Bot, Serializable {
 				}
 				System.err.println("play next card end. played:"
 						+ Arrays.toString(playedCard) + " count:"
-						+ playedCardCount + " turn:" + turn);
+						+ playedCardCount + " turn:" + turn + " first:"
+						+ firstDealer);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
