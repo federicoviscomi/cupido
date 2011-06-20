@@ -108,7 +108,7 @@ public class CardPassingWaitingState implements PlayerState {
 	}
 
 	@Override
-	public void handleCardPassed(Card[] passedCards) {
+	public boolean handleCardPassed(Card[] passedCards) {
 		List<Card> cards = new ArrayList<Card>();
 		
 		for (Card card : passedCards)
@@ -144,29 +144,31 @@ public class CardPassingWaitingState implements PlayerState {
 									.transitionToWaitingFirstDeal(hand);
 					}
 				});
+		
+		return true;
 	}
 
 	@Override
-	public void handleCardPlayed(Card card, int playerPosition) {
+	public boolean handleCardPlayed(Card card, int playerPosition) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
-	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
-	public void handleGameStarted(Card[] myCards) {
+	public boolean handleGameStarted(Card[] myCards) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
-	public void handlePlayerLeft(String player) {
+	public boolean handlePlayerLeft(String player) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 }

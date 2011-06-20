@@ -124,11 +124,6 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		stateManager.handleGameEnded(matchPoints, playersTotalPoints);
 	}
 
-	public void handleNewPlayerJoined(String name, boolean isBot, int points,
-			int position) {
-		stateManager.handleNewPlayerJoined(name, isBot, points, position);
-	}
-
 	public void handlePlayerLeft(String player) {
 		stateManager.handlePlayerLeft(player);
 	}

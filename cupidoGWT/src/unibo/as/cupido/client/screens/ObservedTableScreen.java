@@ -86,7 +86,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 			@Override
 			public void onNewPlayerJoined(String name, boolean isBot,
 					int points, int position) {
-				tableWidget.handleNewPlayerJoined(name, isBot, points, position);
+				System.out.println("Client: ObservedTableScreen: warning: received a NewPlayerJoined notification while observing a table, it was ingored.");
 			}
 			
 			@Override

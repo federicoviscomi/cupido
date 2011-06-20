@@ -63,8 +63,5 @@ public interface ViewerStateManager {
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
 
-	public void handleNewPlayerJoined(String name, boolean isBot, int points,
-			int position);
-
 	public void handlePlayerLeft(String player);
 }

@@ -120,13 +120,13 @@ public class WaitingDealState implements PlayerState {
 	}
 
 	@Override
-	public void handleCardPassed(Card[] cards) {
+	public boolean handleCardPassed(Card[] cards) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
-	public void handleCardPlayed(Card card, int playerPosition) {
+	public boolean handleCardPlayed(Card card, int playerPosition) {
 		stateManager.addDealtCard(playerPosition, card);
 
 		cardsGameWidget.revealCoveredCard(playerPosition, card);
@@ -147,23 +147,24 @@ public class WaitingDealState implements PlayerState {
 						}
 					}
 				});
+		return true;
 	}
 
 	@Override
-	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
-	public void handleGameStarted(Card[] myCards) {
+	public boolean handleGameStarted(Card[] myCards) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
-	public void handlePlayerLeft(String player) {
+	public boolean handlePlayerLeft(String player) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 }

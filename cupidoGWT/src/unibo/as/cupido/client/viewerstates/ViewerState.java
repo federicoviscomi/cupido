@@ -6,13 +6,24 @@ public interface ViewerState {
 
 	public void disableControls();
 	
-	public void handleCardPlayed(Card card, int playerPosition);
+	/**
+	 * Returns false if this event can't be handled right now, but it can
+	 * be handled in a later state. It will be notified again at each state
+	 * transition, until it is handled.
+	 */
+	public boolean handleCardPlayed(Card card, int playerPosition);
 
-	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
+	/**
+	 * Returns false if this event can't be handled right now, but it can
+	 * be handled in a later state. It will be notified again at each state
+	 * transition, until it is handled.
+	 */
+	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
 
-	public void handleNewPlayerJoined(String name, boolean isBot, int points,
-			int position);
-
-	public void handlePlayerLeft(String player);
-
+	/**
+	 * Returns false if this event can't be handled right now, but it can
+	 * be handled in a later state. It will be notified again at each state
+	 * transition, until it is handled.
+	 */
+	public boolean handlePlayerLeft(String player);
 }

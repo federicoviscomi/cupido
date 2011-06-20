@@ -1,5 +1,6 @@
 package unibo.as.cupido.client.playerstates;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,12 @@ import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.screens.ScreenManager;
+import unibo.as.cupido.shared.cometNotification.CardPassed;
+import unibo.as.cupido.shared.cometNotification.CardPlayed;
+import unibo.as.cupido.shared.cometNotification.GameEnded;
+import unibo.as.cupido.shared.cometNotification.GameStarted;
+import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
+import unibo.as.cupido.shared.cometNotification.PlayerLeft;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -21,6 +28,8 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	private int firstPlayerInTrick = -1;
 
 	boolean heartsBroken = false;
+	
+	List<Serializable> pendingNotifications = new ArrayList<Serializable>();
 
 	/**
 	 * Some information about the players. The first element refers to the
@@ -118,41 +127,49 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	@Override
 	public void transitionToCardPassing(List<Card> hand) {
 		currentState = new CardPassingState(cardsGameWidget, this, hand);
+		sendPendingNotifications();
 	}
 
 	@Override
 	public void transitionToCardPassingWaiting(List<Card> hand) {
 		currentState = new CardPassingWaitingState(cardsGameWidget, this, hand);
+		sendPendingNotifications();
 	}
 
 	@Override
 	public void transitionToEndOfTrick(List<Card> hand) {
 		currentState = new EndOfTrickState(cardsGameWidget, this, hand);
+		sendPendingNotifications();
 	}
 
 	@Override
 	public void transitionToFirstDealer(List<Card> hand) {
 		currentState = new FirstDealerState(cardsGameWidget, this, hand);
+		sendPendingNotifications();
 	}
 
 	@Override
 	public void transitionToWaitingDeal(List<Card> hand) {
 		currentState = new WaitingDealState(cardsGameWidget, this, hand);
+		sendPendingNotifications();
 	}
 
 	@Override
 	public void transitionToWaitingFirstDeal(List<Card> hand) {
 		currentState = new WaitingFirstDealState(cardsGameWidget, this, hand);
+		sendPendingNotifications();
 	}
 
 	@Override
 	public void transitionToYourTurn(List<Card> hand) {
 		currentState = new YourTurnState(cardsGameWidget, this, hand);
+		sendPendingNotifications();
 	}
 
 	@Override
 	public void transitionToGameEnded() {
 		currentState = new GameEndedState(cardsGameWidget, this);
+		sendPendingNotifications();
 	}
 
 	@Override
@@ -240,26 +257,68 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void handleCardPassed(Card[] cards) {
-		currentState.handleCardPassed(cards);
+		boolean handled = currentState.handleCardPassed(cards);
+		if (!handled)
+			pendingNotifications.add(new CardPassed(cards));
 	}
 
 	@Override
 	public void handleCardPlayed(Card card, int playerPosition) {
-		currentState.handleCardPlayed(card, playerPosition);
+		boolean handled = currentState.handleCardPlayed(card, playerPosition);
+		if (!handled)
+			pendingNotifications.add(new CardPlayed(card, playerPosition));
 	}
 
 	@Override
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		currentState.handleGameEnded(matchPoints, playersTotalPoints);
+		boolean handled = currentState.handleGameEnded(matchPoints, playersTotalPoints);
+		if (!handled)
+			pendingNotifications.add(new GameEnded(matchPoints, playersTotalPoints));
 	}
 
 	@Override
 	public void handleGameStarted(Card[] myCards) {
-		currentState.handleGameStarted(myCards);
+		boolean handled = currentState.handleGameStarted(myCards);
+		if (!handled)
+			pendingNotifications.add(new GameStarted(myCards));
 	}
 
 	@Override
 	public void handlePlayerLeft(String player) {
-		currentState.handlePlayerLeft(player);
+		boolean handled = currentState.handlePlayerLeft(player);
+		if (!handled)
+			pendingNotifications.add(new PlayerLeft(player));
+	}
+	
+	private void sendPendingNotifications() {
+		List<Serializable> list = pendingNotifications;
+		// Note that this may be modified in the calls to handle*() methods below.
+		pendingNotifications = new ArrayList<Serializable>();
+		
+		for (Serializable x : list) {
+			if (x instanceof CardPassed) {
+				CardPassed message = (CardPassed) x;
+				handleCardPassed(message.cards);
+				
+			} else if (x instanceof CardPlayed) {
+				CardPlayed message = (CardPlayed) x;
+				handleCardPlayed(message.card, message.playerPosition);
+				
+			} else if (x instanceof GameEnded) {
+				GameEnded message = (GameEnded) x;
+				handleGameEnded(message.matchPoints, message.playersTotalPoints);
+				
+			} else if (x instanceof GameStarted) {
+				GameStarted message = (GameStarted) x;
+				handleGameStarted(message.myCards);
+				
+			} else if (x instanceof PlayerLeft) {
+				PlayerLeft message = (PlayerLeft) x;
+				handlePlayerLeft(message.player);
+				
+			} else {
+				assert false;
+			}
+		}
 	}
 }

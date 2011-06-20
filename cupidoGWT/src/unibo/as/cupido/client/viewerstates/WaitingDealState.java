@@ -111,7 +111,7 @@ public class WaitingDealState implements ViewerState {
 	}
 
 	@Override
-	public void handleCardPlayed(Card card, int playerPosition) {
+	public boolean handleCardPlayed(Card card, int playerPosition) {
 		stateManager.addDealtCard(playerPosition, card);
 
 		cardsGameWidget.revealCoveredCard(playerPosition, card);
@@ -126,25 +126,19 @@ public class WaitingDealState implements ViewerState {
 						else
 							stateManager.transitionToWaitingDeal();
 					}
-				});		
+				});
+		return true;
 	}
 
 	@Override
-	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	@Override
-	public void handleNewPlayerJoined(String name, boolean isBot, int points,
-			int position) {
+	public boolean handlePlayerLeft(String player) {
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void handlePlayerLeft(String player) {
-		// TODO Auto-generated method stub
-		
+		return false;
 	}
 }
