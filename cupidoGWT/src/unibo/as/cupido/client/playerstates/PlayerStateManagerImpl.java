@@ -9,14 +9,14 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
-import unibo.as.cupido.client.screens.ScreenSwitcher;
+import unibo.as.cupido.client.screens.ScreenManager;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	private PlayerState currentState = null;
-	private ScreenSwitcher screenSwitcher;
+	private ScreenManager screenManager;
 	private CardsGameWidget cardsGameWidget;
 	private int firstPlayerInTrick = -1;
 
@@ -39,10 +39,10 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 * Initialize the state manager. The current user is a player, and his hand
 	 * cards are `cards'.
 	 */
-	public PlayerStateManagerImpl(int tableSize, ScreenSwitcher screenSwitcher,
+	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
 			InitialTableStatus initialTableStatus, Card[] cards, String username) {
 		this.username = username;
-		this.screenSwitcher = screenSwitcher;
+		this.screenManager = screenManager;
 
 		for (String opponent : initialTableStatus.opponents)
 			assert opponent != null;
@@ -216,7 +216,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void exit() {
-		screenSwitcher.displayMainMenuScreen(username);
+		screenManager.displayMainMenuScreen(username);
 	}
 
 	@Override

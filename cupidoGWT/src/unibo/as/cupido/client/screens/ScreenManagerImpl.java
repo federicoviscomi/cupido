@@ -25,7 +25,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher {
+public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
 	Widget currentScreenWidget = null;
 	Screen currentScreen = null;
@@ -38,7 +38,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 
 	CometMessageListener cometMessageListener;
 
-	public ScreenSwitcherImpl() {
+	public ScreenManagerImpl() {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 

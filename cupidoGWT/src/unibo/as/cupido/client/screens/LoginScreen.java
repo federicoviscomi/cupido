@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class LoginScreen extends VerticalPanel implements Screen {
 
-	private ScreenSwitcher screenSwitcher;
+	private ScreenManager screenManager;
 	private CupidoInterfaceAsync cupidoService;
 	
 	private TextBox usernameBox;
@@ -29,13 +29,13 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	private PushButton okButton;
 	private PushButton registerButton;
 
-	public LoginScreen(final ScreenSwitcher screenSwitcher, CupidoInterfaceAsync cupidoService) {
+	public LoginScreen(final ScreenManager screenManager, CupidoInterfaceAsync cupidoService) {
 		
-		this.screenSwitcher = screenSwitcher;
+		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
 		
 		// Set an empty listener (one that handles no messages).
-		screenSwitcher.setListener(new CometMessageListener());
+		screenManager.setListener(new CometMessageListener());
 		
 		setHeight((Cupido.height - 200) + "px");
 		setWidth((Cupido.width - 200) + "px");
@@ -92,7 +92,7 @@ public class LoginScreen extends VerticalPanel implements Screen {
 		registerButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayRegistrationScreen();
+				screenManager.displayRegistrationScreen();
 			}
 		});
 		bottomPanel.add(registerButton);
@@ -113,13 +113,13 @@ public class LoginScreen extends VerticalPanel implements Screen {
 		cupidoService.login(username, passwordBox.getText(), new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				screenSwitcher.displayGeneralErrorScreen(caught);
+				screenManager.displayGeneralErrorScreen(caught);
 			}
 
 			@Override
 			public void onSuccess(Boolean successful) {
 				if (successful)
-					screenSwitcher.displayMainMenuScreen(username);
+					screenManager.displayMainMenuScreen(username);
 				else {
 					// Remove the focus, so if the user dismisses the alert with Enter, it
 					// won't be fired again.

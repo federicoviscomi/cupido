@@ -3,7 +3,7 @@ package unibo.as.cupido.client.screens;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
 
-public interface ScreenSwitcher {
+public interface ScreenManager {
 	
 	/**
 	 * Shows the login screen instead of the current one.

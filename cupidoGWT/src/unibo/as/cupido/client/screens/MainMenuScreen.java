@@ -35,7 +35,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 	// This is null when the user is not logged in.
 	private String username;
-	private final ScreenSwitcher screenSwitcher;
+	private final ScreenManager screenManager;
 	private Timer chatTimer;
 	
 	private boolean stoppedRefreshing = false;
@@ -54,13 +54,13 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	 */
 	public static final int chatWidth = 300;
 
-	public MainMenuScreen(final ScreenSwitcher screenSwitcher,
+	public MainMenuScreen(final ScreenManager screenManager,
 			final String username, final CupidoInterfaceAsync cupidoService) {
-		this.screenSwitcher = screenSwitcher;
+		this.screenManager = screenManager;
 		this.username = username;
 		
 		// Set an empty listener (one that handles no messages).
-		screenSwitcher.setListener(new CometMessageListener());
+		screenManager.setListener(new CometMessageListener());
 		
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
@@ -83,16 +83,16 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 						try {
 							throw caught;
 						} catch (MaxNumTableReachedException e) {
-							screenSwitcher.displayMainMenuScreen(username);
+							screenManager.displayMainMenuScreen(username);
 							Window.alert("\310 stato raggiunto il numero massimo di tavoli supportati. Riprova pi\371 tardi.");
 						} catch (Throwable e) {
-							screenSwitcher.displayGeneralErrorScreen(caught);						
+							screenManager.displayGeneralErrorScreen(caught);						
 						}
 					}
 
 					@Override
 					public void onSuccess(InitialTableStatus initialTableStatus) {
-						screenSwitcher.displayTableScreen(username, true, initialTableStatus);
+						screenManager.displayTableScreen(username, true, initialTableStatus);
 					}
 				});
 			}
@@ -105,7 +105,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		errorButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher
+				screenManager
 						.displayGeneralErrorScreen(new IllegalStateException(
 								"An example error message"));
 			}
@@ -118,7 +118,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		observedTableButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayObservedTableScreen(username);
+				screenManager.displayObservedTableScreen(username);
 			}
 		});
 		add(observedTableButton, 200, 500);
@@ -128,7 +128,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		scoresButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayScoresScreen(username);
+				screenManager.displayScoresScreen(username);
 			}
 		});
 		add(scoresButton, 200, 550);
@@ -138,7 +138,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		aboutButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayAboutScreen(username);
+				screenManager.displayAboutScreen(username);
 			}
 		});
 		add(aboutButton, 200, 600);
@@ -148,7 +148,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		logoutButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayAboutScreen(username);
+				screenManager.displayAboutScreen(username);
 			}
 		});
 		add(logoutButton, 200, 650);
@@ -163,11 +163,11 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 							throw caught;
 						} catch (IllegalArgumentException e) {
 							// FIXME: Can this happen?
-							screenSwitcher.displayGeneralErrorScreen(e);
+							screenManager.displayGeneralErrorScreen(e);
 						} catch (UserNotAuthenticatedException e) {
-							screenSwitcher.displayGeneralErrorScreen(e);
+							screenManager.displayGeneralErrorScreen(e);
 						} catch (FatalException e) {
-							screenSwitcher.displayGeneralErrorScreen(e);
+							screenManager.displayGeneralErrorScreen(e);
 						} catch (Throwable e) {
 							assert false;
 						}
@@ -203,9 +203,9 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 						try {
 							throw caught;
 						} catch (UserNotAuthenticatedException e) {
-							screenSwitcher.displayGeneralErrorScreen(e);
+							screenManager.displayGeneralErrorScreen(e);
 						} catch (FatalException e) {
-							screenSwitcher.displayGeneralErrorScreen(e);
+							screenManager.displayGeneralErrorScreen(e);
 						} catch (Throwable e) {
 							// Should never get here.
 							assert false;

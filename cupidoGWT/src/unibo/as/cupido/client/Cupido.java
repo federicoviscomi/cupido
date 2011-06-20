@@ -2,7 +2,7 @@ package unibo.as.cupido.client;
 
 import net.zschech.gwt.comet.client.CometSerializer;
 import net.zschech.gwt.comet.client.SerialTypes;
-import unibo.as.cupido.client.screens.ScreenSwitcherImpl;
+import unibo.as.cupido.client.screens.ScreenManagerImpl;
 import unibo.as.cupido.shared.cometNotification.CardPassed;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
 import unibo.as.cupido.shared.cometNotification.GameEnded;
@@ -32,9 +32,9 @@ public class Cupido implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		ScreenSwitcherImpl screenSwitcher = new ScreenSwitcherImpl();
-		RootPanel.get("mainContainer").add(screenSwitcher);
+		ScreenManagerImpl screenManager = new ScreenManagerImpl();
+		RootPanel.get("mainContainer").add(screenManager);
 
-		screenSwitcher.displayLoadingScreen();
+		screenManager.displayLoadingScreen();
 	}
 }

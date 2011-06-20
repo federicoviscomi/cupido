@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class RegistrationScreen extends VerticalPanel implements Screen {
 
 	private CupidoInterfaceAsync cupidoService;
-	private ScreenSwitcher screenSwitcher;
+	private ScreenManager screenManager;
 	
 	private TextBox usernameBox;
 	private PasswordTextBox passwordBox;
@@ -38,16 +38,16 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 	private HTML checkUsernameAvailabilityLabel;
 	private PushButton checkUsernameAvailability;
 
-	public RegistrationScreen(final ScreenSwitcher screenSwitcher,
+	public RegistrationScreen(final ScreenManager screenManager,
 			final CupidoInterfaceAsync cupidoService) {
 		setHeight((Cupido.height - 280) + "px");
 		setWidth(Cupido.width + "px");
 		
-		this.screenSwitcher = screenSwitcher;
+		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
 		
 		// Set an empty listener (one that handles no messages).
-		screenSwitcher.setListener(new CometMessageListener());
+		screenManager.setListener(new CometMessageListener());
 		
 		setHorizontalAlignment(ALIGN_CENTER);
 
@@ -137,7 +137,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		abortButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayLoginScreen();
+				screenManager.displayLoginScreen();
 			}
 		});
 		bottomPanel.add(abortButton);
@@ -162,7 +162,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		cupidoService.isUserRegistered(usernameBox.getText(), new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				screenSwitcher.displayGeneralErrorScreen(caught);
+				screenManager.displayGeneralErrorScreen(caught);
 			}
 
 			@Override
@@ -245,7 +245,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 					usernameBox.setFocus(true);
 					checkUsernameAvailabilityLabel.setText("");
 				} catch (Throwable e) {
-					screenSwitcher.displayGeneralErrorScreen(e);
+					screenManager.displayGeneralErrorScreen(e);
 				}
 			}
 
@@ -256,15 +256,15 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 				cupidoService.login(username, passwordBox.getText(), new AsyncCallback<Boolean>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						screenSwitcher.displayGeneralErrorScreen(caught);
+						screenManager.displayGeneralErrorScreen(caught);
 					}
 
 					@Override
 					public void onSuccess(Boolean successful) {
 						if (successful)
-							screenSwitcher.displayMainMenuScreen(username);
+							screenManager.displayMainMenuScreen(username);
 						else
-							screenSwitcher.displayGeneralErrorScreen(new FatalException("The very same username-password pair used for registering didn't work for logging in."));
+							screenManager.displayGeneralErrorScreen(new FatalException("The very same username-password pair used for registering didn't work for logging in."));
 					}
 				});
 			}

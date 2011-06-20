@@ -8,14 +8,14 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
-import unibo.as.cupido.client.screens.ScreenSwitcher;
+import unibo.as.cupido.client.screens.ScreenManager;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	private ViewerState currentState = null;
-	private ScreenSwitcher screenSwitcher;
+	private ScreenManager screenManager;
 	private CardsGameWidget cardsGameWidget;
 	private int firstPlayerInTrick = -1;
 	private int remainingTricks;
@@ -36,11 +36,11 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	/**
 	 * Initialize the state manager. The current user is a viewer.
 	 */
-	public ViewerStateManagerImpl(int tableSize, ScreenSwitcher screenSwitcher,
+	public ViewerStateManagerImpl(int tableSize, ScreenManager screenManager,
 			ObservedGameStatus observedGameStatus, String username) {
 
 		this.username = username;
-		this.screenSwitcher = screenSwitcher;
+		this.screenManager = screenManager;
 		this.cardsGameWidget = new CardsGameWidget(tableSize,
 				observedGameStatus, null, new VerticalPanel(),
 				new CardsGameWidget.GameEventListener() {
@@ -181,7 +181,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	@Override
 	public void exit() {
-		screenSwitcher.displayMainMenuScreen(username);
+		screenManager.displayMainMenuScreen(username);
 	}
 
 	@Override

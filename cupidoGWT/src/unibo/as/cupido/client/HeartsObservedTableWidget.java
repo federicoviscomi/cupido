@@ -3,7 +3,7 @@ package unibo.as.cupido.client;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
-import unibo.as.cupido.client.screens.ScreenSwitcher;
+import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManagerImpl;
 
@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class HeartsObservedTableWidget extends AbsolutePanel {
 
-	private ScreenSwitcher screenSwitcher;
+	private ScreenManager screenManager;
 	private BeforeGameWidget beforeGameWidget;
 	private CardsGameWidget cardsGameWidget = null;
 	private int tableSize;
@@ -27,9 +27,9 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	 * @param username
 	 */
 	public HeartsObservedTableWidget(int tableSize, final String username,
-			final ScreenSwitcher screenSwitcher) {
+			final ScreenManager screenManager) {
 		this.tableSize = tableSize;
-		this.screenSwitcher = screenSwitcher;
+		this.screenManager = screenManager;
 
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
@@ -99,7 +99,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		observedGameStatus.playerStatus[3].playedCard = null;
 		observedGameStatus.playerStatus[3].score = 1234;
 
-		stateManager = new ViewerStateManagerImpl(tableSize, screenSwitcher,
+		stateManager = new ViewerStateManagerImpl(tableSize, screenManager,
 				observedGameStatus, username);
 
 		cardsGameWidget = stateManager.getWidget();

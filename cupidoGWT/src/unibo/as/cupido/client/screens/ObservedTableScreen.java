@@ -24,17 +24,17 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 	private HeartsObservedTableWidget tableWidget;
 	private LocalChatWidget chatWidget;
 
-	public ObservedTableScreen(ScreenSwitcher screenSwitcher,
+	public ObservedTableScreen(ScreenManager screenManager,
 			String username, final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
 		// Set an empty listener (one that handles no messages).
-		screenSwitcher.setListener(new CometMessageListener());
+		screenManager.setListener(new CometMessageListener());
 		
 		assert Cupido.height == Cupido.width - chatWidth;
 		tableWidget = new HeartsObservedTableWidget(
-				Cupido.height, username, screenSwitcher);
+				Cupido.height, username, screenManager);
 		add(tableWidget, 0, 0);
 
 		chatWidget = new LocalChatWidget(username,
@@ -57,7 +57,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		chatWidget.setWidth(chatWidth + "px");
 		add(chatWidget, Cupido.width - chatWidth, 0);
 
-		screenSwitcher.setListener(new CometMessageListener() {
+		screenManager.setListener(new CometMessageListener() {
 			@Override
 			public void onNewLocalChatMessage(String user, String message) {
 				chatWidget.displayMessage(user, message);

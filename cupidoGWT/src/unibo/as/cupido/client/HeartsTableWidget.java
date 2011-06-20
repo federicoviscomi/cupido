@@ -4,13 +4,13 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.client.playerstates.PlayerStateManager;
 import unibo.as.cupido.client.playerstates.PlayerStateManagerImpl;
-import unibo.as.cupido.client.screens.ScreenSwitcher;
+import unibo.as.cupido.client.screens.ScreenManager;
 
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class HeartsTableWidget extends AbsolutePanel {
 
-	private ScreenSwitcher screenSwitcher;
+	private ScreenManager screenManager;
 	private BeforeGameWidget beforeGameWidget;
 	private CardsGameWidget cardsGameWidget = null;
 	private int tableSize;
@@ -27,9 +27,9 @@ public class HeartsTableWidget extends AbsolutePanel {
 	 * @param isOwner 
 	 */
 	public HeartsTableWidget(int tableSize, final String username,
-			InitialTableStatus initialTableStatus, boolean isOwner, final ScreenSwitcher screenSwitcher) {
+			InitialTableStatus initialTableStatus, boolean isOwner, final ScreenManager screenManager) {
 		this.tableSize = tableSize;
-		this.screenSwitcher = screenSwitcher;
+		this.screenManager = screenManager;
 
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
@@ -82,7 +82,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		for (int i = 0; i < 13; i++)
 			bottomPlayerCards[i] = RandomCardGenerator.generateCard();
 
-		stateManager = new PlayerStateManagerImpl(tableSize, screenSwitcher,
+		stateManager = new PlayerStateManagerImpl(tableSize, screenManager,
 				initialTableStatus, bottomPlayerCards, username);
 
 		cardsGameWidget = stateManager.getWidget();

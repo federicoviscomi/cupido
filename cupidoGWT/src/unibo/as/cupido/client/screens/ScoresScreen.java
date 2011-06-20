@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.Label;
 
 public class ScoresScreen extends AbsolutePanel implements Screen {
 
-	public ScoresScreen(ScreenSwitcher screenSwitcher) {
+	public ScoresScreen(ScreenManager screenManager) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 		Label label = new HTML("<b>Scores scteen (TODO)</b>");

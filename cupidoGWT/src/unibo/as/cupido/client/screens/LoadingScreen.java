@@ -7,12 +7,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class LoadingScreen extends VerticalPanel implements Screen {
 
-	public LoadingScreen(ScreenSwitcher screenSwitcher) {
+	public LoadingScreen(ScreenManager screenManager) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 		
 		// Set an empty listener (one that handles no messages).
-		screenSwitcher.setListener(new CometMessageListener());
+		screenManager.setListener(new CometMessageListener());
 
 		this.setHorizontalAlignment(ALIGN_CENTER);
 		this.setVerticalAlignment(ALIGN_MIDDLE);

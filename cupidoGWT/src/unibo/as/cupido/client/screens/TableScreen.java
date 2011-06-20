@@ -25,14 +25,14 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	private HeartsTableWidget tableWidget;
 	private LocalChatWidget chatWidget;
 
-	public TableScreen(ScreenSwitcher screenSwitcher, String username, boolean isOwner,
+	public TableScreen(ScreenManager screenManager, String username, boolean isOwner,
 			InitialTableStatus initialTableStatus, final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
 		assert Cupido.height == Cupido.width - chatWidth;
 		tableWidget = new HeartsTableWidget(Cupido.height,
-				username, initialTableStatus, isOwner, screenSwitcher);
+				username, initialTableStatus, isOwner, screenManager);
 		add(tableWidget, 0, 0);
 
 		chatWidget = new LocalChatWidget(username,
@@ -55,7 +55,7 @@ public class TableScreen extends AbsolutePanel implements Screen {
 		chatWidget.setWidth(chatWidth + "px");
 		add(chatWidget, Cupido.width - chatWidth, 0);
 
-		screenSwitcher.setListener(new CometMessageListener() {
+		screenManager.setListener(new CometMessageListener() {
 			@Override
 			public void onNewLocalChatMessage(String user, String message) {
 				chatWidget.displayMessage(user, message);

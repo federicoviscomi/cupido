@@ -13,10 +13,10 @@ public class AboutScreen extends VerticalPanel implements Screen {
 
 	private PushButton menuButton;
 
-	public AboutScreen(final ScreenSwitcher screenSwitcher, final String username) {
+	public AboutScreen(final ScreenManager screenManager, final String username) {
 		
 		// Set an empty listener (one that handles no messages).
-		screenSwitcher.setListener(new CometMessageListener());
+		screenManager.setListener(new CometMessageListener());
 		
 		setHeight((Cupido.height - 80) + "px");
 		setWidth((Cupido.width - 120) + "px");
@@ -45,7 +45,7 @@ public class AboutScreen extends VerticalPanel implements Screen {
 		menuButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenSwitcher.displayMainMenuScreen(username);
+				screenManager.displayMainMenuScreen(username);
 			}
 		});
 		add(menuButton);
