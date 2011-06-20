@@ -34,6 +34,9 @@ public class LoginScreen extends VerticalPanel implements Screen {
 		this.screenSwitcher = screenSwitcher;
 		this.cupidoService = cupidoService;
 		
+		// Set an empty listener (one that handles no messages).
+		screenSwitcher.setListener(new CometMessageListener());
+		
 		setHeight((Cupido.height - 200) + "px");
 		setWidth((Cupido.width - 200) + "px");
 

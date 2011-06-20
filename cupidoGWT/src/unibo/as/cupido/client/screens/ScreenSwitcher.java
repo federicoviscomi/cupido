@@ -1,5 +1,6 @@
 package unibo.as.cupido.client.screens;
 
+
 public interface ScreenSwitcher {
 	
 	/**
@@ -51,4 +52,6 @@ public interface ScreenSwitcher {
 	public void displayLoadingScreen();
 	
 	public void disableControls();
+	
+	public void setListener(CometMessageListener listener);
 }

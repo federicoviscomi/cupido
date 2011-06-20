@@ -11,6 +11,13 @@ import unibo.as.cupido.client.Cupido.CupidoCometSerializer;
 import unibo.as.cupido.client.CupidoCometListener;
 import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
+import unibo.as.cupido.shared.cometNotification.CardPassed;
+import unibo.as.cupido.shared.cometNotification.CardPlayed;
+import unibo.as.cupido.shared.cometNotification.GameEnded;
+import unibo.as.cupido.shared.cometNotification.GameStarted;
+import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
+import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
+import unibo.as.cupido.shared.cometNotification.PlayerLeft;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -28,7 +35,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 
 	CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
 
-	CupidoCometListener cometListener;
+	CometMessageListener cometMessageListener;
 
 	public ScreenSwitcherImpl() {
 		setHeight(Cupido.height + "px");
@@ -46,7 +53,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 				System.out
 						.println("cupidoService.openCometConnection() succeeded.");
 
-				cometListener = new CupidoCometListener(new CometListener() {
+				CupidoCometListener cometListener = new CupidoCometListener(new CometListener() {
 
 					@Override
 					public void onConnected(int heartbeat) {
@@ -70,8 +77,33 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 
 					@Override
 					public void onMessage(List<? extends Serializable> messages) {
-						System.out
-								.println("Client: received Comet message while loading.");
+						for (Serializable message : messages) {
+							if (message instanceof CardPassed) {
+								CardPassed x = (CardPassed)message;
+								cometMessageListener.onCardPassed(x.cards);
+							} else if (message instanceof CardPlayed) {
+								CardPlayed x = (CardPlayed)message;
+								cometMessageListener.onCardPlayed(x.card, x.playerPosition);
+							} else if (message instanceof GameEnded) {
+								GameEnded x = (GameEnded)message;
+								cometMessageListener.onGameEnded(x.matchPoints, x.playersTotalPoints);
+							} else if (message instanceof GameStarted) {
+								GameStarted x = (GameStarted)message;
+								cometMessageListener.onGameStarted(x.myCards);
+							} else if (message instanceof NewLocalChatMessage) {
+								NewLocalChatMessage x = (NewLocalChatMessage)message;
+								cometMessageListener.onNewLocalChatMessage(x.user, x.message);
+							} else if (message instanceof NewPlayerJoined) {
+								NewPlayerJoined x = (NewPlayerJoined)message;
+								cometMessageListener.onNewPlayerJoined(x.name, x.isBot, x.points, x.position);
+							} else if (message instanceof PlayerLeft) {
+								PlayerLeft x = (PlayerLeft)message;
+								cometMessageListener.onPlayerLeft(x.player);
+							} else {
+								displayGeneralErrorScreen(new Exception("Unhandled comet message: " + message.toString()));
+								break;
+							}
+						}
 					}
 
 				});
@@ -177,8 +209,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		TableScreen screen = new TableScreen(this, username, cupidoService,
-				cometListener);
+		TableScreen screen = new TableScreen(this, username, cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -189,11 +220,11 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 	@Override
 	public void displayObservedTableScreen(String username) {
 		assert !switchingScreen;
-		switchingScreen = true;
+		switchingScreen = true;	
 
 		removeCurrentScreen();
 		ObservedTableScreen screen = new ObservedTableScreen(this, username,
-				cupidoService, cometListener);
+				cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -220,7 +251,7 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		LoadingScreen screen = new LoadingScreen();
+		LoadingScreen screen = new LoadingScreen(this);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -230,5 +261,10 @@ public class ScreenSwitcherImpl extends AbsolutePanel implements ScreenSwitcher 
 	
 	public void disableControls() {
 		currentScreen.disableControls();
+	}
+
+	@Override
+	public void setListener(CometMessageListener listener) {
+		cometMessageListener = listener;
 	}
 }

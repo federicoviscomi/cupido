@@ -9,6 +9,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.DOM;
@@ -44,6 +46,9 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		this.screenSwitcher = screenSwitcher;
 		this.cupidoService = cupidoService;
 		
+		// Set an empty listener (one that handles no messages).
+		screenSwitcher.setListener(new CometMessageListener());
+		
 		setHorizontalAlignment(ALIGN_CENTER);
 
 		DOM.setStyleAttribute(getElement(), "marginTop", "100px");
@@ -69,12 +74,21 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		
 		usernameBox = new TextBox();
 		usernameBox.setWidth("200px");
-		usernameBox.addKeyUpHandler(new KeyUpHandler() {
+		usernameBox.addKeyPressHandler(new KeyPressHandler() {
+			private String lastContent = "";
 			@Override
-			public void onKeyUp(KeyUpEvent event) {
+			public void onKeyPress(KeyPressEvent event) {
+				if (usernameBox.getText().equals(lastContent))
+					return;
+				lastContent = usernameBox.getText();
 				okButton.setEnabled(false);
 				checkUsernameAvailability.setEnabled(true); 
 				checkUsernameAvailabilityLabel.setText("");
+			}
+		});
+		usernameBox.addKeyUpHandler(new KeyUpHandler() {
+			@Override
+			public void onKeyUp(KeyUpEvent event) {
 				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
 					checkUsername();
 			}
@@ -90,8 +104,10 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		passwordConfirmBox.addKeyUpHandler(new KeyUpHandler() {
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
-				if (okButton.isEnabled())
-					tryRegistering();
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					if (okButton.isEnabled())
+						tryRegistering();
+				}
 			}
 		});
 		grid.setWidget(2, 1, passwordConfirmBox);
@@ -108,6 +124,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		grid.setWidget(0, 2, checkUsernameAvailability);
 		
 		checkUsernameAvailabilityLabel = new HTML();
+		checkUsernameAvailabilityLabel.setWidth("200px");
 		grid.setWidget(0, 3, checkUsernameAvailabilityLabel);
 		
 		add(grid);

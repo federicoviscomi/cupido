@@ -54,6 +54,10 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 			final String username, final CupidoInterfaceAsync cupidoService) {
 		this.screenSwitcher = screenSwitcher;
 		this.username = username;
+		
+		// Set an empty listener (one that handles no messages).
+		screenSwitcher.setListener(new CometMessageListener());
+		
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 

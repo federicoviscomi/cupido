@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import net.zschech.gwt.comet.client.CometListener;
+import unibo.as.cupido.backendInterfaces.common.Card;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoCometListener;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
@@ -24,11 +25,13 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 	private LocalChatWidget chatWidget;
 
 	public ObservedTableScreen(ScreenSwitcher screenSwitcher,
-			String username, final CupidoInterfaceAsync cupidoService,
-			CupidoCometListener listener) {
+			String username, final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
+		// Set an empty listener (one that handles no messages).
+		screenSwitcher.setListener(new CometMessageListener());
+		
 		assert Cupido.height == Cupido.width - chatWidth;
 		tableWidget = new HeartsObservedTableWidget(
 				Cupido.height, username, screenSwitcher);
@@ -54,43 +57,42 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		chatWidget.setWidth(chatWidth + "px");
 		add(chatWidget, Cupido.width - chatWidth, 0);
 
-		listener.setListener(new CometListener() {
-
+		screenSwitcher.setListener(new CometMessageListener() {
 			@Override
-			public void onConnected(int heartbeat) {
+			public void onNewLocalChatMessage(String user, String message) {
+				chatWidget.displayMessage(user, message);
 			}
-
+			
 			@Override
-			public void onDisconnected() {
+			public void onCardPassed(Card[] cards) {
+				tableWidget.handleCardPassed(cards);
 			}
-
+			
 			@Override
-			public void onError(Throwable exception, boolean connected) {
+			public void onCardPlayed(Card card, int playerPosition) {
+				tableWidget.handleCardPlayed(card, playerPosition);
 			}
-
+			
 			@Override
-			public void onHeartbeat() {
+			public void onGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+				tableWidget.handleGameEnded(matchPoints, playersTotalPoints);
 			}
-
+			
 			@Override
-			public void onRefresh() {
+			public void onGameStarted(Card[] myCards) {
+				tableWidget.handleGameStarted(myCards);
 			}
-
+			
 			@Override
-			public void onMessage(List<? extends Serializable> messages) {
-				for (Serializable message : messages) {
-					if (message instanceof NewLocalChatMessage) {
-						NewLocalChatMessage x = (NewLocalChatMessage) message;
-						System.out
-								.println("Client: received a NewLocalChatMessage object, displaying it.");
-						chatWidget.displayMessage(x.user, x.message);
-					} else {
-						System.out
-								.println("Client: Received unrecognized Comet message.");
-					}
-				}
+			public void onNewPlayerJoined(String name, boolean isBot,
+					int points, int position) {
+				tableWidget.handleNewPlayerJoined(name, isBot, points, position);
 			}
-
+			
+			@Override
+			public void onPlayerLeft(String player) {
+				tableWidget.handlePlayerLeft(player);
+			}
 		});
 	}
 

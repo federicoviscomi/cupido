@@ -10,6 +10,10 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 public class GeneralErrorScreen extends AbsolutePanel implements Screen {
 
 	public GeneralErrorScreen(ScreenSwitcher screenSwitcher, Throwable e) {
+		
+		// Set an empty listener (one that handles no messages).
+		screenSwitcher.setListener(new CometMessageListener());
+		
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
