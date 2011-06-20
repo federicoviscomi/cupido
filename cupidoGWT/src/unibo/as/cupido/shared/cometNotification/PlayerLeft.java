@@ -13,8 +13,8 @@ public class PlayerLeft implements Serializable {
 	public String player;
 	
 	public PlayerLeft(){
-		super();
 	}
+	
 	public PlayerLeft(String player){
 		this.player=player;
 	}

@@ -20,4 +20,12 @@ public class GameEnded implements Serializable {
 	 * owner's points if you were viewing the others are in clockwise order
 	 */
 	public int[] playersTotalPoints;
+	
+	public GameEnded() {
+	}
+	
+	public GameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		this.matchPoints = matchPoints;
+		this.playersTotalPoints = playersTotalPoints;
+	}
 }

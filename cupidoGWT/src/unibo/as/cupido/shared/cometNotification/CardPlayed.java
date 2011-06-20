@@ -19,5 +19,12 @@ public class CardPlayed implements Serializable {
 	 * the others are clockwise
 	 */
 	public int playerPosition;
+	
+	public CardPlayed() {
+	}
 
+	public CardPlayed(Card card, int playerPosition) {
+		this.card = card;
+		this.playerPosition = playerPosition;
+	}
 }

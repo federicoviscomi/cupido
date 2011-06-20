@@ -15,4 +15,11 @@ public class CardPassed implements Serializable {
 	 * Card.lenght is always 3
 	 */
 	public Card[] cards;
+	
+	public CardPassed() {
+	}
+	
+	public CardPassed(Card[] cards) {
+		this.cards = cards;
+	}
 }

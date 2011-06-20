@@ -23,4 +23,14 @@ public class NewPlayerJoined implements Serializable {
 	 * on position range is [1-3]
 	 */
 	public int position;
+	
+	public NewPlayerJoined() {
+	}
+	
+	public NewPlayerJoined(String name, boolean isBot, int points, int position) {
+		this.name = name;
+		this.isBot = isBot;
+		this.points = points;
+		this.position = position;
+	}
 }

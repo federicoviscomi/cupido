@@ -12,5 +12,11 @@ public class GameStarted implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public Card[] myCards;
+	
+	public GameStarted() {
+	}
 
+	public GameStarted(Card[] myCards) {
+		this.myCards = myCards;
+	}
 }

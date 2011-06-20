@@ -6,10 +6,14 @@ public class NewLocalChatMessage implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public NewLocalChatMessage() {
-
-	}
-
 	public String user;
 	public String message;
+	
+	public NewLocalChatMessage() {
+	}
+
+	public NewLocalChatMessage(String user, String message) {
+		this.user = user;
+		this.message = message;
+	}
 }
