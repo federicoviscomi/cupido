@@ -1,6 +1,5 @@
 package unibo.as.cupido.backendInterfacesImpl.table.playerUI;
 
-
 import jargs.gnu.CmdLineParser;
 import jargs.gnu.CmdLineParser.IllegalOptionValueException;
 import jargs.gnu.CmdLineParser.UnknownOptionException;
@@ -63,6 +62,14 @@ public class PlayerConsoleUI {
 				new PrintWriter(System.out));
 	}
 
+	public PlayerConsoleUI(BufferedReader in, PrintWriter out)
+			throws AccessException, RemoteException, NotBoundException {
+		this.in = in;
+		this.out = out;
+		gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
+				.lookup(GlobalTableManagerInterface.globalTableManagerName);
+	}
+
 	public PlayerConsoleUI(String inputFileName) throws Exception {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				inputFileName))), new PrintWriter(System.out));
@@ -73,14 +80,6 @@ public class PlayerConsoleUI {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				inputFileName))), new PrintWriter(new FileOutputStream(
 				outputFileName)));
-	}
-
-	public PlayerConsoleUI(BufferedReader in, PrintWriter out)
-			throws AccessException, RemoteException, NotBoundException {
-		this.in = in;
-		this.out = out;
-		gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
-				.lookup(GlobalTableManagerInterface.globalTableManagerName);
 	}
 
 	public void execute() throws IOException {
@@ -104,7 +103,7 @@ public class PlayerConsoleUI {
 				out.print("\n#: ");
 				nextCommandLine = in.readLine();
 				out.println(nextCommandLine);
-				
+
 				if (nextCommandLine == null) {
 					exit(0);
 				}

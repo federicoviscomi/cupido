@@ -27,6 +27,23 @@ public class CardsManager {
 	public static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
 	public static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
 
+	public static int whoWins(final Card[] playedCard, final int firstDealer) {
+		return Arrays.asList(playedCard).indexOf(
+				Collections.max(Arrays.asList(playedCard),
+						new Comparator<Card>() {
+							@Override
+							public int compare(Card o1, Card o2) {
+								int firstSuit = playedCard[firstDealer].suit
+										.ordinal();
+								return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14
+										: o1.value))
+										- ((o2.suit.ordinal() == firstSuit ? 1
+												: 0) * (o2.value == 1 ? 14
+												: o2.value));
+							}
+						}));
+	}
+
 	/** stores the cards passed by each player */
 	private Card[][] allPassedCards = new Card[4][];
 	/** stores the cards played in the current turn */
@@ -41,6 +58,7 @@ public class CardsManager {
 	private int firstDealerInTurn;
 	/** the number of turn made in this hand */
 	private int turn = 0;
+
 	/** stores round points of every player */
 	private int[] points = new int[4];
 
@@ -111,6 +129,10 @@ public class CardsManager {
 		for (int i = 0; i < 4; i++) {
 			Collections.sort(cards[i], cardsComparator);
 		}
+	}
+
+	public int firstDealer() {
+		return firstDealerInTurn;
 	}
 
 	public boolean gameEnded() {
@@ -258,27 +280,6 @@ public class CardsManager {
 				return i;
 		}
 		return -1;
-	}
-
-	public int firstDealer() {
-		return firstDealerInTurn;
-	}
-
-	public static int whoWins(final Card[] playedCard, final int firstDealer) {
-		return Arrays.asList(playedCard).indexOf(
-				Collections.max(Arrays.asList(playedCard),
-						new Comparator<Card>() {
-							@Override
-							public int compare(Card o1, Card o2) {
-								int firstSuit = playedCard[firstDealer].suit
-										.ordinal();
-								return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14
-										: o1.value))
-										- ((o2.suit.ordinal() == firstSuit ? 1
-												: 0) * (o2.value == 1 ? 14
-												: o2.value));
-							}
-						}));
 	}
 
 }

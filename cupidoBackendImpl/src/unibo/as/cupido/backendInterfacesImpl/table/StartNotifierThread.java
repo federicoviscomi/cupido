@@ -10,13 +10,6 @@ public class StartNotifierThread extends Thread {
 		this.stm = stm;
 	}
 
-	public void setGameStarted() {
-		synchronized (lock) {
-			gameStarted = true;
-			lock.notify();
-		}
-	}
-
 	@Override
 	public void run() {
 		try {
@@ -32,5 +25,12 @@ public class StartNotifierThread extends Thread {
 			e.printStackTrace();
 		}
 		System.err.println("StartNotifierThread 5");
+	}
+
+	public void setGameStarted() {
+		synchronized (lock) {
+			gameStarted = true;
+			lock.notify();
+		}
 	}
 }

@@ -24,8 +24,7 @@ public class PlayersManager {
 		final String botName;
 		final BotNotificationInterface bot;
 
-		public NonRemoteBotInfo(String botName,
-				BotNotificationInterface bot) {
+		public NonRemoteBotInfo(String botName, BotNotificationInterface bot) {
 			if (botName == null || bot == null)
 				throw new IllegalArgumentException("null bot name or interface");
 			this.botName = botName;
@@ -129,9 +128,8 @@ public class PlayersManager {
 	}
 
 	public void addNonRemoteBot(String userName, int position,
-			BotNotificationInterface bot)
-			throws FullTableException, PositionFullException,
-			NotCreatorException {
+			BotNotificationInterface bot) throws FullTableException,
+			PositionFullException, NotCreatorException {
 
 		if (playersCount > 4)
 			throw new FullTableException();
@@ -368,7 +366,7 @@ public class PlayersManager {
 			if (players[i] != null && !players[i].name.equals(userName)) {
 				try {
 					players[i].sni.notifyPlayedCard(card,
-							 toRelativePosition(position, i));
+							toRelativePosition(position, i));
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

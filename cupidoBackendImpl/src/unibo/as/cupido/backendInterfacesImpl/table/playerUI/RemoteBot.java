@@ -140,7 +140,7 @@ public class RemoteBot implements Bot, Serializable {
 				+ "(" + card + ", " + playerPosition + ") played:"
 				+ Arrays.toString(playedCard) + " count:" + playedCardCount
 				+ " turn:" + turn + " first:" + firstDealer);
-	
+
 		if (playerPosition == 2) {
 			synchronized (lock) {
 				ableToPlay = true;

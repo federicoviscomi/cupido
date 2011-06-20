@@ -1,6 +1,5 @@
 package unibo.as.cupido.backendInterfacesImpl.table;
 
-
 public class EndNotifierThread extends Thread {
 
 	private final SingleTableManager stm;
@@ -9,13 +8,6 @@ public class EndNotifierThread extends Thread {
 
 	public EndNotifierThread(SingleTableManager stm) {
 		this.stm = stm;
-	}
-
-	public void setGameEnded() {
-		synchronized (lock) {
-			gameEnded = true;
-			lock.notify();
-		}
 	}
 
 	@Override
@@ -30,6 +22,13 @@ public class EndNotifierThread extends Thread {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	public void setGameEnded() {
+		synchronized (lock) {
+			gameEnded = true;
+			lock.notify();
 		}
 	}
 }
