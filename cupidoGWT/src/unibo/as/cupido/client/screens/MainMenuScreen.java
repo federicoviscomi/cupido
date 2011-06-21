@@ -145,12 +145,23 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		});
 		add(aboutButton, 200, 600);
 
-		PushButton logoutButton = new PushButton("Informazioni su Cupido");
+		PushButton logoutButton = new PushButton("Logout");
 		buttons.add(logoutButton);
 		logoutButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenManager.displayAboutScreen(username);
+				freeze();
+				cupidoService.logout(new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						screenManager.displayGeneralErrorScreen(caught);
+					}
+					
+					@Override
+					public void onSuccess(Void result) {
+						screenManager.displayLoginScreen();
+					}
+				});
 			}
 		});
 		add(logoutButton, 200, 650);
