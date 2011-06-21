@@ -151,10 +151,6 @@ public class PlayersManager {
 			if (i != position) {
 				if (players[i] != null) {
 					try {
-						System.err.println("\nnotifing joined bot " + botName
-								+ " to player " + players[i].name + " at " + i
-								+ ". relative position is "
-								+ toRelativePosition(position, i));
 						players[i].sni.notifyPlayerJoined("_bot." + userName
 								+ "." + position, true, 0,
 								toRelativePosition(position, i));
@@ -165,10 +161,6 @@ public class PlayersManager {
 					}
 				}
 				if (nonRemoteBotsInfo[i] != null) {
-					System.err.println("\nnotifing joined bot " + botName
-							+ " to player " + nonRemoteBotsInfo[i].botName
-							+ " at " + i + ". relative position is "
-							+ toRelativePosition(position, i));
 					nonRemoteBotsInfo[i].bot.notifyPlayerJoined("_bot."
 							+ userName + "." + position, true, 0,
 							toRelativePosition(position, i));
@@ -214,11 +206,6 @@ public class PlayersManager {
 			if (i != position) {
 				if (players[i] != null) {
 					try {
-						System.err.println("\nnotifing joined player "
-								+ playerName + " at " + position
-								+ " to player " + players[i].name + " at " + i
-								+ ". relative position is "
-								+ toRelativePosition(position, i));
 						players[i].sni.notifyPlayerJoined(playerName, false,
 								score, toRelativePosition(position, i));
 					} catch (RemoteException e) {
@@ -228,11 +215,6 @@ public class PlayersManager {
 					}
 				}
 				if (nonRemoteBotsInfo[i] != null) {
-					System.err.println("\nnotifing joined bot " + playerName
-							+ " at " + position + " to player "
-							+ players[i].name + " at " + i
-							+ ". relative position is "
-							+ toRelativePosition(position, i));
 					nonRemoteBotsInfo[i].bot.notifyPlayerJoined("_bot."
 							+ playerName + "." + position, false, score,
 							toRelativePosition(position, i));
