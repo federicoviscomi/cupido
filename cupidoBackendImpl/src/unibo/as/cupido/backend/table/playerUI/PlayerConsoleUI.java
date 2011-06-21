@@ -232,16 +232,9 @@ public class PlayerConsoleUI {
 		try {
 			in.close();
 		} catch (IOException e) {
+			//
 		}
 		out.close();
-		try {
-			if (remoteBot.singleTableManager != null) {
-				gtm.notifyTableDestruction(table.tableDescriptor,
-						localTableManager);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		System.exit(exitStatus);
 	}
 
