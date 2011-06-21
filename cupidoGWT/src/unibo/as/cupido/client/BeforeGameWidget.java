@@ -62,6 +62,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 	private Listener listener;
 
+	private boolean frozen = false;
+
 	/*
 	 * The widget that represents the table before the actual game.
 	 * 
@@ -204,7 +206,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 			listener.onTableFull(initialTableStatus);
 	}
 	
-	public boolean isTableFull() {
+	private boolean isTableFull() {
 		return initialTableStatus.opponents[0] != null
 			&& initialTableStatus.opponents[1] != null
 			&& initialTableStatus.opponents[2] != null;
@@ -234,18 +236,27 @@ public class BeforeGameWidget extends AbsolutePanel {
 			addBotButton(player);
 	}
 	
-	public void disableControls() {
+	public void freeze() {
 		for (PushButton button : buttons)
 			if (button != null)
 				button.setEnabled(false);
+		frozen  = true;
 	}
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		if (frozen) {
+			System.out.println("Client: notice: received a GameEnded notification while frozen, ignoring it.");
+			return;
+		}
 		listener.onGameEnded();
 	}
 
 	public void handleNewPlayerJoined(String name, boolean isBot, int points,
 			int position) {
+		if (frozen) {
+			System.out.println("Client: notice: received a NewPlayerJoined notification while frozen, ignoring it.");
+			return;
+		}
 		if (isBot)
 			addBot(position);
 		else
@@ -253,6 +264,10 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	public void handlePlayerLeft(String player) {
+		if (frozen) {
+			System.out.println("Client: notice: received a PlayerLeft notification while frozen, ignoring it.");
+			return;
+		}
 		for (int i = 0; i < 3; i++) {
 			if (initialTableStatus.opponents[i] == null)
 				continue;

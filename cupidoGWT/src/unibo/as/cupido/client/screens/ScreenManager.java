@@ -54,7 +54,5 @@ public interface ScreenManager {
 	 */
 	public void displayLoadingScreen();
 	
-	public void disableControls();
-	
 	public void setListener(CometMessageListener listener);
 }

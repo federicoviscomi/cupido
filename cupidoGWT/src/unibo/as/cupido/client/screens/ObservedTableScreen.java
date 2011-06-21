@@ -25,6 +25,8 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 	public static final int chatWidth = 200;
 	private HeartsObservedTableWidget tableWidget;
 	private LocalChatWidget chatWidget;
+	
+	private boolean frozen = false;
 
 	public ObservedTableScreen(ScreenManager screenManager,
 			String username, final CupidoInterfaceAsync cupidoService) {
@@ -85,6 +87,10 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 				new LocalChatWidget.MessageSender() {
 					@Override
 					public void sendMessage(String message) {
+						if (frozen) {
+							System.out.println("Client: notice: the sendMessage() event was received while frozen, ignoring it.");
+							return;
+						}
 						cupidoService.sendLocalChatMessage(message,
 								new AsyncCallback<Void>() {
 									@Override
@@ -104,37 +110,65 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		screenManager.setListener(new CometMessageListener() {
 			@Override
 			public void onNewLocalChatMessage(String user, String message) {
+				if (frozen) {
+					System.out.println("Client: notice: the onNewLocalChatMessage() event was received while frozen, ignoring it.");
+					return;
+				}
 				chatWidget.displayMessage(user, message);
 			}
 			
 			@Override
 			public void onCardPassed(Card[] cards) {
+				if (frozen) {
+					System.out.println("Client: notice: the onCardPassed() event was received while frozen, ignoring it.");
+					return;
+				}
 				System.out.println("Client: ObservedTableScreen: warning: received a CardPassed notification while observing a table, it was ingored.");
 			}
 			
 			@Override
 			public void onCardPlayed(Card card, int playerPosition) {
+				if (frozen) {
+					System.out.println("Client: notice: the onCardPlayed() event was received while frozen, ignoring it.");
+					return;
+				}
 				tableWidget.handleCardPlayed(card, playerPosition);
 			}
 			
 			@Override
 			public void onGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+				if (frozen) {
+					System.out.println("Client: notice: the onGameEnded() event was received while frozen, ignoring it.");
+					return;
+				}
 				tableWidget.handleGameEnded(matchPoints, playersTotalPoints);
 			}
 			
 			@Override
 			public void onGameStarted(Card[] myCards) {
+				if (frozen) {
+					System.out.println("Client: notice: the onGameStarted() event was received while frozen, ignoring it.");
+					return;
+				}
 				System.out.println("Client: ObservedTableScreen: warning: received a GameStarted notification while observing a table, it was ingored.");
 			}
 			
 			@Override
 			public void onNewPlayerJoined(String name, boolean isBot,
 					int points, int position) {
+				if (frozen) {
+					System.out.println("Client: notice: the onNewPlayerJoined() event was received while frozen, ignoring it.");
+					return;
+				}
 				System.out.println("Client: ObservedTableScreen: warning: received a NewPlayerJoined notification while observing a table, it was ingored.");
 			}
 			
 			@Override
 			public void onPlayerLeft(String player) {
+				if (frozen) {
+					System.out.println("Client: notice: the onPlayerLeft() event was received while frozen, ignoring it.");
+					return;
+				}
 				tableWidget.handlePlayerLeft(player);
 			}
 		});
@@ -145,8 +179,9 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 	}
 
 	@Override
-	public void disableControls() {
-		tableWidget.disableControls();
-		chatWidget.disableControls();
+	public void freeze() {
+		tableWidget.freeze();
+		chatWidget.freeze();
+		frozen = true;
 	}
 }

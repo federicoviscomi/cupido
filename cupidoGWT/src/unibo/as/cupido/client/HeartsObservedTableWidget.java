@@ -20,8 +20,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 	private ViewerStateManager stateManager;
 	
-	private boolean controlsDisabled = false;
 	private ObservedGameStatus observedGameStatus;
+	private boolean frozen = false;
 
 	/**
 	 * 
@@ -77,17 +77,29 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 				new BeforeGameWidget.Listener() {
 					@Override
 					public void onTableFull(InitialTableStatus initialTableStatus) {
+						if (frozen) {
+							System.out.println("Client: notice: received a onTableFull() event while frozen, ignoring it.");
+							return;
+						}
 						startGame(username, initialTableStatus);
 					}
 
 					@Override
 					public void onGameEnded() {
+						if (frozen) {
+							System.out.println("Client: notice: received a onGameEnded() event while frozen, ignoring it.");
+							return;
+						}
 						screenManager.displayMainMenuScreen(username);
 						Window.alert("L'owner ha lasciato il tavolo, e quindi la partita \350 stata annullata.");
 					}
 
 					@Override
 					public void onExit() {
+						if (frozen) {
+							System.out.println("Client: notice: received a onExit() event while frozen, ignoring it.");
+							return;
+						}
 						screenManager.displayMainMenuScreen(username);
 					}
 				});
@@ -96,8 +108,10 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 	public void startGame(final String username, InitialTableStatus initialTableStatus) {
 
-		if (controlsDisabled)
+		if (frozen) {
+			System.out.println("Client: notice: startGame() was called while frozen, ignoring it.");
 			return;
+		}
 		
 		// Update observedGameStatus with initialTableStatus.
 		
@@ -119,6 +133,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	
 	public void startGame(String username, ObservedGameStatus observedGameStatus) {
 		
+		assert !frozen;
+		
 		stateManager = new ViewerStateManagerImpl(tableSize, screenManager,
 				observedGameStatus, username);
 
@@ -126,25 +142,37 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		add(cardsGameWidget, 0, 0);
 	}
 	
-	public void disableControls() {
+	public void freeze() {
 		if (beforeGameWidget != null)
-			beforeGameWidget.disableControls();
+			beforeGameWidget.freeze();
 		if (cardsGameWidget != null) {
-			cardsGameWidget.disableControls();
-			stateManager.disableControls();
+			cardsGameWidget.freeze();
+			stateManager.freeze();
 		}
-		controlsDisabled = true;
+		frozen = true;
 	}
 
 	public void handleCardPlayed(Card card, int playerPosition) {
+		if (frozen) {
+			System.out.println("Client: notice: received a CardPlayed notification while frozen, ignoring it.");
+			return;
+		}
 		stateManager.handleCardPlayed(card, playerPosition);
 	}
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		if (frozen) {
+			System.out.println("Client: notice: received a GameEnded notification while frozen, ignoring it.");
+			return;
+		}
 		stateManager.handleGameEnded(matchPoints, playersTotalPoints);
 	}
 
 	public void handlePlayerLeft(String player) {
+		if (frozen) {
+			System.out.println("Client: notice: received a PlayerLeft notification while frozen, ignoring it.");
+			return;
+		}
 		stateManager.handlePlayerLeft(player);
 	}
 }

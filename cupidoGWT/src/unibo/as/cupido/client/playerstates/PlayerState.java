@@ -13,7 +13,7 @@ public interface PlayerState {
 	 */
 	public void activate();
 
-	public void disableControls();
+	public void freeze();
 	
 	/**
 	 * This is called before starting an animation.

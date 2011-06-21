@@ -23,6 +23,8 @@ public class LocalChatWidget extends AbsolutePanel {
 	private TextBox messageField;
 	private PushButton sendButton;
 	private String username;
+	
+	private boolean frozen = false;
 
 	private MessageSender messageSender;
 
@@ -77,7 +79,7 @@ public class LocalChatWidget extends AbsolutePanel {
 		add(bottomRow, 0, (Cupido.height - bottomRowHeight));
 	}
 
-	protected void sendMessage() {
+	private void sendMessage() {
 		// FIXME: This is a place-holder implementation.
 		// Rewrite this method when the servlet is ready.
 		if (messageField.getText().equals(""))
@@ -95,7 +97,12 @@ public class LocalChatWidget extends AbsolutePanel {
 	}
 
 	public void displayMessage(String username, String message) {
-
+		
+		if (frozen) {
+			System.out.println("Client: notice: displayMessage() was called while frozen, ignoring it.");
+			return;
+		}
+		
 		String messages = messageList.getHTML();
 
 		SafeHtmlBuilder x = new SafeHtmlBuilder();
@@ -109,8 +116,9 @@ public class LocalChatWidget extends AbsolutePanel {
 		messagesPanel.scrollToBottom();
 	}
 	
-	public void disableControls() {
+	public void freeze() {
 		messageField.setEnabled(false);
-		sendButton.setEnabled(false);		
+		sendButton.setEnabled(false);
+		frozen = true;
 	}
 }

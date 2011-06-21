@@ -37,6 +37,8 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 
 	private HTML checkUsernameAvailabilityLabel;
 	private PushButton checkUsernameAvailability;
+	
+	private boolean frozen = false;
 
 	public RegistrationScreen(final ScreenManager screenManager,
 			final CupidoInterfaceAsync cupidoService) {
@@ -162,11 +164,19 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		cupidoService.isUserRegistered(usernameBox.getText(), new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable caught) {
+				if (frozen) {
+					System.out.println("Client: notice: the onFailure() event was received while frozen, ignoring it.");
+					return;
+				}
 				screenManager.displayGeneralErrorScreen(caught);
 			}
 
 			@Override
 			public void onSuccess(Boolean isRegistered) {
+				if (frozen) {
+					System.out.println("Client: notice: the onSuccess() event was received while frozen, ignoring it.");
+					return;
+				}
 				checkUsernameAvailability.setEnabled(false);
 				usernameBox.setEnabled(true);
 				if (isRegistered) {
@@ -233,6 +243,10 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				if (frozen) {
+					System.out.println("Client: notice: the onFailure() event was received while frozen, ignoring it.");
+					return;
+				}
 				try {
 					throw caught;
 				} catch (DuplicateUserNameException e) {
@@ -251,16 +265,29 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 
 			@Override
 			public void onSuccess(Void result) {
+				if (frozen) {
+					System.out.println("Client: notice: the onSuccess() event was received while frozen, ignoring it.");
+					return;
+				}
+				
 				final String username = usernameBox.getText();
 				
 				cupidoService.login(username, passwordBox.getText(), new AsyncCallback<Boolean>() {
 					@Override
 					public void onFailure(Throwable caught) {
+						if (frozen) {
+							System.out.println("Client: notice: the onFailure() event was received while frozen, ignoring it.");
+							return;
+						}
 						screenManager.displayGeneralErrorScreen(caught);
 					}
 
 					@Override
 					public void onSuccess(Boolean successful) {
+						if (frozen) {
+							System.out.println("Client: notice: the onSuccess() event was received while frozen, ignoring it.");
+							return;
+						}
 						if (successful)
 							screenManager.displayMainMenuScreen(username);
 						else
@@ -277,7 +304,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 	}
 
 	@Override
-	public void disableControls() {
+	public void freeze() {
 		usernameBox.setEnabled(false);
 		passwordBox.setEnabled(false);
 		passwordConfirmBox.setEnabled(false);
@@ -286,5 +313,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		abortButton.setEnabled(false);
 
 		checkUsernameAvailability.setEnabled(false);
+		
+		frozen = true;
 	}
 }

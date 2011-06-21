@@ -41,6 +41,8 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	private boolean stoppedRefreshing = false;
 	private boolean waitingServletResponse = false;
 	
+	private boolean frozen = false;
+	
 	/**
 	 * This is true if the user sent a message and no refresh request
 	 * has yet been sent to the servlet after that.
@@ -76,7 +78,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		tableButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				disableControls();
+				freeze();
 				cupidoService.createTable(new AsyncCallback<InitialTableStatus>() {
 					@Override
 					public void onFailure(Throwable caught) {
@@ -193,6 +195,8 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		chatTimer = new Timer() {
 			@Override
 			public void run() {
+				if (frozen)
+					return;
 				if (waitingServletResponse)
 					return;
 				needRefresh = false;
@@ -233,10 +237,11 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		chatTimer.run();
 	}
 	
-	public void disableControls() {
+	public void freeze() {
 		for (PushButton w : buttons)
 			w.setEnabled(false);
-		chatWidget.disableControls();
+		chatWidget.freeze();
+		frozen = true;
 	}
 	
 	@Override

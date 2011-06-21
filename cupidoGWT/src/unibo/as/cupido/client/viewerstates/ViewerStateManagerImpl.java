@@ -26,6 +26,8 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	private int firstPlayerInTrick = -1;
 	private int remainingTricks;
 	
+	private boolean frozen = false;
+	
 	String username;
 	
 	private List<Serializable> pendingNotifications = new ArrayList<Serializable>();
@@ -120,21 +122,37 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	@Override
 	public void transitionToEndOfTrick() {
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToEndOfTrick() method was called while frozen, ignoring it.");
+			return;
+		}
 		transitionTo(new EndOfTrickState(cardsGameWidget, this));
 	}
 
 	@Override
 	public void transitionToWaitingFirstDeal() {
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToWaitingFirstDeal() method was called while frozen, ignoring it.");
+			return;
+		}
 		transitionTo(new WaitingFirstDealState(cardsGameWidget, this));
 	}
 
 	@Override
 	public void transitionToGameEnded() {
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToGameEnded() method was called while frozen, ignoring it.");
+			return;
+		}
 		transitionTo(new GameEndedState(cardsGameWidget, this));
 	}
 
 	@Override
 	public void transitionToWaitingDeal() {
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToWaitingDeal() method was called while frozen, ignoring it.");
+			return;
+		}
 		transitionTo(new WaitingDealState(cardsGameWidget, this));
 	}
 
@@ -150,6 +168,10 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	@Override
 	public void addDealtCard(int player, Card card) {
+		if (frozen) {
+			System.out.println("Client: notice: the addDealtCard() method was called while frozen, ignoring it.");
+			return;
+		}
 		if (firstPlayerInTrick == -1) {
 			assert dealtCards.size() == 0;
 			firstPlayerInTrick = player;
@@ -160,6 +182,10 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	@Override
 	public void goToNextTrick() {
+		if (frozen) {
+			System.out.println("Client: notice: the goToNextTrick() method was called while frozen, ignoring it.");
+			return;
+		}
 		assert dealtCards.size() == 4;
 		firstPlayerInTrick += winnerCard(dealtCards);
 		firstPlayerInTrick = firstPlayerInTrick % 4;
@@ -216,12 +242,17 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	}
 
 	@Override
-	public void disableControls() {
-		currentState.disableControls();
+	public void freeze() {
+		currentState.freeze();
+		frozen = true;
 	}
 
 	@Override
 	public void handleCardPlayed(Card card, int playerPosition) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleCardPlayed() method was called while frozen, ignoring it.");
+			return;
+		}
 		boolean handled = currentState.handleCardPlayed(card, playerPosition);
 		if (!handled)
 			pendingNotifications.add(new CardPlayed(card, playerPosition));
@@ -229,6 +260,10 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	@Override
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleGameEnded() method was called while frozen, ignoring it.");
+			return;
+		}
 		boolean handled = currentState.handleGameEnded(matchPoints, playersTotalPoints);
 		if (!handled)
 			pendingNotifications.add(new GameEnded(matchPoints, playersTotalPoints));
@@ -236,6 +271,10 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	@Override
 	public void handlePlayerLeft(String player) {
+		if (frozen) {
+			System.out.println("Client: notice: the handlePlayerLeft() method was called while frozen, ignoring it.");
+			return;
+		}
 		boolean handled = currentState.handlePlayerLeft(player);
 		if (!handled)
 			pendingNotifications.add(new PlayerLeft(player));

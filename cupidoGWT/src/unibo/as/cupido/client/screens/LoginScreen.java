@@ -28,6 +28,8 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	private PasswordTextBox passwordBox;
 	private PushButton okButton;
 	private PushButton registerButton;
+	
+	private boolean frozen = false;
 
 	public LoginScreen(final ScreenManager screenManager, CupidoInterfaceAsync cupidoService) {
 		
@@ -137,10 +139,11 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	}
 
 	@Override
-	public void disableControls() {
+	public void freeze() {
 		usernameBox.setEnabled(false);
 		passwordBox.setEnabled(false);
 		okButton.setEnabled(false);
 		registerButton.setEnabled(false);
+		frozen = true;
 	}
 }

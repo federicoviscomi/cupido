@@ -8,6 +8,8 @@ import com.google.gwt.user.client.ui.Label;
 
 public class ScoresScreen extends AbsolutePanel implements Screen {
 
+	private boolean frozen = false;
+	
 	public ScoresScreen(ScreenManager screenManager) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
@@ -20,6 +22,7 @@ public class ScoresScreen extends AbsolutePanel implements Screen {
 	}
 
 	@Override
-	public void disableControls() {
+	public void freeze() {
+		frozen = true;
 	}
 }

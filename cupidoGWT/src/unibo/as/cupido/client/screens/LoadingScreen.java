@@ -25,6 +25,6 @@ public class LoadingScreen extends VerticalPanel implements Screen {
 	}
 
 	@Override
-	public void disableControls() {
+	public void freeze() {
 	}
 }

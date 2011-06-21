@@ -33,7 +33,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	// This is used to check that no screen switches occur while switching
 	// screen.
 	boolean switchingScreen = false;
-
+	
 	CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
 
 	CometMessageListener cometMessageListener;
@@ -260,10 +260,6 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 		switchingScreen = false;
 	}
 	
-	public void disableControls() {
-		currentScreen.disableControls();
-	}
-
 	@Override
 	public void setListener(CometMessageListener listener) {
 		cometMessageListener = listener;

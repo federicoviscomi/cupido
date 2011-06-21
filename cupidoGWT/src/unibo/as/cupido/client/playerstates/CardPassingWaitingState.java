@@ -31,6 +31,8 @@ public class CardPassingWaitingState implements PlayerState {
 	private PlayerStateManager stateManager;
 
 	private List<Card> hand;
+	
+	private boolean frozen = false;
 
 	public CardPassingWaitingState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand) {
@@ -87,19 +89,28 @@ public class CardPassingWaitingState implements PlayerState {
 	}
 
 	@Override
-	public void disableControls() {
+	public void freeze() {
 		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
+		frozen = false;
 	}
 
 	@Override
 	public void handleAnimationStart() {
+		if (frozen) {
+			System.out.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+			return;
+		}
 		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
 	}
 
 	@Override
 	public void handleAnimationEnd() {
+		if (frozen) {
+			System.out.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+			return;
+		}
 		continueButton.setEnabled(true);
 		exitButton.setEnabled(true);
 	}
@@ -107,10 +118,18 @@ public class CardPassingWaitingState implements PlayerState {
 	@Override
 	public void handleCardClicked(int player, Card card, State state,
 			boolean isRaised) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
+			return;
+		}
 	}
 	
 	@Override
 	public boolean handleCardPassed(Card[] passedCards) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+			return false;
+		}
 		List<Card> cards = new ArrayList<Card>();
 		
 		for (Card card : passedCards)
@@ -152,24 +171,40 @@ public class CardPassingWaitingState implements PlayerState {
 
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+			return false;
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
+			return false;
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean handleGameStarted(Card[] myCards) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
+			return false;
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean handlePlayerLeft(String player) {
+		if (frozen) {
+			System.out.println("Client: notice: the handlePlayerLeft() event was received while frozen, deferring it.");
+			return false;
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}
