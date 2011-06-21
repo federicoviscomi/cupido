@@ -145,8 +145,6 @@ public class DatabaseManager implements DatabaseInterface {
 						+ size + " ;");
 		ArrayList<RankingEntry> rank = new ArrayList<RankingEntry>(size);
 		while (topChunk.next()) {
-			System.out.println(topChunk.getInt(1) + " " + topChunk.getString(2)
-					+ " " + topChunk.getInt(3));
 			rank.add(new RankingEntry(topChunk.getString(2),
 					topChunk.getInt(1), topChunk.getInt(3)));
 		}
@@ -244,6 +242,10 @@ public class DatabaseManager implements DatabaseInterface {
 		}
 		System.out.println("---");
 		for (RankingEntry p : this.getLocalRank("golf")){
+			System.out.println(p.rank+" "+p.username+" "+p.points);
+		}
+		System.out.println("---");
+		for (RankingEntry p : this.getTopRank(13)){
 			System.out.println(p.rank+" "+p.username+" "+p.points);
 		}
 	}
