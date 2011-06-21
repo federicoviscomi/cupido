@@ -509,7 +509,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			UserNotAuthenticatedException, FatalException {
 		InitialTableStatus its = new InitialTableStatus();
 		its.opponents = new String[3];
-		its.playerScores = new int[4];
+		its.playerScores = new int[3];
 		its.whoIsBot = new boolean[3];
 		its.opponents[0] = null;
 		its.opponents[1] = null;
@@ -539,9 +539,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			String username = (String) httpSession.getAttribute(USERNAME);
 			TableInterface ti = gtm.createTable(username, sni);
 			httpSession.setAttribute(TI, ti);
-			DatabaseInterface dbi = (DatabaseInterface) getServletContext()
-					.getAttribute(DBI);
-			its.playerScores[0] = dbi.getPlayerScore(username);
 		} catch (RemoteException e) {
 			System.out
 					.println("Servlet: on createTable() catched RemoteException-> "
@@ -553,18 +550,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		} catch (IllegalArgumentException e) {
 			System.out
 					.println("Servlet: on createTable catched IllegalArgumentException ->"
-							+ e.getMessage());
-			throw new FatalException();
-			// e.printStackTrace();
-		} catch (SQLException e) {
-			System.out
-					.println("Servlet: on createTable catched SQLException ->"
-							+ e.getMessage());
-			throw new FatalException();
-			// e.printStackTrace();
-		} catch (NoSuchUserException e) {
-			System.out
-					.println("Servlet: on createTable catched NoSuchUserException ->"
 							+ e.getMessage());
 			throw new FatalException();
 			// e.printStackTrace();

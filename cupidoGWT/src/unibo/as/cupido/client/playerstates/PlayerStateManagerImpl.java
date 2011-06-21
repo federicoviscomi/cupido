@@ -67,7 +67,8 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		observedGameStatus.playerStatus[0].name = username;
 		observedGameStatus.playerStatus[0].numOfCardsInHand = 13;
 		observedGameStatus.playerStatus[0].playedCard = null;
-		observedGameStatus.playerStatus[0].score = initialTableStatus.playerScores[0];
+		// FIXME: This number should come from the servlet.
+		observedGameStatus.playerStatus[0].score = 1234;
 
 		// Left player
 		observedGameStatus.playerStatus[1] = new PlayerStatus();
@@ -75,7 +76,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		observedGameStatus.playerStatus[1].name = initialTableStatus.opponents[0];
 		observedGameStatus.playerStatus[1].numOfCardsInHand = 13;
 		observedGameStatus.playerStatus[1].playedCard = null;
-		observedGameStatus.playerStatus[1].score = initialTableStatus.playerScores[1];
+		observedGameStatus.playerStatus[1].score = initialTableStatus.playerScores[0];
 
 		// Top player
 		observedGameStatus.playerStatus[2] = new PlayerStatus();
@@ -83,7 +84,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		observedGameStatus.playerStatus[2].name = initialTableStatus.opponents[1];
 		observedGameStatus.playerStatus[2].numOfCardsInHand = 13;
 		observedGameStatus.playerStatus[2].playedCard = null;
-		observedGameStatus.playerStatus[2].score = initialTableStatus.playerScores[2];
+		observedGameStatus.playerStatus[2].score = initialTableStatus.playerScores[1];
 
 		// Right player
 		observedGameStatus.playerStatus[3] = new PlayerStatus();
@@ -91,7 +92,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		observedGameStatus.playerStatus[3].name = initialTableStatus.opponents[2];
 		observedGameStatus.playerStatus[3].numOfCardsInHand = 13;
 		observedGameStatus.playerStatus[3].playedCard = null;
-		observedGameStatus.playerStatus[3].score = initialTableStatus.playerScores[3];
+		observedGameStatus.playerStatus[3].score = initialTableStatus.playerScores[2];
 
 		this.cardsGameWidget = new CardsGameWidget(tableSize,
 				observedGameStatus, cards, new VerticalPanel(),
