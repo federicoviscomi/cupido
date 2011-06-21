@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import unibo.as.cupido.backend.table.bot.BotNotificationInterface;
+import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
@@ -76,10 +77,13 @@ public class PlayersManager {
 	private NonRemoteBotInfo[] nonRemoteBotsInfo = new NonRemoteBotInfo[4];
 	private int playersCount = 1;
 	private final RemovalThread removalThread;
+	private final DatabaseManager databaseManager;
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
-			int score, RemovalThread removalThread) throws SQLException,
+			int score, RemovalThread removalThread,
+			DatabaseManager databaseManager) throws SQLException,
 			NoSuchUserException {
+		this.databaseManager = databaseManager;
 		if (owner == null || snf == null || removalThread == null)
 			throw new IllegalArgumentException();
 		players[0] = new PlayerInfo(owner, false, score, snf);
@@ -416,9 +420,11 @@ public class PlayersManager {
 
 	public int[] updateScore(int[] matchPoints) {
 		int min = matchPoints[0];
-		for (int point : matchPoints)
-			if (min < point)
-				min = point;
+		for (int i = 1; i < 4; i++) {
+			if (min < matchPoints[i])
+				min = matchPoints[i];
+		}
+
 		int[] newScore = new int[4];
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null) {
@@ -428,6 +434,16 @@ public class PlayersManager {
 					players[i].score -= 1;
 				}
 				newScore[i] = players[i].score;
+				try {
+					databaseManager.updateScore(players[i].name,
+							players[i].score);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchUserException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		return newScore;

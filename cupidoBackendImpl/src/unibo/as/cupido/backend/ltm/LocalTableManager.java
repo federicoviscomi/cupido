@@ -15,9 +15,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.concurrent.RejectedExecutionException;
 
 import unibo.as.cupido.backend.table.SingleTableManager;
+import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
@@ -147,12 +147,13 @@ public class LocalTableManager implements LocalTableManagerInterface {
 			nextId++;
 			return new Pair<TableInterface, TableInfoForClient>(tableRemote,
 					newTable);
-		} catch (RejectedExecutionException e) {
-			e.printStackTrace();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchUserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchLTMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -176,16 +177,8 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	}
 
-	/**
-	 * 
-	 * When a Table terminates, it calls this method to notify his
-	 * LocalTableManager
-	 * 
-	 * @param tableId
-	 *            the id of the table that terminates
-	 */
+	@Override
 	public void notifyTableDestruction(int tableId) {
-
 		allTables.remove(tableId);
 	}
 

@@ -1,7 +1,6 @@
 package unibo.as.cupido.backend.table.playerUI;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,7 +27,6 @@ public class RemoteBot implements Bot, Serializable {
 	InitialTableStatus initialTableStatus;
 	ArrayList<Card> cards;
 	Card[] playedCard = new Card[4];
-	int point;
 	private int turn = 0;
 	private int playedCardCount = 0;
 	private int firstDealer = -1;
@@ -36,7 +34,8 @@ public class RemoteBot implements Bot, Serializable {
 	private boolean ableToPlay = false;
 	private boolean ableToPass = false;
 	PrintWriter out;
-	private Object lock = new Object();
+	private final Object lock = new Object();
+	private int points = 0;
 
 	public RemoteBot(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, final String userName)
@@ -71,6 +70,44 @@ public class RemoteBot implements Bot, Serializable {
 		initialTableStatus.whoIsBot[position] = true;
 	}
 
+	private ArrayList<Card> chooseValidCards() {
+		ArrayList<Card> validCards = new ArrayList<Card>(13);
+		if (cards.contains(CardsManager.twoOfClubs)) {
+			validCards.add(CardsManager.twoOfClubs);
+			return validCards;
+		}
+
+		if (playedCardCount == 0) {
+			if (!brokenHearted) {
+				for (int i = 0; i < cards.size(); i++) {
+					if (cards.get(i).suit != Card.Suit.HEARTS) {
+						validCards.add(cards.get(i));
+					}
+				}
+			}
+			if (validCards.size() == 0) {
+				validCards.addAll(cards);
+			}
+			return validCards;
+		}
+
+		
+		
+		for (int i = 0; i < cards.size(); i++) {
+			if (cards.get(i).suit == playedCard[firstDealer].suit) {
+				validCards.add(cards.get(i));
+			}
+		}
+		if (validCards.size() == 0) {
+			validCards.addAll(cards);
+		}
+		return validCards;
+	}
+
+	private Card choseCard() {
+		return chooseValidCards().get(0);
+	}
+
 	@Override
 	public void createTable() throws RemoteException {
 		throw new UnsupportedOperationException("method not implemented yet");
@@ -88,8 +125,9 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyGameStarted(Card[] cards) {
-		this.cards = new ArrayList<Card>(4);
-		this.cards.addAll(Arrays.asList(cards));
+		this.cards = new ArrayList<Card>(13);
+		for (int i = 0; i < cards.length; i++)
+			this.cards.add(cards[i]);
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			synchronized (lock) {
 				ableToPass = true;
@@ -105,24 +143,20 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
-		for (Card card : cards)
-			this.cards.add(card);
-		// this.cards.addAll(Arrays.asList(cards));
+		for (int i = 0; i < cards.length; i++)
+			this.cards.add(cards[i]);
 		synchronized (lock) {
 			if (!ableToPass) {
 				ableToPass = true;
 				lock.notify();
 			}
 		}
-		for (Card card : this.cards) {
-			if (card.equals(CardsManager.twoOfClubs)) {
-				synchronized (lock) {
-					ableToPlay = true;
-					lock.notify();
-				}
-				firstDealer = 3;
-				return;
+		if (this.cards.contains(CardsManager.twoOfClubs)) {
+			synchronized (lock) {
+				ableToPlay = true;
+				lock.notify();
 			}
+			firstDealer = 3;
 		}
 		out.println("\nplay starts. " + userName + " cards are:"
 				+ this.cards.toString());
@@ -136,32 +170,7 @@ public class RemoteBot implements Bot, Serializable {
 				+ " turn:" + turn + " first:" + firstDealer
 				+ " broken hearted " + brokenHearted);
 
-		if (card.suit == Suit.HEARTS)
-			brokenHearted = true;
-		if (firstDealer == -1) {
-			firstDealer = playerPosition;
-		}
-		playedCard[playerPosition] = card;
-		playedCardCount++;
-		if (playedCardCount == 4) {
-			firstDealer = CardsManager.whoWins(playedCard, firstDealer);
-			playedCardCount = 0;
-			Arrays.fill(playedCard, null);
-			turn++;
-			if (firstDealer == 3) {
-				synchronized (lock) {
-					ableToPlay = true;
-					lock.notify();
-				}
-			}
-		} else {
-			if (playerPosition == 2) {
-				synchronized (lock) {
-					ableToPlay = true;
-					lock.notify();
-				}
-			}
-		}
+		setCardPlayed(card, playerPosition);
 
 		out.println("\n" + userName + " fine player " + playerPosition
 				+ " played card " + card + ".\n turn cards:"
@@ -231,53 +240,69 @@ public class RemoteBot implements Bot, Serializable {
 				out.println("\n" + userName + " play next card iniz. played:"
 						+ Arrays.toString(playedCard) + " count:"
 						+ playedCardCount + " turn:" + turn + " first:"
-						+ firstDealer + " broken hearted " + brokenHearted);
+						+ firstDealer + " broken hearted: " + brokenHearted
+						+ " owned: " + cards.toString());
 
-				playedCard[3] = null;
-				if (cards.remove(CardsManager.twoOfClubs)) {
-					playedCard[3] = CardsManager.twoOfClubs;
-				} else if (playedCardCount == 0) {
-					if (!brokenHearted) {
-						for (int i = 0; i < cards.size()
-								&& playedCard[3] == null; i++) {
-							if (cards.get(i).suit != Card.Suit.HEARTS) {
-								playedCard[3] = cards.remove(0);
-							}
-						}
-					}
-				} else {
-					for (int i = 0; i < cards.size() && playedCard[3] == null; i++)
-						if (cards.get(i).suit == playedCard[firstDealer].suit)
-							playedCard[3] = cards.remove(i);
-				}
-				if (playedCard[3] == null)
-					playedCard[3] = cards.remove(0);
-				if (playedCard[3].suit == Card.Suit.HEARTS)
-					brokenHearted = true;
+				/** choose a valid card */
+				Card cardToPlay = choseCard();
+
+				/** play chosen card */
+				singleTableManager.playCard(userName, cardToPlay);
+
+				/** update status */
+				setCardPlayed(cardToPlay, 3);
+
 				out.println("\n" + userName + " play next card fine. played:"
 						+ Arrays.toString(playedCard) + " count:"
 						+ playedCardCount + " turn:" + turn + " first:"
-						+ firstDealer + " broken hearted " + brokenHearted);
+						+ firstDealer + " broken hearted: " + brokenHearted
+						+ " owned: " + cards.toString());
 
-				playedCardCount++;
-				if (playedCardCount == 4) {
-					firstDealer = CardsManager.whoWins(playedCard, firstDealer);
-					playedCardCount = 0;
-					turn++;
-					Arrays.fill(playedCard, null);
-					if (firstDealer == 3) {
-						ableToPlay = true;
-						lock.notify();
-					}
-				}
-
-				singleTableManager.playCard(userName, playedCard[3]);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+
+	private void setCardPlayed(Card card, int playerPosition) {
+		if (card.suit == Suit.HEARTS) {
+			brokenHearted = true;
+		}
+		if (firstDealer == -1) {
+			firstDealer = playerPosition;
+		}
+		if (playerPosition == 3) {
+			cards.remove(card);
+		}
+		playedCard[playerPosition] = card;
+		playedCardCount++;
+		if (playedCardCount == 4) {
+			firstDealer = CardsManager.whoWins(playedCard, firstDealer);
+			playedCardCount = 0;
+			turn++;
+			if (firstDealer == 3) {
+				synchronized (lock) {
+					ableToPlay = true;
+					lock.notify();
+				}
+				for (Card c : playedCard) {
+					if (c.suit == Suit.HEARTS)
+						points++;
+					else if (c.equals(CardsManager.twoOfClubs))
+						points += 5;
+				}
+			}
+			Arrays.fill(playedCard, null);
+		} else {
+			if (playerPosition == 2) {
+				synchronized (lock) {
+					ableToPlay = true;
+					lock.notify();
+				}
+			}
+		}
 	}
 
 }

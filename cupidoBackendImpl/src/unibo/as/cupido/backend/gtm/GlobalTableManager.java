@@ -51,6 +51,7 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
  */
 public class GlobalTableManager implements GlobalTableManagerInterface {
 
+	@SuppressWarnings("unused")
 	public static void main(String args[]) throws RemoteException {
 		new GlobalTableManager();
 	}
@@ -60,7 +61,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	/** manage a swarm of LTM */
 	private LTMSwarm ltmSwarm;
 
-	private Registry registry;
+	Registry registry;
 
 	public GlobalTableManager() throws RemoteException {
 		try {
