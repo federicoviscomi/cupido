@@ -1,0 +1,46 @@
+
+play starts. cane cards are:[[DIAMONDS 6], [DIAMONDS 8], [DIAMONDS 13], [SPADES 7], [SPADES 9], [SPADES 13], [HEARTS 3], [HEARTS 5], [HEARTS 12], [CLUBS 5], [CLUBS 9], [CLUBS 10], [CLUBS 11], [DIAMONDS 3], [DIAMONDS 5], [DIAMONDS 9]]
+
+cane iniz player 2 played card [CLUBS 2].
+ turn cards:[null, null, null, null] count:0 turn:0 first:-1 broken hearted false
+
+cane fine player 2 played card [CLUBS 2].
+ turn cards:[null, null, [CLUBS 2], null] count:1 turn:0 first:2 broken hearted false
+
+cane play next card iniz. played:[null, null, [CLUBS 2], null] count:1 turn:0 first:2 broken hearted false
+
+cane play next card fine. played:[null, null, [CLUBS 2], [CLUBS 5]] count:1 turn:0 first:2 broken hearted false
+
+cane iniz player 0 played card [CLUBS 3].
+ turn cards:[null, null, [CLUBS 2], [CLUBS 5]] count:2 turn:0 first:2 broken hearted false
+
+cane fine player 0 played card [CLUBS 3].
+ turn cards:[[CLUBS 3], null, [CLUBS 2], [CLUBS 5]] count:3 turn:0 first:2 broken hearted false
+
+cane iniz player 1 played card [CLUBS 4].
+ turn cards:[[CLUBS 3], null, [CLUBS 2], [CLUBS 5]] count:3 turn:0 first:2 broken hearted false
+
+cane fine player 1 played card [CLUBS 4].
+ turn cards:[null, null, null, null] count:0 turn:1 first:3 broken hearted false
+
+cane play next card iniz. played:[null, null, null, null] count:0 turn:1 first:3 broken hearted false
+
+cane play next card fine. played:[null, null, null, [SPADES 7]] count:0 turn:1 first:3 broken hearted false
+
+cane iniz player 0 played card [SPADES 11].
+ turn cards:[null, null, null, [SPADES 7]] count:1 turn:1 first:3 broken hearted false
+
+cane fine player 0 played card [SPADES 11].
+ turn cards:[[SPADES 11], null, null, [SPADES 7]] count:2 turn:1 first:3 broken hearted false
+
+cane iniz player 1 played card [SPADES 2].
+ turn cards:[[SPADES 11], null, null, [SPADES 7]] count:2 turn:1 first:3 broken hearted false
+
+cane fine player 1 played card [SPADES 2].
+ turn cards:[[SPADES 11], [SPADES 2], null, [SPADES 7]] count:3 turn:1 first:3 broken hearted false
+
+cane iniz player 2 played card [SPADES 10].
+ turn cards:[[SPADES 11], [SPADES 2], null, [SPADES 7]] count:3 turn:1 first:3 broken hearted false
+
+cane fine player 2 played card [SPADES 10].
+ turn cards:[null, null, null, null] count:0 turn:2 first:0 broken hearted false

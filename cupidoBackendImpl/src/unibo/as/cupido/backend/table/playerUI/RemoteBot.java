@@ -1,6 +1,10 @@
 package unibo.as.cupido.backend.table.playerUI;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -31,15 +35,28 @@ public class RemoteBot implements Bot, Serializable {
 	private boolean brokenHearted = false;
 	private boolean ableToPlay = false;
 	private boolean ableToPass = false;
-
+	PrintWriter out;
 	private Object lock = new Object();
 
 	public RemoteBot(InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager, String userName)
-			throws FileNotFoundException {
+			TableInterface singleTableManager, final String userName)
+			throws IOException {
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;
+
+		File outputFile = new File("cupidoBackendImpl/botlog/remote/"
+				+ userName);
+		outputFile.delete();
+		outputFile.createNewFile();
+		out = new PrintWriter(new FileWriter(outputFile));
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				System.err.println("shuting down remote user " + userName);
+				out.close();
+			}
+		});
 
 	}
 
@@ -62,7 +79,7 @@ public class RemoteBot implements Bot, Serializable {
 	@Override
 	public synchronized void notifyGameEnded(int[] matchPoints,
 			int[] playersTotalPoint) {
-		System.out.println("\n" + userName + ": "
+		out.println("\n" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
@@ -83,7 +100,7 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyLocalChatMessage(ChatMessage message) {
-		System.out.println("\nlocal chat message: " + message);
+		out.println("\nlocal chat message: " + message);
 	}
 
 	@Override
@@ -107,16 +124,17 @@ public class RemoteBot implements Bot, Serializable {
 				return;
 			}
 		}
-		System.out.println("\nplay starts. " + userName + " cards are:"
+		out.println("\nplay starts. " + userName + " cards are:"
 				+ this.cards.toString());
 	}
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		System.out.println("\n" + userName + " iniz player " + playerPosition
+		out.println("\n" + userName + " iniz player " + playerPosition
 				+ " played card " + card + ".\n turn cards:"
 				+ Arrays.toString(playedCard) + " count:" + playedCardCount
-				+ " turn:" + turn + " first:" + firstDealer);
+				+ " turn:" + turn + " first:" + firstDealer
+				+ " broken hearted " + brokenHearted);
 
 		if (card.suit == Suit.HEARTS)
 			brokenHearted = true;
@@ -145,10 +163,11 @@ public class RemoteBot implements Bot, Serializable {
 			}
 		}
 
-		System.out.println("\n" + userName + " fine player " + playerPosition
+		out.println("\n" + userName + " fine player " + playerPosition
 				+ " played card " + card + ".\n turn cards:"
 				+ Arrays.toString(playedCard) + " count:" + playedCardCount
-				+ " turn:" + turn + " first:" + firstDealer);
+				+ " turn:" + turn + " first:" + firstDealer
+				+ " broken hearted " + brokenHearted);
 	}
 
 	@Override
@@ -174,7 +193,7 @@ public class RemoteBot implements Bot, Serializable {
 		if (position == 3)
 			throw new IllegalArgumentException("Player not found " + name);
 		initialTableStatus.opponents[position] = null;
-		System.out.println(initialTableStatus);
+		out.println(initialTableStatus);
 	}
 
 	@Override
@@ -209,11 +228,10 @@ public class RemoteBot implements Bot, Serializable {
 					lock.wait();
 				}
 				ableToPlay = false;
-				System.out.println("\n" + userName
-						+ " play next card iniz. played:"
+				out.println("\n" + userName + " play next card iniz. played:"
 						+ Arrays.toString(playedCard) + " count:"
 						+ playedCardCount + " turn:" + turn + " first:"
-						+ firstDealer);
+						+ firstDealer + " broken hearted " + brokenHearted);
 
 				playedCard[3] = null;
 				if (cards.remove(CardsManager.twoOfClubs)) {
@@ -236,11 +254,10 @@ public class RemoteBot implements Bot, Serializable {
 					playedCard[3] = cards.remove(0);
 				if (playedCard[3].suit == Card.Suit.HEARTS)
 					brokenHearted = true;
-				System.out.println("\n" + userName
-						+ " play next card fine. played:"
+				out.println("\n" + userName + " play next card fine. played:"
 						+ Arrays.toString(playedCard) + " count:"
 						+ playedCardCount + " turn:" + turn + " first:"
-						+ firstDealer);
+						+ firstDealer + " broken hearted " + brokenHearted);
 
 				playedCardCount++;
 				if (playedCardCount == 4) {

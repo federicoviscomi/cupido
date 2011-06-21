@@ -1,6 +1,7 @@
 package unibo.as.cupido.backend.table;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -86,7 +87,7 @@ public class SingleTableManager implements TableInterface {
 		} catch (NoSuchLTMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(-1);

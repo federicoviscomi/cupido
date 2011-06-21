@@ -29,16 +29,11 @@ public class CardsManager {
 	public static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
 
 	public static int whoWins(final Card[] playedCard, final int firstDealer) {
-		int winner = 0;
-		for (int i = 1; i < 4; i++) {
+		int winner = firstDealer;
+		for (int i = 0; i < 4; i++) {
 			if (playedCard[i].suit == playedCard[firstDealer].suit) {
-				if (playedCard[i].value == 1) {
-					System.err.println("\n\nWHO WINS? first dealer "
-							+ firstDealer + ", winner " + winner + ", cards "
-							+ Arrays.toString(playedCard));
-					return i;
-				}
-				if (playedCard[i].value > playedCard[firstDealer].value)
+				if (playedCard[i].value == 1
+						|| playedCard[i].value > playedCard[winner].value)
 					winner = i;
 			}
 		}
