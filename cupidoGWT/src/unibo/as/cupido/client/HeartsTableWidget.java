@@ -40,7 +40,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		setHeight(tableSize + "px");
 		
 		beforeGameWidget = new BeforeGameWidget(tableSize, username, isOwner, initialTableStatus,
-				new BeforeGameWidget.Listener() {
+				cupidoService, new BeforeGameWidget.Listener() {
 					@Override
 					public void onTableFull(InitialTableStatus initialTableStatus) {
 						
@@ -94,6 +94,11 @@ public class HeartsTableWidget extends AbsolutePanel {
 							}
 						});
 						
+					}
+
+					@Override
+					public void onFatalException(Throwable e) {
+						screenManager.displayGeneralErrorScreen(e);
 					}
 				});
 		add(beforeGameWidget, 0, 0);

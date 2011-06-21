@@ -80,7 +80,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		
 		assert Cupido.height == Cupido.width - chatWidth;
 		tableWidget = new HeartsObservedTableWidget(
-				Cupido.height, username, screenManager, observedGameStatus);
+				Cupido.height, username, screenManager, observedGameStatus, cupidoService);
 		add(tableWidget, 0, 0);
 
 		chatWidget = new LocalChatWidget(username,

@@ -3,12 +3,19 @@ package unibo.as.cupido.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import unibo.as.cupido.common.exception.FatalException;
+import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.NotCreatorException;
+import unibo.as.cupido.common.exception.PositionFullException;
+import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -52,6 +59,11 @@ public class BeforeGameWidget extends AbsolutePanel {
 		 * This is called if the user chooses to exit.
 		 */
 		void onExit();
+		
+		/**
+		 * This is called if a call to the servlet fails with a fatal exception.
+		 */
+		void onFatalException(Throwable e);
 	}
 	
 	InitialTableStatus initialTableStatus;
@@ -63,6 +75,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 	private Listener listener;
 
 	private boolean frozen = false;
+
+	private CupidoInterfaceAsync cupidoService;
 
 	/*
 	 * The widget that represents the table before the actual game.
@@ -76,12 +90,14 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * table (and thus also a player).
 	 */
 	public BeforeGameWidget(int tableSize, String bottomUserName, boolean isOwner,
-			InitialTableStatus initialTableStatus, final Listener listener) {
+			InitialTableStatus initialTableStatus, CupidoInterfaceAsync cupidoService,
+			final Listener listener) {
 		
 		this.tableSize = tableSize;
 		this.isOwner = isOwner;
 		this.initialTableStatus = initialTableStatus;
 		this.listener = listener;
+		this.cupidoService = cupidoService;
 
 		for (int i = 0; i < 3; i++)
 			buttons.add(null);
@@ -144,14 +160,48 @@ public class BeforeGameWidget extends AbsolutePanel {
 		final int buttonWidth = 95;
 		final int buttonHeight = 15;
 		
-		PushButton button = new PushButton("Aggiungi un bot");
+		final PushButton button = new PushButton("Aggiungi un bot");
 		buttons.set(position, button);
 		button.setHeight(buttonHeight + "px");
 		button.setWidth(buttonWidth + "px");
 		button.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				addBot(position);
+				remove(button);
+				System.out.println("Client: calling cupidoService.addBot(" + position + ", _)");
+				cupidoService.addBot(position + 1, new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						try {
+							throw caught;
+						} catch (PositionFullException e) {
+							// The position has been occupied in the meantime,
+							// nothing to do.
+						} catch (FullTableException e) {
+							// The position has been occupied in the meantime,
+							// nothing to do.
+						} catch (NotCreatorException e) {
+							listener.onFatalException(e);
+						} catch (IllegalArgumentException e) {
+							listener.onFatalException(e);
+						} catch (NoSuchTableException e) {
+							// The table has been destroyed in the meantime,
+							// nothing to do. The GameEnded notification will
+							// bring back the user to the main menu.
+						} catch (UserNotAuthenticatedException e) {
+							listener.onFatalException(e);
+						} catch (FatalException e) {
+							listener.onFatalException(e);
+						} catch (Throwable e) {
+							listener.onFatalException(e);
+						}
+					}
+
+					@Override
+					public void onSuccess(Void result) {
+						addBot(position);
+					}
+				});
 			}
 		});
 		
