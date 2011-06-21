@@ -48,7 +48,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 		/**
 		 * This is called when the table is full of players and/or bots.
 		 */
-		void onTableFull(InitialTableStatus initialTableStatus);
+		void onTableFull();
 		
 		/**
 		 * This is called if the game is interrupted by another player (i.e. the owner).
@@ -156,6 +156,10 @@ public class BeforeGameWidget extends AbsolutePanel {
 		add(exitButton, tableSize - 100, tableSize - 40);
 	}
 	
+	public InitialTableStatus getInitialTableStatus() {
+		return initialTableStatus;
+	}
+	
 	private void addBotButton(final int position) {
 		final int buttonWidth = 95;
 		final int buttonHeight = 15;
@@ -252,7 +256,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 		labels.get(position).setHTML(s);
 		
 		if (isTableFull())
-			listener.onTableFull(initialTableStatus);
+			listener.onTableFull();
 	}
 	
 	private boolean isTableFull() {
@@ -274,7 +278,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 		labels.get(position).setHTML("<b><big>bot</big></b>");
 		
 		if (isTableFull())
-			listener.onTableFull(initialTableStatus);
+			listener.onTableFull();
 	}
 	
 	private void removePlayer(int player) {

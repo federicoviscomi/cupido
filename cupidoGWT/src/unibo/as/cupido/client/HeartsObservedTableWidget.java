@@ -79,12 +79,12 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 				initialTableStatus,
 				cupidoService, new BeforeGameWidget.Listener() {
 					@Override
-					public void onTableFull(InitialTableStatus initialTableStatus) {
+					public void onTableFull() {
 						if (frozen) {
 							System.out.println("Client: notice: received a onTableFull() event while frozen, ignoring it.");
 							return;
 						}
-						startGame(username, initialTableStatus);
+						startGame(username, beforeGameWidget.getInitialTableStatus());
 					}
 
 					@Override
