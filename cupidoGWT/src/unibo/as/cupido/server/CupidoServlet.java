@@ -256,6 +256,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				g.matchPoints = matchPoints;
 				g.playersTotalPoints = playersTotalPoint;
 				cometSession.enqueue(g);
+				httpSession.removeAttribute(TI);
+				httpSession.removeAttribute(SNI);
 			}
 		};
 	}
@@ -739,6 +741,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new NoSuchTableException();
 		}
 		httpSession.removeAttribute(TI);
+		httpSession.removeAttribute(SNI);
 	}
 
 	@Override
@@ -837,6 +840,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					.println("Servlet: on addBot() catched RemoteException-> "
 							+ e.getMessage());
 			// e.printStackTrace();
+			throw new FatalException();
 		} catch (IllegalStateException e) {
 			throw new NoSuchTableException();
 		}
@@ -859,6 +863,42 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		// Create the Comet session for the browser
 		CometServlet.getCometSession(httpSession);
 		System.out.println("Servlet: Comet connession opened.");
+	}
+
+	@Override
+	public int getMyScore() throws FatalException,
+			UserNotAuthenticatedException {
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null) {
+			return 0;
+		}
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
+			throw new UserNotAuthenticatedException();
+		}
+		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
+				.getAttribute(DBI);
+		try {
+			return dbi.getPlayerScore((String) httpSession
+					.getAttribute(USERNAME));
+		} catch (IllegalArgumentException e) {
+			System.out
+					.println("Servlet: on getMyScore() catched RemoteException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		} catch (SQLException e) {
+			System.out
+					.println("Servlet: on getMyScore() catched SQLException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		} catch (NoSuchUserException e) {
+			System.out
+					.println("Servlet: on getMyScore() catched NoSuchUserException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		}
 	}
 
 	/**

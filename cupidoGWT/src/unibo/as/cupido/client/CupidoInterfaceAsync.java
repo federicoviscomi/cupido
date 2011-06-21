@@ -48,4 +48,6 @@ public interface CupidoInterfaceAsync {
 	void sendLocalChatMessage(String message, AsyncCallback<Void> callback);
 
 	void destroySession(AsyncCallback<Void> callback);
+
+	void getMyScore(AsyncCallback<Integer> callback);
 }
