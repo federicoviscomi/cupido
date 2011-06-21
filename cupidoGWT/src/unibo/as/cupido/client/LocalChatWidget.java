@@ -80,8 +80,6 @@ public class LocalChatWidget extends AbsolutePanel {
 	}
 
 	private void sendMessage() {
-		// FIXME: This is a place-holder implementation.
-		// Rewrite this method when the servlet is ready.
 		if (messageField.getText().equals(""))
 			return;
 
@@ -89,8 +87,7 @@ public class LocalChatWidget extends AbsolutePanel {
 
 		messageSender.sendMessage(message);
 
-		// TODO: Check if this should be called or not.
-		// displayMessage(username, message);
+		displayMessage(username, message);
 
 		messageField.setText("");
 		messageField.setFocus(true);
