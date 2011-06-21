@@ -3,7 +3,7 @@ package unibo.as.cupido.common.interfaces;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import unibo.as.cupido.common.structures.Pair;
+import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 
@@ -134,7 +134,7 @@ public interface DatabaseInterface {
 	 * @throws IllegalArgumentException
 	 *             if <code>size</code> is not positive
 	 */
-	public ArrayList<Pair<String, Integer>> getTopRank(int size)
+	public ArrayList<RankingEntry> getTopRank(int size)
 			throws SQLException, IllegalArgumentException;
 
 	/**
@@ -154,7 +154,7 @@ public interface DatabaseInterface {
 	 * @throws NoSuchUserException
 	 *             if <code>userName</code> is not in database
 	 */
-	public ArrayList<Pair<String, Integer>> getLocalRank(String userName)
+	public ArrayList<RankingEntry> getLocalRank(String userName)
 			throws SQLException, IllegalArgumentException, NoSuchUserException;
 
 	/**
@@ -168,7 +168,7 @@ public interface DatabaseInterface {
 	 * @throws NoSuchUserException
 	 *             if <code>userName</code> is not in database
 	 */
-	public int getUserRank(String userName) throws SQLException,
+	public RankingEntry getUserRank(String userName) throws SQLException,
 			IllegalArgumentException, NoSuchUserException;
 
 	/**
