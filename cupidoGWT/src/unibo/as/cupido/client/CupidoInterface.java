@@ -227,6 +227,14 @@ public interface CupidoInterface extends RemoteService {
 			UserNotAuthenticatedException, FatalException;
 
 	/**
+	 * 
+	 * @return player score
+	 * @throws UserNotAuthenticatedException 
+	 * @throws FatalException
+	 */
+	int getMyScore() throws UserNotAuthenticatedException, FatalException;
+
+	/**
 	 * Destroy comet and http sessions
 	 */
 	public void destroySession();
