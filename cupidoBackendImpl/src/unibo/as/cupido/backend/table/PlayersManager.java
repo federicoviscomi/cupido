@@ -4,18 +4,18 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import unibo.as.cupido.backend.table.bot.BotNotificationInterface;
-import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
-import unibo.as.cupido.common.interfaces.TableInterface.Positions;
-import unibo.as.cupido.common.structures.Card;
-import unibo.as.cupido.common.structures.ChatMessage;
-import unibo.as.cupido.common.structures.InitialTableStatus;
-import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
 import unibo.as.cupido.common.exception.PositionFullException;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.interfaces.TableInterface.Positions;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
 
 public class PlayersManager {
 

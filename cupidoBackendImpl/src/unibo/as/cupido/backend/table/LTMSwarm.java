@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
+import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 
 public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 

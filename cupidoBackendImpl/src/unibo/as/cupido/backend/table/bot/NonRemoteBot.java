@@ -1,8 +1,6 @@
 package unibo.as.cupido.backend.table.bot;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -34,13 +32,6 @@ public class NonRemoteBot implements BotNotificationInterface {
 		cardPlayingThread = new NonRemoteBotCardPlayingThread(this, botName);
 		cardPlayingThread.start();
 		this.singleTableManager = singleTableManager;
-
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-
-			}
-		});
 	}
 
 	@Override

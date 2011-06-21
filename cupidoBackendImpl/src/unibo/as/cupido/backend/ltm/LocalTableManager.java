@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.RejectedExecutionException;
 
+import unibo.as.cupido.backend.table.SingleTableManager;
+import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
@@ -24,8 +26,6 @@ import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Pair;
 import unibo.as.cupido.common.structures.TableDescriptor;
 import unibo.as.cupido.common.structures.TableInfoForClient;
-import unibo.as.cupido.common.exception.NoSuchUserException;
-import unibo.as.cupido.backend.table.SingleTableManager;
 
 /**
  * 

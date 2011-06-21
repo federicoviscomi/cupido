@@ -11,6 +11,13 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 
+import unibo.as.cupido.backend.GlobalChatImpl;
+import unibo.as.cupido.backend.table.LTMSwarm;
+import unibo.as.cupido.backend.table.LTMSwarm.Triple;
+import unibo.as.cupido.common.exception.AllLTMBusyException;
+import unibo.as.cupido.common.exception.NoSuchLTMException;
+import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.interfaces.GlobalChatInterface;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
@@ -19,13 +26,6 @@ import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Pair;
 import unibo.as.cupido.common.structures.TableDescriptor;
 import unibo.as.cupido.common.structures.TableInfoForClient;
-import unibo.as.cupido.common.exception.AllLTMBusyException;
-import unibo.as.cupido.common.exception.NoSuchLTMException;
-import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
-import unibo.as.cupido.common.exception.NoSuchTableException;
-import unibo.as.cupido.backend.GlobalChatImpl;
-import unibo.as.cupido.backend.table.LTMSwarm;
-import unibo.as.cupido.backend.table.LTMSwarm.Triple;
 
 /**
  * 

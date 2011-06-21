@@ -5,10 +5,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
+
+import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
-import unibo.as.cupido.common.exception.IllegalMoveException;
 
 public class CardsManager {
 

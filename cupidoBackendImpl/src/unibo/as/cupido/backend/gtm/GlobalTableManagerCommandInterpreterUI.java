@@ -9,8 +9,8 @@ import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.backend.table.LTMSwarm.Triple;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 
 /**
  * 
