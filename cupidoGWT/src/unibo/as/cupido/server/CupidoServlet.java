@@ -508,7 +508,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	public InitialTableStatus createTable() throws MaxNumTableReachedException,
 			UserNotAuthenticatedException, FatalException {
 		InitialTableStatus its = new InitialTableStatus();
-		its.playerScores = new int[3];
+		its.opponents = new String[3];
+		its.playerScores = new int[4];
+		its.whoIsBot = new boolean[3];
+		its.opponents[0] = null;
+		its.opponents[1] = null;
+		its.opponents[2] = null;
 		try {
 			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
 					.getAttribute(GTMI);
