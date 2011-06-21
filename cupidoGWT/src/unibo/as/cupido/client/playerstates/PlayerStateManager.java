@@ -61,7 +61,7 @@ public interface PlayerStateManager {
 
 	CardsGameWidget getWidget();
 
-	public void disableControls();
+	public void freeze();
 
 	
 	public void handleCardPassed(Card[] cards);

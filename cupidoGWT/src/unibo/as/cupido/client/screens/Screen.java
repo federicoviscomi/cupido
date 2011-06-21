@@ -7,5 +7,5 @@ public interface Screen {
 	 */
 	public void prepareRemoval();
 
-	public void disableControls();
+	public void freeze();
 }

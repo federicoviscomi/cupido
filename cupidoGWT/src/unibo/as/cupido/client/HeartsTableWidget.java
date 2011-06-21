@@ -1,11 +1,15 @@
 package unibo.as.cupido.client;
 
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.client.playerstates.PlayerStateManager;
 import unibo.as.cupido.client.playerstates.PlayerStateManagerImpl;
 import unibo.as.cupido.client.screens.ScreenManager;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class HeartsTableWidget extends AbsolutePanel {
@@ -16,8 +20,8 @@ public class HeartsTableWidget extends AbsolutePanel {
 	private int tableSize;
 
 	private PlayerStateManager stateManager = null;
-	private boolean controlsDisabled = false;
-
+	private boolean frozen = false;
+	
 	/**
 	 * 
 	 * @param tableSize
@@ -27,55 +31,86 @@ public class HeartsTableWidget extends AbsolutePanel {
 	 * @param isOwner 
 	 */
 	public HeartsTableWidget(int tableSize, final String username,
-			InitialTableStatus initialTableStatus, boolean isOwner, final ScreenManager screenManager) {
+			InitialTableStatus initialTableStatus, final boolean isOwner,
+			final ScreenManager screenManager, final CupidoInterfaceAsync cupidoService) {
 		this.tableSize = tableSize;
 		this.screenManager = screenManager;
 
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
-				
-		beforeGameWidget = new BeforeGameWidget(tableSize, username, initialTableStatus.playerScores[0], isOwner,
-				new BeforeGameWidget.Callback() {
-					private int numPlayers = 1;
+		
+		beforeGameWidget = new BeforeGameWidget(tableSize, username, isOwner, initialTableStatus,
+				new BeforeGameWidget.Listener() {
+					@Override
+					public void onTableFull(InitialTableStatus initialTableStatus) {
+						
+						if (frozen) {
+							System.out.println("Client: notice: the onTableFull() event was received while frozen, ignoring it.");
+							return;
+						}
+						
+						startGame(username, initialTableStatus);
+					}
 
 					@Override
-					public void onAddBot(int position) {
-						numPlayers++;
-						if (numPlayers == 4)
-							startGame(username);
+					public void onGameEnded() {
+						if (frozen) {
+							System.out.println("Client: notice: the onGameEnded() event was received while frozen, ignoring it.");
+							return;
+						}
+						
+						assert !isOwner;
+						screenManager.displayMainMenuScreen(username);
+						Window.alert("L'owner ha lasciato il tavolo, e quindi la partita \350 stata annullata.");
+					}
+
+					@Override
+					public void onExit() {
+						if (frozen) {
+							System.out.println("Client: notice: the onExit() event was received while frozen, ignoring it.");
+							return;
+						}
+						beforeGameWidget.freeze();
+						cupidoService.leaveTable(new AsyncCallback<Void>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								try {
+									throw caught;
+								} catch (UserNotAuthenticatedException e) {
+									screenManager.displayGeneralErrorScreen(e);
+								} catch (NoSuchTableException e) {
+									// The table has been deleted by the owner, before
+									// the leaveTable() request was processed.
+									// Just ignore this exception.
+									screenManager.displayMainMenuScreen(username);
+								} catch (Throwable e) {
+									screenManager.displayGeneralErrorScreen(e);
+								}
+							}
+
+							@Override
+							public void onSuccess(Void result) {
+								screenManager.displayMainMenuScreen(username);
+							}
+						});
+						
 					}
 				});
 		add(beforeGameWidget, 0, 0);
 	}
 
-	public void startGame(final String username) {
+	public void startGame(final String username, InitialTableStatus initialTableStatus) {
 
-		if (controlsDisabled)
+		if (frozen) {
+			System.out.println("Client: notice: startGame() was called while frozen, ignoring it.");
 			return;
+		}
 		
 		remove(beforeGameWidget);
 		beforeGameWidget = null;
 
 		// FIXME: Initialize the widget with the correct values.
 		// These values are only meant for debugging purposes.
-
-		InitialTableStatus initialTableStatus = new InitialTableStatus();
-
-		initialTableStatus.opponents = new String[3];
-		initialTableStatus.opponents[0] = "Pinco";
-		initialTableStatus.opponents[1] = "This must *not* be displayed";
-		initialTableStatus.opponents[2] = "Pallo";
-
-		initialTableStatus.playerScores = new int[4];
-		initialTableStatus.playerScores[0] = 1234;
-		initialTableStatus.playerScores[1] = 5678;
-		initialTableStatus.playerScores[2] = 9012;
-		initialTableStatus.playerScores[3] = 3456;
-
-		initialTableStatus.whoIsBot = new boolean[3];
-		initialTableStatus.whoIsBot[0] = false;
-		initialTableStatus.whoIsBot[1] = true;
-		initialTableStatus.whoIsBot[2] = false;
 
 		Card[] bottomPlayerCards = new Card[13];
 
@@ -89,17 +124,22 @@ public class HeartsTableWidget extends AbsolutePanel {
 		add(cardsGameWidget, 0, 0);
 	}
 	
-	public void disableControls() {
+	public void freeze() {
 		if (beforeGameWidget != null)
-			beforeGameWidget.disableControls();
+			beforeGameWidget.freeze();
 		if (cardsGameWidget != null) {
-			cardsGameWidget.disableControls();
-			stateManager.disableControls();
+			cardsGameWidget.freeze();
+			stateManager.freeze();
 		}
-		controlsDisabled  = true;
+		frozen = true;
 	}
 
 	public void handleCardPassed(Card[] cards) {
+		if (frozen) {
+			System.out.println("Client: notice: handleCardPassed() was called while frozen, ignoring it.");
+			return;
+		}
+		
 		if (cardsGameWidget == null) {
 			System.out.println("Client: HeartsTableWidget: warning: CardPassed received before the game start, it was ignored.");
 		} else {
@@ -108,6 +148,11 @@ public class HeartsTableWidget extends AbsolutePanel {
 	}
 
 	public void handleCardPlayed(Card card, int playerPosition) {
+		if (frozen) {
+			System.out.println("Client: notice: handleCardPlayed() was called while frozen, ignoring it.");
+			return;
+		}
+		
 		if (cardsGameWidget == null) {
 			System.out.println("Client: HeartsTableWidget: warning: CardPlayed received before the game start, it was ignored.");
 		} else {
@@ -116,6 +161,10 @@ public class HeartsTableWidget extends AbsolutePanel {
 	}
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		if (frozen) {
+			System.out.println("Client: notice: handleGameEnded() was called while frozen, ignoring it.");
+			return;
+		}
 		if (cardsGameWidget == null) {
 			beforeGameWidget.handleGameEnded(matchPoints, playersTotalPoints);
 		} else {
@@ -124,6 +173,11 @@ public class HeartsTableWidget extends AbsolutePanel {
 	}
 
 	public void handleGameStarted(Card[] myCards) {
+		if (frozen) {
+			System.out.println("Client: notice: handleGameStarted() was called while frozen, ignoring it.");
+			return;
+		}
+		
 		if (cardsGameWidget == null) {
 			System.out.println("Client: HeartsTableWidget: warning: GameStarted received before the game start, it was ignored.");
 		} else {
@@ -133,6 +187,11 @@ public class HeartsTableWidget extends AbsolutePanel {
 
 	public void handleNewPlayerJoined(String name, boolean isBot, int points,
 			int position) {
+		if (frozen) {
+			System.out.println("Client: notice: handleNewPlayerJoined() was called while frozen, ignoring it.");
+			return;
+		}
+		
 		if (cardsGameWidget == null) {
 			beforeGameWidget.handleNewPlayerJoined(name, isBot, points, position);
 		} else {
@@ -141,6 +200,11 @@ public class HeartsTableWidget extends AbsolutePanel {
 	}
 
 	public void handlePlayerLeft(String player) {
+		if (frozen) {
+			System.out.println("Client: notice: handlePlayerLeft() was called while frozen, ignoring it.");
+			return;
+		}
+		
 		if (cardsGameWidget == null) {
 			beforeGameWidget.handlePlayerLeft(player);
 		} else {

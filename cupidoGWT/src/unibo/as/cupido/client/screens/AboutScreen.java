@@ -56,7 +56,7 @@ public class AboutScreen extends VerticalPanel implements Screen {
 	}
 
 	@Override
-	public void disableControls() {
+	public void freeze() {
 		menuButton.setEnabled(false);
 	}
 }

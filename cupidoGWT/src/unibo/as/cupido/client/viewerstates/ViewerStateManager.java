@@ -57,7 +57,7 @@ public interface ViewerStateManager {
 
 	public void transitionToWaitingDeal();
 	
-	public void disableControls();
+	public void freeze();
 
 	public void handleCardPlayed(Card card, int playerPosition);
 

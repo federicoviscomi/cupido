@@ -28,9 +28,15 @@ public class CardPassingState implements PlayerState {
 	boolean confirmed = false;
 	private PushButton okButton;
 	private PushButton exitButton;
+	private CardsGameWidget cardsGameWidget;
+	
+	private boolean frozen = false;
 
 	public CardPassingState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand) {
+		
+		this.cardsGameWidget = cardsGameWidget;
+		
 		VerticalPanel cornerWidget = new VerticalPanel();
 		cornerWidget.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		cornerWidget
@@ -63,6 +69,12 @@ public class CardPassingState implements PlayerState {
 						new GWTAnimation.AnimationCompletedListener() {
 							@Override
 							public void onComplete() {
+								
+								if (frozen) {
+									System.out.println("Client: notice: the onComplete() event was received while frozen, ignoring it.");
+									return;
+								}
+								
 								List<Card> sortedList = new ArrayList<Card>();
 								for (Card card : raisedCards)
 									sortedList.add(card);
@@ -103,81 +115,117 @@ public class CardPassingState implements PlayerState {
 		cornerWidget.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(cornerWidget);
-		cardsGameWidget.setListener(new GameEventListener() {
-			@Override
-			public void onAnimationStart() {
-				okButton.setEnabled(false);
-				exitButton.setEnabled(false);
-			}
-
-			@Override
-			public void onAnimationEnd() {
-				okButton.setEnabled(!confirmed && raisedCards.size() == 3);
-				exitButton.setEnabled(!confirmed);
-			}
-
-			@Override
-			public void onCardClicked(int player, Card card, State state,
-					boolean isRaised) {
-				if (state == State.DEALT)
-					return;
-				if (player != 0 || card == null)
-					return;
-
-				if (isRaised) {
-					boolean found = raisedCards.remove(card);
-					assert found;
-					cardsGameWidget.lowerRaisedCard(0, card);
-				} else {
-					if (raisedCards.size() == 3)
-						// Never raise more than 3 cards at once.
-						return;
-					raisedCards.add(card);
-					cardsGameWidget.raiseCard(0, card);
-				}
-
-				cardsGameWidget.runPendingAnimations(200,
-						new GWTAnimation.AnimationCompletedListener() {
-							@Override
-							public void onComplete() {
-							}
-						});
-			}
-		});
 	}
 	
 	@Override
-	public void disableControls() {
+	public void activate() {
+	}
+	
+	@Override
+	public void freeze() {
+		okButton.setEnabled(false);
+		exitButton.setEnabled(false);
+		frozen = true;
+	}
+	
+	@Override
+	public void handleAnimationStart() {
+		if (frozen) {
+			System.out.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+			return;
+		}
 		okButton.setEnabled(false);
 		exitButton.setEnabled(false);
 	}
 
 	@Override
+	public void handleAnimationEnd() {
+		if (frozen) {
+			System.out.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+			return;
+		}
+		okButton.setEnabled(!confirmed && raisedCards.size() == 3);
+		exitButton.setEnabled(!confirmed);
+	}
+
+	@Override
+	public void handleCardClicked(int player, Card card, State state,
+			boolean isRaised) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
+			return;
+		}
+		if (state == State.DEALT)
+			return;
+		if (player != 0 || card == null)
+			return;
+
+		if (isRaised) {
+			boolean found = raisedCards.remove(card);
+			assert found;
+			cardsGameWidget.lowerRaisedCard(0, card);
+		} else {
+			if (raisedCards.size() == 3)
+				// Never raise more than 3 cards at once.
+				return;
+			raisedCards.add(card);
+			cardsGameWidget.raiseCard(0, card);
+		}
+
+		cardsGameWidget.runPendingAnimations(200,
+				new GWTAnimation.AnimationCompletedListener() {
+					@Override
+					public void onComplete() {
+					}
+				});
+	}
+
+	@Override
 	public boolean handleCardPassed(Card[] cards) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+			return false;
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
+			return false;
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
+			return false;
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean handleGameStarted(Card[] myCards) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
+			return false;
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean handlePlayerLeft(String player) {
+		if (frozen) {
+			System.out.println("Client: notice: the handlePlayerLeft() event was received while frozen, deferring it.");
+			return false;
+		}
 		// TODO Auto-generated method stub
 		return false;
 	}

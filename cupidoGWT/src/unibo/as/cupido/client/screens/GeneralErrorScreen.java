@@ -44,6 +44,6 @@ public class GeneralErrorScreen extends AbsolutePanel implements Screen {
 	}
 
 	@Override
-	public void disableControls() {
+	public void freeze() {
 	}
 }

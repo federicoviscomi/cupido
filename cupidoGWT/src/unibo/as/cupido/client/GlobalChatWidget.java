@@ -24,6 +24,7 @@ public class GlobalChatWidget extends AbsolutePanel {
 	private TextBox messageField;
 	private PushButton sendButton;
 	private ChatListener listener;
+	private boolean frozen = false;
 	
 	public interface ChatListener {
 		public void sendMessage(String message);
@@ -76,7 +77,7 @@ public class GlobalChatWidget extends AbsolutePanel {
 		add(bottomRow, 0, (Cupido.height - bottomRowHeight));
 	}
 
-	protected void sendMessage() {
+	private void sendMessage() {
 		if (messageField.getText().equals(""))
 			return;
 
@@ -87,6 +88,12 @@ public class GlobalChatWidget extends AbsolutePanel {
 	}
 
 	public void setLastMessages(ChatMessage[] messages) {
+		
+		if (frozen) {
+			System.out.println("Client: notice: setLastMessages() was called while frozen, ignoring it.");
+			return;
+		}
+		
 		SafeHtmlBuilder x = new SafeHtmlBuilder();
 		
 		for (ChatMessage message : messages) {
@@ -101,8 +108,9 @@ public class GlobalChatWidget extends AbsolutePanel {
 		messagesPanel.scrollToBottom();
 	}
 	
-	public void disableControls() {
+	public void freeze() {
 		messageField.setEnabled(false);
 		sendButton.setEnabled(false);
+		frozen = true;
 	}
 }

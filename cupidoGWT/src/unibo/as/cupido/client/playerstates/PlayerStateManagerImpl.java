@@ -43,6 +43,8 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	private List<Card> dealtCards = new ArrayList<Card>();
 	
 	private String username;
+	
+	private boolean frozen = false;
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
@@ -96,15 +98,33 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				new CardsGameWidget.GameEventListener() {
 					@Override
 					public void onAnimationStart() {
+						if (frozen) {
+							System.out.println("Client: notice: the onAnimationStart() event was received while frozen, ignoring it.");
+							return;
+						}
+						
+						currentState.handleAnimationStart();
 					}
 
 					@Override
 					public void onAnimationEnd() {
+						if (frozen) {
+							System.out.println("Client: notice: the onAnimationEnd() event was received while frozen, ignoring it.");
+							return;
+						}
+						
+						currentState.handleAnimationEnd();
 					}
 
 					@Override
 					public void onCardClicked(int player, Card card,
 							State state, boolean isRaised) {
+						if (frozen) {
+							System.out.println("Client: notice: the onCardClicked() event was received while frozen, ignoring it.");
+							return;
+						}
+						
+						currentState.handleCardClicked(player, card, state, isRaised);
 					}
 				});
 
@@ -123,53 +143,91 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 		transitionToCardPassing(handCards);
 	}
+	
+	private void transitionTo(PlayerState newState) {
+		currentState = newState;
+		currentState.activate();
+		sendPendingNotifications();
+	}
 
 	@Override
 	public void transitionToCardPassing(List<Card> hand) {
-		currentState = new CardPassingState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToCardPassing() method was called while frozen, ignoring it.");
+			return;
+		}
+		
+		transitionTo(new CardPassingState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToCardPassingWaiting(List<Card> hand) {
-		currentState = new CardPassingWaitingState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToCardPassingWaiting() method was called while frozen, ignoring it.");
+			return;
+		}
+		
+		transitionTo(new CardPassingWaitingState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToEndOfTrick(List<Card> hand) {
-		currentState = new EndOfTrickState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToEndOfTrick() method was called while frozen, ignoring it.");
+			return;
+		}
+		
+		transitionTo(new EndOfTrickState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToFirstDealer(List<Card> hand) {
-		currentState = new FirstDealerState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToFirstDealer() method was called while frozen, ignoring it.");
+			return;
+		}
+		
+		transitionTo(new FirstDealerState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToWaitingDeal(List<Card> hand) {
-		currentState = new WaitingDealState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToWaitingDeal() method was called while frozen, ignoring it.");
+			return;
+		}
+		
+		transitionTo(new WaitingDealState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToWaitingFirstDeal(List<Card> hand) {
-		currentState = new WaitingFirstDealState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToWaitingFirstDeal() method was called while frozen, ignoring it.");
+			return;
+		}
+		
+		transitionTo(new WaitingFirstDealState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToYourTurn(List<Card> hand) {
-		currentState = new YourTurnState(cardsGameWidget, this, hand);
-		sendPendingNotifications();
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToYourTurn() method was called while frozen, ignoring it.");
+			return;
+		}
+		
+		transitionTo(new YourTurnState(cardsGameWidget, this, hand));
 	}
 
 	@Override
 	public void transitionToGameEnded() {
-		currentState = new GameEndedState(cardsGameWidget, this);
-		sendPendingNotifications();
+		if (frozen) {
+			System.out.println("Client: notice: the transitionToGameEnded() method was called while frozen, ignoring it.");
+			return;
+		}
+		
+		transitionTo(new GameEndedState(cardsGameWidget, this));
 	}
 
 	@Override
@@ -184,6 +242,12 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void addDealtCard(int player, Card card) {
+		
+		if (frozen) {
+			System.out.println("Client: notice: the addDealtCard() method was called while frozen, ignoring it.");
+			return;
+		}
+		
 		if (card.suit == Card.Suit.HEARTS)
 			heartsBroken = true;
 		if (firstPlayerInTrick == -1) {
@@ -196,6 +260,11 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void goToNextTrick() {
+		if (frozen) {
+			System.out.println("Client: notice: the addDealtCard() method was called while frozen, ignoring it.");
+			return;
+		}
+		
 		assert dealtCards.size() == 4;
 		firstPlayerInTrick += winnerCard(dealtCards);
 		firstPlayerInTrick = firstPlayerInTrick % 4;
@@ -233,6 +302,11 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void exit() {
+		if (frozen) {
+			System.out.println("Client: notice: the exit() method was called while frozen, ignoring it.");
+			return;
+		}
+		
 		screenManager.displayMainMenuScreen(username);
 	}
 
@@ -251,12 +325,17 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	}
 	
 	@Override
-	public void disableControls() {
-		currentState.disableControls();
+	public void freeze() {
+		currentState.freeze();
 	}
 
 	@Override
 	public void handleCardPassed(Card[] cards) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleCardPassed() event was received while frozen, ignoring it.");
+			return;
+		}
+		
 		boolean handled = currentState.handleCardPassed(cards);
 		if (!handled)
 			pendingNotifications.add(new CardPassed(cards));
@@ -264,6 +343,10 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void handleCardPlayed(Card card, int playerPosition) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleCardPlayed() event was received while frozen, ignoring it.");
+			return;
+		}
 		boolean handled = currentState.handleCardPlayed(card, playerPosition);
 		if (!handled)
 			pendingNotifications.add(new CardPlayed(card, playerPosition));
@@ -271,6 +354,10 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleGameEnded() event was received while frozen, ignoring it.");
+			return;
+		}
 		boolean handled = currentState.handleGameEnded(matchPoints, playersTotalPoints);
 		if (!handled)
 			pendingNotifications.add(new GameEnded(matchPoints, playersTotalPoints));
@@ -278,6 +365,10 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void handleGameStarted(Card[] myCards) {
+		if (frozen) {
+			System.out.println("Client: notice: the handleGameStarted() event was received while frozen, ignoring it.");
+			return;
+		}
 		boolean handled = currentState.handleGameStarted(myCards);
 		if (!handled)
 			pendingNotifications.add(new GameStarted(myCards));
@@ -285,6 +376,10 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void handlePlayerLeft(String player) {
+		if (frozen) {
+			System.out.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
+			return;
+		}
 		boolean handled = currentState.handlePlayerLeft(player);
 		if (!handled)
 			pendingNotifications.add(new PlayerLeft(player));
