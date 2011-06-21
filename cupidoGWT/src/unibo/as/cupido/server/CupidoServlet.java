@@ -14,6 +14,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import unibo.as.cupido.common.interfaces.DatabaseInterface;
@@ -33,6 +34,7 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
@@ -866,11 +868,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public int getMyScore() throws FatalException,
+	public RankingEntry getMyRank() throws FatalException,
 			UserNotAuthenticatedException {
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		if (httpSession == null) {
-			return 0;
+			return null;
 		}
 		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 			throw new UserNotAuthenticatedException();
@@ -878,29 +880,48 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
 				.getAttribute(DBI);
 		try {
-			return dbi.getPlayerScore((String) httpSession
-					.getAttribute(USERNAME));
+			String name = (String) httpSession.getAttribute(USERNAME);
+			return dbi.getUserRank(name);
 		} catch (IllegalArgumentException e) {
 			System.out
-					.println("Servlet: on getMyScore() catched RemoteException-> "
+					.println("Servlet: on getMyRank() catched RemoteException-> "
 							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
 		} catch (SQLException e) {
 			System.out
-					.println("Servlet: on getMyScore() catched SQLException-> "
+					.println("Servlet: on getMyRank() catched SQLException-> "
 							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
 		} catch (NoSuchUserException e) {
 			System.out
-					.println("Servlet: on getMyScore() catched NoSuchUserException-> "
+					.println("Servlet: on getMyRank() catched NoSuchUserException-> "
 							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
 		}
 	}
 
+	/*TODO
+	 * (non-Javadoc)
+	 * @see unibo.as.cupido.client.CupidoInterface#getTopRank()
+	 */
+	@Override
+	public ArrayList<RankingEntry> getTopRank() throws UserNotAuthenticatedException, FatalException{
+		return null;
+		
+	}
+	
+	/* TODO
+	 * (non-Javadoc)
+	 * @see unibo.as.cupido.client.CupidoInterface#getLocalRank()
+	 */
+	@Override
+	public ArrayList<RankingEntry> getLocalRank() throws UserNotAuthenticatedException, FatalException{
+		return null;
+		
+	}
 	/**
 	 * Invalidate httpSession.
 	 */
