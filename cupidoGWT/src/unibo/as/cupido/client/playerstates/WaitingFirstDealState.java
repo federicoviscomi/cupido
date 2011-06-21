@@ -6,6 +6,7 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GWTAnimation;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -34,12 +35,15 @@ public class WaitingFirstDealState implements PlayerState {
 
 	private boolean frozen = false;
 
+	private CupidoInterfaceAsync cupidoService;
+
 	public WaitingFirstDealState(CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, List<Card> hand) {
+			final PlayerStateManager stateManager, List<Card> hand, CupidoInterfaceAsync cupidoService) {
 		
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.hand = hand;
+		this.cupidoService = cupidoService;
 		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);

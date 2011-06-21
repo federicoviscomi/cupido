@@ -9,6 +9,7 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GWTAnimation;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -31,11 +32,14 @@ public class CardPassingState implements PlayerState {
 	private CardsGameWidget cardsGameWidget;
 	
 	private boolean frozen = false;
+	private CupidoInterfaceAsync cupidoService;
 
 	public CardPassingState(final CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, final List<Card> hand) {
+			final PlayerStateManager stateManager, final List<Card> hand,
+			CupidoInterfaceAsync cupidoService) {
 		
 		this.cardsGameWidget = cardsGameWidget;
+		this.cupidoService = cupidoService;
 		
 		VerticalPanel cornerWidget = new VerticalPanel();
 		cornerWidget.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);

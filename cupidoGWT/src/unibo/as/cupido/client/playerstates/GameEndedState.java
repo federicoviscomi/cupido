@@ -4,6 +4,7 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -19,8 +20,13 @@ public class GameEndedState implements PlayerState {
 	
 	private boolean frozen = false;
 
+	private CupidoInterfaceAsync cupidoService;
+
 	public GameEndedState(CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager) {
+			final PlayerStateManager stateManager, CupidoInterfaceAsync cupidoService) {
+		
+		this.cupidoService = cupidoService;
+		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
