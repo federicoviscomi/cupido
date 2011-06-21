@@ -1,11 +1,13 @@
 package unibo.as.cupido.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -49,5 +51,9 @@ public interface CupidoInterfaceAsync {
 
 	void destroySession(AsyncCallback<Void> callback);
 
-	void getMyScore(AsyncCallback<Integer> callback);
+	void getMyRank(AsyncCallback<RankingEntry> callback);
+
+	void getLocalRank(AsyncCallback<ArrayList<RankingEntry>> callback);
+
+	void getTopRank(AsyncCallback<ArrayList<RankingEntry>> callback);
 }

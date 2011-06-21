@@ -3,12 +3,14 @@
  */
 package unibo.as.cupido.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FatalException;
@@ -201,7 +203,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void addBot(int position) throws PositionFullException, FullTableException,
+	public void addBot(int position) throws PositionFullException, FullTableException,
 			NotCreatorException, IllegalArgumentException, NoSuchTableException,
 			UserNotAuthenticatedException, FatalException;
 
@@ -211,7 +213,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	ChatMessage[] viewLastMessages() throws UserNotAuthenticatedException,
+	public ChatMessage[] viewLastMessages() throws UserNotAuthenticatedException,
 			FatalException;
 
 	/**
@@ -228,11 +230,32 @@ public interface CupidoInterface extends RemoteService {
 
 	/**
 	 * 
-	 * @return player score
-	 * @throws UserNotAuthenticatedException 
+	 * @return player name, rank and points
+	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	int getMyScore() throws UserNotAuthenticatedException, FatalException;
+	public RankingEntry getMyRank() throws UserNotAuthenticatedException,
+			FatalException;
+
+	/**
+	 * 
+	 * @return RankingEntry of 10 top players in global ranking list
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
+	 */
+	public ArrayList<RankingEntry> getTopRank()
+			throws UserNotAuthenticatedException, FatalException;
+
+	/**
+	 * 
+	 * @return one chunk the global rank list which contains from four position
+	 *         before user to five position after the user.
+	 * @throws UserNotAuthenticatedException
+	 * @throws FatalException
+	 *             ;
+	 */
+	public ArrayList<RankingEntry> getLocalRank()
+			throws UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * Destroy comet and http sessions
