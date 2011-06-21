@@ -28,26 +28,20 @@ public class CardsManager {
 	public static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
 
 	public static int whoWins(final Card[] playedCard, final int firstDealer) {
-		Comparator<Card> comparator = new Comparator<Card>() {
-			@Override
-			public int compare(Card o1, Card o2) {
-				return ((o1.suit == playedCard[firstDealer].suit ? 1 : 0) * (o1.value == 1 ? 14
-						: o1.value))
-						- ((o2.suit == playedCard[firstDealer].suit ? 1 : 0) * (o2.value == 1 ? 14
-								: o2.value));
+		int winner = 0;
+		for (int i = 1; i < 4; i++) {
+			if (playedCard[i].suit == playedCard[firstDealer].suit) {
+				if (playedCard[i].value == 1) {
+					System.err.println("\n\nWHO WINS? first dealer "
+							+ firstDealer + ", winner " + winner + ", cards "
+							+ Arrays.toString(playedCard));
+					return i;
+				}
+				if (playedCard[i].value > playedCard[firstDealer].value)
+					winner = i;
 			}
-		};
-		int maxPosition = firstDealer;
-		for (int i = 0; i < 4; i++) {
-			if (comparator.compare(playedCard[i], playedCard[maxPosition]) > 0)
-				maxPosition = i;
 		}
-
-		System.err.println("\n\nWHO WINS? first dealer " + firstDealer
-				+ ", winner " + maxPosition + ", cards "
-				+ Arrays.toString(playedCard));
-
-		return maxPosition;
+		return winner;
 	}
 
 	/** stores the cards passed by each player */
@@ -55,6 +49,7 @@ public class CardsManager {
 	/** stores the cards played in the current turn */
 	private Card[] cardPlayed = new Card[4];
 	/** stores the cards owned by each player */
+	@SuppressWarnings("unchecked")
 	private ArrayList<Card>[] cards = new ArrayList[4];
 	/** the total points of the cards played in the current turn */
 	private int currentTurnPoints;
@@ -72,22 +67,7 @@ public class CardsManager {
 	 * <code>true</code> if some player correctly played an hearts at some point
 	 * in the game. <code>false</code> otherwise
 	 */
-	private boolean brokenHearted;
-
-	/**
-	 * compare to cards according to the order given by ths suit of first card
-	 * played
-	 */
-	private final Comparator<Card> winnerComparator = new Comparator<Card>() {
-		@Override
-		public int compare(Card o1, Card o2) {
-			int firstSuit = cardPlayed[firstDealerInTurn].suit.ordinal();
-			return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14
-					: o1.value))
-					- ((o2.suit.ordinal() == firstSuit ? 1 : 0) * (o2.value == 1 ? 14
-							: o2.value));
-		}
-	};
+	private boolean brokenHearted = false;
 
 	public CardsManager() {
 		dealCards();
@@ -118,6 +98,7 @@ public class CardsManager {
 	}
 
 	/** deals card pseudo-uniformly at random */
+	@SuppressWarnings("unchecked")
 	private void dealCards() {
 		cards = new ArrayList[4];
 		for (int i = 0; i < 4; i++)
@@ -160,6 +141,7 @@ public class CardsManager {
 		return cards[position].toArray(new Card[13]);
 	}
 
+	@SuppressWarnings("boxing")
 	public ArrayList<Integer> getWinners() {
 		ArrayList<Integer> winners = new ArrayList<Integer>();
 		int minimumPoint = points[0];
@@ -215,9 +197,12 @@ public class CardsManager {
 			if (card.suit.equals(Card.Suit.HEARTS)) {
 				if (playerPosition == firstDealerInTurn) {
 					for (Card currentPlayerCard : cards[firstDealerInTurn]) {
-						if (!currentPlayerCard.suit.equals(Suit.HEARTS)) {
+						if (currentPlayerCard.suit != Suit.HEARTS) {
 							throw new IllegalMoveException(
-									"Cannot play heart rigth now");
+									"Cannot play heart rigth now. player "
+											+ playerPosition + " cards "
+											+ cards[playerPosition].toString()
+											+ " card played " + card);
 						}
 					}
 
@@ -229,12 +214,9 @@ public class CardsManager {
 		cardPlayed[playerPosition] = card;
 		playedCardsCount++;
 		if (playedCardsCount == 4) {
-			/* decide who takes this hand cards and calculate this hand points */
-			int maxPosition = firstDealerInTurn;
+			firstDealerInTurn = CardsManager.whoWins(cardPlayed,
+					firstDealerInTurn);
 			for (int i = 0; i < 4; i++) {
-				if (winnerComparator.compare(cardPlayed[i],
-						cardPlayed[maxPosition]) > 0)
-					maxPosition = i;
 				if (cardPlayed[i].suit.ordinal() == Card.Suit.HEARTS.ordinal()) {
 					currentTurnPoints++;
 				} else if (cardPlayed[i].suit.ordinal() == Card.Suit.SPADES
@@ -243,7 +225,6 @@ public class CardsManager {
 				}
 			}
 			Arrays.fill(cardPlayed, null);
-			firstDealerInTurn = maxPosition;
 			turn++;
 			playedCardsCount = 0;
 		}
@@ -283,17 +264,6 @@ public class CardsManager {
 		if (allPlayerPassedCards()) {
 			this.passCards();
 		}
-	}
-
-	/**
-	 * @return the position of the player who owns the two of clubs
-	 */
-	private int whoHasTwoOfClubs() {
-		for (int i = 0; i < 4; i++) {
-			if (cards[i].contains(twoOfClubs))
-				return i;
-		}
-		return -1;
 	}
 
 }

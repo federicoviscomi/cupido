@@ -1,5 +1,8 @@
 package unibo.as.cupido.backend.table.bot;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -25,12 +28,19 @@ public class NonRemoteBot implements BotNotificationInterface {
 	private boolean brokenHearted = false;
 
 	public NonRemoteBot(String botName, InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager) {
+			TableInterface singleTableManager) throws FileNotFoundException {
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
 		cardPlayingThread = new NonRemoteBotCardPlayingThread(this, botName);
 		cardPlayingThread.start();
 		this.singleTableManager = singleTableManager;
+
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+
+			}
+		});
 	}
 
 	@Override
@@ -45,8 +55,6 @@ public class NonRemoteBot implements BotNotificationInterface {
 
 	@Override
 	public synchronized void notifyGameStarted(Card[] cards) {
-		System.err.println("\ncards dealt to " + botName + ":"
-				+ Arrays.toString(cards));
 		this.cards = new ArrayList<Card>(4);
 		this.cards.addAll(Arrays.asList(cards));
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
@@ -56,26 +64,28 @@ public class NonRemoteBot implements BotNotificationInterface {
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
-		System.err.println("\ncards passed to" + botName + ": "
-				+ Arrays.toString(cards));
 		if (alreadyGotCards)
 			throw new IllegalArgumentException("passing cards twice to player "
 					+ botName);
 		alreadyGotCards = true;
-		this.cards.addAll(Arrays.asList(cards));
+		// this.cards.addAll(Arrays.asList(cards));
+		for (Card card : cards)
+			this.cards.add(card);
 		cardPlayingThread.setAbleToPass();
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			cardPlayingThread.setAbleToPlay();
 			firstDealer = 3;
 		}
+		System.out.println("\nplay starts. " + botName + " cards are:"
+				+ this.cards.toString());
 	}
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		System.err.println("\n" + botName + " iniz player " + playerPosition + " played card "
-				+ card + ".\n turn cards:" + Arrays.toString(playedCard)
-				+ " count:" + playedCardCount + " turn:" + turn + " first:"
-				+ firstDealer);
+		System.out.println("\n" + botName + " iniz player " + playerPosition
+				+ " played card " + card + ".\n turn cards:"
+				+ Arrays.toString(playedCard) + " count:" + playedCardCount
+				+ " turn:" + turn + " first:" + firstDealer);
 
 		if (firstDealer == -1) {
 			firstDealer = playerPosition;
@@ -98,10 +108,10 @@ public class NonRemoteBot implements BotNotificationInterface {
 			}
 		}
 
-		System.err.println("\n" + botName + " fine player " + playerPosition + " played card "
-				+ card + ".\n turn cards:" + Arrays.toString(playedCard)
-				+ " count:" + playedCardCount + " turn:" + turn + " first:"
-				+ firstDealer);
+		System.out.println("\n" + botName + " fine player " + playerPosition
+				+ " played card " + card + ".\n turn cards:"
+				+ Arrays.toString(playedCard) + " count:" + playedCardCount
+				+ " turn:" + turn + " first:" + firstDealer);
 	}
 
 	@Override
@@ -147,7 +157,7 @@ public class NonRemoteBot implements BotNotificationInterface {
 
 	public synchronized void playNextCard() {
 		try {
-			System.err.println("\n" + botName + " play next card iniz. played:"
+			System.out.println("\n" + botName + " play next card iniz. played:"
 					+ Arrays.toString(playedCard) + " count:" + playedCardCount
 					+ " turn:" + turn + " first:" + firstDealer);
 
@@ -156,14 +166,14 @@ public class NonRemoteBot implements BotNotificationInterface {
 				playedCard[3] = CardsManager.twoOfClubs;
 			} else if (playedCardCount == 0) {
 				if (!brokenHearted) {
-					for (int i = 0; i < cards.size(); i++) {
+					for (int i = 0; i < cards.size() && playedCard[3] == null; i++) {
 						if (cards.get(i).suit != Card.Suit.HEARTS) {
 							playedCard[3] = cards.remove(0);
 						}
 					}
 				}
 			} else {
-				for (int i = 0; i < cards.size(); i++)
+				for (int i = 0; i < cards.size() && playedCard[3] == null; i++)
 					if (cards.get(i).suit == playedCard[firstDealer].suit)
 						playedCard[3] = cards.remove(i);
 			}
@@ -183,8 +193,7 @@ public class NonRemoteBot implements BotNotificationInterface {
 					cardPlayingThread.setAbleToPlay();
 				}
 			}
-
-			System.err.println("\n" + botName + " play next card fine. played:"
+			System.out.println("\n" + botName + " play next card fine. played:"
 					+ Arrays.toString(playedCard) + " count:" + playedCardCount
 					+ " turn:" + turn + " first:" + firstDealer);
 		} catch (Exception e) {

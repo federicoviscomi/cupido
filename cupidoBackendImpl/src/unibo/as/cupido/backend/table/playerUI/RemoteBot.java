@@ -1,5 +1,8 @@
 package unibo.as.cupido.backend.table.playerUI;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -34,10 +37,12 @@ public class RemoteBot implements Bot, Serializable {
 	private Object lock = new Object();
 
 	public RemoteBot(InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager, String userName) {
+			TableInterface singleTableManager, String userName)
+			throws FileNotFoundException {
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;
+
 	}
 
 	@Override
@@ -68,9 +73,6 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyGameStarted(Card[] cards) {
-		System.err.println("\ncard dealt to " + userName + ": "
-				+ Arrays.toString(cards));
-		System.err.flush();
 		this.cards = new ArrayList<Card>(4);
 		this.cards.addAll(Arrays.asList(cards));
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
@@ -88,9 +90,9 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
-		System.err.println("\ncards passed to " + userName + ": "
-				+ Arrays.toString(cards));
-		this.cards.addAll(Arrays.asList(cards));
+		for (Card card : cards)
+			this.cards.add(card);
+		// this.cards.addAll(Arrays.asList(cards));
 		synchronized (lock) {
 			if (!ableToPass) {
 				ableToPass = true;
@@ -107,11 +109,13 @@ public class RemoteBot implements Bot, Serializable {
 				return;
 			}
 		}
+		System.out.println("\nplay starts. " + userName + " cards are:"
+				+ this.cards.toString());
 	}
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		System.err.println("\n" + userName + " iniz player " + playerPosition
+		System.out.println("\n" + userName + " iniz player " + playerPosition
 				+ " played card " + card + ".\n turn cards:"
 				+ Arrays.toString(playedCard) + " count:" + playedCardCount
 				+ " turn:" + turn + " first:" + firstDealer);
@@ -143,10 +147,10 @@ public class RemoteBot implements Bot, Serializable {
 			}
 		}
 
-		System.err.println("\n" + userName + " fine player " + playerPosition + " played card "
-				+ card + ".\n turn cards:" + Arrays.toString(playedCard)
-				+ " count:" + playedCardCount + " turn:" + turn + " first:"
-				+ firstDealer);
+		System.out.println("\n" + userName + " fine player " + playerPosition
+				+ " played card " + card + ".\n turn cards:"
+				+ Arrays.toString(playedCard) + " count:" + playedCardCount
+				+ " turn:" + turn + " first:" + firstDealer);
 	}
 
 	@Override
@@ -207,7 +211,8 @@ public class RemoteBot implements Bot, Serializable {
 					lock.wait();
 				}
 				ableToPlay = false;
-				System.err.println("\n" + userName + " play next card iniz. played:"
+				System.out.println("\n" + userName
+						+ " play next card iniz. played:"
 						+ Arrays.toString(playedCard) + " count:"
 						+ playedCardCount + " turn:" + turn + " first:"
 						+ firstDealer);
@@ -217,14 +222,15 @@ public class RemoteBot implements Bot, Serializable {
 					playedCard[3] = CardsManager.twoOfClubs;
 				} else if (playedCardCount == 0) {
 					if (!brokenHearted) {
-						for (int i = 0; i < cards.size(); i++) {
+						for (int i = 0; i < cards.size()
+								&& playedCard[3] == null; i++) {
 							if (cards.get(i).suit != Card.Suit.HEARTS) {
 								playedCard[3] = cards.remove(0);
 							}
 						}
 					}
 				} else {
-					for (int i = 0; i < cards.size(); i++)
+					for (int i = 0; i < cards.size() && playedCard[3] == null; i++)
 						if (cards.get(i).suit == playedCard[firstDealer].suit)
 							playedCard[3] = cards.remove(i);
 				}
@@ -232,7 +238,8 @@ public class RemoteBot implements Bot, Serializable {
 					playedCard[3] = cards.remove(0);
 				if (playedCard[3].suit == Card.Suit.HEARTS)
 					brokenHearted = true;
-				System.err.println("\n" + userName + " play next card fine. played:"
+				System.out.println("\n" + userName
+						+ " play next card fine. played:"
 						+ Arrays.toString(playedCard) + " count:"
 						+ playedCardCount + " turn:" + turn + " first:"
 						+ firstDealer);
