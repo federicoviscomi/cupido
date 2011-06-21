@@ -1,5 +1,8 @@
 package unibo.as.cupido.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -20,27 +23,19 @@ public class BeforeGameWidget extends AbsolutePanel {
 	private static final int playerLabelHeight = 20;
 
 	HTML bottomLabel;
-	HTML leftLabel;
-	HTML topLabel;
-	HTML rightLabel;
+	/*
+	 * labels.get(0) is the left label, and other labels follow in clockwise order.
+	 * This list has always 3 elements.
+	 */
+	List<HTML> labels = new ArrayList<HTML>();
 
 	/*
-	 * This is not null only if there is no player in that position and the
-	 * current user is the table owner.
+	 * A list containing the displayed "Add bot" buttons (if any).
+	 * buttons.get(0) is the left button, and other buttons follow in clockwise order.
+	 * This list has always 3 elements.
+	 * Each element may be null if there is no button displayed in that position.
 	 */
-	PushButton leftButton = null;
-
-	/*
-	 * This is not null only if there is no player in that position and the
-	 * current user is the table owner.
-	 */
-	PushButton topButton = null;
-
-	/*
-	 * This is not null only if there is no player in that position and the
-	 * current user is the table owner.
-	 */
-	PushButton rightButton = null;
+	List<PushButton> buttons = new ArrayList<PushButton>();
 
 	public interface Listener {
 		/**
@@ -85,75 +80,53 @@ public class BeforeGameWidget extends AbsolutePanel {
 		this.isOwner = isOwner;
 		this.initialTableStatus = initialTableStatus;
 		this.listener = listener;
+
+		for (int i = 0; i < 3; i++)
+			buttons.add(null);
 		
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 		DOM.setStyleAttribute(getElement(), "background", "green");
 		
 		bottomLabel = new HTML();
-		leftLabel = new HTML();
-		topLabel = new HTML();
-		rightLabel = new HTML();
+		
+		for (int i = 0; i < 3; i++)
+			labels.add(new HTML());
 
 		bottomLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		leftLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-		topLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		rightLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+		labels.get(0).setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+		labels.get(1).setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		labels.get(2).setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 
 		bottomLabel.setWidth(playerLabelWidth + "px");
-		leftLabel.setWidth(playerLabelWidth + "px");
-		topLabel.setWidth(playerLabelWidth + "px");
-		rightLabel.setWidth(playerLabelWidth + "px");
-
 		bottomLabel.setHeight(playerLabelHeight + "px");
-		leftLabel.setHeight(playerLabelHeight + "px");
-		topLabel.setHeight(playerLabelHeight + "px");
-		rightLabel.setHeight(playerLabelHeight + "px");
+		
+		for (HTML label : labels) {
+			label.setWidth(playerLabelWidth + "px");
+			label.setHeight(playerLabelHeight + "px");
+		}
 
 		add(bottomLabel, tableSize / 2 - playerLabelWidth / 2, tableSize - 10
 				- playerLabelHeight);
-		add(leftLabel, 10, tableSize / 2 - playerLabelHeight / 2);
-		add(topLabel, tableSize / 2 - playerLabelWidth / 2, 10);
-		add(rightLabel, tableSize - 10 - playerLabelWidth, tableSize / 2
+		add(labels.get(0), 10, tableSize / 2 - playerLabelHeight / 2);
+		add(labels.get(1), tableSize / 2 - playerLabelWidth / 2, 10);
+		add(labels.get(2), tableSize - 10 - playerLabelWidth, tableSize / 2
 				- playerLabelHeight / 2);
 		
 		bottomLabel.setHTML(constructLabelHtml(bottomUserName, initialTableStatus.playerScores[0]));
-
-		if (initialTableStatus.opponents[0] != null) {
-			leftLabel.setHTML(constructLabelHtml(initialTableStatus.opponents[0],
-					initialTableStatus.playerScores[1]));
-		} else {
-			if (isOwner) {
-				addBotButton(0);
+		
+		for (int i = 0; i < 3; i++)
+			if (initialTableStatus.opponents[i] != null) {
+				labels.get(i).setHTML(constructLabelHtml(initialTableStatus.opponents[i],
+						initialTableStatus.playerScores[i + 1]));
 			} else {
-				// TODO: Decide what the label should show in this case.
-				// When changing here, also update the removePlayer() method.
+				if (isOwner)
+					addBotButton(i);
+				else {
+					// TODO: Decide what the label should show in this case.
+					// When changing here, also update the removePlayer() method.
+				}
 			}
-		}
-
-		if (initialTableStatus.opponents[1] != null) {
-			topLabel.setHTML(constructLabelHtml(initialTableStatus.opponents[1],
-					initialTableStatus.playerScores[2]));
-		} else {
-			if (isOwner) {
-				addBotButton(1);
-			} else {
-				// TODO: Decide what the label should show in this case.
-				// When changing here, also update the removePlayer() method.
-			}
-		}
-
-		if (initialTableStatus.opponents[2] != null) {
-			rightLabel.setHTML(constructLabelHtml(initialTableStatus.opponents[2],
-					initialTableStatus.playerScores[3]));
-		} else {
-			if (isOwner) {
-				addBotButton(2);
-			} else {
-				// TODO: Decide what the label should show in this case.
-				// When changing here, also update the removePlayer() method.
-			}
-		}
 		
 		PushButton exitButton = new PushButton("Esci");
 		exitButton.addClickHandler(new ClickHandler() {
@@ -165,49 +138,33 @@ public class BeforeGameWidget extends AbsolutePanel {
 		add(exitButton, tableSize - 100, tableSize - 40);
 	}
 	
-	private void addBotButton(int position) {
+	private void addBotButton(final int position) {
 		final int buttonWidth = 95;
 		final int buttonHeight = 15;
 		
+		PushButton button = new PushButton("Aggiungi un bot");
+		buttons.set(position, button);
+		button.setHeight(buttonHeight + "px");
+		button.setWidth(buttonWidth + "px");
+		button.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				addBot(position);
+			}
+		});
+		
 		switch (position) {
 		case 0:
-			leftButton = new PushButton("Aggiungi un bot");
-			leftButton.setHeight(buttonHeight + "px");
-			leftButton.setWidth(buttonWidth + "px");
-			add(leftButton, 30, tableSize / 2 - buttonHeight / 2);
-			leftButton.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					addBot(0);
-				}
-			});
+			add(button, 30, tableSize / 2 - buttonHeight / 2);
 			break;
 			
 		case 1:
-			topButton = new PushButton("Aggiungi un bot");
-			topButton.setHeight(buttonHeight + "px");
-			topButton.setWidth(buttonWidth + "px");
-			add(topButton, tableSize / 2 - buttonWidth / 2, 30);
-			topButton.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					addBot(1);
-				}
-			});
+			add(button, tableSize / 2 - buttonWidth / 2, 30);
 			break;
 			
 		case 2:
-			rightButton = new PushButton("Aggiungi un bot");
-			rightButton.setHeight(buttonHeight + "px");
-			rightButton.setWidth(buttonWidth + "px");
-			add(rightButton, tableSize - 40 - buttonWidth, tableSize / 2
+			add(button, tableSize - 40 - buttonWidth, tableSize / 2
 					- buttonHeight / 2);
-			rightButton.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					addBot(2);
-				}
-			});
 			break;
 		}
 	}
@@ -238,31 +195,10 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 		String s = builder.toSafeHtml().asString();
 
-		switch (position) {
-		case 0:
-			if (leftButton != null)
-				remove(leftButton);
-			assert leftLabel.getText().isEmpty();
-			leftLabel.setHTML(s);
-			break;
-
-		case 1:
-			if (topButton != null)
-				remove(topButton);
-			assert topLabel.getText().isEmpty();
-			topLabel.setHTML(s);
-			break;
-
-		case 2:
-			if (rightButton != null)
-				remove(rightButton);
-			assert rightLabel.getText().isEmpty();
-			rightLabel.setHTML(s);
-			break;
-
-		default:
-			assert false;
-		}
+		if (buttons.get(position) != null)
+			remove(buttons.get(position));
+		assert labels.get(position).getText().isEmpty();
+		labels.get(position).setHTML(s);
 		
 		if (isTableFull())
 			listener.onTableFull(initialTableStatus);
@@ -279,37 +215,12 @@ public class BeforeGameWidget extends AbsolutePanel {
 		initialTableStatus.opponents[position] = "";
 		initialTableStatus.whoIsBot[position] = true;
 		
-		switch (position) {
-		case 0:
-			if (leftButton != null)
-				;
-			remove(leftButton);
-			leftButton = null;
-			assert leftLabel.getText().isEmpty();
-			leftLabel.setHTML("<b><big>bot</big></b>");
-			break;
-
-		case 1:
-			if (topButton != null)
-				;
-			remove(topButton);
-			topButton = null;
-			assert topLabel.getText().isEmpty();
-			topLabel.setHTML("<b><big>bot</big></b>");
-			break;
-
-		case 2:
-			if (rightButton != null)
-				;
-			remove(rightButton);
-			rightButton = null;
-			assert rightLabel.getText().isEmpty();
-			rightLabel.setHTML("<b><big>bot</big></b>");
-			break;
-
-		default:
-			assert false;
-		}
+		assert (buttons.get(position) != null);
+		remove(buttons.get(position));
+		buttons.set(position, null);
+		
+		assert labels.get(position).getText().isEmpty();
+		labels.get(position).setHTML("<b><big>bot</big></b>");
 		
 		if (isTableFull())
 			listener.onTableFull(initialTableStatus);
@@ -318,37 +229,15 @@ public class BeforeGameWidget extends AbsolutePanel {
 	private void removePlayer(int player) {
 		initialTableStatus.opponents[player] = null;
 		
-		switch (player) {
-		case 0:
-			
-			leftLabel.setText("");
-			if (isOwner)
-				addBotButton(player);
-			break;
-			
-		case 1:
-			
-			leftLabel.setText("");
-			if (isOwner)
-				addBotButton(player);
-			break;
-			
-		case 2:
-			
-			leftLabel.setText("");
-			if (isOwner)
-				addBotButton(player);
-			break;
-		}
+		labels.get(player).setText("");
+		if (isOwner)
+			addBotButton(player);
 	}
 	
 	public void disableControls() {
-		if (leftButton != null)
-			leftButton.setEnabled(false);
-		if (topButton != null)
-			topButton.setEnabled(false);
-		if (rightButton != null)
-			rightButton.setEnabled(false);
+		for (PushButton button : buttons)
+			if (button != null)
+				button.setEnabled(false);
 	}
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
