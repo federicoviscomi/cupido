@@ -32,7 +32,7 @@ public class TableScreen extends AbsolutePanel implements Screen {
 
 		assert Cupido.height == Cupido.width - chatWidth;
 		tableWidget = new HeartsTableWidget(Cupido.height,
-				username, initialTableStatus, isOwner, screenManager);
+				username, initialTableStatus, isOwner, screenManager, cupidoService);
 		add(tableWidget, 0, 0);
 
 		chatWidget = new LocalChatWidget(username,

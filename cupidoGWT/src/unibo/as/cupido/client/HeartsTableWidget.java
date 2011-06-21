@@ -1,5 +1,7 @@
 package unibo.as.cupido.client;
 
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.client.playerstates.PlayerStateManager;
@@ -7,6 +9,7 @@ import unibo.as.cupido.client.playerstates.PlayerStateManagerImpl;
 import unibo.as.cupido.client.screens.ScreenManager;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class HeartsTableWidget extends AbsolutePanel {
@@ -28,7 +31,8 @@ public class HeartsTableWidget extends AbsolutePanel {
 	 * @param isOwner 
 	 */
 	public HeartsTableWidget(int tableSize, final String username,
-			InitialTableStatus initialTableStatus, final boolean isOwner, final ScreenManager screenManager) {
+			InitialTableStatus initialTableStatus, final boolean isOwner,
+			final ScreenManager screenManager, final CupidoInterfaceAsync cupidoService) {
 		this.tableSize = tableSize;
 		this.screenManager = screenManager;
 
@@ -51,7 +55,30 @@ public class HeartsTableWidget extends AbsolutePanel {
 
 					@Override
 					public void onExit() {
-						screenManager.displayMainMenuScreen(username);
+						beforeGameWidget.disableControls();
+						cupidoService.leaveTable(new AsyncCallback<Void>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								try {
+									throw caught;
+								} catch (UserNotAuthenticatedException e) {
+									screenManager.displayGeneralErrorScreen(e);
+								} catch (NoSuchTableException e) {
+									// The table has been deleted by the owner, before
+									// the leaveTable() request was processed.
+									// Just ignore this exception.
+									screenManager.displayMainMenuScreen(username);
+								} catch (Throwable e) {
+									screenManager.displayGeneralErrorScreen(e);
+								}
+							}
+
+							@Override
+							public void onSuccess(Void result) {
+								screenManager.displayMainMenuScreen(username);
+							}
+						});
+						
 					}
 				});
 		add(beforeGameWidget, 0, 0);
