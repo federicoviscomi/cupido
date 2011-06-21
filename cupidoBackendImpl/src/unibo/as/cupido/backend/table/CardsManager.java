@@ -31,10 +31,9 @@ public class CardsManager {
 		Comparator<Card> comparator = new Comparator<Card>() {
 			@Override
 			public int compare(Card o1, Card o2) {
-				int firstSuit = playedCard[firstDealer].suit.ordinal();
-				return ((o1.suit.ordinal() == firstSuit ? 1 : 0) * (o1.value == 1 ? 14
+				return ((o1.suit == playedCard[firstDealer].suit ? 1 : 0) * (o1.value == 1 ? 14
 						: o1.value))
-						- ((o2.suit.ordinal() == firstSuit ? 1 : 0) * (o2.value == 1 ? 14
+						- ((o2.suit == playedCard[firstDealer].suit ? 1 : 0) * (o2.value == 1 ? 14
 								: o2.value));
 			}
 		};
@@ -43,6 +42,11 @@ public class CardsManager {
 			if (comparator.compare(playedCard[i], playedCard[maxPosition]) > 0)
 				maxPosition = i;
 		}
+
+		System.err.println("\n\nWHO WINS? first dealer " + firstDealer
+				+ ", winner " + maxPosition + ", cards "
+				+ Arrays.toString(playedCard));
+
 		return maxPosition;
 	}
 
@@ -89,8 +93,7 @@ public class CardsManager {
 		dealCards();
 	}
 
-	public void addCardsInformationForViewers(
-			ObservedGameStatus observedGameStatus) {
+	void addCardsInformationForViewers(ObservedGameStatus observedGameStatus) {
 		for (int i = 0; i < 4; i++) {
 			observedGameStatus.playerStatus[i].numOfCardsInHand = cards[i]
 					.size();
@@ -181,7 +184,9 @@ public class CardsManager {
 
 	public void playCard(int playerPosition, Card card)
 			throws IllegalMoveException {
-		if (card == null || !cards[playerPosition].remove(card)) {
+		if (card == null)
+			throw new IllegalArgumentException();
+		if (!cards[playerPosition].remove(card)) {
 			throw new IllegalArgumentException("User " + playerPosition
 					+ " does not own card " + card);
 		}
@@ -197,7 +202,12 @@ public class CardsManager {
 				if (currentPlayerCard.suit == cardPlayed[firstDealerInTurn].suit) {
 					throw new IllegalMoveException("\nPlayer " + playerPosition
 							+ " must play a card of suit "
-							+ cardPlayed[firstDealerInTurn].suit + "\n ");
+							+ cardPlayed[firstDealerInTurn].suit + "\n first:"
+							+ firstDealerInTurn + " first card:"
+							+ cardPlayed[firstDealerInTurn] + " card played:"
+							+ card + " cards played "
+							+ Arrays.toString(cardPlayed)
+							+ " played cards count " + playedCardsCount + "\n");
 				}
 			}
 		}
@@ -215,6 +225,7 @@ public class CardsManager {
 				brokenHearted = true;
 			}
 		}
+
 		cardPlayed[playerPosition] = card;
 		playedCardsCount++;
 		if (playedCardsCount == 4) {
@@ -231,6 +242,8 @@ public class CardsManager {
 					currentTurnPoints += 13;
 				}
 			}
+			Arrays.fill(cardPlayed, null);
+			firstDealerInTurn = maxPosition;
 			turn++;
 			playedCardsCount = 0;
 		}
