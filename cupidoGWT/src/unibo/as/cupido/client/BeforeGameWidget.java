@@ -168,7 +168,6 @@ public class BeforeGameWidget extends AbsolutePanel {
 			@Override
 			public void onClick(ClickEvent event) {
 				remove(button);
-				System.out.println("Client: calling cupidoService.addBot(" + position + ", _)");
 				cupidoService.addBot(position + 1, new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {
