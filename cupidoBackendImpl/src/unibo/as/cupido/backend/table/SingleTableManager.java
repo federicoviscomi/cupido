@@ -72,9 +72,9 @@ public class SingleTableManager implements TableInterface {
 			InitialTableStatus initialTableStatus = playersManager
 					.getInitialTableStatus(position);
 
-			
 			NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus,
-					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(table.tableDescriptor.id));
+					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
+							table.tableDescriptor.id));
 			viewers.notifyBotJoined(botName, position);
 
 			playersManager.addBot(userName, position, bot);
@@ -133,7 +133,8 @@ public class SingleTableManager implements TableInterface {
 		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
 		viewers.notifyGameEnded(matchPoints, playersTotalPoint);
 		try {
-			LocalTableManagerInterface ltm = gtm.getLTMInterface(table.tableDescriptor.ltmId);
+			LocalTableManagerInterface ltm = gtm
+					.getLTMInterface(table.tableDescriptor.ltmId);
 			ltm.notifyTableDestruction(table.tableDescriptor.id);
 			gtm.notifyTableDestruction(table.tableDescriptor, ltm);
 		} catch (RemoteException e) {
