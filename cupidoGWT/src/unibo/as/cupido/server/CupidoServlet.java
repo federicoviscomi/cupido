@@ -1,12 +1,5 @@
-/*
- * WARNING put comment lines in constructor method CupidoServlet() to test Servlet without registry
- * put comment lines in registerUser() for fake registration
- */
 package unibo.as.cupido.server;
 
-/*
- * FIXME: do NOT remove unused imports and variables
- */
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -63,9 +56,11 @@ import unibo.as.cupido.shared.cometNotification.PlayerLeft;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
- * must check before call other component's:
- * - if user are authenticated
- * - if user are at a table or not
+ * Before calling other component's, CupidoServlet must check:
+ * <ul>
+ * <li> if users are authenticated
+ * <li> if users are at a table or not
+ * </ul>
  * @author Lorenzo Belli
  *
  */
@@ -76,8 +71,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	/*
 	 * hostname and port of registry, default is 127.0.0.1:1099
 	 * GTMLookupName and GCLookupName are name for registry lookup
-	 * Values of GTMLookupName in defined in GlobalTableManagerInterface
-	 * Values of GCLookupName can be found in GlobalChatInterface
+	 * Values of GTMLookupName is defined in GlobalTableManagerInterface
+	 * Values of GCLookupName is defined in GlobalChatInterface
 	 */
 	private static final String registryHost = "127.0.0.1";
 	private static final int registryPort = 1099;
@@ -100,10 +95,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	
 	private static final int NUMTOPRANKENTRIES = 10;
 
-	/*
-	 * Saves registry lookups in servlet context, and initialize DBmanager
-	 * 
-	 * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+	/**
+	 * Saves registry lookups in servlet context, and initialize DBmanager.
 	 */
 	@Override
 	public void init(ServletConfig config) {
@@ -135,7 +128,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		getServletContext().setAttribute(GTMI, gtmi);
 		DatabaseInterface dbi = new DatabaseManager();
 		getServletContext().setAttribute(DBI, dbi);
-		// Istantiate a single sessionClosedListener in servlet context
 		getServletContext().setAttribute(SCL, new SessionClosedListener() {
 			@Override
 			public void onSessionClosed(HttpSession hSession) {
@@ -158,25 +150,27 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		System.out.println("Serlvet: SessionClosedListener inited.");
 	}
 
-	/*
-	 * Implements here action to perform when notified by the table must create
-	 * CometNotification classes
+	/**
+	 * Implements here action to perform when notified by the table. A
+	 * ServletNotificationsInterface object is bounded to a single httpSession.
 	 * 
 	 * @param hSession
-	 * 
+	 *            HttpSession of the bounded client
 	 * @param ctSession
+	 *            CometSession of the bounded client
 	 * 
-	 * @return
+	 * @return a ServletNotificationsInterface object
 	 */
 	private ServletNotificationsInterface getServletNotificationsInterface(
 			final HttpSession hSession, final CometSession cSession) {
 		return new ServletNotificationsInterface() {
-
 			private HttpSession httpSession = hSession;
 			private CometSession cometSession = cSession;
 
-			/*
-			 * Called by the table when a player left the game
+			/**
+			 * Notify PlayerLeft at the client
+			 * 
+			 * @see PlayerLeft
 			 */
 			@Override
 			public void notifyPlayerLeft(String name) {
@@ -184,10 +178,14 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					System.out.println("SerletNotInterf: session null");
 					return;
 				}
-				// Notifica playerLeft al client
 				cometSession.enqueue(new PlayerLeft(name));
 			}
 
+			/**
+			 * Notify NewPlayerJoined at the client.
+			 * 
+			 * @see NewPlayerJoined
+			 */
 			@Override
 			public void notifyPlayerJoined(String name, boolean isBot,
 					int point, int position) {
@@ -203,6 +201,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				cometSession.enqueue(j);
 			}
 
+			/**
+			 * Notify CardPlayed at the client.
+			 * 
+			 * @see CardPlayed
+			 */
 			@Override
 			public void notifyPlayedCard(Card card, int playerPosition) {
 				if (httpSession == null || cometSession == null) {
@@ -215,6 +218,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				cometSession.enqueue(p);
 			}
 
+			/**
+			 * Notify CardPassed at the client.
+			 * 
+			 * @see CardPassed
+			 */
 			@Override
 			public void notifyPassedCards(Card[] cards) {
 				if (httpSession == null || cometSession == null) {
@@ -226,6 +234,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				cometSession.enqueue(p);
 			}
 
+			/**
+			 * Notify NewLocalChatMessage at the client.
+			 * 
+			 * @see NewLocalChatMessage
+			 */
 			@Override
 			public void notifyLocalChatMessage(ChatMessage message) {
 				if (httpSession == null || cometSession == null) {
@@ -238,6 +251,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				cometSession.enqueue(m);
 			}
 
+			/**
+			 * Notify GameStarted at the client.
+			 * 
+			 * @see GameStarted
+			 */
 			@Override
 			public void notifyGameStarted(Card[] cards) {
 				if (httpSession == null || cometSession == null) {
@@ -249,6 +267,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				cometSession.enqueue(g);
 			}
 
+			/**
+			 * Notify GameEnded at the client, and remove attribute bindings in
+			 * httpSession.
+			 * 
+			 * @see GameEnded
+			 */
 			@Override
 			public void notifyGameEnded(int[] matchPoints,
 					int[] playersTotalPoint) {
@@ -276,10 +300,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		public void onSessionClosed(HttpSession httpSession);
 	}
 
-	@Override
-	/*
-	 * refers to GlobalChat. Client poll this method
+	/**
+	 * Show the last NUMTOPRANKENTRIES messages of the global chat. Client poll
+	 * this method
 	 */
+	@Override
 	public ChatMessage[] viewLastMessages()
 			throws UserNotAuthenticatedException, FatalException {
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
@@ -302,13 +327,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
-	/*
-	 * TODO: IllegalArgumentException in never thrown because input is never
-	 * checked TODO: choose legal messages
-	 * 
-	 * @see
-	 * unibo.as.cupido.client.CupidoInterface#sendGlobalChatMessage(java.lang
-	 * .String)
+	/**
+	 * FIXME: IllegalArgumentException in never thrown because input is never
+	 * checked. TODO: choose legal messages
 	 */
 	@Override
 	public void sendGlobalChatMessage(String message)
@@ -336,12 +357,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
-	/*
-	 * TODO: IllegalArgumentExceptions never thrown TODO: choose legal messages
-	 * 
-	 * @see
-	 * unibo.as.cupido.client.CupidoInterface#sendLocalChatMessage(java.lang
-	 * .String)
+	/**
+	 * Send Message in Local chat.
+	 * TODO: IllegalArgumentExceptions never thrown. TODO: choose legal messages
 	 */
 	@Override
 	public void sendLocalChatMessage(String message)
@@ -376,16 +394,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
-	/*
-	 * Login errors are non-informative
-	 * 
-	 * @see unibo.as.cupido.client.CupidoInterface#login(java.lang.String,
-	 * java.lang.String)
+	/**
+	 * Login errors must be non-informative.
 	 */
 	@Override
 	public boolean login(String username, String password)
 			throws FatalException {
-
 		/*
 		 * FAKE LOGIN if (true){ HttpSession httpSession =
 		 * getThreadLocalRequest().getSession(false); if (httpSession != null){
@@ -446,6 +460,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	}
 
+	/**
+	 * Check in the database if the user with name {@link username} is
+	 * already registered.
+	 */
 	@Override
 	public boolean isUserRegistered(String username)
 			throws IllegalArgumentException, FatalException {
@@ -463,9 +481,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
-	/*
-	 * @see unibo.as.cupido.client.CupidoInterface#logout()
-	 */
 	@Override
 	public void logout() {
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
@@ -475,6 +490,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
+	/**
+	 * Retrieve table List from Global Table Manager.
+	 * 
+	 * @see unibo.as.cupido.client.GlobalTableManagerInterface#getTableList()
+	 */
 	@Override
 	public Collection<TableInfoForClient> getTableList()
 			throws UserNotAuthenticatedException, FatalException {
@@ -486,9 +506,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 			throw new UserNotAuthenticatedException();
 		}
-
 		try {
-
 			GlobalTableManagerInterface gtm = (GlobalTableManagerInterface) getServletContext()
 					.getAttribute(GTMI);
 			return gtm.getTableList();
@@ -502,13 +520,18 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * Create a new table
-	 * @throws MaxNumTableReachedException
+	 * Create a new table. Binds httpSession with its
+	 * {@link ServletNotificationInterface} and {@link TableInterface}
 	 * 
+	 * @throws MaxNumTableReachedException
+	 *             if no more tables can be created now
 	 * @throws RemoteException
 	 *             in case of internal errors
 	 * @throws AllLTMBusyException
 	 *             if catch AllLTMBusyException
+	 * 
+	 * @see GlobalTableManagerInterfaces#createTable(String,
+	 *      ServletNotificationInterface)
 	 */
 	@Override
 	public InitialTableStatus createTable() throws MaxNumTableReachedException,
@@ -830,7 +853,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 		try {
 			ti.addBot((String) httpSession.getAttribute(USERNAME), position);
-
 		} catch (PositionFullException e) {
 			throw e;
 		} catch (IllegalArgumentException e) {
@@ -851,7 +873,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * Open connection and bind httpSession with remote service interfaces
+	 * Open Comet connection.
+	 * @see CometSession
 	 */
 	@Override
 	public void openCometConnection() {
