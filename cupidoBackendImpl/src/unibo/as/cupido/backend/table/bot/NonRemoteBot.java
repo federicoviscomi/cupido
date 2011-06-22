@@ -246,12 +246,6 @@ public class NonRemoteBot implements BotNotificationInterface {
 				cardPlayingThread.setAbleToPlay();
 			}
 		}
-		if (((firstDealer + playedCardCount + 4) % 4) != playerPosition) {
-			throw new IllegalStateException(" current player should be "
-					+ ((firstDealer + playedCardCount + 4) % 4)
-					+ " instead is " + playerPosition + " " + botName
-					+ " first: " + firstDealer + " count: " + playedCardCount);
-		}
 	}
 
 }

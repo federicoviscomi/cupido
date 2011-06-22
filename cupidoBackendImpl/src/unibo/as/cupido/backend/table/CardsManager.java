@@ -105,8 +105,7 @@ public class CardsManager {
 			throw new IllegalArgumentException("User " + playerPosition
 					+ " does not own card " + card);
 		}
-		
-		
+
 		if (playedCardsCount == 0) {
 			if (turn == 0 && !card.equals(twoOfClubs)) {
 				throw new IllegalMoveException(
@@ -132,7 +131,8 @@ public class CardsManager {
 								+ " all played:" + Arrays.toString(cardPlayed)
 								+ "\n player: " + playerPosition
 								+ ", player cards:"
-								+ this.cards[playerPosition].toString() + " \n played cards count: "+playedCardsCount);
+								+ this.cards[playerPosition].toString()
+								+ " \n played cards count: " + playedCardsCount);
 					}
 				}
 			}
@@ -178,13 +178,6 @@ public class CardsManager {
 		}
 
 		setCardPlayed(playerPosition, card);
-		
-		if (((firstDealerInTurn + playedCardsCount + 4) % 4) != playerPosition) {
-			throw new IllegalStateException(" current player should be "
-					+ ((firstDealerInTurn + playedCardsCount + 4) % 4)
-					+ " instead is " + playerPosition + " first: "
-					+ firstDealerInTurn + " count: " + playedCardsCount);
-		}
 
 	}
 
