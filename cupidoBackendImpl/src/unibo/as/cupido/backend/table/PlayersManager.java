@@ -91,47 +91,7 @@ public class PlayersManager {
 		removalThread.start();
 	}
 
-	private void addBot(String userName, int position,
-			ServletNotificationsInterface bot) throws FullTableException,
-			IllegalArgumentException, PositionFullException,
-			NotCreatorException {
-
-		if (playersCount > 4)
-			throw new FullTableException();
-		if (position < 1 || position > 3 || userName == null)
-			throw new IllegalArgumentException();
-		if (players[position] != null)
-			throw new PositionFullException();
-		if (!userName.equals(players[Positions.OWNER.ordinal()].name))
-			throw new NotCreatorException("Creator: "
-					+ players[Positions.OWNER.ordinal()] + ". Current user: "
-					+ userName);
-
-		/*
-		 * notify every players but the one who is adding the bot and the bot
-		 * itself
-		 */
-		for (int i = 1; i < 4; i++) {
-			if (i != position && players[i] != null
-					&& !players[i].name.equals(userName)) {
-				try {
-					this.print();
-					players[i].sni.notifyPlayerJoined("_bot." + userName + "."
-							+ position, true, 0,
-							toRelativePosition(position, i));
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-
-		players[position] = new PlayerInfo("_bot." + userName + "." + position,
-				true, 0, bot);
-		playersCount++;
-	}
-
-	public void addNonRemoteBot(String userName, int position,
+	public void addBot(String userName, int position,
 			BotNotificationInterface bot) throws FullTableException,
 			PositionFullException, NotCreatorException {
 

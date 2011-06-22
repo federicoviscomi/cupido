@@ -63,13 +63,15 @@ public interface ServletNotificationsInterface extends Remote {
 	 * @param card
 	 *            card played
 	 * @param playerPosition
-	 *            position in the table of the player who played the card. Note
-	 *            that position is relative to the player who is notified. More
-	 *            precisely the player who joined is <code>position</code>
-	 *            positions next to the player who received the notification in
-	 *            clockwise order. So minimum position is one and maximum
-	 *            position is three.
+	 *            position of the player who played the card. If who receives
+	 *            this notification is a viewer then <code>playerPosition</code>
+	 *            is the absolute position in the table of the player who played
+	 *            a card and is in range 0-3. Otherwise if who receives this
+	 *            notification is a player then <code>playerPosition</code> is
+	 *            the position of the player who played relative to the player
+	 *            who receives this notification and is in range 0-2.
 	 * @throws RemoteException
+	 * 
 	 */
 	public void notifyPlayedCard(Card card, int playerPosition)
 			throws RemoteException;

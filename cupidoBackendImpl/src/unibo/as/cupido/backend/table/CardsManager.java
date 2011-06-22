@@ -13,9 +13,7 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 
 public class CardsManager {
 
-	/**
-	 * Compare two cards just for showing them in a user friendly order
-	 */
+	/** used just for showing cards in a user friendly order */
 	private static final Comparator<Card> cardsComparator = new Comparator<Card>() {
 		@Override
 		public int compare(Card o1, Card o2) {
@@ -24,9 +22,8 @@ public class CardsManager {
 		}
 	};
 
-	/** the two of clubs */
 	public static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
-	public static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
+	public static final Card queenOfSpades = new Card(12, Card.Suit.SPADES);
 
 	public static int whoWins(final Card[] playedCard, final int firstDealer) {
 		int winner = firstDealer;
@@ -37,9 +34,6 @@ public class CardsManager {
 					winner = i;
 			}
 		}
-		System.err.println("\n\nWHO WINS? first dealer " + firstDealer
-				+ ", winner " + winner + ", cards "
-				+ Arrays.toString(playedCard));
 		return winner;
 	}
 
@@ -56,10 +50,8 @@ public class CardsManager {
 	private int firstDealerInTurn = -1;
 	/** the number of turn made in this hand */
 	private int turn = 0;
-
 	/** stores round points of every player */
 	private int[] points = new int[4];
-
 	/**
 	 * <code>true</code> if some player correctly played an hearts at some point
 	 * in the game. <code>false</code> otherwise
@@ -113,13 +105,15 @@ public class CardsManager {
 			throw new IllegalArgumentException("User " + playerPosition
 					+ " does not own card " + card);
 		}
-		if (playerPosition == firstDealerInTurn) {
+		
+		
+		if (playedCardsCount == 0) {
 			if (turn == 0 && !card.equals(twoOfClubs)) {
 				throw new IllegalMoveException(
 						"First card played must be two of clubs");
 			}
 			if (!brokenHearted && card.suit.equals(Card.Suit.HEARTS)) {
-				for (Card currentPlayerCard : cards[firstDealerInTurn]) {
+				for (Card currentPlayerCard : cards[playerPosition]) {
 					if (currentPlayerCard.suit != Suit.HEARTS) {
 						throw new IllegalMoveException(
 								"Cannot play heart rigth now");
@@ -132,7 +126,13 @@ public class CardsManager {
 					if (currentPlayerCard.suit == cardPlayed[firstDealerInTurn].suit) {
 						throw new IllegalMoveException("\nPlayer "
 								+ playerPosition + " must play a card of suit "
-								+ cardPlayed[firstDealerInTurn].suit);
+								+ cardPlayed[firstDealerInTurn].suit
+								+ "\n card played:" + card + ", first card:"
+								+ cardPlayed[firstDealerInTurn]
+								+ " all played:" + Arrays.toString(cardPlayed)
+								+ "\n player: " + playerPosition
+								+ ", player cards:"
+								+ this.cards[playerPosition].toString() + " \n played cards count: "+playedCardsCount);
 					}
 				}
 			}
@@ -170,7 +170,22 @@ public class CardsManager {
 
 		checkMoveValidity(playerPosition, card);
 
+		if (((firstDealerInTurn + playedCardsCount + 4) % 4) != playerPosition) {
+			throw new IllegalStateException(" current player should be "
+					+ ((firstDealerInTurn + playedCardsCount + 4) % 4)
+					+ " instead is " + playerPosition + " first: "
+					+ firstDealerInTurn + " count: " + playedCardsCount);
+		}
+
 		setCardPlayed(playerPosition, card);
+		
+		if (((firstDealerInTurn + playedCardsCount + 4) % 4) != playerPosition) {
+			throw new IllegalStateException(" current player should be "
+					+ ((firstDealerInTurn + playedCardsCount + 4) % 4)
+					+ " instead is " + playerPosition + " first: "
+					+ firstDealerInTurn + " count: " + playedCardsCount);
+		}
+
 	}
 
 	void print() {
@@ -223,10 +238,11 @@ public class CardsManager {
 			for (int i = 0; i < 4; i++) {
 				if (cardPlayed[i].suit == Card.Suit.HEARTS) {
 					points[firstDealerInTurn]++;
-				} else if (cardPlayed[i].equals(womanOfSpades)) {
+				} else if (cardPlayed[i].equals(queenOfSpades)) {
 					points[firstDealerInTurn] += 5;
 				}
 			}
+			Arrays.fill(cardPlayed, null);
 		}
 	}
 
