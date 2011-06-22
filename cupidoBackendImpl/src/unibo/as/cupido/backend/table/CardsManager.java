@@ -50,10 +50,8 @@ public class CardsManager {
 	private int firstDealerInTurn = -1;
 	/** the number of turn made in this hand */
 	private int turn = 0;
-
 	/** stores round points of every player */
 	private int[] points = new int[4];
-
 	/**
 	 * <code>true</code> if some player correctly played an hearts at some point
 	 * in the game. <code>false</code> otherwise
@@ -107,13 +105,15 @@ public class CardsManager {
 			throw new IllegalArgumentException("User " + playerPosition
 					+ " does not own card " + card);
 		}
-		if (playerPosition == firstDealerInTurn) {
+		
+		
+		if (playedCardsCount == 0) {
 			if (turn == 0 && !card.equals(twoOfClubs)) {
 				throw new IllegalMoveException(
 						"First card played must be two of clubs");
 			}
 			if (!brokenHearted && card.suit.equals(Card.Suit.HEARTS)) {
-				for (Card currentPlayerCard : cards[firstDealerInTurn]) {
+				for (Card currentPlayerCard : cards[playerPosition]) {
 					if (currentPlayerCard.suit != Suit.HEARTS) {
 						throw new IllegalMoveException(
 								"Cannot play heart rigth now");
@@ -126,7 +126,13 @@ public class CardsManager {
 					if (currentPlayerCard.suit == cardPlayed[firstDealerInTurn].suit) {
 						throw new IllegalMoveException("\nPlayer "
 								+ playerPosition + " must play a card of suit "
-								+ cardPlayed[firstDealerInTurn].suit);
+								+ cardPlayed[firstDealerInTurn].suit
+								+ "\n card played:" + card + ", first card:"
+								+ cardPlayed[firstDealerInTurn]
+								+ " all played:" + Arrays.toString(cardPlayed)
+								+ "\n player: " + playerPosition
+								+ ", player cards:"
+								+ this.cards[playerPosition].toString() + " \n played cards count: "+playedCardsCount);
 					}
 				}
 			}
@@ -163,6 +169,13 @@ public class CardsManager {
 			throw new IllegalArgumentException();
 
 		checkMoveValidity(playerPosition, card);
+
+		if (((firstDealerInTurn + playedCardsCount + 4) % 4) != playerPosition) {
+			throw new IllegalStateException(" current player should be "
+					+ ((firstDealerInTurn + playedCardsCount + 4) % 4)
+					+ " instead is " + playerPosition + " first: "
+					+ firstDealerInTurn + " count: " + playedCardsCount);
+		}
 
 		setCardPlayed(playerPosition, card);
 	}
@@ -221,6 +234,7 @@ public class CardsManager {
 					points[firstDealerInTurn] += 5;
 				}
 			}
+			Arrays.fill(cardPlayed, null);
 		}
 	}
 

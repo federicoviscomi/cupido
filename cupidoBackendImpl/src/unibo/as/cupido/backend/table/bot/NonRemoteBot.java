@@ -72,7 +72,6 @@ public class NonRemoteBot implements BotNotificationInterface {
 			}
 			return validCards;
 		}
-
 		for (int i = 0; i < cards.size(); i++) {
 			if (cards.get(i).suit == playedCard[firstDealer].suit) {
 				validCards.add(cards.get(i));
