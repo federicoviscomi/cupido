@@ -8,6 +8,10 @@ public class TableDescriptor implements Serializable {
 	public int id;
 
 	public String ltmId;
+	
+	public TableDescriptor() {
+		
+	}
 
 	public TableDescriptor(String server, int id) {
 		this.ltmId = server;

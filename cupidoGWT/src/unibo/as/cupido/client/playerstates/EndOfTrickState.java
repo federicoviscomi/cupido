@@ -2,14 +2,17 @@ package unibo.as.cupido.client.playerstates;
 
 import java.util.List;
 
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GWTAnimation;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -24,13 +27,15 @@ public class EndOfTrickState implements PlayerState {
 	private List<Card> hand;
 	
 	private boolean frozen = false;
+	private CupidoInterfaceAsync cupidoService;
 
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, final List<Card> hand) {
+			final PlayerStateManager stateManager, final List<Card> hand, final CupidoInterfaceAsync cupidoService) {
 		
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.hand = hand;
+		this.cupidoService = cupidoService;
 		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
@@ -46,7 +51,24 @@ public class EndOfTrickState implements PlayerState {
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				stateManager.exit();
+				freeze();
+				cupidoService.leaveTable(new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						try {
+							throw caught;
+						} catch (NoSuchTableException e) {
+							// The table has been destroyed in the meantime, nothing to do.
+						} catch (Throwable e) {
+							stateManager.onFatalException(e);
+						}
+					}
+
+					@Override
+					public void onSuccess(Void result) {
+						stateManager.exit();
+					}
+				});
 			}
 		});
 		panel.add(exitButton);

@@ -1,10 +1,12 @@
 package unibo.as.cupido.client.screens;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.MaxNumTableReachedException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
@@ -22,8 +24,11 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class MainMenuScreen extends AbsolutePanel implements Screen {
 	
@@ -58,22 +63,29 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 	public MainMenuScreen(final ScreenManager screenManager,
 			final String username, final CupidoInterfaceAsync cupidoService) {
+		
 		this.screenManager = screenManager;
 		this.username = username;
+		
+		setHeight(Cupido.height + "px");
+		setWidth(Cupido.width + "px");
+		
+		VerticalPanel panel = new VerticalPanel();
+		panel.setSpacing(30);
+		panel.setWidth((Cupido.width - chatWidth) + "px");
+		panel.setHeight((Cupido.height - 100) + "px");
+		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		add(panel, 0, 0);
 		
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
 		
-		setHeight(Cupido.height + "px");
-		setWidth(Cupido.width + "px");
-
-		// FIXME: Remove this. It was inserted for debugging purposes.
-		this.username = "pippo";
-
-		Label label = new HTML("<b>Main menu screen (TODO)</b>");
-		add(label, 200, 320);
+		Label label = new HTML("<h1>Menu</h1>");
+		panel.add(label);
 
 		PushButton tableButton = new PushButton("Crea un nuovo tavolo");
+		tableButton.setWidth("250px");
 		buttons.add(tableButton);
 		tableButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -99,10 +111,11 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 				});
 			}
 		});
-		add(tableButton, 200, 400);
+		panel.add(tableButton);
 
 		PushButton errorButton = new PushButton(
 				"Vai alla schermata Errore generico");
+		errorButton.setWidth("250px");
 		buttons.add(errorButton);
 		errorButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -112,20 +125,33 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 								"An example error message"));
 			}
 		});
-		add(errorButton, 200, 450);
+		panel.add(errorButton);
 
-		PushButton observedTableButton = new PushButton(
-				"Vai alla schermata Tavolo osservato");
-		buttons.add(observedTableButton);
-		observedTableButton.addClickHandler(new ClickHandler() {
+		PushButton tableListButton = new PushButton(
+				"Vai alla lista dei tavoli");
+		tableListButton.setWidth("250px");
+		buttons.add(tableListButton);
+		tableListButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenManager.displayObservedTableScreen(username);
+				freeze();
+				cupidoService.getTableList(new AsyncCallback<Collection<TableInfoForClient>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						screenManager.displayGeneralErrorScreen(caught);
+					}
+
+					@Override
+					public void onSuccess(Collection<TableInfoForClient> result) {
+						screenManager.displayTableListScreen(username, result);
+					}
+				});
 			}
 		});
-		add(observedTableButton, 200, 500);
+		panel.add(tableListButton);
 
 		PushButton scoresButton = new PushButton("Vai alla schermata Punteggi");
+		scoresButton.setWidth("250px");
 		buttons.add(scoresButton);
 		scoresButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -133,9 +159,10 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 				screenManager.displayScoresScreen(username);
 			}
 		});
-		add(scoresButton, 200, 550);
+		panel.add(scoresButton);
 
 		PushButton aboutButton = new PushButton("Informazioni su Cupido");
+		aboutButton.setWidth("250px");
 		buttons.add(aboutButton);
 		aboutButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -143,9 +170,10 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 				screenManager.displayAboutScreen(username);
 			}
 		});
-		add(aboutButton, 200, 600);
+		panel.add(aboutButton);
 
 		PushButton logoutButton = new PushButton("Logout");
+		logoutButton.setWidth("250px");
 		buttons.add(logoutButton);
 		logoutButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -164,7 +192,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 				});
 			}
 		});
-		add(logoutButton, 200, 650);
+		panel.add(logoutButton);
 
 		chatWidget = new GlobalChatWidget(this.username, new ChatListener() {
 			@Override

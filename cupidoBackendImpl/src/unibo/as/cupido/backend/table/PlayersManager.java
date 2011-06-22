@@ -17,6 +17,7 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.PlayerStatus;
 
 public class PlayersManager {
 
@@ -196,6 +197,7 @@ public class PlayersManager {
 			ObservedGameStatus observedGameStatus) {
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null) {
+				observedGameStatus.playerStatus[i] = new PlayerStatus();
 				observedGameStatus.playerStatus[i].name = players[i].name;
 				observedGameStatus.playerStatus[i].isBot = players[i].isBot;
 				observedGameStatus.playerStatus[i].score = players[i].score;

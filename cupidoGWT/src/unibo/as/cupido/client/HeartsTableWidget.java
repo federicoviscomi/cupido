@@ -21,6 +21,8 @@ public class HeartsTableWidget extends AbsolutePanel {
 
 	private PlayerStateManager stateManager = null;
 	private boolean frozen = false;
+	private String username;
+	private CupidoInterfaceAsync cupidoService;
 	
 	/**
 	 * 
@@ -33,25 +35,23 @@ public class HeartsTableWidget extends AbsolutePanel {
 	public HeartsTableWidget(int tableSize, final String username,
 			InitialTableStatus initialTableStatus, final boolean isOwner,
 			final ScreenManager screenManager, final CupidoInterfaceAsync cupidoService) {
+		
+		this.username = username;
 		this.tableSize = tableSize;
 		this.screenManager = screenManager;
+		this.cupidoService = cupidoService;
 
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 		
-		beforeGameWidget = new BeforeGameWidget(tableSize, username, isOwner, initialTableStatus,
-				new BeforeGameWidget.Listener() {
+		beforeGameWidget = new BeforeGameWidget(tableSize, username, username, isOwner, initialTableStatus,
+				cupidoService, new BeforeGameWidget.Listener() {
 					@Override
-					public void onTableFull(InitialTableStatus initialTableStatus) {
-						
-						if (frozen) {
-							System.out.println("Client: notice: the onTableFull() event was received while frozen, ignoring it.");
-							return;
-						}
-						
-						startGame(username, initialTableStatus);
+					public void onTableFull() {
+						// Just wait for the GameStarted notification.
+						beforeGameWidget.freeze();
 					}
-
+					
 					@Override
 					public void onGameEnded() {
 						if (frozen) {
@@ -95,35 +95,15 @@ public class HeartsTableWidget extends AbsolutePanel {
 						});
 						
 					}
+
+					@Override
+					public void onFatalException(Throwable e) {
+						screenManager.displayGeneralErrorScreen(e);
+					}
 				});
 		add(beforeGameWidget, 0, 0);
 	}
 
-	public void startGame(final String username, InitialTableStatus initialTableStatus) {
-
-		if (frozen) {
-			System.out.println("Client: notice: startGame() was called while frozen, ignoring it.");
-			return;
-		}
-		
-		remove(beforeGameWidget);
-		beforeGameWidget = null;
-
-		// FIXME: Initialize the widget with the correct values.
-		// These values are only meant for debugging purposes.
-
-		Card[] bottomPlayerCards = new Card[13];
-
-		for (int i = 0; i < 13; i++)
-			bottomPlayerCards[i] = RandomCardGenerator.generateCard();
-
-		stateManager = new PlayerStateManagerImpl(tableSize, screenManager,
-				initialTableStatus, bottomPlayerCards, username);
-
-		cardsGameWidget = stateManager.getWidget();
-		add(cardsGameWidget, 0, 0);
-	}
-	
 	public void freeze() {
 		if (beforeGameWidget != null)
 			beforeGameWidget.freeze();
@@ -134,6 +114,24 @@ public class HeartsTableWidget extends AbsolutePanel {
 		frozen = true;
 	}
 
+	public void handleGameStarted(Card[] myCards) {
+		if (frozen) {
+			System.out.println("Client: notice: handleGameStarted() was called while frozen, ignoring it.");
+			return;
+		}
+		
+		InitialTableStatus initialTableStatus = beforeGameWidget.getInitialTableStatus();
+		
+		remove(beforeGameWidget);
+		beforeGameWidget = null;
+		
+		stateManager = new PlayerStateManagerImpl(tableSize, screenManager,
+				initialTableStatus, myCards, username, cupidoService);
+		
+		cardsGameWidget = stateManager.getWidget();
+		add(cardsGameWidget, 0, 0);
+	}
+	
 	public void handleCardPassed(Card[] cards) {
 		if (frozen) {
 			System.out.println("Client: notice: handleCardPassed() was called while frozen, ignoring it.");
@@ -169,19 +167,6 @@ public class HeartsTableWidget extends AbsolutePanel {
 			beforeGameWidget.handleGameEnded(matchPoints, playersTotalPoints);
 		} else {
 			stateManager.handleGameEnded(matchPoints, playersTotalPoints);
-		}
-	}
-
-	public void handleGameStarted(Card[] myCards) {
-		if (frozen) {
-			System.out.println("Client: notice: handleGameStarted() was called while frozen, ignoring it.");
-			return;
-		}
-		
-		if (cardsGameWidget == null) {
-			System.out.println("Client: HeartsTableWidget: warning: GameStarted received before the game start, it was ignored.");
-		} else {
-			stateManager.handleGameStarted(myCards);
 		}
 	}
 

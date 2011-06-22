@@ -2,16 +2,19 @@ package unibo.as.cupido.client.playerstates;
 
 import java.util.List;
 
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GWTAnimation;
 import unibo.as.cupido.client.RandomCardGenerator;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -20,9 +23,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class WaitingDealState implements PlayerState {
 
-	// FIXME: Remove this button when the servlet is ready.
-	private PushButton continueButton;
-	
 	private PushButton exitButton;
 
 	private CardsGameWidget cardsGameWidget;
@@ -35,12 +35,17 @@ public class WaitingDealState implements PlayerState {
 	
 	private boolean frozen = false;
 
+	private CupidoInterfaceAsync cupidoService;
+	
+	private boolean eventReceived = false;
+
 	public WaitingDealState(CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, List<Card> hand) {
+			final PlayerStateManager stateManager, List<Card> hand, final CupidoInterfaceAsync cupidoService) {
 		
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.hand = hand;
+		this.cupidoService = cupidoService;
 		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
@@ -69,27 +74,29 @@ public class WaitingDealState implements PlayerState {
 		text.setWordWrap(true);
 		panel.add(text);
 
-		// FIXME: Remove this button when the servlet is ready.
-		continueButton = new PushButton("[DEBUG] Continua");
-		continueButton.setWidth("80px");
-		continueButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				// FIXME: This data should come from the servlet.
-				int player = currentPlayer;
-				Card card = RandomCardGenerator.generateCard();
-				
-				handleCardPlayed(card, player);
-			}
-		});
-		panel.add(continueButton);
-
 		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				stateManager.exit();
+				freeze();
+				cupidoService.leaveTable(new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						try {
+							throw caught;
+						} catch (NoSuchTableException e) {
+							// The table has been destroyed in the meantime, nothing to do.
+						} catch (Throwable e) {
+							stateManager.onFatalException(e);
+						}
+					}
+
+					@Override
+					public void onSuccess(Void result) {
+						stateManager.exit();
+					}
+				});
 			}
 		});
 		panel.add(exitButton);
@@ -103,7 +110,6 @@ public class WaitingDealState implements PlayerState {
 
 	@Override
 	public void freeze() {
-		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
 		frozen = true;
 	}
@@ -114,7 +120,6 @@ public class WaitingDealState implements PlayerState {
 			System.out.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
-		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
 	}
 
@@ -124,7 +129,6 @@ public class WaitingDealState implements PlayerState {
 			System.out.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
-		continueButton.setEnabled(true);
 		exitButton.setEnabled(true);
 	}
 
@@ -153,6 +157,15 @@ public class WaitingDealState implements PlayerState {
 			System.out.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
 			return false;
 		}
+		
+		if (eventReceived)
+			// The next state will handle this.
+			return false;
+		
+		eventReceived = true;
+		
+		// playerPosition was in the [0-2] interval, now it is between 1 and 3.
+		++playerPosition;
 		
 		stateManager.addDealtCard(playerPosition, card);
 

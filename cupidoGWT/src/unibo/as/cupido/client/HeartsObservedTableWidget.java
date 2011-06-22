@@ -22,6 +22,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	
 	private ObservedGameStatus observedGameStatus;
 	private boolean frozen = false;
+	private CupidoInterfaceAsync cupidoService;
 
 	/**
 	 * 
@@ -30,11 +31,13 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	 * @param username
 	 */
 	public HeartsObservedTableWidget(int tableSize, final String username,
-			final ScreenManager screenManager, ObservedGameStatus observedGameStatus) {
+			final ScreenManager screenManager, ObservedGameStatus observedGameStatus,
+			CupidoInterfaceAsync cupidoService) {
 		
 		this.tableSize = tableSize;
 		this.screenManager = screenManager;
 		this.observedGameStatus = observedGameStatus;
+		this.cupidoService = cupidoService;
 
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
@@ -72,16 +75,16 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 				initialTableStatus.playerScores[i + 1] = observedGameStatus.playerStatus[i + 1].score;
 			}
 		
-		beforeGameWidget = new BeforeGameWidget(tableSize, observedGameStatus.playerStatus[0].name, false,
+		beforeGameWidget = new BeforeGameWidget(tableSize, username, observedGameStatus.playerStatus[0].name, false,
 				initialTableStatus,
-				new BeforeGameWidget.Listener() {
+				cupidoService, new BeforeGameWidget.Listener() {
 					@Override
-					public void onTableFull(InitialTableStatus initialTableStatus) {
+					public void onTableFull() {
 						if (frozen) {
 							System.out.println("Client: notice: received a onTableFull() event while frozen, ignoring it.");
 							return;
 						}
-						startGame(username, initialTableStatus);
+						startGame(username, beforeGameWidget.getInitialTableStatus());
 					}
 
 					@Override
@@ -101,6 +104,11 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 							return;
 						}
 						screenManager.displayMainMenuScreen(username);
+					}
+
+					@Override
+					public void onFatalException(Throwable e) {
+						screenManager.displayGeneralErrorScreen(e);
 					}
 				});
 		add(beforeGameWidget, 0, 0);

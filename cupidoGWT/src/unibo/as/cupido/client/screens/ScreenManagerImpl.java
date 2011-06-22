@@ -1,6 +1,7 @@
 package unibo.as.cupido.client.screens;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import net.zschech.gwt.comet.client.CometClient;
@@ -12,6 +13,8 @@ import unibo.as.cupido.client.CupidoCometListener;
 import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.shared.cometNotification.CardPassed;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
 import unibo.as.cupido.shared.cometNotification.GameEnded;
@@ -219,12 +222,12 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	}
 
 	@Override
-	public void displayObservedTableScreen(String username) {
+	public void displayObservedTableScreen(String username, ObservedGameStatus observedGameStatus) {
 		assert !switchingScreen;
 		switchingScreen = true;	
 
 		removeCurrentScreen();
-		ObservedTableScreen screen = new ObservedTableScreen(this, username,
+		ObservedTableScreen screen = new ObservedTableScreen(this, username, observedGameStatus,
 				cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
@@ -253,6 +256,20 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
 		removeCurrentScreen();
 		LoadingScreen screen = new LoadingScreen(this);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
+
+		switchingScreen = false;
+	}
+	
+	@Override
+	public void displayTableListScreen(String username, Collection<TableInfoForClient> tableCollection) {
+		assert !switchingScreen;
+		switchingScreen = true;
+
+		removeCurrentScreen();
+		TableListScreen screen = new TableListScreen(this, username, tableCollection, cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);

@@ -10,6 +10,7 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.shared.cometNotification.CardPassed;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
@@ -45,15 +46,18 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	private String username;
 	
 	private boolean frozen = false;
+	private CupidoInterfaceAsync cupidoService;
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
 	 * cards are `cards'.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			InitialTableStatus initialTableStatus, Card[] cards, String username) {
+			InitialTableStatus initialTableStatus, Card[] cards, String username,
+			CupidoInterfaceAsync cupidoService) {
 		this.username = username;
 		this.screenManager = screenManager;
+		this.cupidoService = cupidoService;
 
 		for (String opponent : initialTableStatus.opponents)
 			assert opponent != null;
@@ -158,7 +162,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 		
-		transitionTo(new CardPassingState(cardsGameWidget, this, hand));
+		transitionTo(new CardPassingState(cardsGameWidget, this, hand, cupidoService));
 	}
 
 	@Override
@@ -168,7 +172,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 		
-		transitionTo(new CardPassingWaitingState(cardsGameWidget, this, hand));
+		transitionTo(new CardPassingWaitingState(cardsGameWidget, this, hand, cupidoService));
 	}
 
 	@Override
@@ -178,7 +182,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 		
-		transitionTo(new EndOfTrickState(cardsGameWidget, this, hand));
+		transitionTo(new EndOfTrickState(cardsGameWidget, this, hand, cupidoService));
 	}
 
 	@Override
@@ -188,7 +192,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 		
-		transitionTo(new FirstDealerState(cardsGameWidget, this, hand));
+		transitionTo(new FirstDealerState(cardsGameWidget, this, hand, cupidoService));
 	}
 
 	@Override
@@ -198,7 +202,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 		
-		transitionTo(new WaitingDealState(cardsGameWidget, this, hand));
+		transitionTo(new WaitingDealState(cardsGameWidget, this, hand, cupidoService));
 	}
 
 	@Override
@@ -208,7 +212,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 		
-		transitionTo(new WaitingFirstDealState(cardsGameWidget, this, hand));
+		transitionTo(new WaitingFirstDealState(cardsGameWidget, this, hand, cupidoService));
 	}
 
 	@Override
@@ -218,7 +222,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 		
-		transitionTo(new YourTurnState(cardsGameWidget, this, hand));
+		transitionTo(new YourTurnState(cardsGameWidget, this, hand, cupidoService));
 	}
 
 	@Override
@@ -228,7 +232,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 		
-		transitionTo(new GameEndedState(cardsGameWidget, this));
+		transitionTo(new GameEndedState(cardsGameWidget, this, cupidoService));
 	}
 
 	@Override
@@ -386,7 +390,61 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			pendingNotifications.add(new PlayerLeft(player));
 	}
 	
+	private static void printCards(Card[] cards) {
+		boolean first = true;
+		for (Card card : cards) {
+			if (!first)
+				System.out.print(", ");
+			first = false;
+			System.out.println(card.toString());
+		}
+	}
+	
+	private void printPendingNotifications() {
+		System.out.print("{ ");
+		boolean first = true;
+		for (Serializable x : pendingNotifications) {
+			if (!first)
+				System.out.println(",");
+				System.out.print("  ");
+			first = false;
+			if (x instanceof CardPassed) {
+				CardPassed message = (CardPassed) x;
+				System.out.print("CardPassed(");
+				printCards(message.cards);
+				System.out.print(")");
+				
+			} else if (x instanceof CardPlayed) {
+				CardPlayed message = (CardPlayed) x;
+				System.out.print("CardPlayed(");
+				System.out.print(message.card + ", " + message.playerPosition);
+				System.out.print(")");
+				
+			} else if (x instanceof GameEnded) {
+				System.out.print("GameEnded(...)");
+				
+			} else if (x instanceof GameStarted) {
+				GameStarted message = (GameStarted) x;
+				System.out.print("GameStarted(");
+				printCards(message.myCards);
+				System.out.print(")");
+				
+			} else if (x instanceof PlayerLeft) {
+				PlayerLeft message = (PlayerLeft) x;
+				System.out.print("PlayerLeft(" + message.player + ")");
+				
+			} else {
+				assert false;
+			}
+		}
+		System.out.println("}");
+	}
+	
 	private void sendPendingNotifications() {
+		// TODO: Remove these lines.
+		// System.out.println("Client: PlayerStateManagerImpl: in sendPendingNotifications(): " + pendingNotifications.size() + " notifications pending.");
+		// printPendingNotifications();
+		
 		List<Serializable> list = pendingNotifications;
 		// Note that this may be modified in the calls to handle*() methods below.
 		pendingNotifications = new ArrayList<Serializable>();
@@ -416,5 +474,13 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				assert false;
 			}
 		}
+		// TODO: Remove these lines.
+		// System.out.println("Client: PlayerStateManagerImpl: exiting from sendPendingNotifications(): " + pendingNotifications.size() + " notifications are still pending.");
+		// printPendingNotifications();
+	}
+
+	@Override
+	public void onFatalException(Throwable e) {
+		screenManager.displayGeneralErrorScreen(e);
 	}
 }

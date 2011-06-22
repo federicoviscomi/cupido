@@ -3,12 +3,19 @@ package unibo.as.cupido.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import unibo.as.cupido.common.exception.FatalException;
+import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.NotCreatorException;
+import unibo.as.cupido.common.exception.PositionFullException;
+import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -41,7 +48,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 		/**
 		 * This is called when the table is full of players and/or bots.
 		 */
-		void onTableFull(InitialTableStatus initialTableStatus);
+		void onTableFull();
 		
 		/**
 		 * This is called if the game is interrupted by another player (i.e. the owner).
@@ -52,6 +59,11 @@ public class BeforeGameWidget extends AbsolutePanel {
 		 * This is called if the user chooses to exit.
 		 */
 		void onExit();
+		
+		/**
+		 * This is called if a call to the servlet fails with a fatal exception.
+		 */
+		void onFatalException(Throwable e);
 	}
 	
 	InitialTableStatus initialTableStatus;
@@ -64,6 +76,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 	private boolean frozen = false;
 
+	private CupidoInterfaceAsync cupidoService;
+
 	/*
 	 * The widget that represents the table before the actual game.
 	 * 
@@ -75,13 +89,15 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * @param isOwner specifies whether the current user is the owner of the
 	 * table (and thus also a player).
 	 */
-	public BeforeGameWidget(int tableSize, String bottomUserName, boolean isOwner,
-			InitialTableStatus initialTableStatus, final Listener listener) {
+	public BeforeGameWidget(int tableSize, String username, String bottomUserName, boolean isOwner,
+			InitialTableStatus initialTableStatus, CupidoInterfaceAsync cupidoService,
+			final Listener listener) {
 		
 		this.tableSize = tableSize;
 		this.isOwner = isOwner;
 		this.initialTableStatus = initialTableStatus;
 		this.listener = listener;
+		this.cupidoService = cupidoService;
 
 		for (int i = 0; i < 3; i++)
 			buttons.add(null);
@@ -115,12 +131,30 @@ public class BeforeGameWidget extends AbsolutePanel {
 		add(labels.get(2), tableSize - 10 - playerLabelWidth, tableSize / 2
 				- playerLabelHeight / 2);
 		
-		bottomLabel.setHTML(constructLabelHtml(bottomUserName, initialTableStatus.playerScores[0]));
+		int[] scores = new int[4];
+		
+		// initialTableStatus.playerScores has a different meaning depending
+		// whether the user is a player or just a viewer.
+		if (bottomUserName.equals(username)) {
+			// The user is a player.
+			
+			// TODO: This data should come from the servlet.
+			scores[0] = 1234;
+			
+			for (int i = 0; i < 3; i++)
+				scores[i] = initialTableStatus.playerScores[i];
+		} else {
+			// The user is a viewer.
+			for (int i = 0; i < 4; i++)
+				scores[i] = initialTableStatus.playerScores[i];
+		}
+		
+		bottomLabel.setHTML(constructLabelHtml(bottomUserName, scores[0]));
 		
 		for (int i = 0; i < 3; i++)
 			if (initialTableStatus.opponents[i] != null) {
 				labels.get(i).setHTML(constructLabelHtml(initialTableStatus.opponents[i],
-						initialTableStatus.playerScores[i + 1]));
+						scores[i + 1]));
 			} else {
 				if (isOwner)
 					addBotButton(i);
@@ -140,18 +174,55 @@ public class BeforeGameWidget extends AbsolutePanel {
 		add(exitButton, tableSize - 100, tableSize - 40);
 	}
 	
+	public InitialTableStatus getInitialTableStatus() {
+		return initialTableStatus;
+	}
+	
 	private void addBotButton(final int position) {
 		final int buttonWidth = 95;
 		final int buttonHeight = 15;
 		
-		PushButton button = new PushButton("Aggiungi un bot");
+		final PushButton button = new PushButton("Aggiungi un bot");
 		buttons.set(position, button);
 		button.setHeight(buttonHeight + "px");
 		button.setWidth(buttonWidth + "px");
 		button.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				addBot(position);
+				remove(button);
+				cupidoService.addBot(position + 1, new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						try {
+							throw caught;
+						} catch (PositionFullException e) {
+							// The position has been occupied in the meantime,
+							// nothing to do.
+						} catch (FullTableException e) {
+							// The position has been occupied in the meantime,
+							// nothing to do.
+						} catch (NotCreatorException e) {
+							listener.onFatalException(e);
+						} catch (IllegalArgumentException e) {
+							listener.onFatalException(e);
+						} catch (NoSuchTableException e) {
+							// The table has been destroyed in the meantime,
+							// nothing to do. The GameEnded notification will
+							// bring back the user to the main menu.
+						} catch (UserNotAuthenticatedException e) {
+							listener.onFatalException(e);
+						} catch (FatalException e) {
+							listener.onFatalException(e);
+						} catch (Throwable e) {
+							listener.onFatalException(e);
+						}
+					}
+
+					@Override
+					public void onSuccess(Void result) {
+						addBot(position);
+					}
+				});
 			}
 		});
 		
@@ -203,7 +274,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 		labels.get(position).setHTML(s);
 		
 		if (isTableFull())
-			listener.onTableFull(initialTableStatus);
+			listener.onTableFull();
 	}
 	
 	private boolean isTableFull() {
@@ -217,15 +288,17 @@ public class BeforeGameWidget extends AbsolutePanel {
 		initialTableStatus.opponents[position] = "";
 		initialTableStatus.whoIsBot[position] = true;
 		
-		assert (buttons.get(position) != null);
-		remove(buttons.get(position));
-		buttons.set(position, null);
+		if (isOwner) {
+			assert (buttons.get(position) != null);
+			remove(buttons.get(position));
+			buttons.set(position, null);
+		}
 		
 		assert labels.get(position).getText().isEmpty();
 		labels.get(position).setHTML("<b><big>bot</big></b>");
 		
 		if (isTableFull())
-			listener.onTableFull(initialTableStatus);
+			listener.onTableFull();
 	}
 	
 	private void removePlayer(int player) {

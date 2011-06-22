@@ -29,58 +29,17 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 	private boolean frozen = false;
 
 	public ObservedTableScreen(ScreenManager screenManager,
-			String username, final CupidoInterfaceAsync cupidoService) {
+			String username, ObservedGameStatus observedGameStatus,
+			final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
 		
-		// FIXME: This data should come from the servlet.
-		// Remove the following code when actually communicating with the servlet.
-		ObservedGameStatus observedGameStatus = new ObservedGameStatus();
-		observedGameStatus.firstDealerInTrick = 0;
-
-		observedGameStatus.playerStatus = new PlayerStatus[4];
-
-		// Bottom player
-		observedGameStatus.playerStatus[0] = new PlayerStatus();
-		observedGameStatus.playerStatus[0].isBot = false;
-		observedGameStatus.playerStatus[0].name = "bottom player name";
-		observedGameStatus.playerStatus[0].numOfCardsInHand = 12;
-		observedGameStatus.playerStatus[0].playedCard = new Card(11,
-				Card.Suit.SPADES);
-		observedGameStatus.playerStatus[0].score = 1234;
-
-		// Left player
-		observedGameStatus.playerStatus[1] = new PlayerStatus();
-		observedGameStatus.playerStatus[1].isBot = false;
-		observedGameStatus.playerStatus[1].name = "left player name";
-		observedGameStatus.playerStatus[1].numOfCardsInHand = 12;
-		observedGameStatus.playerStatus[1].playedCard = new Card(11,
-				Card.Suit.HEARTS);
-		observedGameStatus.playerStatus[1].score = 1234;
-
-		// Top player
-		observedGameStatus.playerStatus[2] = new PlayerStatus();
-		observedGameStatus.playerStatus[2].isBot = true;
-		observedGameStatus.playerStatus[2].name = null;
-		observedGameStatus.playerStatus[2].numOfCardsInHand = 12;
-		observedGameStatus.playerStatus[2].playedCard = new Card(1,
-				Card.Suit.HEARTS);
-		observedGameStatus.playerStatus[2].score = 1234;
-
-		// Right player
-		observedGameStatus.playerStatus[3] = new PlayerStatus();
-		observedGameStatus.playerStatus[3].isBot = false;
-		observedGameStatus.playerStatus[3].name = "right player name";
-		observedGameStatus.playerStatus[3].numOfCardsInHand = 13;
-		observedGameStatus.playerStatus[3].playedCard = null;
-		observedGameStatus.playerStatus[3].score = 1234;
-		
 		assert Cupido.height == Cupido.width - chatWidth;
 		tableWidget = new HeartsObservedTableWidget(
-				Cupido.height, username, screenManager, observedGameStatus);
+				Cupido.height, username, screenManager, observedGameStatus, cupidoService);
 		add(tableWidget, 0, 0);
 
 		chatWidget = new LocalChatWidget(username,
