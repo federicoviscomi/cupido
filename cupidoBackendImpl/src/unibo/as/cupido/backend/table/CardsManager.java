@@ -29,11 +29,18 @@ public class CardsManager {
 		int winner = firstDealer;
 		for (int i = 0; i < 4; i++) {
 			if (playedCard[i].suit == playedCard[firstDealer].suit) {
-				if (playedCard[i].value == 1
-						|| playedCard[i].value > playedCard[winner].value)
+				if (playedCard[i].value == 1) {
+					System.err.println(" played: "
+							+ Arrays.toString(playedCard) + " first: "
+							+ firstDealer + " winner: " + i);
+					return i;
+				}
+				if (playedCard[i].value > playedCard[winner].value)
 					winner = i;
 			}
 		}
+		System.err.println(" played: " + Arrays.toString(playedCard)
+				+ " first: " + firstDealer + " winner: " + winner);
 		return winner;
 	}
 

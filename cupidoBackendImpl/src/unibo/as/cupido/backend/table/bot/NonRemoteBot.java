@@ -126,8 +126,8 @@ public class NonRemoteBot implements BotNotificationInterface {
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		out.println("\n" + botName + " player " + playerPosition
-				+ " played card " + card);
+		// out.println("\n" + botName + " player " + playerPosition+
+		// " played card " + card);
 		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
 				+ firstDealer + " broken hearted " + brokenHearted
 				+ " turn cards:" + Arrays.toString(playedCard));
@@ -182,12 +182,15 @@ public class NonRemoteBot implements BotNotificationInterface {
 
 	public synchronized void playNextCard() {
 		try {
-			out.println("\n" + botName + " plays ");
+			// out.println("\n" + botName + " plays ");
+			// out.println(" count:" + playedCardCount + " turn:" + turn+
+			// " first:" + firstDealer + " broken hearted "+ brokenHearted +
+			// " turn cards:"+ Arrays.toString(playedCard) + "\n owned "+
+			// cards.toString());
 			out.println(" count:" + playedCardCount + " turn:" + turn
 					+ " first:" + firstDealer + " broken hearted "
 					+ brokenHearted + " turn cards:"
-					+ Arrays.toString(playedCard) + "\n owned "
-					+ cards.toString());
+					+ Arrays.toString(playedCard));
 
 			/** choose a valid card */
 			Card cardToPlay = choseCard();
@@ -198,11 +201,15 @@ public class NonRemoteBot implements BotNotificationInterface {
 			/** update status */
 			setCardPlayed(cardToPlay, 3);
 
+			// out.println(" count:" + playedCardCount + " turn:" + turn+
+			// " first:" + firstDealer + " broken hearted "+ brokenHearted +
+			// " turn cards:"+ Arrays.toString(playedCard) + " played " +
+			// cardToPlay+ "\n owned " + cards.toString());
 			out.println(" count:" + playedCardCount + " turn:" + turn
 					+ " first:" + firstDealer + " broken hearted "
 					+ brokenHearted + " turn cards:"
-					+ Arrays.toString(playedCard) + " played " + cardToPlay
-					+ "\n owned " + cards.toString());
+					+ Arrays.toString(playedCard));
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

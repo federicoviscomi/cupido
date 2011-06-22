@@ -31,7 +31,7 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 					}
 					ableToPlay = false;
 				}
-				Thread.sleep(1000);
+				//Thread.sleep(1000);
 				bot.playNextCard();
 			}
 		} catch (Exception e) {

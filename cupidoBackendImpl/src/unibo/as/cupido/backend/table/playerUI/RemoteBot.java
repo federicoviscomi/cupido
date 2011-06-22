@@ -166,8 +166,8 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		out.println("\n" + userName + " player " + playerPosition
-				+ " played card " + card);
+		// out.println("\n" + userName + " player " + playerPosition+
+		// " played card " + card);
 		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
 				+ firstDealer + " broken hearted " + brokenHearted
 				+ " turn cards:" + Arrays.toString(playedCard));
@@ -238,12 +238,16 @@ public class RemoteBot implements Bot, Serializable {
 				}
 				ableToPlay = false;
 
-				out.println("\n" + userName + " plays ");
+				// out.println("\n" + userName + " plays ");
+				// out.println(" count:" + playedCardCount + " turn:" + turn
+				// + " first:" + firstDealer + " broken hearted "
+				// + brokenHearted + " turn cards:"
+				// + Arrays.toString(playedCard) + "\n owned "
+				// + cards.toString());
 				out.println(" count:" + playedCardCount + " turn:" + turn
 						+ " first:" + firstDealer + " broken hearted "
 						+ brokenHearted + " turn cards:"
-						+ Arrays.toString(playedCard) + "\n owned "
-						+ cards.toString());
+						+ Arrays.toString(playedCard));
 
 				/** choose a valid card */
 				Card cardToPlay = choseCard();
@@ -254,11 +258,15 @@ public class RemoteBot implements Bot, Serializable {
 				/** update status */
 				setCardPlayed(cardToPlay, 3);
 
+				// out.println(" count:" + playedCardCount + " turn:" + turn
+				// + " first:" + firstDealer + " broken hearted "
+				// + brokenHearted + " turn cards:"
+				// + Arrays.toString(playedCard) + " played " + cardToPlay
+				// + "\n owned " + cards.toString());
 				out.println(" count:" + playedCardCount + " turn:" + turn
 						+ " first:" + firstDealer + " broken hearted "
 						+ brokenHearted + " turn cards:"
-						+ Arrays.toString(playedCard) + " played " + cardToPlay
-						+ "\n owned " + cards.toString());
+						+ Arrays.toString(playedCard));
 
 			}
 		} catch (Exception e) {
