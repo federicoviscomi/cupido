@@ -1,8 +1,10 @@
-echo Removing backend interfaces...
-rm -rf cupidoGWT/war/WEB-INF/classes/unibo/as/cupido/common
 
-echo Copying backend interfaces...
-cp -r cupidoCommon/bin/unibo/as/cupido/common/ cupidoGWT/war/WEB-INF/classes/unibo/as/cupido/
+echo "Removing the old war/ directory..."
+rm -rf war/
+
+echo "Creating an updated war/ directory..."
+cp -R cupidoGWT/war/ .
+cp -R cupidoCommon/bin/unibo/as/cupido/common/ war/WEB-INF/classes/unibo/as/cupido/
 
 echo Removing stubs...
 find . -name '*_Stub.class' -delete
@@ -48,8 +50,7 @@ echo "Terminating child processes, please wait..."
 
 for pid in $PIDS
 do
-  kill -s SIGTERM "$pid"
+  kill "$pid"
 done
 
-
-
+sleep 1
