@@ -48,5 +48,8 @@ echo "Terminating child processes, please wait..."
 
 for pid in $PIDS
 do
-  kill -9 "$pid"
+  kill -s SIGTERM "$pid"
 done
+
+
+

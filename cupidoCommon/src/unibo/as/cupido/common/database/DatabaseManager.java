@@ -6,7 +6,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import unibo.as.cupido.common.structures.Pair;
+import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.interfaces.DatabaseInterface;
@@ -19,6 +19,7 @@ public class DatabaseManager implements DatabaseInterface {
 	public static void main(String[] args) throws SQLException,
 			DuplicateUserNameException, NoSuchUserException {
 		DatabaseManager databaseManager = new DatabaseManager();
+		databaseManager.test();
 		// System.out.println(databaseManager.login("cane", "bau"));
 	}
 
@@ -29,6 +30,7 @@ public class DatabaseManager implements DatabaseInterface {
 	// TODO handle statement.close() problem
 	private Statement statement;
 	private Connection connection;
+	
 	public DatabaseManager() {
 		try {
 			Class.forName("org.gjt.mm.mysql.Driver");
@@ -81,28 +83,34 @@ public class DatabaseManager implements DatabaseInterface {
 				"SELECT name FROM User WHERE name = '" + userName + "'").next();
 	}
 
+	/*
+	 * Query is:
+	 * select * from (SELECT @rank:=@rank+1 AS rank, name, score from
+	 * User USE INDEX (scoreIndex) ORDER BY score DESC)AS globalList limit 2,9
+	 * 
+	 * @see
+	 * unibo.as.cupido.common.interfaces.DatabaseInterface#getLocalRank(java
+	 * .lang.String)
+	 */
 	@Override
-	public ArrayList<Pair<String, Integer>> getLocalRank(String userName)
+	public ArrayList<RankingEntry> getLocalRank(String userName)
 			throws SQLException, NoSuchUserException {
 		if (userName == null)
 			throw new IllegalArgumentException();
-
-		// FIXME don't know if this works
-
-		int userRank = getUserRank(userName);
-
+		int userRank = getUserRank(userName).rank;
+		int from = (userRank - 5);
+		from = from >= 0 ? from : 0;
+		int to = userRank + 4;
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet chunk = statement
-				.executeQuery("SELECT @rank:=@rank+1 AS rank, name, score  "
-						+ " FROM User "
-						+ " USE INDEX (scoreIndex) WHERE @rank >= "
-						+ (userRank - 5) + " AND @rank <= " + (userRank + 4)
-						+ " ORDER BY score DESC LIMIT 10;");
-		ArrayList<Pair<String, Integer>> rank = new ArrayList<Pair<String, Integer>>(
-				10);
+				.executeQuery("SELECT * FROM " +
+						"(SELECT @rank:=@rank+1 AS rank, name, score from User USE INDEX (scoreIndex) ORDER BY score DESC)" +
+						"AS globalList LIMIT "+ from + ", " + to + " ;");
+
+		ArrayList<RankingEntry> rank = new ArrayList<RankingEntry>(10);
 		while (chunk.next()) {
-			rank.add(new Pair<String, Integer>(chunk.getString(2), chunk
-					.getInt(3)));
+			rank.add(new RankingEntry(chunk.getString(2), chunk.getInt(1),
+					chunk.getInt(3)));
 		}
 		return rank;
 	}
@@ -123,9 +131,9 @@ public class DatabaseManager implements DatabaseInterface {
 		return 0;
 	}
 
+
 	@Override
-	public ArrayList<Pair<String, Integer>> getTopRank(int size)
-			throws SQLException {
+	public ArrayList<RankingEntry> getTopRank(int size) throws SQLException {
 		if (size <= 0)
 			throw new IllegalArgumentException();
 		// FIXME does this really work?
@@ -135,34 +143,36 @@ public class DatabaseManager implements DatabaseInterface {
 						+ " FROM User "
 						+ " USE INDEX (scoreIndex) ORDER BY score DESC LIMIT "
 						+ size + " ;");
-		ArrayList<Pair<String, Integer>> rank = new ArrayList<Pair<String, Integer>>(
-				size);
+		ArrayList<RankingEntry> rank = new ArrayList<RankingEntry>(size);
 		while (topChunk.next()) {
-			System.out.println(topChunk.getLong(1) + " "
-					+ topChunk.getString(2) + " " + topChunk.getLong(3));
-			rank.add(new Pair<String, Integer>(topChunk.getString(2), topChunk
-					.getInt(3)));
+			rank.add(new RankingEntry(topChunk.getString(2),
+					topChunk.getInt(1), topChunk.getInt(3)));
 		}
 		return rank;
 	}
 
+	
+	/*
+	 * Query is:
+	 * SELECT * FROM (SELECT @rank:=@rank+1 AS rank, name, score FROM
+	 * User USE INDEX (scoreIndex) ORDER BY score DESC) AS ranking WHERE
+	 * name='echo';
+	 */
 	@Override
-	public int getUserRank(String userName) throws SQLException,
+	public RankingEntry getUserRank(String userName) throws SQLException,
 			NoSuchUserException {
 		if (userName == null)
 			throw new IllegalArgumentException();
-
-		// FIXME does this really works?
 
 		if (!this.contains(userName))
 			throw new NoSuchUserException(userName);
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet chunk = statement
-				.executeQuery("SELECT @rank:=@rank+1 AS rank FROM User USE INDEX (scoreIndex) WHERE name = '"
-						+ userName + "' ORDER BY score DESC LIMIT 1;");
+				.executeQuery("SELECT * FROM "
+						+ "(SELECT @rank:=@rank+1 AS rank, name, score FROM User USE INDEX (scoreIndex) ORDER BY score DESC)"
+						+ " AS ranking  where name='" + userName + "';");
 		chunk.next();
-		// FIXME doesn't work with getInt(1). could that be a problem?
-		return (int) chunk.getLong(1);
+		return new RankingEntry(userName, chunk.getInt(1), chunk.getInt(3));
 	}
 
 	@Override
@@ -177,6 +187,7 @@ public class DatabaseManager implements DatabaseInterface {
 						+ "' AND password ='" + password + "' LIMIT 1;");
 		return res.next();
 	}
+	
 
 	private void print() {
 		try {
@@ -208,11 +219,11 @@ public class DatabaseManager implements DatabaseInterface {
 			//
 		}
 		try {
-			addNewUser("rosa", "rosae");
+			addNewUser("rosa", "rosa");
 		} catch (DuplicateUserNameException e) {
 			//
 		}
-		ResultSet res = statement.executeQuery("SELECT * FROM User");
+		/*ResultSet res = statement.executeQuery("SELECT * FROM User;");
 		System.out.println();
 		while (res.next()) {
 			System.out.println(res.getString(1) + " " + res.getString(2) + " "
@@ -220,9 +231,22 @@ public class DatabaseManager implements DatabaseInterface {
 		}
 		this.updateScore("rosa", 34);
 		this.updateScore("cane", 34);
-		ArrayList<Pair<String, Integer>> globalRank = this.getLocalRank("cane");
-		for (Pair<String, Integer> p : globalRank) {
-			System.out.println(":" + p);
+		System.out.println("Update");
+		ArrayList<RankingEntry> globalRank = this.getLocalRank("cane");
+		for (RankingEntry p : globalRank) {
+			System.out.println(":" + p.username+" "+p.rank+" "+p.points);
+		}
+		*/
+		for (RankingEntry p : this.getLocalRank("foxtrot")){
+			System.out.println(p.rank+" "+p.username+" "+p.points);
+		}
+		System.out.println("---");
+		for (RankingEntry p : this.getLocalRank("golf")){
+			System.out.println(p.rank+" "+p.username+" "+p.points);
+		}
+		System.out.println("---");
+		for (RankingEntry p : this.getTopRank(13)){
+			System.out.println(p.rank+" "+p.username+" "+p.points);
 		}
 	}
 

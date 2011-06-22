@@ -3,6 +3,7 @@ package unibo.as.cupido.backend.table;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
 
 public class RemovalThread extends Thread {

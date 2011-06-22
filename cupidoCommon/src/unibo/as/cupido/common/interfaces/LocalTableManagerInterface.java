@@ -61,4 +61,13 @@ public interface LocalTableManagerInterface extends Remote {
 	 */
 	public void isAlive() throws RemoteException;
 
+	/**
+	 * Called by an STM when a play terminates
+	 * 
+	 * @param tableId
+	 * @throws RemoteException
+	 */
+	public void notifyTableDestruction(int tableId) throws RemoteException;
+
+	
 }
