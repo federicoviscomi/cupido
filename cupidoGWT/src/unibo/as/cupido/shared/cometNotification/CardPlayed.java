@@ -1,6 +1,7 @@
 package unibo.as.cupido.shared.cometNotification;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 
 import unibo.as.cupido.common.structures.Card;
 
@@ -10,16 +11,16 @@ public class CardPlayed implements Serializable {
 
 	public Card card;
 
-	/*
-	 * if you are playing playerPosition = 0 is the player are you
+	/**
+	 * Position of the player who played the card. If you are a viewer then
+	 * <code>playerPosition</code> is the absolute position in the table of the
+	 * player who played a card and is in range 0-3. Otherwise if you are a
+	 * player then <code>playerPosition</code> is the position of the player who
+	 * played relative you and is in range 0-2.
 	 * 
-	 * if you are viewing the match playerPosition = 0 is the player is the
-	 * owner
-	 * 
-	 * the others are clockwise
 	 */
 	public int playerPosition;
-	
+
 	public CardPlayed() {
 	}
 
