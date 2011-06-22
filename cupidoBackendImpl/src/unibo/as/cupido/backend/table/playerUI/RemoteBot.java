@@ -206,7 +206,7 @@ public class RemoteBot implements Bot, Serializable {
 	}
 
 	@Override
-	public synchronized void passCards() {
+	public void passCards() {
 		try {
 			synchronized (lock) {
 				while (!ableToPass) {
@@ -230,7 +230,7 @@ public class RemoteBot implements Bot, Serializable {
 	}
 
 	@Override
-	public synchronized void playNextCard() {
+	public void playNextCard() {
 		try {
 			synchronized (lock) {
 				while (!ableToPlay) {
@@ -310,12 +310,6 @@ public class RemoteBot implements Bot, Serializable {
 					lock.notify();
 				}
 			}
-		}
-		if (((firstDealer + playedCardCount + 4) % 4) != playerPosition) {
-			throw new IllegalStateException(" current player should be "
-					+ ((firstDealer + playedCardCount + 4) % 4)
-					+ " instead is " + playerPosition + " " + userName
-					+ " first: " + firstDealer + " count: " + playedCardCount);
 		}
 	}
 
