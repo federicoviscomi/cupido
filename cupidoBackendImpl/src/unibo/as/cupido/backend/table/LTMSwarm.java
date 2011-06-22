@@ -100,7 +100,7 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 
 		@Override
 		public boolean equals(Object o) {
-			return this.ltmi == ((Triple) o).ltmi;
+			return this.ltmi.equals(((Triple) o).ltmi);
 		}
 
 		@Override
@@ -163,7 +163,7 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 			throws NoSuchLTMInterfaceException {
 		synchronized (swarm) {
 			int index = swarm.indexOf(Triple.getDefault(ltmi));
-			if (index < -1)
+			if (index < 0)
 				throw new NoSuchLTMInterfaceException();
 			swarm.get(index).tableCount--;
 		}

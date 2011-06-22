@@ -167,8 +167,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	@Override
 	public void isAlive() throws RemoteException {
-		System.out.println("Current thread is " + Thread.currentThread()
-				+ " called isAlive()");
+		//
 	}
 
 	@Override

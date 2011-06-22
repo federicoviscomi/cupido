@@ -77,7 +77,7 @@ public class SingleTableManager implements TableInterface {
 					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(table.tableDescriptor.id));
 			viewers.notifyBotJoined(botName, position);
 
-			playersManager.addNonRemoteBot(userName, position, bot);
+			playersManager.addBot(userName, position, bot);
 			if (playersManager.playersCount() == 4) {
 				startNotifierThread.setGameStarted();
 			}
