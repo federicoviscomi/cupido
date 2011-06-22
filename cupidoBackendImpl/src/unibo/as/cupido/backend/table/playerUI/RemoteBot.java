@@ -155,10 +155,10 @@ public class RemoteBot implements Bot, Serializable {
 		}
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			synchronized (lock) {
+				firstDealer = 3;
 				ableToPlay = true;
 				lock.notify();
 			}
-			firstDealer = 3;
 		}
 		out.println("\nplay starts. " + userName + " cards are:"
 				+ this.cards.toString());
@@ -298,7 +298,7 @@ public class RemoteBot implements Bot, Serializable {
 				for (Card c : playedCard) {
 					if (c.suit == Suit.HEARTS)
 						points++;
-					else if (c.equals(CardsManager.twoOfClubs))
+					else if (c.equals(CardsManager.queenOfSpades))
 						points += 5;
 				}
 			}
@@ -310,6 +310,12 @@ public class RemoteBot implements Bot, Serializable {
 					lock.notify();
 				}
 			}
+		}
+		if (((firstDealer + playedCardCount + 4) % 4) != playerPosition) {
+			throw new IllegalStateException(" current player should be "
+					+ ((firstDealer + playedCardCount + 4) % 4)
+					+ " instead is " + playerPosition + " " + userName
+					+ " first: " + firstDealer + " count: " + playedCardCount);
 		}
 	}
 

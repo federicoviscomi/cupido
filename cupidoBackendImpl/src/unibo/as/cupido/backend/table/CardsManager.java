@@ -23,7 +23,7 @@ public class CardsManager {
 	};
 
 	public static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
-	public static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
+	public static final Card queenOfSpades = new Card(12, Card.Suit.SPADES);
 
 	public static int whoWins(final Card[] playedCard, final int firstDealer) {
 		int winner = firstDealer;
@@ -178,6 +178,14 @@ public class CardsManager {
 		}
 
 		setCardPlayed(playerPosition, card);
+		
+		if (((firstDealerInTurn + playedCardsCount + 4) % 4) != playerPosition) {
+			throw new IllegalStateException(" current player should be "
+					+ ((firstDealerInTurn + playedCardsCount + 4) % 4)
+					+ " instead is " + playerPosition + " first: "
+					+ firstDealerInTurn + " count: " + playedCardsCount);
+		}
+
 	}
 
 	void print() {
@@ -230,7 +238,7 @@ public class CardsManager {
 			for (int i = 0; i < 4; i++) {
 				if (cardPlayed[i].suit == Card.Suit.HEARTS) {
 					points[firstDealerInTurn]++;
-				} else if (cardPlayed[i].equals(womanOfSpades)) {
+				} else if (cardPlayed[i].equals(queenOfSpades)) {
 					points[firstDealerInTurn] += 5;
 				}
 			}

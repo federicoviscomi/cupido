@@ -117,8 +117,8 @@ public class NonRemoteBot implements BotNotificationInterface {
 			this.cards.add(card);
 		cardPlayingThread.setAbleToPass();
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			cardPlayingThread.setAbleToPlay();
 			firstDealer = 3;
+			cardPlayingThread.setAbleToPlay();
 		}
 		out.println("\nplay starts. " + botName + " cards are:"
 				+ this.cards.toString());
@@ -245,6 +245,12 @@ public class NonRemoteBot implements BotNotificationInterface {
 			if (playerPosition == 2) {
 				cardPlayingThread.setAbleToPlay();
 			}
+		}
+		if (((firstDealer + playedCardCount + 4) % 4) != playerPosition) {
+			throw new IllegalStateException(" current player should be "
+					+ ((firstDealer + playedCardCount + 4) % 4)
+					+ " instead is " + playerPosition + " " + botName
+					+ " first: " + firstDealer + " count: " + playedCardCount);
 		}
 	}
 
