@@ -97,6 +97,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	private static final String GTMI = "globalTableManagerInterface";
 	private static final String DBI = "databaseInterface";
 	private static final String SCL = "sessionClosedListener";
+	
+	private static final int NUMTOPRANKENTRIES = 10;
 
 	/*
 	 * Saves registry lookups in servlet context, and initialize DBmanager
@@ -903,25 +905,72 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
-	/*TODO
-	 * (non-Javadoc)
-	 * @see unibo.as.cupido.client.CupidoInterface#getTopRank()
-	 */
 	@Override
-	public ArrayList<RankingEntry> getTopRank() throws UserNotAuthenticatedException, FatalException{
-		return null;
-		
+	public ArrayList<RankingEntry> getTopRank()
+			throws UserNotAuthenticatedException, FatalException {
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null) {
+			return null;
+		}
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
+			throw new UserNotAuthenticatedException();
+		}
+		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
+				.getAttribute(DBI);
+		try {
+			return dbi.getTopRank(NUMTOPRANKENTRIES);
+		} catch (IllegalArgumentException e) {
+			System.out
+					.println("Servlet: on getTopRank() catched IllegalArgumentException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		} catch (SQLException e) {
+			System.out
+					.println("Servlet: on getTopRank() catched SQLException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		}
+	}
+
+	@Override
+	public ArrayList<RankingEntry> getLocalRank()
+			throws UserNotAuthenticatedException, FatalException {
+		HttpSession httpSession = getThreadLocalRequest().getSession(false);
+		if (httpSession == null) {
+			return null;
+		}
+		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
+			throw new UserNotAuthenticatedException();
+		}
+		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
+				.getAttribute(DBI);
+		ArrayList<RankingEntry> ret = null;
+		try {
+			return dbi
+					.getLocalRank((String) httpSession.getAttribute(USERNAME));
+		} catch (IllegalArgumentException e) {
+			System.out
+					.println("Servlet: on getLocalRank() catched IllegalArgumentException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		} catch (SQLException e) {
+			System.out
+					.println("Servlet: on getLocalRank() catched SQLException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+			throw new FatalException();
+		} catch (NoSuchUserException e) {
+			System.out
+					.println("Servlet: on getLocalRank() catched NoSuchUserException-> "
+							+ e.getMessage());
+			// e.printStackTrace();
+		}
+		return ret;
 	}
 	
-	/* TODO
-	 * (non-Javadoc)
-	 * @see unibo.as.cupido.client.CupidoInterface#getLocalRank()
-	 */
-	@Override
-	public ArrayList<RankingEntry> getLocalRank() throws UserNotAuthenticatedException, FatalException{
-		return null;
-		
-	}
 	/**
 	 * Invalidate httpSession.
 	 */
