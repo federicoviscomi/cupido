@@ -75,7 +75,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 				initialTableStatus.playerScores[i + 1] = observedGameStatus.playerStatus[i + 1].score;
 			}
 		
-		beforeGameWidget = new BeforeGameWidget(tableSize, observedGameStatus.playerStatus[0].name, false,
+		beforeGameWidget = new BeforeGameWidget(tableSize, username, observedGameStatus.playerStatus[0].name, false,
 				initialTableStatus,
 				cupidoService, new BeforeGameWidget.Listener() {
 					@Override

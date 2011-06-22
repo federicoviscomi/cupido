@@ -1,10 +1,12 @@
 package unibo.as.cupido.client.screens;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.MaxNumTableReachedException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
@@ -114,16 +116,27 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		});
 		add(errorButton, 200, 450);
 
-		PushButton observedTableButton = new PushButton(
-				"Vai alla schermata Tavolo osservato");
-		buttons.add(observedTableButton);
-		observedTableButton.addClickHandler(new ClickHandler() {
+		PushButton tableListButton = new PushButton(
+				"Vai alla lista dei tavoli");
+		buttons.add(tableListButton);
+		tableListButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenManager.displayObservedTableScreen(username);
+				freeze();
+				cupidoService.getTableList(new AsyncCallback<Collection<TableInfoForClient>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						screenManager.displayGeneralErrorScreen(caught);
+					}
+
+					@Override
+					public void onSuccess(Collection<TableInfoForClient> result) {
+						screenManager.displayTableListScreen(username, result);
+					}
+				});
 			}
 		});
-		add(observedTableButton, 200, 500);
+		add(tableListButton, 200, 500);
 
 		PushButton scoresButton = new PushButton("Vai alla schermata Punteggi");
 		buttons.add(scoresButton);

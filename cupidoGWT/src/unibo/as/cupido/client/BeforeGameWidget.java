@@ -89,7 +89,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * @param isOwner specifies whether the current user is the owner of the
 	 * table (and thus also a player).
 	 */
-	public BeforeGameWidget(int tableSize, String bottomUserName, boolean isOwner,
+	public BeforeGameWidget(int tableSize, String username, String bottomUserName, boolean isOwner,
 			InitialTableStatus initialTableStatus, CupidoInterfaceAsync cupidoService,
 			final Listener listener) {
 		
@@ -131,12 +131,30 @@ public class BeforeGameWidget extends AbsolutePanel {
 		add(labels.get(2), tableSize - 10 - playerLabelWidth, tableSize / 2
 				- playerLabelHeight / 2);
 		
-		bottomLabel.setHTML(constructLabelHtml(bottomUserName, initialTableStatus.playerScores[0]));
+		int[] scores = new int[4];
+		
+		// initialTableStatus.playerScores has a different meaning depending
+		// whether the user is a player or just a viewer.
+		if (bottomUserName.equals(username)) {
+			// The user is a player.
+			
+			// TODO: This data should come from the servlet.
+			scores[0] = 1234;
+			
+			for (int i = 0; i < 3; i++)
+				scores[i] = initialTableStatus.playerScores[i];
+		} else {
+			// The user is a viewer.
+			for (int i = 0; i < 4; i++)
+				scores[i] = initialTableStatus.playerScores[i];
+		}
+		
+		bottomLabel.setHTML(constructLabelHtml(bottomUserName, scores[0]));
 		
 		for (int i = 0; i < 3; i++)
 			if (initialTableStatus.opponents[i] != null) {
 				labels.get(i).setHTML(constructLabelHtml(initialTableStatus.opponents[i],
-						initialTableStatus.playerScores[i + 1]));
+						scores[i + 1]));
 			} else {
 				if (isOwner)
 					addBotButton(i);
@@ -270,9 +288,11 @@ public class BeforeGameWidget extends AbsolutePanel {
 		initialTableStatus.opponents[position] = "";
 		initialTableStatus.whoIsBot[position] = true;
 		
-		assert (buttons.get(position) != null);
-		remove(buttons.get(position));
-		buttons.set(position, null);
+		if (isOwner) {
+			assert (buttons.get(position) != null);
+			remove(buttons.get(position));
+			buttons.set(position, null);
+		}
 		
 		assert labels.get(position).getText().isEmpty();
 		labels.get(position).setHTML("<b><big>bot</big></b>");

@@ -1,6 +1,10 @@
 package unibo.as.cupido.client.screens;
 
+import java.util.Collection;
+
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 
 
 public interface ScreenManager {
@@ -38,8 +42,10 @@ public interface ScreenManager {
 
 	/**
 	 * Shows the table screen (as a viewer) instead of the current one.
+	 * 
+	 * @param observedGameStatus 
 	 */
-	public void displayObservedTableScreen(String username);
+	public void displayObservedTableScreen(String username, ObservedGameStatus observedGameStatus);
 
 	/**
 	 * Shows the general error screen instead of the current one.
@@ -53,6 +59,11 @@ public interface ScreenManager {
 	 * Shows the loading screen instead of the current one.
 	 */
 	public void displayLoadingScreen();
+	
+	/**
+	 * Shows the table list screen instead of the current one.
+	 */
+	public void displayTableListScreen(String username, Collection<TableInfoForClient> tableCollection);
 	
 	public void setListener(CometMessageListener listener);
 }
