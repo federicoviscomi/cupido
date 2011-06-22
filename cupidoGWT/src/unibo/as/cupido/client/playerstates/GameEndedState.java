@@ -1,5 +1,6 @@
 package unibo.as.cupido.client.playerstates;
 
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
@@ -8,6 +9,7 @@ import unibo.as.cupido.client.CupidoInterfaceAsync;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -23,7 +25,7 @@ public class GameEndedState implements PlayerState {
 	private CupidoInterfaceAsync cupidoService;
 
 	public GameEndedState(CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, CupidoInterfaceAsync cupidoService) {
+			final PlayerStateManager stateManager, final CupidoInterfaceAsync cupidoService) {
 		
 		this.cupidoService = cupidoService;
 		
@@ -42,6 +44,7 @@ public class GameEndedState implements PlayerState {
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
+				// FIXME: Should cupidoService.leaveTable() be called here or not?
 				stateManager.exit();
 			}
 		});

@@ -390,7 +390,61 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			pendingNotifications.add(new PlayerLeft(player));
 	}
 	
+	private static void printCards(Card[] cards) {
+		boolean first = true;
+		for (Card card : cards) {
+			if (!first)
+				System.out.print(", ");
+			first = false;
+			System.out.println(card.toString());
+		}
+	}
+	
+	private void printPendingNotifications() {
+		System.out.print("{ ");
+		boolean first = true;
+		for (Serializable x : pendingNotifications) {
+			if (!first)
+				System.out.println(",");
+				System.out.print("  ");
+			first = false;
+			if (x instanceof CardPassed) {
+				CardPassed message = (CardPassed) x;
+				System.out.print("CardPassed(");
+				printCards(message.cards);
+				System.out.print(")");
+				
+			} else if (x instanceof CardPlayed) {
+				CardPlayed message = (CardPlayed) x;
+				System.out.print("CardPlayed(");
+				System.out.print(message.card + ", " + message.playerPosition);
+				System.out.print(")");
+				
+			} else if (x instanceof GameEnded) {
+				System.out.print("GameEnded(...)");
+				
+			} else if (x instanceof GameStarted) {
+				GameStarted message = (GameStarted) x;
+				System.out.print("GameStarted(");
+				printCards(message.myCards);
+				System.out.print(")");
+				
+			} else if (x instanceof PlayerLeft) {
+				PlayerLeft message = (PlayerLeft) x;
+				System.out.print("PlayerLeft(" + message.player + ")");
+				
+			} else {
+				assert false;
+			}
+		}
+		System.out.println("}");
+	}
+	
 	private void sendPendingNotifications() {
+		// TODO: Remove these lines.
+		// System.out.println("Client: PlayerStateManagerImpl: in sendPendingNotifications(): " + pendingNotifications.size() + " notifications pending.");
+		// printPendingNotifications();
+		
 		List<Serializable> list = pendingNotifications;
 		// Note that this may be modified in the calls to handle*() methods below.
 		pendingNotifications = new ArrayList<Serializable>();
@@ -420,5 +474,13 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				assert false;
 			}
 		}
+		// TODO: Remove these lines.
+		// System.out.println("Client: PlayerStateManagerImpl: exiting from sendPendingNotifications(): " + pendingNotifications.size() + " notifications are still pending.");
+		// printPendingNotifications();
+	}
+
+	@Override
+	public void onFatalException(Throwable e) {
+		screenManager.displayGeneralErrorScreen(e);
 	}
 }
