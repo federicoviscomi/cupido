@@ -127,19 +127,17 @@ public class NonRemoteBot implements BotNotificationInterface {
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		out.println("\n" + botName + " iniz player " + playerPosition
-				+ " played card " + card + ".\n turn cards:"
-				+ Arrays.toString(playedCard) + " count:" + playedCardCount
-				+ " turn:" + turn + " first:" + firstDealer
-				+ " broken hearted " + brokenHearted);
+		out.println("\n" + botName + " player " + playerPosition
+				+ " played card " + card);
+		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
+				+ firstDealer + " broken hearted " + brokenHearted
+				+ " turn cards:" + Arrays.toString(playedCard));
 
 		setCardPlayed(card, playerPosition);
 
-		out.println("\n" + botName + " fine player " + playerPosition
-				+ " played card " + card + ".\n turn cards:"
-				+ Arrays.toString(playedCard) + " count:" + playedCardCount
-				+ " turn:" + turn + " first:" + firstDealer
-				+ " broken hearted " + brokenHearted);
+		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
+				+ firstDealer + " broken hearted " + brokenHearted
+				+ " turn cards:" + Arrays.toString(playedCard));
 	}
 
 	@Override
@@ -185,10 +183,11 @@ public class NonRemoteBot implements BotNotificationInterface {
 
 	public synchronized void playNextCard() {
 		try {
-			out.println("\n" + botName + " play next card iniz. played:"
-					+ Arrays.toString(playedCard) + " count:" + playedCardCount
-					+ " turn:" + turn + " first:" + firstDealer
-					+ " broken hearted: " + brokenHearted + " owned: "
+			out.println("\n" + botName + " plays ");
+			out.println(" count:" + playedCardCount + " turn:" + turn
+					+ " first:" + firstDealer + " broken hearted "
+					+ brokenHearted + " turn cards:"
+					+ Arrays.toString(playedCard) + "\n owned "
 					+ cards.toString());
 
 			/** choose a valid card */
@@ -200,11 +199,11 @@ public class NonRemoteBot implements BotNotificationInterface {
 			/** update status */
 			setCardPlayed(cardToPlay, 3);
 
-			out.println("\n" + botName + " play next card fine. played:"
-					+ Arrays.toString(playedCard) + " count:" + playedCardCount
-					+ " turn:" + turn + " first:" + firstDealer
-					+ " broken hearted: " + brokenHearted + " owned: "
-					+ cards.toString());
+			out.println(" count:" + playedCardCount + " turn:" + turn
+					+ " first:" + firstDealer + " broken hearted "
+					+ brokenHearted + " turn cards:"
+					+ Arrays.toString(playedCard) + " played " + cardToPlay
+					+ "\n owned " + cards.toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -212,11 +211,17 @@ public class NonRemoteBot implements BotNotificationInterface {
 	}
 
 	private void setCardPlayed(Card card, int playerPosition) {
-		if (card.suit == Suit.HEARTS) {
-			brokenHearted = true;
-		}
 		if (firstDealer == -1) {
 			firstDealer = playerPosition;
+		}
+		if (((firstDealer + playedCardCount + 4) % 4) != playerPosition) {
+			throw new IllegalStateException(" current player should be "
+					+ ((firstDealer + playedCardCount + 4) % 4)
+					+ " instead is " + playerPosition + " " + botName
+					+ " first: " + firstDealer + " count: " + playedCardCount);
+		}
+		if (card.suit == Suit.HEARTS) {
+			brokenHearted = true;
 		}
 		if (playerPosition == 3) {
 			cards.remove(card);

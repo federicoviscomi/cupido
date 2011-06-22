@@ -13,9 +13,7 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 
 public class CardsManager {
 
-	/**
-	 * Compare two cards just for showing them in a user friendly order
-	 */
+	/** used just for showing cards in a user friendly order */
 	private static final Comparator<Card> cardsComparator = new Comparator<Card>() {
 		@Override
 		public int compare(Card o1, Card o2) {
@@ -24,7 +22,6 @@ public class CardsManager {
 		}
 	};
 
-	/** the two of clubs */
 	public static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
 	public static final Card womanOfSpades = new Card(12, Card.Suit.SPADES);
 
@@ -37,9 +34,6 @@ public class CardsManager {
 					winner = i;
 			}
 		}
-		System.err.println("\n\nWHO WINS? first dealer " + firstDealer
-				+ ", winner " + winner + ", cards "
-				+ Arrays.toString(playedCard));
 		return winner;
 	}
 
