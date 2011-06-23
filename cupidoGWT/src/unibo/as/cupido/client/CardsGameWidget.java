@@ -15,6 +15,7 @@ import unibo.as.cupido.common.structures.PlayerStatus;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -1171,32 +1172,85 @@ public class CardsGameWidget extends AbsolutePanel {
 	public void displayScores(int[] matchPoints, int[] totalScore) {
 		assert matchPoints.length == 4;
 		assert totalScore.length == 4;
+				
+		final int gridHeight = 200;
+		final int gridWidth = 400;
+		
+		Grid grid = new Grid(5, 3);
+		grid.setCellSpacing(0);
+		grid.setBorderWidth(1);
+		grid.setWidth(gridWidth + "px");
+		grid.setHeight(gridHeight + "px");
+		add(grid, tableSize/2 - gridWidth/2, tableSize/2 - gridHeight/2);
+		DOM.setStyleAttribute(grid.getElement(), "background", "white");
+		DOM.setStyleAttribute(grid.getElement(), "borderLeftStyle", "solid");
+		DOM.setStyleAttribute(grid.getElement(), "borderRightStyle", "solid");
+		DOM.setStyleAttribute(grid.getElement(), "borderBottomStyle", "solid");
+		DOM.setStyleAttribute(grid.getElement(), "borderTopStyle", "solid");
+		DOM.setStyleAttribute(grid.getElement(), "borderLeftWidth", "1px");
+		DOM.setStyleAttribute(grid.getElement(), "borderRightWidth", "1px");
+		DOM.setStyleAttribute(grid.getElement(), "borderBottomWidth", "1px");
+		DOM.setStyleAttribute(grid.getElement(), "borderTopWidth", "1px");
+		
+		{
+			HTML userLabel = new HTML("<b>Utente</b>");
+			userLabel.setWidth("128px");
+			userLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			grid.setWidget(0, 1, userLabel);
+			HTML matchPointsLabel = new HTML("<b>Punteggio<br />della partita</b>");
+			matchPointsLabel.setWidth("118px");
+			matchPointsLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			grid.setWidget(0, 1, matchPointsLabel);
+			HTML totalScoreLabel = new HTML("<b>Nuovo punteggio<br/>globale</b>");
+			totalScoreLabel.setWidth("148px");
+			totalScoreLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			grid.setWidget(0, 2, totalScoreLabel);
+		}
+		
+		for (int i = 0; i < 4; i++) {
+			{
+				SafeHtmlBuilder builder = new SafeHtmlBuilder();
+				builder.appendHtmlConstant("<b>");
+				if (players.get(i).isBot)
+					builder.appendEscaped("bot");
+				else
+					builder.appendEscaped(players.get(i).name);
+				builder.appendHtmlConstant("</b>");
+				HTML userLabel = new HTML(builder.toSafeHtml());
+				userLabel.setWidth("128px");
+				userLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				grid.setWidget(i + 1, 0, userLabel);
+			}
+			
+			{
+				HTML matchPointsLabel = new HTML("" + matchPoints[i]);
+				matchPointsLabel.setWidth("118px");
+				matchPointsLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				grid.setWidget(i + 1, 1, matchPointsLabel);
+			}
+
+			
+			if (!players.get(i).isBot) {
+				SafeHtmlBuilder builder = new SafeHtmlBuilder();
+				builder.append(totalScore[i]);
+				builder.appendEscaped(" (");
+				int change = totalScore[i] - players.get(i).score;
+				if (change > 0)
+					builder.append('+');
+				builder.append(change);
+				builder.appendEscaped(")");
+				HTML totalScoreLabel = new HTML(builder.toSafeHtml());
+				totalScoreLabel.setWidth("148px");
+				totalScoreLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				grid.setWidget(i + 1, 2, totalScoreLabel);
+			}
+		}
 		
 		for (int i = 0; i < 4; i++) {
 			players.get(i).score = totalScore[i];
 		}
 		
 		updateLabels();
-		
-		final int gridHeight = 400;
-		final int gridWidth = 400;
-		
-		Grid grid = new Grid(5, 3);
-		grid.setWidth(gridWidth + "px");
-		grid.setHeight(gridHeight + "px");
-		add(grid, tableSize/2 - gridWidth/2, tableSize/2 - gridHeight/2);
-		
-		grid.setWidget(0, 1, new HTML("Utente"));
-		grid.setWidget(0, 1, new HTML("Punteggio della partita"));
-		grid.setWidget(0, 2, new HTML("Nuovo punteggio globale"));
-		
-		for (int i = 0; i < 4; i++) {
-			HTML label = new HTML();
-			label.setText(players.get(i).name);
-			grid.setWidget(i + 1, 0, label);
-			grid.setWidget(i + 1, 1, new HTML("" + matchPoints[i]));
-			grid.setWidget(i + 1, 2, new HTML("" + totalScore[i]));
-		}
 	}
 
 	public void freeze() {
