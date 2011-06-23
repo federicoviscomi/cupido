@@ -73,7 +73,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * Informations about the players. The first element refers to the bottom
 	 * player, and the other elements are sorted clockwise.
 	 */
-	private List<PlayerData> players;
+	private List<PlayerData> players = new ArrayList<PlayerData>();
 
 	/**
 	 * The size of the table (width and height) in pixels.
@@ -288,6 +288,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			playerData.isBot = playerStatus.isBot;
 			playerData.name = playerStatus.name;
 			playerData.score = playerStatus.score;
+			players.add(playerData);
 
 			Label playerLabel = new Label();
 			playerLabel.setWordWrap(false);
