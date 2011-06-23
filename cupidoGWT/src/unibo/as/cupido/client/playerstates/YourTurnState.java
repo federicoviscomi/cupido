@@ -11,6 +11,7 @@ import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -249,8 +250,10 @@ public class YourTurnState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// This notification should never arrive in this state. 
+		freeze();
+		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the YourTurn state"));
+		return true;
 	}
 
 	@Override
@@ -260,8 +263,16 @@ public class YourTurnState implements PlayerState {
 					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		if (dealtCard) {
+			// The animation for the card dealing is still in progress, let
+			// the next state handle this.
+			return false;
+		} else {
+			// This notification should never arrive in this state. 
+			freeze();
+			stateManager.onFatalException(new Exception("The CardPlayed notification was received when the client was in the YourTurn state"));
+			return true;
+		}
 	}
 
 	@Override
@@ -271,8 +282,13 @@ public class YourTurnState implements PlayerState {
 					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		if (dealtCard) {
+			// Let the next state handle this.
+			return false;
+		}
+		stateManager.exit();
+		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
+		return true;
 	}
 
 	@Override
@@ -282,8 +298,10 @@ public class YourTurnState implements PlayerState {
 					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// This notification should never arrive in this state. 
+		freeze();
+		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the YourTurn state"));
+		return true;
 	}
 
 	@Override

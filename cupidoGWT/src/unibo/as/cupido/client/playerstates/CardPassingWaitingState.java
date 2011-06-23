@@ -13,6 +13,7 @@ import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -33,6 +34,8 @@ public class CardPassingWaitingState implements PlayerState {
 	private boolean frozen = false;
 
 	private CupidoInterfaceAsync cupidoService;
+
+	private boolean eventReceived = false;
 
 	public CardPassingWaitingState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
@@ -131,6 +134,15 @@ public class CardPassingWaitingState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
+		
+		if (eventReceived) {
+			// Let the next state handle this.
+			// It is an error, but the animation is running and it can't be handled right now.
+			return false;
+		}
+		
+		eventReceived = true;
+		
 		List<Card> cards = new ArrayList<Card>();
 
 		for (Card card : passedCards)
@@ -173,7 +185,7 @@ public class CardPassingWaitingState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
+		// Let the next state handle this.
 		return false;
 	}
 
@@ -184,8 +196,13 @@ public class CardPassingWaitingState implements PlayerState {
 					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		if (eventReceived) {
+			// Let the next state handle this.
+			return false;
+		}
+		stateManager.exit();
+		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
+		return true;
 	}
 
 	@Override
@@ -195,7 +212,7 @@ public class CardPassingWaitingState implements PlayerState {
 					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
+		// Let the next state handle this.
 		return false;
 	}
 

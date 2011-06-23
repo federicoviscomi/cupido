@@ -21,10 +21,13 @@ public class GameEndedState implements PlayerState {
 
 	private CupidoInterfaceAsync cupidoService;
 
+	private PlayerStateManager stateManager;
+
 	public GameEndedState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager,
 			final CupidoInterfaceAsync cupidoService) {
 
+		this.stateManager = stateManager;
 		this.cupidoService = cupidoService;
 
 		VerticalPanel panel = new VerticalPanel();
@@ -99,8 +102,10 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// This notification should never arrive in this state. 
+		freeze();
+		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the GameEnded state"));
+		return true;
 	}
 
 	@Override
@@ -110,8 +115,10 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// This notification should never arrive in this state. 
+		freeze();
+		stateManager.onFatalException(new Exception("The CardPlayed notification was received when the client was in the GameEnded state"));
+		return true;
 	}
 
 	@Override
@@ -121,8 +128,8 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// TODO Display the scores.
+		return true;
 	}
 
 	@Override
@@ -132,8 +139,10 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// This notification should never arrive in this state. 
+		freeze();
+		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the GameEnded state"));
+		return true;
 	}
 
 	@Override
