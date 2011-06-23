@@ -40,6 +40,9 @@ public class RemoteBot implements Bot, Serializable {
 	public RemoteBot(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, final String userName)
 			throws IOException {
+		if (initialTableStatus == null || userName == null)
+			throw new IllegalArgumentException();
+
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;

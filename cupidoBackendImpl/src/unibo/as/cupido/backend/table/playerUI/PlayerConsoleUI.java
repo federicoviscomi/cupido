@@ -15,20 +15,12 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
-import unibo.as.cupido.common.exception.DuplicateUserNameException;
-import unibo.as.cupido.common.exception.FullTableException;
-import unibo.as.cupido.common.exception.NoSuchLTMException;
-import unibo.as.cupido.common.exception.NoSuchTableException;
-import unibo.as.cupido.common.exception.NoSuchUserException;
-import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -49,6 +41,9 @@ public class PlayerConsoleUI {
 			"--arbitrary", "play an arbitrary card", "addbot POSITION", "", "",
 			"add a bot in specified absolute position", "join", "", "",
 			"join an arbitrary table");
+
+	private static final String[] AllCommands = { "create", "join", "list",
+			"login", "pass", "play", "addbot" };
 
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
@@ -152,7 +147,8 @@ public class PlayerConsoleUI {
 					tableInterface = gtm.getLTMInterface(
 							tableInfo.tableDescriptor.ltmId).getTable(
 							tableInfo.tableDescriptor.id);
-					tableInterface.joinTable(playerName, remoteBot);
+					remoteBot.initialTableStatus = tableInterface.joinTable(
+							playerName, remoteBot);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
