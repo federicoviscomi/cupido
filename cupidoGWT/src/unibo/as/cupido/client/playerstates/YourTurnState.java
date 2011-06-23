@@ -121,37 +121,9 @@ public class YourTurnState implements PlayerState {
 			return card.suit == suit;
 
 		// The player has no card with that suit, so he is allowed to deal any
-		// card,
-		// except in the first trick, where the player must not play a penalty
-		// card, if possible.
+		// card.
 
-		if (hand.size() != 13)
-			// Not the first trick, the player can deal any card.
-			return true;
-
-		// First trick
-
-		boolean mustPlayAPenaltyCard = true;
-
-		for (Card handCard : hand)
-			if (!isPenaltyCard(handCard)) {
-				mustPlayAPenaltyCard = false;
-				break;
-			}
-
-		if (mustPlayAPenaltyCard)
-			return true;
-
-		// The player has some not-penalty cards, so he must play one of them.
-		return !isPenaltyCard(card);
-	}
-
-	private static boolean isPenaltyCard(Card card) {
-		if (card.suit == Card.Suit.HEARTS)
-			return true;
-		if (card.suit == Card.Suit.SPADES && card.value == 12)
-			return true;
-		return false;
+		return true;
 	}
 
 	@Override
