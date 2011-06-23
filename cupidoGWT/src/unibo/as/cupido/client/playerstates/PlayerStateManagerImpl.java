@@ -16,7 +16,6 @@ import unibo.as.cupido.shared.cometNotification.CardPassed;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
 import unibo.as.cupido.shared.cometNotification.GameEnded;
 import unibo.as.cupido.shared.cometNotification.GameStarted;
-import unibo.as.cupido.shared.cometNotification.PlayerLeft;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -416,9 +415,17 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
 			return;
 		}
-		boolean handled = currentState.handlePlayerLeft(player);
-		if (!handled)
-			pendingNotifications.add(new PlayerLeft(player));
+		int i = 1;
+		while (i < 4 && players.get(i).name.equals(player))
+			i++;
+		if (i == 4) {
+			onFatalException(new Exception("An invalid PlayerLeft notification was received."));
+			return;
+		}
+		PlayerInfo x = players.get(i);
+		x.isBot = true;
+		x.name = null;
+		currentState.handlePlayerLeft(i);
 	}
 
 	private static void printCards(Card[] cards) {
@@ -460,10 +467,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				printCards(message.myCards);
 				System.out.print(")");
 
-			} else if (x instanceof PlayerLeft) {
-				PlayerLeft message = (PlayerLeft) x;
-				System.out.print("PlayerLeft(" + message.player + ")");
-
 			} else {
 				assert false;
 			}
@@ -498,10 +501,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			} else if (x instanceof GameStarted) {
 				GameStarted message = (GameStarted) x;
 				handleGameStarted(message.myCards);
-
-			} else if (x instanceof PlayerLeft) {
-				PlayerLeft message = (PlayerLeft) x;
-				handlePlayerLeft(message.player);
 
 			} else {
 				assert false;

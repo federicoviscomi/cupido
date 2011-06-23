@@ -37,6 +37,8 @@ public class WaitingDealState implements PlayerState {
 
 	private boolean eventReceived = false;
 
+	private HTML text;
+
 	public WaitingDealState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
 			final CupidoInterfaceAsync cupidoService) {
@@ -49,25 +51,13 @@ public class WaitingDealState implements PlayerState {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-
+		
 		currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager
 				.getDealtCards().size()) % 4;
-		PlayerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
-				.get(currentPlayer);
-
-		assert currentPlayer != 0;
-
-		final HTML text;
-
-		if (playerInfo.isBot)
-			text = new HTML("Attendi che il bot giochi");
-		else {
-			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
-			safeHtmlBuilder.appendEscaped(playerInfo.name);
-			safeHtmlBuilder.appendHtmlConstant(" giochi.");
-			text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
-		}
+		
+		text = new HTML();
+		
+		recomputeLabelMessage();
 
 		text.setWidth("120px");
 		text.setWordWrap(true);
@@ -102,6 +92,23 @@ public class WaitingDealState implements PlayerState {
 		panel.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(panel);
+	}
+	
+	private void recomputeLabelMessage() {
+		PlayerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
+				.get(currentPlayer);
+		
+		assert currentPlayer != 0;
+		
+		if (playerInfo.isBot)
+			text = new HTML("Attendi che il bot giochi");
+		else {
+			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+			safeHtmlBuilder.appendEscaped(playerInfo.name);
+			safeHtmlBuilder.appendHtmlConstant(" giochi.");
+			text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
+		}
 	}
 
 	@Override
@@ -217,13 +224,13 @@ public class WaitingDealState implements PlayerState {
 	}
 
 	@Override
-	public boolean handlePlayerLeft(String player) {
+	public void handlePlayerLeft(int player) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the handlePlayerLeft() event was received while frozen, deferring it.");
-			return false;
+					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
+			return;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		if (currentPlayer == player)
+			recomputeLabelMessage();
 	}
 }

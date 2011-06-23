@@ -201,13 +201,12 @@ public class WaitingFirstDealState implements PlayerState {
 	}
 
 	@Override
-	public boolean handlePlayerLeft(String player) {
+	public void handlePlayerLeft(int player) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the handlePlayerLeft() event was received while frozen, deferring it.");
-			return false;
+					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
+			return;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// Nothing to do.
 	}
 }

@@ -65,10 +65,5 @@ public interface PlayerState {
 	 */
 	public boolean handleGameStarted(Card[] myCards);
 
-	/**
-	 * Returns false if this event can't be handled right now, but it can be
-	 * handled in a later state. It will be notified again at each state
-	 * transition, until it is handled.
-	 */
-	public boolean handlePlayerLeft(String player);
+	public void handlePlayerLeft(int player);
 }
