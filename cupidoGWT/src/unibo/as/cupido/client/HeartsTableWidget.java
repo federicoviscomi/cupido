@@ -52,7 +52,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		scores[0] = userScore;
 		
 		for (int i = 0; i < 3; i++)
-			scores[i] = initialTableStatus.playerScores[i];
+			scores[i + 1] = initialTableStatus.playerScores[i];
 		
 		beforeGameWidget = new BeforeGameWidget(tableSize, username, username,
 				isOwner, initialTableStatus, scores, cupidoService,
