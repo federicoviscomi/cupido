@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class GameEndedState implements ViewerState {
 
 	private PushButton exitButton;
-	
+
 	private boolean frozen = false;
 
 	public GameEndedState(CardsGameWidget cardsGameWidget,
@@ -41,7 +41,7 @@ public class GameEndedState implements ViewerState {
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
-	
+
 	@Override
 	public void activate() {
 	}
@@ -55,7 +55,8 @@ public class GameEndedState implements ViewerState {
 	@Override
 	public void handleAnimationStart() {
 		if (frozen) {
-			System.out.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
 		exitButton.setEnabled(false);
@@ -64,16 +65,18 @@ public class GameEndedState implements ViewerState {
 	@Override
 	public void handleAnimationEnd() {
 		if (frozen) {
-			System.out.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
 		exitButton.setEnabled(true);
 	}
-	
+
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen) {
-			System.out.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -83,7 +86,8 @@ public class GameEndedState implements ViewerState {
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen) {
-			System.out.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -93,7 +97,8 @@ public class GameEndedState implements ViewerState {
 	@Override
 	public boolean handlePlayerLeft(String player) {
 		if (frozen) {
-			System.out.println("Client: notice: the PlayerLeft event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the PlayerLeft event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub

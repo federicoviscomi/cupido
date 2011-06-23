@@ -56,7 +56,7 @@ public interface ViewerStateManager {
 	public void transitionToGameEnded();
 
 	public void transitionToWaitingDeal();
-	
+
 	public void freeze();
 
 	public void handleCardPlayed(Card card, int playerPosition);

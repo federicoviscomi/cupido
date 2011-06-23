@@ -86,7 +86,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	private GameEventListener listener;
 
 	private Widget cornerWidget = null;
-	
+
 	private boolean frozen = false;
 
 	/**
@@ -358,7 +358,7 @@ public class CardsGameWidget extends AbsolutePanel {
 						if (runningAnimation)
 							// Clicking a card during an animation does nothing.
 							return;
-						
+
 						if (frozen)
 							return;
 
@@ -413,9 +413,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	 */
 	public void runPendingAnimations(int duration,
 			GWTAnimation.AnimationCompletedListener animationCompletedListener) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: runPendingAnimations() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: runPendingAnimations() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -478,10 +479,11 @@ public class CardsGameWidget extends AbsolutePanel {
 	public void revealCoveredCard(int player, Card card) {
 
 		if (frozen) {
-			System.out.println("Client: notice: revealCoveredCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: revealCoveredCard() was called while frozen, ignoring it.");
 			return;
 		}
-		
+
 		assert !runningAnimation;
 		assert !someAnimationsPending;
 
@@ -527,9 +529,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * NOTE: There must be no animations pending when this method is called.
 	 */
 	public void coverCard(int player, Card card) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: coverCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: coverCard() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -578,10 +581,11 @@ public class CardsGameWidget extends AbsolutePanel {
 	public void dealCard(int player, Card card) {
 
 		if (frozen) {
-			System.out.println("Client: notice: dealCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: dealCard() was called while frozen, ignoring it.");
 			return;
 		}
-		
+
 		assert card != null;
 		assert !runningAnimation;
 
@@ -618,9 +622,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * runPendingAnimations().
 	 */
 	public void pickCard(int player, Card card) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: pickCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: pickCard() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -660,9 +665,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * runPendingAnimations().
 	 */
 	public void raiseCard(int player, Card card) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: raiseCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: raiseCard() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -703,9 +709,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * runPendingAnimations().
 	 */
 	public void lowerRaisedCard(int player, Card card) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: lowerRaisedCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: lowerRaisedCard() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -754,9 +761,10 @@ public class CardsGameWidget extends AbsolutePanel {
 			int waitTime,
 			final int animationTime,
 			final GWTAnimation.AnimationCompletedListener animationCompletedListener) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: animateTrickTaking() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: animateTrickTaking() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -1122,21 +1130,22 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	public void setCornerWidget(Widget cornerWidget) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: setCornerWidget() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: setCornerWidget() was called while frozen, ignoring it.");
 			return;
 		}
-		
+
 		if (this.cornerWidget != null)
 			remove(this.cornerWidget);
-		
+
 		this.cornerWidget = cornerWidget;
 		cornerWidget.setWidth("200px");
 		cornerWidget.setHeight("200px");
 		add(cornerWidget, tableSize - 200, tableSize - 200);
 	}
-	
+
 	public void freeze() {
 		frozen = true;
 	}

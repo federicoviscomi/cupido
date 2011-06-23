@@ -106,8 +106,8 @@ public interface CupidoInterface extends RemoteService {
 	 */
 	public InitialTableStatus joinTable(String server, int tableId)
 			throws FullTableException, NoSuchTableException,
-			DuplicateUserNameException, NoSuchServerException, UserNotAuthenticatedException,
-			FatalException;
+			DuplicateUserNameException, NoSuchServerException,
+			UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * 
@@ -147,7 +147,8 @@ public interface CupidoInterface extends RemoteService {
 	 *             if player is not playing or viewing a game
 	 * @throws FatalException
 	 */
-	void leaveTable() throws UserNotAuthenticatedException, NoSuchTableException, FatalException;
+	void leaveTable() throws UserNotAuthenticatedException,
+			NoSuchTableException, FatalException;
 
 	/**
 	 * 
@@ -199,13 +200,13 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws IllegalArgumentException
 	 *             if position value is out of valid range
 	 * @throws NoSuchTableException
-	 * 			   if user is not at the table
+	 *             if user is not at the table
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	public void addBot(int position) throws PositionFullException, FullTableException,
-			NotCreatorException, IllegalArgumentException, NoSuchTableException,
-			UserNotAuthenticatedException, FatalException;
+	public void addBot(int position) throws PositionFullException,
+			FullTableException, NotCreatorException, IllegalArgumentException,
+			NoSuchTableException, UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * 
@@ -213,8 +214,8 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	public ChatMessage[] viewLastMessages() throws UserNotAuthenticatedException,
-			FatalException;
+	public ChatMessage[] viewLastMessages()
+			throws UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * Sends a message to the table chat

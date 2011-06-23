@@ -17,15 +17,15 @@ public class EndOfTrickState implements ViewerState {
 	private PushButton exitButton;
 	private CardsGameWidget cardsGameWidget;
 	private ViewerStateManager stateManager;
-	
+
 	private boolean frozen = false;
 
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
-		
+
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
-		
+
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -48,7 +48,7 @@ public class EndOfTrickState implements ViewerState {
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
-	
+
 	@Override
 	public void activate() {
 		stateManager.goToNextTrick();
@@ -77,7 +77,8 @@ public class EndOfTrickState implements ViewerState {
 	@Override
 	public void handleAnimationStart() {
 		if (frozen) {
-			System.out.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
 		exitButton.setEnabled(false);
@@ -86,16 +87,18 @@ public class EndOfTrickState implements ViewerState {
 	@Override
 	public void handleAnimationEnd() {
 		if (frozen) {
-			System.out.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
 		exitButton.setEnabled(true);
 	}
-	
+
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen) {
-			System.out.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -105,7 +108,8 @@ public class EndOfTrickState implements ViewerState {
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen) {
-			System.out.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -115,7 +119,8 @@ public class EndOfTrickState implements ViewerState {
 	@Override
 	public boolean handlePlayerLeft(String player) {
 		if (frozen) {
-			System.out.println("Client: notice: the PlayerLeft event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the PlayerLeft event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub

@@ -30,26 +30,26 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class MainMenuScreen extends AbsolutePanel implements Screen {
-	
+
 	// The interval between subsequent polls to the (global) chat, in
 	// milliseconds.
 	final static int chatRefreshInterval = 2000;
-	
+
 	List<PushButton> buttons = new ArrayList<PushButton>();
 
 	// This is null when the user is not logged in.
 	private String username;
 	private final ScreenManager screenManager;
 	private Timer chatTimer;
-	
+
 	private boolean stoppedRefreshing = false;
 	private boolean waitingServletResponse = false;
-	
+
 	private boolean frozen = false;
-	
+
 	/**
-	 * This is true if the user sent a message and no refresh request
-	 * has yet been sent to the servlet after that.
+	 * This is true if the user sent a message and no refresh request has yet
+	 * been sent to the servlet after that.
 	 */
 	private boolean needRefresh = false;
 
@@ -62,13 +62,13 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 	public MainMenuScreen(final ScreenManager screenManager,
 			final String username, final CupidoInterfaceAsync cupidoService) {
-		
+
 		this.screenManager = screenManager;
 		this.username = username;
-		
+
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
-		
+
 		VerticalPanel panel = new VerticalPanel();
 		panel.setSpacing(30);
 		panel.setWidth((Cupido.width - chatWidth) + "px");
@@ -76,10 +76,10 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		add(panel, 0, 0);
-		
+
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
-		
+
 		Label label = new HTML("<h1>Menu</h1>");
 		panel.add(label);
 
@@ -90,24 +90,29 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 			@Override
 			public void onClick(ClickEvent event) {
 				freeze();
-				cupidoService.createTable(new AsyncCallback<InitialTableStatus>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						try {
-							throw caught;
-						} catch (MaxNumTableReachedException e) {
-							screenManager.displayMainMenuScreen(username);
-							Window.alert("\310 stato raggiunto il numero massimo di tavoli supportati. Riprova pi\371 tardi.");
-						} catch (Throwable e) {
-							screenManager.displayGeneralErrorScreen(caught);						
-						}
-					}
+				cupidoService
+						.createTable(new AsyncCallback<InitialTableStatus>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								try {
+									throw caught;
+								} catch (MaxNumTableReachedException e) {
+									screenManager
+											.displayMainMenuScreen(username);
+									Window.alert("\310 stato raggiunto il numero massimo di tavoli supportati. Riprova pi\371 tardi.");
+								} catch (Throwable e) {
+									screenManager
+											.displayGeneralErrorScreen(caught);
+								}
+							}
 
-					@Override
-					public void onSuccess(InitialTableStatus initialTableStatus) {
-						screenManager.displayTableScreen(username, true, initialTableStatus);
-					}
-				});
+							@Override
+							public void onSuccess(
+									InitialTableStatus initialTableStatus) {
+								screenManager.displayTableScreen(username,
+										true, initialTableStatus);
+							}
+						});
 			}
 		});
 		panel.add(tableButton);
@@ -126,25 +131,27 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		});
 		panel.add(errorButton);
 
-		PushButton tableListButton = new PushButton(
-				"Vai alla lista dei tavoli");
+		PushButton tableListButton = new PushButton("Vai alla lista dei tavoli");
 		tableListButton.setWidth("250px");
 		buttons.add(tableListButton);
 		tableListButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				freeze();
-				cupidoService.getTableList(new AsyncCallback<Collection<TableInfoForClient>>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						screenManager.displayGeneralErrorScreen(caught);
-					}
+				cupidoService
+						.getTableList(new AsyncCallback<Collection<TableInfoForClient>>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								screenManager.displayGeneralErrorScreen(caught);
+							}
 
-					@Override
-					public void onSuccess(Collection<TableInfoForClient> result) {
-						screenManager.displayTableListScreen(username, result);
-					}
-				});
+							@Override
+							public void onSuccess(
+									Collection<TableInfoForClient> result) {
+								screenManager.displayTableListScreen(username,
+										result);
+							}
+						});
 			}
 		});
 		panel.add(tableListButton);
@@ -183,7 +190,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 					public void onFailure(Throwable caught) {
 						screenManager.displayGeneralErrorScreen(caught);
 					}
-					
+
 					@Override
 					public void onSuccess(Void result) {
 						screenManager.displayLoginScreen();
@@ -196,30 +203,31 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		chatWidget = new GlobalChatWidget(this.username, new ChatListener() {
 			@Override
 			public void sendMessage(String message) {
-				cupidoService.sendGlobalChatMessage(message, new AsyncCallback<Void>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						try {
-							throw caught;
-						} catch (IllegalArgumentException e) {
-							// FIXME: Can this happen?
-							screenManager.displayGeneralErrorScreen(e);
-						} catch (UserNotAuthenticatedException e) {
-							screenManager.displayGeneralErrorScreen(e);
-						} catch (FatalException e) {
-							screenManager.displayGeneralErrorScreen(e);
-						} catch (Throwable e) {
-							assert false;
-						}
-					}
+				cupidoService.sendGlobalChatMessage(message,
+						new AsyncCallback<Void>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								try {
+									throw caught;
+								} catch (IllegalArgumentException e) {
+									// FIXME: Can this happen?
+									screenManager.displayGeneralErrorScreen(e);
+								} catch (UserNotAuthenticatedException e) {
+									screenManager.displayGeneralErrorScreen(e);
+								} catch (FatalException e) {
+									screenManager.displayGeneralErrorScreen(e);
+								} catch (Throwable e) {
+									assert false;
+								}
+							}
 
-					@Override
-					public void onSuccess(Void result) {
-						needRefresh = true;
-						chatTimer.cancel();
-						chatTimer.run();
-					}
-				});
+							@Override
+							public void onSuccess(Void result) {
+								needRefresh = true;
+								chatTimer.cancel();
+								chatTimer.run();
+							}
+						});
 			}
 		});
 		chatWidget.setHeight(Cupido.height + "px");
@@ -229,7 +237,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		DOM.setStyleAttribute(chatWidget.getElement(), "borderLeftStyle",
 				"solid");
 		DOM.setStyleAttribute(chatWidget.getElement(), "borderLeftWidth", "1px");
-		
+
 		chatTimer = new Timer() {
 			@Override
 			public void run() {
@@ -238,50 +246,51 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 				if (waitingServletResponse)
 					return;
 				needRefresh = false;
-				cupidoService.viewLastMessages(new AsyncCallback<ChatMessage[]>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						waitingServletResponse = false;
-						try {
-							throw caught;
-						} catch (UserNotAuthenticatedException e) {
-							screenManager.displayGeneralErrorScreen(e);
-						} catch (FatalException e) {
-							screenManager.displayGeneralErrorScreen(e);
-						} catch (Throwable e) {
-							// Should never get here.
-							assert false;
-						}
-					}
+				cupidoService
+						.viewLastMessages(new AsyncCallback<ChatMessage[]>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								waitingServletResponse = false;
+								try {
+									throw caught;
+								} catch (UserNotAuthenticatedException e) {
+									screenManager.displayGeneralErrorScreen(e);
+								} catch (FatalException e) {
+									screenManager.displayGeneralErrorScreen(e);
+								} catch (Throwable e) {
+									// Should never get here.
+									assert false;
+								}
+							}
 
-					@Override
-					public void onSuccess(ChatMessage[] messages) {
-						waitingServletResponse = false;
-						
-						chatWidget.setLastMessages(messages);
-						
-						if (!stoppedRefreshing) {
-							if (needRefresh)
-								// Refresh immediately.
-								chatTimer.run();
-							else
-								chatTimer.schedule(chatRefreshInterval);
-						}
-					}
-				});
+							@Override
+							public void onSuccess(ChatMessage[] messages) {
+								waitingServletResponse = false;
+
+								chatWidget.setLastMessages(messages);
+
+								if (!stoppedRefreshing) {
+									if (needRefresh)
+										// Refresh immediately.
+										chatTimer.run();
+									else
+										chatTimer.schedule(chatRefreshInterval);
+								}
+							}
+						});
 				waitingServletResponse = true;
 			}
 		};
 		chatTimer.run();
 	}
-	
+
 	public void freeze() {
 		for (PushButton w : buttons)
 			w.setEnabled(false);
 		chatWidget.freeze();
 		frozen = true;
 	}
-	
+
 	@Override
 	public void prepareRemoval() {
 		stoppedRefreshing = true;

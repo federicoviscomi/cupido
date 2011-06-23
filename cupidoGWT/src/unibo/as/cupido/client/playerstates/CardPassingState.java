@@ -31,17 +31,17 @@ public class CardPassingState implements PlayerState {
 	private PushButton okButton;
 	private PushButton exitButton;
 	private CardsGameWidget cardsGameWidget;
-	
+
 	private boolean frozen = false;
 	private CupidoInterfaceAsync cupidoService;
 
 	public CardPassingState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand,
 			final CupidoInterfaceAsync cupidoService) {
-		
+
 		this.cardsGameWidget = cardsGameWidget;
 		this.cupidoService = cupidoService;
-		
+
 		VerticalPanel cornerWidget = new VerticalPanel();
 		cornerWidget.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		cornerWidget
@@ -64,7 +64,7 @@ public class CardPassingState implements PlayerState {
 				text.setText("");
 
 				confirmed = true;
-				
+
 				Card[] cards = new Card[3];
 				for (int i = 0; i < 3; i++)
 					cards[i] = raisedCards.get(i);
@@ -75,7 +75,8 @@ public class CardPassingState implements PlayerState {
 						try {
 							throw caught;
 						} catch (NoSuchTableException e) {
-							// The owner has left the table, so the game was interrupted.
+							// The owner has left the table, so the game was
+							// interrupted.
 						} catch (Throwable e) {
 							stateManager.onFatalException(e);
 						}
@@ -93,12 +94,13 @@ public class CardPassingState implements PlayerState {
 						new GWTAnimation.AnimationCompletedListener() {
 							@Override
 							public void onComplete() {
-								
+
 								if (frozen) {
-									System.out.println("Client: notice: the onComplete() event was received while frozen, ignoring it.");
+									System.out
+											.println("Client: notice: the onComplete() event was received while frozen, ignoring it.");
 									return;
 								}
-								
+
 								List<Card> sortedList = new ArrayList<Card>();
 								for (Card card : raisedCards)
 									sortedList.add(card);
@@ -140,7 +142,8 @@ public class CardPassingState implements PlayerState {
 						try {
 							throw caught;
 						} catch (NoSuchTableException e) {
-							// The table has been destroyed in the meantime, nothing to do.
+							// The table has been destroyed in the meantime,
+							// nothing to do.
 						} catch (Throwable e) {
 							stateManager.onFatalException(e);
 						}
@@ -157,22 +160,23 @@ public class CardPassingState implements PlayerState {
 
 		cardsGameWidget.setCornerWidget(cornerWidget);
 	}
-	
+
 	@Override
 	public void activate() {
 	}
-	
+
 	@Override
 	public void freeze() {
 		okButton.setEnabled(false);
 		exitButton.setEnabled(false);
 		frozen = true;
 	}
-	
+
 	@Override
 	public void handleAnimationStart() {
 		if (frozen) {
-			System.out.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
 		okButton.setEnabled(false);
@@ -182,7 +186,8 @@ public class CardPassingState implements PlayerState {
 	@Override
 	public void handleAnimationEnd() {
 		if (frozen) {
-			System.out.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
 		okButton.setEnabled(!confirmed && raisedCards.size() == 3);
@@ -193,7 +198,8 @@ public class CardPassingState implements PlayerState {
 	public void handleCardClicked(int player, Card card, State state,
 			boolean isRaised) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
 			return;
 		}
 		if (state == State.DEALT)
@@ -224,7 +230,8 @@ public class CardPassingState implements PlayerState {
 	@Override
 	public boolean handleCardPassed(Card[] cards) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -234,7 +241,8 @@ public class CardPassingState implements PlayerState {
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -244,7 +252,8 @@ public class CardPassingState implements PlayerState {
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -254,7 +263,8 @@ public class CardPassingState implements PlayerState {
 	@Override
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -264,7 +274,8 @@ public class CardPassingState implements PlayerState {
 	@Override
 	public boolean handlePlayerLeft(String player) {
 		if (frozen) {
-			System.out.println("Client: notice: the handlePlayerLeft() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handlePlayerLeft() event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub

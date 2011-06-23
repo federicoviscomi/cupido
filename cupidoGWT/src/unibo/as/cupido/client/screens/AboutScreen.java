@@ -14,10 +14,10 @@ public class AboutScreen extends VerticalPanel implements Screen {
 	private PushButton menuButton;
 
 	public AboutScreen(final ScreenManager screenManager, final String username) {
-		
+
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
-		
+
 		setHeight((Cupido.height - 80) + "px");
 		setWidth((Cupido.width - 120) + "px");
 

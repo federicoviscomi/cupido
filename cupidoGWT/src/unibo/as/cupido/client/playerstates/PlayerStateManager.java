@@ -40,7 +40,7 @@ public interface PlayerStateManager {
 	 * Exits from the game.
 	 */
 	public void exit();
-	
+
 	/**
 	 * Reacts to a fatal exception.
 	 */
@@ -68,7 +68,6 @@ public interface PlayerStateManager {
 
 	public void freeze();
 
-	
 	public void handleCardPassed(Card[] cards);
 
 	public void handleCardPlayed(Card card, int playerPosition);

@@ -30,21 +30,22 @@ public class WaitingDealState implements PlayerState {
 	private List<Card> hand;
 
 	private final int currentPlayer;
-	
+
 	private boolean frozen = false;
 
 	private CupidoInterfaceAsync cupidoService;
-	
+
 	private boolean eventReceived = false;
 
 	public WaitingDealState(CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, List<Card> hand, final CupidoInterfaceAsync cupidoService) {
-		
+			final PlayerStateManager stateManager, List<Card> hand,
+			final CupidoInterfaceAsync cupidoService) {
+
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.hand = hand;
 		this.cupidoService = cupidoService;
-		
+
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -84,7 +85,8 @@ public class WaitingDealState implements PlayerState {
 						try {
 							throw caught;
 						} catch (NoSuchTableException e) {
-							// The table has been destroyed in the meantime, nothing to do.
+							// The table has been destroyed in the meantime,
+							// nothing to do.
 						} catch (Throwable e) {
 							stateManager.onFatalException(e);
 						}
@@ -101,7 +103,7 @@ public class WaitingDealState implements PlayerState {
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
-	
+
 	@Override
 	public void activate() {
 	}
@@ -111,11 +113,12 @@ public class WaitingDealState implements PlayerState {
 		exitButton.setEnabled(false);
 		frozen = true;
 	}
-	
+
 	@Override
 	public void handleAnimationStart() {
 		if (frozen) {
-			System.out.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
 		exitButton.setEnabled(false);
@@ -124,7 +127,8 @@ public class WaitingDealState implements PlayerState {
 	@Override
 	public void handleAnimationEnd() {
 		if (frozen) {
-			System.out.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
 		exitButton.setEnabled(true);
@@ -134,7 +138,8 @@ public class WaitingDealState implements PlayerState {
 	public void handleCardClicked(int player, Card card, State state,
 			boolean isRaised) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
 			return;
 		}
 	}
@@ -142,7 +147,8 @@ public class WaitingDealState implements PlayerState {
 	@Override
 	public boolean handleCardPassed(Card[] cards) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -152,19 +158,20 @@ public class WaitingDealState implements PlayerState {
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
 			return false;
 		}
-		
+
 		if (eventReceived)
 			// The next state will handle this.
 			return false;
-		
+
 		eventReceived = true;
-		
+
 		// playerPosition was in the [0-2] interval, now it is between 1 and 3.
 		++playerPosition;
-		
+
 		stateManager.addDealtCard(playerPosition, card);
 
 		cardsGameWidget.revealCoveredCard(playerPosition, card);
@@ -180,8 +187,7 @@ public class WaitingDealState implements PlayerState {
 							if (currentPlayer == 3)
 								stateManager.transitionToYourTurn(hand);
 							else
-								stateManager
-										.transitionToWaitingDeal(hand);
+								stateManager.transitionToWaitingDeal(hand);
 						}
 					}
 				});
@@ -191,7 +197,8 @@ public class WaitingDealState implements PlayerState {
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -201,7 +208,8 @@ public class WaitingDealState implements PlayerState {
 	@Override
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
@@ -211,7 +219,8 @@ public class WaitingDealState implements PlayerState {
 	@Override
 	public boolean handlePlayerLeft(String player) {
 		if (frozen) {
-			System.out.println("Client: notice: the handlePlayerLeft() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handlePlayerLeft() event was received while frozen, deferring it.");
 			return false;
 		}
 		// TODO Auto-generated method stub
