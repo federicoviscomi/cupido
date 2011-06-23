@@ -10,7 +10,10 @@ public interface ServletNotificationsInterface extends Remote {
 
 	/**
 	 * End of the game is notified to the servlet. Every players and every
-	 * viewers in the table get this notification.
+	 * viewers in the table get this notification. The game could end normally
+	 * or prematurely. The last happens when player creator leaves the table
+	 * before normal end of the game, in this case and only in this case all
+	 * arguments are <code>null</code>.
 	 * 
 	 * @param matchPoints
 	 *            points the player has taken during this hand FIXME arguments

@@ -22,17 +22,16 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 				while (!ableToPass) {
 					lock.wait();
 				}
+				bot.passCards();
 			}
-			bot.passCards();
 			for (int i = 0; i < 13; i++) {
 				synchronized (lock) {
 					while (!ableToPlay) {
 						lock.wait();
 					}
 					ableToPlay = false;
+					bot.playNextCard();
 				}
-				//Thread.sleep(1000);
-				bot.playNextCard();
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

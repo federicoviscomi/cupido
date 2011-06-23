@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import unibo.as.cupido.backend.gtm.GlobalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
+import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 
 public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
@@ -46,7 +48,7 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 		public void run() {
 			try {
 				while (true) {
-					super.sleep((long) 1e5);
+					super.sleep(GlobalTableManagerInterface.POLLING_DELAY);
 					synchronized (ltmSwarm.swarm) {
 						Iterator<Triple> iterator = ltmSwarm.swarm.iterator();
 						while (iterator.hasNext()) {

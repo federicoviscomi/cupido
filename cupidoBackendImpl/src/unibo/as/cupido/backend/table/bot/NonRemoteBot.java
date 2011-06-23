@@ -116,12 +116,12 @@ public class NonRemoteBot implements BotNotificationInterface {
 		for (Card card : cards)
 			this.cards.add(card);
 		cardPlayingThread.setAbleToPass();
+		out.println("\nplay starts. " + botName + " cards are:"
+				+ this.cards.toString());
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			firstDealer = 3;
 			cardPlayingThread.setAbleToPlay();
 		}
-		out.println("\nplay starts. " + botName + " cards are:"
-				+ this.cards.toString());
 	}
 
 	@Override
