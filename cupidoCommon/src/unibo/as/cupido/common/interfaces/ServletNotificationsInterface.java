@@ -13,8 +13,7 @@ public interface ServletNotificationsInterface extends Remote {
 	 * viewers in the table get this notification.
 	 * 
 	 * @param matchPoints
-	 *            points the player has taken during this hand FIXME arguments
-	 *            are array not integer
+	 *            points the player has taken during this hand
 	 * @param playersTotalPoint
 	 *            points of the player updated after this match
 	 */
