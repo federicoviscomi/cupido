@@ -15,14 +15,21 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
+import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.NoSuchLTMException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
@@ -31,31 +38,38 @@ public class PlayerConsoleUI {
 	private static final String FORMAT = "%-20.20s %-3.3s %-10.10s %-30.30s\n";
 
 	private static final String USAGE = String.format(FORMAT + FORMAT + FORMAT
-			+ FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT, "COMMAND",
-			"OPT", "LONG_OPT", "DESCRIPTION", "create", "", "",
-			"create a new table", "exit", "", "", "", "list", "-p",
+			+ FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT
+			+ FORMAT, "COMMAND", "OPT", "LONG_OPT", "DESCRIPTION", "create",
+			"", "", "create a new table", "exit", "", "", "", "list", "-p",
 			"--players", "list all player in the table", "list", "-c",
 			"--cards", "list this player cards", "list", "-t", "--tables",
 			"list all tables", "login NAME PASSWORD", "", "", "", "pass", "-a",
 			"--arbitrary", "pass arbitrary cards", "pass CARD1 CARD2 CARD3",
 			"-c", "--card", "pass specified cards", "play", "-a",
-			"--arbitrary", "play an arbitrary card");
+			"--arbitrary", "play an arbitrary card", "addbot POSITION", "", "",
+			"add a bot in specified absolute position", "join", "", "",
+			"join an arbitrary table");
 
 	public static void main(String[] args) throws Exception {
-		new PlayerConsoleUI(
-				"/home/cane/workspace/cupido/cupidoBackendImpl/test/createTableAndAddThreeBot")
-				.execute();
+		if (args.length == 0) {
+			new PlayerConsoleUI().execute();
+		} else if (args.length == 1) {
+			new PlayerConsoleUI(args[0]).execute();
+		} else {
+			new PlayerConsoleUI(args[0], args[1]).execute();
+		}
 	}
 
 	private LocalTableManager localTableManager = null;
 	private final GlobalTableManagerInterface gtm;
 	private String playerName;
-	private TableInfoForClient table;
 	private final BufferedReader in;
 	private final PrintWriter out;
 	private boolean logged = false;
 	private Bot botNotification;
 	private RemoteBot remoteBot;
+	private TableInfoForClient tableInfo;
+	private TableInterface tableInterface;
 
 	public PlayerConsoleUI() throws Exception {
 		this(new BufferedReader(new InputStreamReader(System.in)),
@@ -101,9 +115,10 @@ public class PlayerConsoleUI {
 			do {
 				error = false;
 				out.print("\n#: ");
+				out.flush();
 				nextCommandLine = in.readLine();
 				out.println(nextCommandLine);
-
+				out.flush();
 				if (nextCommandLine == null) {
 					exit(0);
 				}
@@ -113,13 +128,16 @@ public class PlayerConsoleUI {
 					if (command.length < 1) {
 						error = true;
 						out.println("\n1 sintax error\n " + USAGE);
+						out.flush();
 					}
 				} catch (IllegalOptionValueException e) {
 					error = true;
 					out.println("\n2 sintax error\n " + USAGE);
+					out.flush();
 				} catch (UnknownOptionException e) {
 					error = true;
 					out.println("\n3 sintax error\n " + USAGE);
+					out.flush();
 				}
 			} while (error);
 			if (command[0].equals("exit")) {
@@ -127,14 +145,23 @@ public class PlayerConsoleUI {
 			} else if (!logged && !command[0].equals("login")) {
 				out.println("log first!");
 				out.println(USAGE);
+				out.flush();
+			} else if (command[0].equals("join")) {
+				try {
+					tableInfo = gtm.getTableList().iterator().next();
+					tableInterface = gtm.getLTMInterface(
+							tableInfo.tableDescriptor.ltmId).getTable(
+							tableInfo.tableDescriptor.id);
+					tableInterface.joinTable(playerName, remoteBot);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} else if (command[0].equals("sleep")) {
 				out.flush();
 				try {
 					Thread.sleep(Integer.parseInt(command[1]));
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -150,6 +177,7 @@ public class PlayerConsoleUI {
 					throw new UnsupportedOperationException();
 				} else {
 					out.println("\nmissing option");
+					out.flush();
 				}
 			} else if (command[0].equals("play")) {
 				boolean arbitraryCards = (parser
@@ -169,6 +197,7 @@ public class PlayerConsoleUI {
 				botNotification = (Bot) UnicastRemoteObject
 						.exportObject(remoteBot);
 				out.println("successfully logged in " + playerName);
+				out.flush();
 			} else if (command[0].equals("create")) {
 				try {
 					remoteBot.singleTableManager = gtm.createTable(playerName,
@@ -196,28 +225,20 @@ public class PlayerConsoleUI {
 							+ ". \nround cards: "
 							+ Arrays.toString(remoteBot.playedCard));
 				}
+				out.flush();
 			} else if (command[0].equals("addbot")) {
 				try {
-					int position = Integer.parseInt(command[1]);
-					remoteBot.singleTableManager.addBot(playerName, position);
-					position--;
-					remoteBot.addBot(position);
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalStateException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (PositionFullException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (FullTableException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NotCreatorException e) {
+					if (command.length < 2) {
+						out.println("missin bot position");
+						out.flush();
+					} else {
+						int position = Integer.parseInt(command[1]);
+						remoteBot.singleTableManager.addBot(playerName,
+								position);
+						position--;
+						remoteBot.addBot(position);
+					}
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -225,6 +246,7 @@ public class PlayerConsoleUI {
 				out.println(command[0] + ": command not found");
 				out.println(USAGE);
 			}
+			out.flush();
 		}
 	}
 
