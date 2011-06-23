@@ -23,18 +23,20 @@ public class GameEndedState implements PlayerState {
 
 	private PlayerStateManager stateManager;
 
+	private CardsGameWidget cardsGameWidget;
+
 	public GameEndedState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager,
 			final CupidoInterfaceAsync cupidoService) {
 
+		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.cupidoService = cupidoService;
-
+		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		// FIXME: Display the scores in some way.
 		final HTML text = new HTML("La partita &egrave; finita");
 		text.setWidth("120px");
 		text.setWordWrap(true);
@@ -42,6 +44,7 @@ public class GameEndedState implements PlayerState {
 
 		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
+		exitButton.setEnabled(false);
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -128,7 +131,8 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Display the scores.
+		exitButton.setEnabled(true);
+		cardsGameWidget.displayScores(matchPoints, playersTotalPoints);
 		return true;
 	}
 
