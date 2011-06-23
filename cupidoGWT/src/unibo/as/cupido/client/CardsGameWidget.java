@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import unibo.as.cupido.client.playerstates.PlayerStateManager.PlayerInfo;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
@@ -17,8 +18,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class CardsGameWidget extends AbsolutePanel {
@@ -286,13 +290,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			playerData.name = playerStatus.name;
 			playerData.score = playerStatus.score;
 
-			String s;
-			if (playerData.isBot)
-				s = "bot";
-			else
-				s = playerData.name + " (" + playerData.score + ")";
-
-			Label playerLabel = new Label(s);
+			Label playerLabel = new Label();
 			playerLabel.setWordWrap(false);
 			playerLabel.setWidth(playerLabelWidth + "px");
 			playerLabel.setHeight(playerLabelHeight + "px");
@@ -384,8 +382,22 @@ public class CardsGameWidget extends AbsolutePanel {
 					tableLayout.names.get(player));
 
 		previousTableLayout = tableLayout;
+		
+		updateLabels();
 	}
-
+	
+	private void updateLabels() {
+		for (int i = 0; i < 4; i++) {
+			PlayerData playerInfo = players.get(i);
+			String s;
+			if (playerInfo.isBot)
+				s = "bot";
+			else
+				s = playerInfo.name + " (" + playerInfo.score + ")";
+			movableWidgets.playerNames.get(i).setText(s);
+		}
+	}
+	
 	private static Position interpolatePosition(Position startPosition,
 			Position endPosition, double progress) {
 		Position position = new Position();
@@ -1144,6 +1156,47 @@ public class CardsGameWidget extends AbsolutePanel {
 		cornerWidget.setWidth("200px");
 		cornerWidget.setHeight("200px");
 		add(cornerWidget, tableSize - 200, tableSize - 200);
+	}
+	
+	/**
+	 * Displays the points and the new users' scores.
+	 * 
+	 * Both parameters are arrays of size 4, containing information
+	 * regarding each player. The first elements contain information
+	 * about the bottom player, and other elements contain information
+	 * about the other players, in clockwise order.
+	 * 
+	 * The totalScore array contains unspecified values for bots.
+	 */
+	public void displayScores(int[] matchPoints, int[] totalScore) {
+		assert matchPoints.length == 4;
+		assert totalScore.length == 4;
+		
+		for (int i = 0; i < 4; i++) {
+			players.get(i).score = totalScore[i];
+		}
+		
+		updateLabels();
+		
+		final int gridHeight = 400;
+		final int gridWidth = 400;
+		
+		Grid grid = new Grid(5, 3);
+		grid.setWidth(gridWidth + "px");
+		grid.setHeight(gridHeight + "px");
+		add(grid, tableSize/2 - gridWidth/2, tableSize/2 - gridHeight/2);
+		
+		grid.setWidget(0, 1, new HTML("Utente"));
+		grid.setWidget(0, 1, new HTML("Punteggio della partita"));
+		grid.setWidget(0, 2, new HTML("Nuovo punteggio globale"));
+		
+		for (int i = 0; i < 4; i++) {
+			HTML label = new HTML();
+			label.setText(players.get(i).name);
+			grid.setWidget(i + 1, 0, label);
+			grid.setWidget(i + 1, 1, new HTML("" + matchPoints[i]));
+			grid.setWidget(i + 1, 2, new HTML("" + totalScore[i]));
+		}
 	}
 
 	public void freeze() {
