@@ -2,9 +2,12 @@ package unibo.as.cupido.backend.gtm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Map;
 
+import unibo.as.cupido.common.exception.EmptyTableException;
+import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.structures.TableDescriptor;
 import unibo.as.cupido.common.structures.TableInfoForClient;
@@ -24,8 +27,14 @@ public class AllTables {
 		ltmMap.put(table.tableDescriptor.ltmId, chosenLTM);
 	}
 
-	public void decreaseFreePosition(TableDescriptor tableDescriptor) {
-		tifc.get(tableDescriptor).freePosition--;
+	public void decreaseFreePosition(TableDescriptor tableDescriptor)
+			throws FullTableException {
+		TableInfoForClient tableInfoForClient = tifc.get(tableDescriptor);
+		if (tableInfoForClient.freePosition == 0) {
+			throw new FullTableException(tableDescriptor.toString());
+		} else {
+			tableInfoForClient.freePosition--;
+		}
 	}
 
 	public Collection<TableInfoForClient> getAllTables() {
@@ -41,6 +50,16 @@ public class AllTables {
 
 	public void removeTable(TableDescriptor tableDescriptor) {
 		tifc.remove(tableDescriptor);
+	}
+
+	public void increaseFreePosition(TableDescriptor tableDescriptor)
+			throws EmptyTableException {
+		TableInfoForClient tableInfoForClient = tifc.get(tableDescriptor);
+		if (tableInfoForClient.freePosition == 3) {
+			throw new EmptyTableException(tableDescriptor.toString());
+		} else {
+			tableInfoForClient.freePosition++;
+		}
 	}
 
 }

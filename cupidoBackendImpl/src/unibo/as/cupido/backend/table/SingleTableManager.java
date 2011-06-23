@@ -8,6 +8,7 @@ import java.util.Arrays;
 import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
@@ -81,7 +82,7 @@ public class SingleTableManager implements TableInterface {
 			if (playersManager.playersCount() == 4) {
 				startNotifierThread.setGameStarted();
 			}
-
+			gtm.notifyTableJoin(table.tableDescriptor);
 		} catch (NoSuchTableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -109,12 +110,14 @@ public class SingleTableManager implements TableInterface {
 		if (playersManager.playersCount() == 4) {
 			startNotifierThread.setGameStarted();
 		}
+		gtm.notifyTableJoin(table.tableDescriptor);
 		return playersManager.getInitialTableStatus(position);
 	}
 
 	public synchronized void leaveTable(Integer i) throws RemoteException,
 			PlayerNotFoundException {
 		this.leaveTable(playersManager.getPlayerName(i));
+
 	}
 
 	@Override
@@ -122,16 +125,32 @@ public class SingleTableManager implements TableInterface {
 			throws RemoteException, PlayerNotFoundException {
 		if (userName == null)
 			throw new IllegalArgumentException();
-		playersManager.removePlayer(userName);
-		viewers.notifyPlayerLeft(userName);
 
+		if (table.owner.equals(userName)) {
+			endNotifierThread.interrupt();
+			this.notifyGameEndedPrematurely();
+		} else {
+			playersManager.removePlayer(userName);
+			viewers.notifyPlayerLeft(userName);
+			try {
+				gtm.notifyTableLeft(table.tableDescriptor);
+			} catch (NoSuchTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (EmptyTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
-	public void notifyGameEnded() {
-		int[] matchPoints = cardsManager.getMatchPoints();
-		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
-		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
-		viewers.notifyGameEnded(matchPoints, playersTotalPoint);
+	private void notifyGameEndedPrematurely() {
+		playersManager.notifyGameEnded(null, null);
+		viewers.notifyGameEnded(null, null);
+		this.notifyTableDestruction();
+	}
+
+	private void notifyTableDestruction() {
 		try {
 			LocalTableManagerInterface ltm = gtm
 					.getLTMInterface(table.tableDescriptor.ltmId);
@@ -147,6 +166,14 @@ public class SingleTableManager implements TableInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void notifyGameEnded() {
+		int[] matchPoints = cardsManager.getMatchPoints();
+		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
+		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
+		viewers.notifyGameEnded(matchPoints, playersTotalPoint);
+		this.notifyTableDestruction();
 	}
 
 	synchronized void notifyGameStarted() {

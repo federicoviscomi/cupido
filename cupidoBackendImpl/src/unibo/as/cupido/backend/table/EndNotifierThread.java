@@ -20,8 +20,8 @@ public class EndNotifierThread extends Thread {
 			}
 			stm.notifyGameEnded();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err
+					.println("EndNotifierThread catched interrupted exception. It's ok only if player creator leaves before the game ends");
 		}
 	}
 

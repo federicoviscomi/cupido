@@ -104,7 +104,7 @@ public class PlayersManager {
 					+ userName);
 
 		String botName = "_bot." + userName + "." + position;
-
+		
 		/*
 		 * notify every players but the one who is adding the bot and the bot
 		 * itself
