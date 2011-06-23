@@ -40,11 +40,6 @@ public class PlayersManager {
 	}
 
 	private static class PlayerInfo {
-		/**
-		 * <code>true</code> if this player is a bot; <code>false</code>
-		 * otherwise
-		 */
-		private final boolean isBot;
 
 		/** this player name */
 		final String name;
@@ -56,21 +51,20 @@ public class PlayersManager {
 		int score;
 
 		/** the servlet notification interface for this player */
-		private final ServletNotificationsInterface sni;
+		final ServletNotificationsInterface sni;
 
-		public PlayerInfo(String name, boolean isBot, int score,
+		public PlayerInfo(String name, int score,
 				ServletNotificationsInterface sni) {
 			if (name == null || sni == null)
 				throw new IllegalArgumentException(name + " " + sni);
 			this.name = name;
-			this.isBot = isBot;
 			this.score = score;
 			this.sni = sni;
 		}
 
 		@Override
 		public String toString() {
-			return "[is bot=" + isBot + ", name=" + name + "]";
+			return "[is bot=true, name=" + name + "]";
 		}
 	}
 
@@ -90,7 +84,7 @@ public class PlayersManager {
 		this.databaseManager = databaseManager;
 		this.removalThread = removalThread;
 
-		players[0] = new PlayerInfo(owner, false, score, snf);
+		players[0] = new PlayerInfo(owner, score, snf);
 		removalThread.start();
 	}
 
@@ -190,7 +184,7 @@ public class PlayersManager {
 			}
 		}
 
-		players[position] = new PlayerInfo(playerName, false, score, sni);
+		players[position] = new PlayerInfo(playerName, score, sni);
 		playersCount++;
 		removalThread.remove();
 		return position;
