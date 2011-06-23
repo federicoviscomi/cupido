@@ -43,8 +43,8 @@ public interface GlobalTableManagerInterface extends Remote {
 			AllLTMBusyException;
 
 	/**
-	 * This method is used by the Servlet to get a list of all the tables with
-	 * empty seats.
+	 * This method is used by the Servlet to get a list of all the tables
+	 * managed by the GTM
 	 * 
 	 * @return
 	 * @throws RemoteException

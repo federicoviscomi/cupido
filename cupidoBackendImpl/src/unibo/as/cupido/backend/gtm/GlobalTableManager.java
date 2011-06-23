@@ -146,11 +146,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 	@Override
 	public Collection<TableInfoForClient> getTableList() throws RemoteException {
-		ArrayList<TableInfoForClient> list = new ArrayList<TableInfoForClient>();
-		for (TableInfoForClient tifc : allTables.getAllTables())
-			if (tifc.freePosition != 0)
-				list.add(tifc);
-		return list;
+		return allTables.getAllTables();
 	}
 
 	@Override
