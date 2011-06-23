@@ -300,12 +300,17 @@ public class PlayerConsoleUI {
 
 	private void exit(int exitStatus) {
 		try {
-			if (remoteBot != null) {
-				remoteBot.singleTableManager.leaveTable(playerName);
-			}
 			in.close();
 		} catch (Exception e) {
 			//
+		}
+		if (remoteBot != null) {
+			try {
+				remoteBot.singleTableManager.leaveTable(playerName);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 		}
 		out.close();
 		System.exit(exitStatus);
