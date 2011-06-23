@@ -225,13 +225,13 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
 	@Override
 	public void displayTableScreen(String username, boolean isOwner,
-			InitialTableStatus initialTableStatus) {
+			InitialTableStatus initialTableStatus, int userScore) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
 		TableScreen screen = new TableScreen(this, username, isOwner,
-				initialTableStatus, cupidoService);
+				initialTableStatus, userScore, cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);

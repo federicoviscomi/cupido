@@ -23,13 +23,13 @@ public class TableScreen extends AbsolutePanel implements Screen {
 
 	public TableScreen(ScreenManager screenManager, String username,
 			boolean isOwner, InitialTableStatus initialTableStatus,
-			final CupidoInterfaceAsync cupidoService) {
+			int userScore, final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
 		assert Cupido.height == Cupido.width - chatWidth;
 		tableWidget = new HeartsTableWidget(Cupido.height, username,
-				initialTableStatus, isOwner, screenManager, cupidoService);
+				initialTableStatus, isOwner, userScore, screenManager, cupidoService);
 		add(tableWidget, 0, 0);
 
 		chatWidget = new LocalChatWidget(username,

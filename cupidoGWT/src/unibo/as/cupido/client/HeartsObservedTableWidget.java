@@ -49,7 +49,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		for (int i = 0; i < 3; i++)
 			assert observedGameStatus.playerStatus[i + 1] == null
 					|| observedGameStatus.playerStatus[i + 1].name != null;
-
+		
 		for (int i = 0; i < 3; i++)
 			if (observedGameStatus.playerStatus[i + 1] != null)
 				numPlayers++;
@@ -78,7 +78,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 		beforeGameWidget = new BeforeGameWidget(tableSize, username,
 				observedGameStatus.playerStatus[0].name, false,
-				initialTableStatus, cupidoService,
+				initialTableStatus, initialTableStatus.playerScores, cupidoService,
 				new BeforeGameWidget.Listener() {
 					@Override
 					public void onTableFull() {

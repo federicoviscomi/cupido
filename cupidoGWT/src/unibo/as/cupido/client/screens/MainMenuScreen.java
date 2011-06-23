@@ -13,6 +13,7 @@ import unibo.as.cupido.common.exception.MaxNumTableReachedException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -108,9 +109,21 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 							@Override
 							public void onSuccess(
-									InitialTableStatus initialTableStatus) {
-								screenManager.displayTableScreen(username,
-										true, initialTableStatus);
+									final InitialTableStatus initialTableStatus) {
+								// Get the user's score, too.
+								// The screen is already frozen, so there's no need to freeze it again.
+								cupidoService.getMyRank(new AsyncCallback<RankingEntry>() {
+									@Override
+									public void onFailure(Throwable caught) {
+										screenManager.displayGeneralErrorScreen(caught);
+									}
+
+									@Override
+									public void onSuccess(RankingEntry rankingEntry) {
+										screenManager.displayTableScreen(username,
+												true, initialTableStatus, rankingEntry.points);
+									}
+								});
 							}
 						});
 			}

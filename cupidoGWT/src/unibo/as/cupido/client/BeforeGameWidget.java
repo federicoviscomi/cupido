@@ -93,7 +93,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	public BeforeGameWidget(int tableSize, String username,
 			String bottomUserName, boolean isOwner,
 			InitialTableStatus initialTableStatus,
-			CupidoInterfaceAsync cupidoService, final Listener listener) {
+			int[] scores, CupidoInterfaceAsync cupidoService, final Listener listener) {
 
 		this.tableSize = tableSize;
 		this.isOwner = isOwner;
@@ -134,24 +134,6 @@ public class BeforeGameWidget extends AbsolutePanel {
 		add(labels.get(1), tableSize / 2 - playerLabelWidth / 2, 10);
 		add(labels.get(2), tableSize - 10 - playerLabelWidth, tableSize / 2
 				- playerLabelHeight / 2);
-
-		int[] scores = new int[4];
-
-		// initialTableStatus.playerScores has a different meaning depending
-		// whether the user is a player or just a viewer.
-		if (bottomUserName.equals(username)) {
-			// The user is a player.
-
-			// TODO: This data should come from the servlet.
-			scores[0] = 1234;
-
-			for (int i = 0; i < 3; i++)
-				scores[i] = initialTableStatus.playerScores[i];
-		} else {
-			// The user is a viewer.
-			for (int i = 0; i < 4; i++)
-				scores[i] = initialTableStatus.playerScores[i];
-		}
 
 		bottomLabel.setHTML(constructLabelHtml(bottomUserName, scores[0]));
 

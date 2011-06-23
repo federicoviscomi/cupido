@@ -23,6 +23,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 	private boolean frozen = false;
 	private String username;
 	private CupidoInterfaceAsync cupidoService;
+	private int[] scores;
 
 	/**
 	 * 
@@ -31,10 +32,11 @@ public class HeartsTableWidget extends AbsolutePanel {
 	 * @param username
 	 * @param initialTableStatus
 	 * @param isOwner
+	 * @param userScore 
 	 */
 	public HeartsTableWidget(int tableSize, final String username,
 			InitialTableStatus initialTableStatus, final boolean isOwner,
-			final ScreenManager screenManager,
+			int userScore, final ScreenManager screenManager,
 			final CupidoInterfaceAsync cupidoService) {
 
 		this.username = username;
@@ -45,8 +47,15 @@ public class HeartsTableWidget extends AbsolutePanel {
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 
+		scores = new int[4];
+		
+		scores[0] = userScore;
+		
+		for (int i = 0; i < 3; i++)
+			scores[i] = initialTableStatus.playerScores[i];
+		
 		beforeGameWidget = new BeforeGameWidget(tableSize, username, username,
-				isOwner, initialTableStatus, cupidoService,
+				isOwner, initialTableStatus, scores, cupidoService,
 				new BeforeGameWidget.Listener() {
 					@Override
 					public void onTableFull() {
@@ -134,7 +143,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		beforeGameWidget = null;
 
 		stateManager = new PlayerStateManagerImpl(tableSize, screenManager,
-				initialTableStatus, myCards, username, cupidoService);
+				initialTableStatus, scores, myCards, username, cupidoService);
 
 		cardsGameWidget = stateManager.getWidget();
 		add(cardsGameWidget, 0, 0);

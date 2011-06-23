@@ -39,7 +39,7 @@ public interface ScreenManager {
 	 * @param inititalTableStatus
 	 */
 	public void displayTableScreen(String username, boolean isOwner,
-			InitialTableStatus inititalTableStatus);
+			InitialTableStatus inititalTableStatus, int userScore);
 
 	/**
 	 * Shows the table screen (as a viewer) instead of the current one.

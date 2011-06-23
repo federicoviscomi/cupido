@@ -9,6 +9,7 @@ import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.structures.TableDescriptor;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
@@ -179,38 +180,50 @@ public class TableListScreen extends VerticalPanel implements Screen {
 		joinButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				TableInfoForClient tableInfoForClient = selectionModel
+				final TableInfoForClient tableInfoForClient = selectionModel
 						.getSelectedObject();
 				freeze();
-				TableDescriptor descriptor = tableInfoForClient.tableDescriptor;
-				cupidoService.joinTable(descriptor.ltmId, descriptor.id,
-						new AsyncCallback<InitialTableStatus>() {
-							@Override
-							public void onFailure(Throwable caught) {
-								try {
-									throw caught;
-								} catch (FullTableException e) {
-									screenManager
-											.displayMainMenuScreen(username);
-									Window.alert("Il tavolo in cui volevi entrare non ha pi\371 posti liberi.");
-								} catch (NoSuchTableException e) {
-									screenManager
-											.displayMainMenuScreen(username);
-									Window.alert("Il tavolo in cui volevi entrare non esiste pi\371.");
-								} catch (Throwable e) {
-									screenManager.displayGeneralErrorScreen(e);
-								}
-							}
+				// Get the user's points *before* calling join, to avoid
+				// losing comet notifications after the join.
+				cupidoService.getMyRank(new AsyncCallback<RankingEntry>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						screenManager.displayGeneralErrorScreen(caught);
+					}
 
-							@Override
-							public void onSuccess(
-									InitialTableStatus initialTableStatus) {
-								// TODO: Can Comet notifications arrive before
-								// the screen is switched?
-								screenManager.displayTableScreen(username,
-										false, initialTableStatus);
-							}
-						});
+					@Override
+					public void onSuccess(final RankingEntry rankingEntry) {
+						TableDescriptor descriptor = tableInfoForClient.tableDescriptor;
+						cupidoService.joinTable(descriptor.ltmId, descriptor.id,
+								new AsyncCallback<InitialTableStatus>() {
+									@Override
+									public void onFailure(Throwable caught) {
+										try {
+											throw caught;
+										} catch (FullTableException e) {
+											screenManager
+													.displayMainMenuScreen(username);
+											Window.alert("Il tavolo in cui volevi entrare non ha pi\371 posti liberi.");
+										} catch (NoSuchTableException e) {
+											screenManager
+													.displayMainMenuScreen(username);
+											Window.alert("Il tavolo in cui volevi entrare non esiste pi\371.");
+										} catch (Throwable e) {
+											screenManager.displayGeneralErrorScreen(e);
+										}
+									}
+
+									@Override
+									public void onSuccess(
+											InitialTableStatus initialTableStatus) {
+										// TODO: Can Comet notifications arrive before
+										// that    the screen is switched?
+										screenManager.displayTableScreen(username,
+												false, initialTableStatus, rankingEntry.points);
+									}
+								});
+					}
+				});
 			}
 		});
 		bottomPanel.add(joinButton);

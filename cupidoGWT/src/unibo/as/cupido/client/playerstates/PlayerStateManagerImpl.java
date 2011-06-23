@@ -50,9 +50,13 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
 	 * cards are `cards'.
+	 * 
+	 * @param scores The four users' scores, starting from the bottom
+	 *               player and in clockwise order. The scores in initialTableStatus
+	 *               are ignored.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			InitialTableStatus initialTableStatus, Card[] cards,
+			InitialTableStatus initialTableStatus, int[] scores, Card[] cards,
 			String username, CupidoInterfaceAsync cupidoService) {
 		this.username = username;
 		this.screenManager = screenManager;
@@ -70,8 +74,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		observedGameStatus.playerStatus[0].name = username;
 		observedGameStatus.playerStatus[0].numOfCardsInHand = 13;
 		observedGameStatus.playerStatus[0].playedCard = null;
-		// FIXME: This number should come from the servlet.
-		observedGameStatus.playerStatus[0].score = 1234;
+		observedGameStatus.playerStatus[0].score = scores[0];
 
 		// Left player
 		observedGameStatus.playerStatus[1] = new PlayerStatus();
@@ -79,7 +82,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		observedGameStatus.playerStatus[1].name = initialTableStatus.opponents[0];
 		observedGameStatus.playerStatus[1].numOfCardsInHand = 13;
 		observedGameStatus.playerStatus[1].playedCard = null;
-		observedGameStatus.playerStatus[1].score = initialTableStatus.playerScores[0];
+		observedGameStatus.playerStatus[1].score = scores[1];
 
 		// Top player
 		observedGameStatus.playerStatus[2] = new PlayerStatus();
@@ -87,7 +90,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		observedGameStatus.playerStatus[2].name = initialTableStatus.opponents[1];
 		observedGameStatus.playerStatus[2].numOfCardsInHand = 13;
 		observedGameStatus.playerStatus[2].playedCard = null;
-		observedGameStatus.playerStatus[2].score = initialTableStatus.playerScores[1];
+		observedGameStatus.playerStatus[2].score = scores[2];
 
 		// Right player
 		observedGameStatus.playerStatus[3] = new PlayerStatus();
@@ -95,7 +98,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		observedGameStatus.playerStatus[3].name = initialTableStatus.opponents[2];
 		observedGameStatus.playerStatus[3].numOfCardsInHand = 13;
 		observedGameStatus.playerStatus[3].playedCard = null;
-		observedGameStatus.playerStatus[3].score = initialTableStatus.playerScores[2];
+		observedGameStatus.playerStatus[3].score = scores[3];
 
 		this.cardsGameWidget = new CardsGameWidget(tableSize,
 				observedGameStatus, cards, new VerticalPanel(),
