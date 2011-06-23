@@ -1,0 +1,46 @@
+Progetto del corso v0.1 (Draft)
+
+Si progetti, documenti e realizzi una applicazione che consente a più utenti
+di partecipare a di seguire delle partite al gioco di carte hearts
+(http://en.wikipedia.org/wiki/Hearts). Gli utenti interagiscono attraverso un
+client proprietario e/o un browser web. L'autenticazione è necessaria per
+accedere alle funzionalità principali dell'applicazione; all'avvio
+l'applicazione premette di effettuare l'autenticazione o di registrare un
+nuovo utente. Una volta autenticati gli utenti hanno modo di vedere gli altri
+utenti collegati, il loro stato e il loro punteggio, i tavoli creati (avviati
+e non avviati) e possono interagire fra loro con uno strumento di tipo chat
+che coinvolge tutti gli utenti. Gli utenti possono essere liberi, in attesa ad
+un tavolo o giocanti. Ogni utente libero può creare un nuovo tavolo ed è posto
+automaticamente in attesa su quel tavolo; in fase di creazione del tavolo
+l'utente può selezionare il numero di giocatori automatici del tavolo. Gli
+utenti automatici (o bots) sono giocatori artificiali che implementano una
+qualche strategia di gioco. Gli utenti liberi possono aggregarsi ad ogni
+tavolo non avviato. Non appena ad un tavolo sono aggregati 4 utenti il tavolo
+si avvia e il gioco ha inizio. Ogni utente in attesa ad un tavolo può in ogni
+momento abbandonare il tavolo e tornare libero. Se il giocatore che abbandona
+il tavolo è il creatore, il tavolo viene distrutto e tutti i giocatori
+diventano liberi. Gli utenti liberi possono osservare i tavoli avviati per
+prendere visione di partite giocate da altri. Il gioco si svolge in un'unica
+mano secondo le regole standard riportate nel link precedentemente
+specificato. Ad ogni vittoria il giocatore incrementa di 4 il proprio
+punteggio. Ad ogni sconfitta il punteggio viene decrementato di 1. Durante il
+gioco è disponibile uno strumento di chat riservato ai partecipanti alla
+partita e agli utenti che la stanno osservando.
+
+I membri del team di sviluppo sono liberi di arricchire i requisiti funzionali
+e non funzionali dell'applicazione comunque lo desiderino. La scelta degli
+stili architetturali e delle tecnologie è libera. Ogni scelta deve essere
+debitamente giustificata nella documentazione progetto; in particolare si
+dovrà essere in grado di dettagliare l'impatto delle scelte operate sui
+principali aspetti legati agli aspetti di qualità interna ed esterna.
+
+I team di sviluppo possono essere formati da 3/4 persone (sono previste
+deleghe per gruppi più piccoli, vanno però concordate con il docente).
+
+Le consegne consistono nella documentazione prodotta durante il processo di
+sviluppo introdotta da un documento che specifica la natura e il ruolo degli
+artegatti presentati. Insieme alla docuentazione va consegnato il codice
+sorgente.
+
+La data ultima di consegna del progetto è il 15/10/2011. Saranno accettate
+anche consegne entro il 31/12 ma la valutazioni saranno decurtate. 
