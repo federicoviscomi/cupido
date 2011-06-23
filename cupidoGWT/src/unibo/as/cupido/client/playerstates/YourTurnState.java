@@ -98,9 +98,19 @@ public class YourTurnState implements PlayerState {
 				// Any card will is ok.
 				return true;
 
-			// The player must not play hearts.
-			return card.suit != Card.Suit.HEARTS;
-
+			// The player must not play hearts, if possible.
+			boolean hasOnlyHearts = true;
+			
+			for (Card x : hand)
+				if (x.suit != Card.Suit.HEARTS) {
+					hasOnlyHearts = false;
+					break;
+				}
+			
+			if (hasOnlyHearts)
+				return true;
+			else
+				return card.suit != Card.Suit.HEARTS;
 		}
 
 		// This is not the first card in a trick, so the player must play a card
