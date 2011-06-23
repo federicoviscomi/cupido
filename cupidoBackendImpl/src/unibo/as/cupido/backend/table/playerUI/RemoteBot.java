@@ -133,6 +133,7 @@ public class RemoteBot implements Bot, Serializable {
 		this.cards = new ArrayList<Card>(13);
 		for (int i = 0; i < cards.length; i++)
 			this.cards.add(cards[i]);
+		out.println("\n game started: " + cards.toString());
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			synchronized (lock) {
 				ableToPass = true;
@@ -155,6 +156,8 @@ public class RemoteBot implements Bot, Serializable {
 				ableToPass = true;
 				lock.notify();
 			}
+			out.println("\npassed cards received. all cards:"
+					+ this.cards.toString());
 		}
 		synchronized (lock) {
 			if (this.cards.contains(CardsManager.twoOfClubs)) {
@@ -162,24 +165,15 @@ public class RemoteBot implements Bot, Serializable {
 				ableToPlay = true;
 				lock.notify();
 			}
-			out.println("\nplay starts. " + userName + " cards are:"
-					+ this.cards.toString());
 		}
 	}
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		// out.println("\n" + userName + " player " + playerPosition+
-		// " played card " + card);
-		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
-				+ firstDealer + " broken hearted " + brokenHearted
-				+ " turn cards:" + Arrays.toString(playedCard));
+		out.println("\n" + userName + " player " + playerPosition
+				+ " played card " + card);
 
 		setCardPlayed(card, playerPosition);
-
-		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
-				+ firstDealer + " broken hearted " + brokenHearted
-				+ " turn cards:" + Arrays.toString(playedCard));
 	}
 
 	@Override
@@ -241,17 +235,6 @@ public class RemoteBot implements Bot, Serializable {
 				}
 				ableToPlay = false;
 
-				// out.println("\n" + userName + " plays ");
-				// out.println(" count:" + playedCardCount + " turn:" + turn
-				// + " first:" + firstDealer + " broken hearted "
-				// + brokenHearted + " turn cards:"
-				// + Arrays.toString(playedCard) + "\n owned "
-				// + cards.toString());
-				out.println(" count:" + playedCardCount + " turn:" + turn
-						+ " first:" + firstDealer + " broken hearted "
-						+ brokenHearted + " turn cards:"
-						+ Arrays.toString(playedCard));
-
 				/** choose a valid card */
 				Card cardToPlay = choseCard();
 
@@ -260,17 +243,6 @@ public class RemoteBot implements Bot, Serializable {
 
 				/** update status */
 				setCardPlayed(cardToPlay, 3);
-
-				// out.println(" count:" + playedCardCount + " turn:" + turn
-				// + " first:" + firstDealer + " broken hearted "
-				// + brokenHearted + " turn cards:"
-				// + Arrays.toString(playedCard) + " played " + cardToPlay
-				// + "\n owned " + cards.toString());
-				out.println(" count:" + playedCardCount + " turn:" + turn
-						+ " first:" + firstDealer + " broken hearted "
-						+ brokenHearted + " turn cards:"
-						+ Arrays.toString(playedCard));
-
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
