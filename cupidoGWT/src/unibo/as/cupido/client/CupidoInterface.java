@@ -6,12 +6,6 @@ package unibo.as.cupido.client;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import unibo.as.cupido.common.structures.Card;
-import unibo.as.cupido.common.structures.ChatMessage;
-import unibo.as.cupido.common.structures.InitialTableStatus;
-import unibo.as.cupido.common.structures.ObservedGameStatus;
-import unibo.as.cupido.common.structures.RankingEntry;
-import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.FullTableException;
@@ -22,6 +16,12 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.RankingEntry;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;

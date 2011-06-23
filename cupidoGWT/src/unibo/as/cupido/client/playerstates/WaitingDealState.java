@@ -2,14 +2,12 @@ package unibo.as.cupido.client.playerstates;
 
 import java.util.List;
 
-import unibo.as.cupido.common.exception.NoSuchTableException;
-import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
-import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GWTAnimation;
-import unibo.as.cupido.client.RandomCardGenerator;
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

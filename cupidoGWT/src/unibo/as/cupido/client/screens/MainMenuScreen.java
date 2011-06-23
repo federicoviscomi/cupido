@@ -4,17 +4,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import unibo.as.cupido.common.structures.ChatMessage;
-import unibo.as.cupido.common.structures.InitialTableStatus;
-import unibo.as.cupido.common.structures.TableInfoForClient;
-import unibo.as.cupido.common.exception.FatalException;
-import unibo.as.cupido.common.exception.MaxNumTableReachedException;
-import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
-
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GlobalChatWidget;
 import unibo.as.cupido.client.GlobalChatWidget.ChatListener;
+import unibo.as.cupido.common.exception.FatalException;
+import unibo.as.cupido.common.exception.MaxNumTableReachedException;
+import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

@@ -1,12 +1,12 @@
 package unibo.as.cupido.client;
 
+import unibo.as.cupido.client.playerstates.PlayerStateManager;
+import unibo.as.cupido.client.playerstates.PlayerStateManagerImpl;
+import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
-import unibo.as.cupido.client.playerstates.PlayerStateManager;
-import unibo.as.cupido.client.playerstates.PlayerStateManagerImpl;
-import unibo.as.cupido.client.screens.ScreenManager;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;

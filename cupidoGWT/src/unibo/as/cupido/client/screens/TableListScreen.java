@@ -2,7 +2,6 @@ package unibo.as.cupido.client.screens;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
@@ -26,7 +25,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 public class TableListScreen extends VerticalPanel implements Screen {

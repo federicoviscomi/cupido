@@ -2,8 +2,8 @@ package unibo.as.cupido.client.playerstates;
 
 import java.util.List;
 
-import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.client.CardsGameWidget;
+import unibo.as.cupido.common.structures.Card;
 
 public interface PlayerStateManager {
 

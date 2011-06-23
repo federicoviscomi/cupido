@@ -1,12 +1,11 @@
 package unibo.as.cupido.client;
 
-import unibo.as.cupido.common.structures.Card;
-import unibo.as.cupido.common.structures.InitialTableStatus;
-import unibo.as.cupido.common.structures.ObservedGameStatus;
-import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManagerImpl;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;

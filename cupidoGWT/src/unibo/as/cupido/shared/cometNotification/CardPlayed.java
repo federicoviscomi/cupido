@@ -1,7 +1,6 @@
 package unibo.as.cupido.shared.cometNotification;
 
 import java.io.Serializable;
-import java.rmi.RemoteException;
 
 import unibo.as.cupido.common.structures.Card;
 

@@ -4,16 +4,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import unibo.as.cupido.common.structures.Card;
-import unibo.as.cupido.common.structures.ObservedGameStatus;
-import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.screens.ScreenManager;
-import unibo.as.cupido.shared.cometNotification.CardPassed;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
 import unibo.as.cupido.shared.cometNotification.GameEnded;
-import unibo.as.cupido.shared.cometNotification.GameStarted;
 import unibo.as.cupido.shared.cometNotification.PlayerLeft;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
