@@ -169,9 +169,9 @@ public class CardPassingWaitingState implements PlayerState {
 								break;
 							}
 						if (found)
-							stateManager.transitionToFirstDealer(hand);
+							stateManager.transitionToFirstLeader(hand);
 						else
-							stateManager.transitionToWaitingFirstDeal(hand);
+							stateManager.transitionToWaitingFirstLead(hand);
 					}
 				});
 

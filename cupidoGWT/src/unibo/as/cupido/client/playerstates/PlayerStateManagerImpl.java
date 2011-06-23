@@ -37,9 +37,9 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	private List<PlayerInfo> players;
 
 	/**
-	 * The (ordered) list of cards dealt in the current trick.
+	 * The (ordered) list of cards played in the current trick.
 	 */
-	private List<Card> dealtCards = new ArrayList<Card>();
+	private List<Card> playedCards = new ArrayList<Card>();
 
 	private String username;
 
@@ -197,38 +197,38 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	}
 
 	@Override
-	public void transitionToFirstDealer(List<Card> hand) {
+	public void transitionToFirstLeader(List<Card> hand) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the transitionToFirstDealer() method was called while frozen, ignoring it.");
+					.println("Client: notice: the transitionToFirstLeader() method was called while frozen, ignoring it.");
 			return;
 		}
 
-		transitionTo(new FirstDealerState(cardsGameWidget, this, hand,
+		transitionTo(new FirstLeaderState(cardsGameWidget, this, hand,
 				cupidoService));
 	}
 
 	@Override
-	public void transitionToWaitingDeal(List<Card> hand) {
+	public void transitionToWaitingPlayedCard(List<Card> hand) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the transitionToWaitingDeal() method was called while frozen, ignoring it.");
+					.println("Client: notice: the transitionToWaitingPlayedCard() method was called while frozen, ignoring it.");
 			return;
 		}
 
-		transitionTo(new WaitingDealState(cardsGameWidget, this, hand,
+		transitionTo(new WaitingPlayedCardState(cardsGameWidget, this, hand,
 				cupidoService));
 	}
 
 	@Override
-	public void transitionToWaitingFirstDeal(List<Card> hand) {
+	public void transitionToWaitingFirstLead(List<Card> hand) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the transitionToWaitingFirstDeal() method was called while frozen, ignoring it.");
+					.println("Client: notice: the transitionToWaitingFirstLead() method was called while frozen, ignoring it.");
 			return;
 		}
 
-		transitionTo(new WaitingFirstDealState(cardsGameWidget, this, hand,
+		transitionTo(new WaitingFirstLeadState(cardsGameWidget, this, hand,
 				cupidoService));
 	}
 
@@ -261,41 +261,41 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	}
 
 	@Override
-	public List<Card> getDealtCards() {
-		return dealtCards;
+	public List<Card> getPlayedCards() {
+		return playedCards;
 	}
 
 	@Override
-	public void addDealtCard(int player, Card card) {
+	public void addPlayedCard(int player, Card card) {
 
 		if (frozen) {
 			System.out
-					.println("Client: notice: the addDealtCard() method was called while frozen, ignoring it.");
+					.println("Client: notice: the addPlayedCard() method was called while frozen, ignoring it.");
 			return;
 		}
 
 		if (card.suit == Card.Suit.HEARTS)
 			heartsBroken = true;
 		if (firstPlayerInTrick == -1) {
-			assert dealtCards.size() == 0;
+			assert playedCards.size() == 0;
 			firstPlayerInTrick = player;
 		}
-		assert (firstPlayerInTrick + dealtCards.size()) % 4 == player;
-		dealtCards.add(card);
+		assert (firstPlayerInTrick + playedCards.size()) % 4 == player;
+		playedCards.add(card);
 	}
 
 	@Override
 	public void goToNextTrick() {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the addDealtCard() method was called while frozen, ignoring it.");
+					.println("Client: notice: the goToNextTrick() method was called while frozen, ignoring it.");
 			return;
 		}
 
-		assert dealtCards.size() == 4;
-		firstPlayerInTrick += winnerCard(dealtCards);
+		assert playedCards.size() == 4;
+		firstPlayerInTrick += winnerCard(playedCards);
 		firstPlayerInTrick = firstPlayerInTrick % 4;
-		dealtCards.clear();
+		playedCards.clear();
 	}
 
 	/**

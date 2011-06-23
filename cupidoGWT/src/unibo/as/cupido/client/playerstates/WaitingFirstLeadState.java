@@ -19,19 +19,25 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class FirstDealerState implements PlayerState {
+public class WaitingFirstLeadState implements PlayerState {
 
 	private PushButton exitButton;
+
 	private HTML text;
-	private List<Card> hand;
+
 	private CardsGameWidget cardsGameWidget;
+
 	private PlayerStateManager stateManager;
 
-	private boolean frozen = false;
-	private CupidoInterfaceAsync cupidoService;
-	private boolean playedCard = false;
+	private List<Card> hand;
 
-	public FirstDealerState(CardsGameWidget cardsGameWidget,
+	private boolean frozen = false;
+
+	private CupidoInterfaceAsync cupidoService;
+
+	private boolean eventReceived = false;
+
+	public WaitingFirstLeadState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
 			final CupidoInterfaceAsync cupidoService) {
 
@@ -44,7 +50,8 @@ public class FirstDealerState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		text = new HTML("Sei il primo a giocare; devi giocare il due di fiori");
+		text = new HTML(
+				"Attendi che il giocatore che ha il due di picche lo giochi.");
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
@@ -118,52 +125,6 @@ public class FirstDealerState implements PlayerState {
 					.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
 			return;
 		}
-		if (player != 0 || card == null)
-			return;
-		if (card.suit != Card.Suit.CLUBS || card.value != 2)
-			return;
-		
-		if (playedCard )
-			// The user has already played a card.
-			return;
-		
-		playedCard = true;
-
-		text.setText("");
-
-		hand.remove(card);
-
-		stateManager.addDealtCard(0, card);
-
-		cardsGameWidget.dealCard(0, card);
-		cardsGameWidget.runPendingAnimations(2000,
-				new GWTAnimation.AnimationCompletedListener() {
-					@Override
-					public void onComplete() {
-						stateManager.transitionToWaitingDeal(hand);
-					}
-				});
-
-		cupidoService.playCard(card, new AsyncCallback<Void>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				try {
-					throw caught;
-				} catch (NoSuchTableException e) {
-					// The table does not exist anymore, because the owner has
-					// left.
-					// Do nothing yet, this situation will be handled when the
-					// GameEnded
-					// notification arrives.
-				} catch (Throwable e) {
-					stateManager.onFatalException(e);
-				}
-			}
-
-			@Override
-			public void onSuccess(Void result) {
-			}
-		});
 	}
 
 	@Override
@@ -175,7 +136,7 @@ public class FirstDealerState implements PlayerState {
 		}
 		// This notification should never arrive in this state. 
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the FirstDealer state"));
+		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the WaitingFirstLead state"));
 		return true;
 	}
 
@@ -186,13 +147,37 @@ public class FirstDealerState implements PlayerState {
 					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
 			return false;
 		}
-		if (playedCard) {
-			// Let the next state handle this.
+
+		if (eventReceived)
+			// The next state will process this.
 			return false;
-		}
-		// This notification should never arrive in this state. 
-		freeze();
-		stateManager.onFatalException(new Exception("The CardPlayed notification was received when the client was in the FirstDealer state"));
+
+		eventReceived = true;
+
+		text.setText("");
+
+		// playerPosition was in the [0-2] interval, now it is between 1 and 3.
+		++playerPosition;
+
+		// This is needed to use playerPosition1 in the listener below.
+		final int playerPosition1 = playerPosition;
+
+		stateManager.addPlayedCard(playerPosition, card);
+
+		cardsGameWidget.revealCoveredCard(playerPosition, card);
+
+		cardsGameWidget.playCard(playerPosition, card);
+		cardsGameWidget.runPendingAnimations(2000,
+				new GWTAnimation.AnimationCompletedListener() {
+
+					@Override
+					public void onComplete() {
+						if (playerPosition1 == 3)
+							stateManager.transitionToYourTurn(hand);
+						else
+							stateManager.transitionToWaitingPlayedCard(hand);
+					}
+				});
 		return true;
 	}
 
@@ -203,7 +188,7 @@ public class FirstDealerState implements PlayerState {
 					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
-		if (playedCard) {
+		if (eventReceived) {
 			// Let the next state handle this.
 			return false;
 		}
@@ -221,7 +206,7 @@ public class FirstDealerState implements PlayerState {
 		}
 		// This notification should never arrive in this state. 
 		freeze();
-		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the FirstDealer state"));
+		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the WaitingFirstLead state"));
 		return true;
 	}
 

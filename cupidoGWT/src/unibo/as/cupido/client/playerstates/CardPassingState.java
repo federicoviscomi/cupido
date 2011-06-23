@@ -91,7 +91,7 @@ public class CardPassingState implements PlayerState {
 				});
 
 				for (Card card : raisedCards)
-					cardsGameWidget.dealCard(0, card);
+					cardsGameWidget.playCard(0, card);
 
 				cardsGameWidget.runPendingAnimations(1500,
 						new GWTAnimation.AnimationCompletedListener() {
@@ -205,7 +205,7 @@ public class CardPassingState implements PlayerState {
 					.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
 			return;
 		}
-		if (state == State.DEALT)
+		if (state == State.PLAYED)
 			return;
 		if (player != 0 || card == null)
 			return;

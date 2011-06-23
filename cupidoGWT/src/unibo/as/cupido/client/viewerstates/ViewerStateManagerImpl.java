@@ -37,9 +37,9 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	private List<PlayerInfo> players;
 
 	/**
-	 * The (ordered) list of cards dealt in the current trick.
+	 * The (ordered) list of cards played in the current trick.
 	 */
-	private List<Card> dealtCards = new ArrayList<Card>();
+	private List<Card> playedCards = new ArrayList<Card>();
 
 	/**
 	 * Initialize the state manager. The current user is a viewer.
@@ -84,7 +84,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		for (int i = 0; i < 4; i++) {
 			Card card = observedGameStatus.playerStatus[(firstPlayerInTrick + i) % 4].playedCard;
 			if (card != null)
-				dealtCards.add(card);
+				playedCards.add(card);
 			else
 				break;
 		}
@@ -97,7 +97,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 				&& observedGameStatus.playerStatus[1].numOfCardsInHand == 13
 				&& observedGameStatus.playerStatus[2].numOfCardsInHand == 13
 				&& observedGameStatus.playerStatus[3].numOfCardsInHand == 13) {
-			transitionToWaitingFirstDeal();
+			transitionToWaitingFirstLead();
 			return;
 		}
 
@@ -110,7 +110,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		if (n == 4)
 			transitionToEndOfTrick();
 		else
-			transitionToWaitingDeal();
+			transitionToWaitingPlayedCard();
 	}
 
 	private void transitionTo(ViewerState newState) {
@@ -130,13 +130,13 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	}
 
 	@Override
-	public void transitionToWaitingFirstDeal() {
+	public void transitionToWaitingFirstLead() {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the transitionToWaitingFirstDeal() method was called while frozen, ignoring it.");
+					.println("Client: notice: the transitionToWaitingFirstLead() method was called while frozen, ignoring it.");
 			return;
 		}
-		transitionTo(new WaitingFirstDealState(cardsGameWidget, this));
+		transitionTo(new WaitingFirstLeadState(cardsGameWidget, this));
 	}
 
 	@Override
@@ -150,13 +150,13 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	}
 
 	@Override
-	public void transitionToWaitingDeal() {
+	public void transitionToWaitingPlayedCard() {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the transitionToWaitingDeal() method was called while frozen, ignoring it.");
+					.println("Client: notice: the transitionToWaitingPlayedCard() method was called while frozen, ignoring it.");
 			return;
 		}
-		transitionTo(new WaitingDealState(cardsGameWidget, this));
+		transitionTo(new WaitingPlayedCardState(cardsGameWidget, this));
 	}
 
 	@Override
@@ -165,23 +165,23 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	}
 
 	@Override
-	public List<Card> getDealtCards() {
-		return dealtCards;
+	public List<Card> getPlayedCards() {
+		return playedCards;
 	}
 
 	@Override
-	public void addDealtCard(int player, Card card) {
+	public void addPlayedCard(int player, Card card) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the addDealtCard() method was called while frozen, ignoring it.");
+					.println("Client: notice: the addPlayedCard() method was called while frozen, ignoring it.");
 			return;
 		}
 		if (firstPlayerInTrick == -1) {
-			assert dealtCards.size() == 0;
+			assert playedCards.size() == 0;
 			firstPlayerInTrick = player;
 		}
-		assert (firstPlayerInTrick + dealtCards.size()) % 4 == player;
-		dealtCards.add(card);
+		assert (firstPlayerInTrick + playedCards.size()) % 4 == player;
+		playedCards.add(card);
 	}
 
 	@Override
@@ -191,10 +191,10 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 					.println("Client: notice: the goToNextTrick() method was called while frozen, ignoring it.");
 			return;
 		}
-		assert dealtCards.size() == 4;
-		firstPlayerInTrick += winnerCard(dealtCards);
+		assert playedCards.size() == 4;
+		firstPlayerInTrick += winnerCard(playedCards);
 		firstPlayerInTrick = firstPlayerInTrick % 4;
-		dealtCards.clear();
+		playedCards.clear();
 		--remainingTricks;
 	}
 

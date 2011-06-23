@@ -11,6 +11,7 @@ import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
@@ -19,11 +20,9 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class WaitingFirstDealState implements PlayerState {
+public class WaitingPlayedCardState implements PlayerState {
 
 	private PushButton exitButton;
-
-	private HTML text;
 
 	private CardsGameWidget cardsGameWidget;
 
@@ -31,13 +30,17 @@ public class WaitingFirstDealState implements PlayerState {
 
 	private List<Card> hand;
 
+	private final int currentPlayer;
+
 	private boolean frozen = false;
 
 	private CupidoInterfaceAsync cupidoService;
 
 	private boolean eventReceived = false;
 
-	public WaitingFirstDealState(CardsGameWidget cardsGameWidget,
+	private HTML text;
+
+	public WaitingPlayedCardState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
 			final CupidoInterfaceAsync cupidoService) {
 
@@ -49,9 +52,14 @@ public class WaitingFirstDealState implements PlayerState {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		
+		currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager
+				.getPlayedCards().size()) % 4;
+		
+		text = new HTML();
+		
+		recomputeLabelMessage();
 
-		text = new HTML(
-				"Attendi che il giocatore che ha il due di picche lo giochi.");
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
@@ -85,6 +93,23 @@ public class WaitingFirstDealState implements PlayerState {
 		panel.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(panel);
+	}
+	
+	private void recomputeLabelMessage() {
+		PlayerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
+				.get(currentPlayer);
+		
+		assert currentPlayer != 0;
+		
+		if (playerInfo.isBot)
+			text = new HTML("Attendi che il bot giochi");
+		else {
+			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+			safeHtmlBuilder.appendEscaped(playerInfo.name);
+			safeHtmlBuilder.appendHtmlConstant(" giochi.");
+			text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
+		}
 	}
 
 	@Override
@@ -136,7 +161,7 @@ public class WaitingFirstDealState implements PlayerState {
 		}
 		// This notification should never arrive in this state. 
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the WaitingFirstDeal state"));
+		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the WaitingPlayedCard state"));
 		return true;
 	}
 
@@ -149,33 +174,31 @@ public class WaitingFirstDealState implements PlayerState {
 		}
 
 		if (eventReceived)
-			// The next state will process this.
+			// The next state will handle this.
 			return false;
 
 		eventReceived = true;
 
-		text.setText("");
-
 		// playerPosition was in the [0-2] interval, now it is between 1 and 3.
 		++playerPosition;
 
-		// This is needed to use playerPosition1 in the listener below.
-		final int playerPosition1 = playerPosition;
-
-		stateManager.addDealtCard(playerPosition, card);
+		stateManager.addPlayedCard(playerPosition, card);
 
 		cardsGameWidget.revealCoveredCard(playerPosition, card);
 
-		cardsGameWidget.dealCard(playerPosition, card);
+		cardsGameWidget.playCard(playerPosition, card);
 		cardsGameWidget.runPendingAnimations(2000,
 				new GWTAnimation.AnimationCompletedListener() {
-
 					@Override
 					public void onComplete() {
-						if (playerPosition1 == 3)
-							stateManager.transitionToYourTurn(hand);
-						else
-							stateManager.transitionToWaitingDeal(hand);
+						if (stateManager.getPlayedCards().size() == 4)
+							stateManager.transitionToEndOfTrick(hand);
+						else {
+							if (currentPlayer == 3)
+								stateManager.transitionToYourTurn(hand);
+							else
+								stateManager.transitionToWaitingPlayedCard(hand);
+						}
 					}
 				});
 		return true;
@@ -206,7 +229,7 @@ public class WaitingFirstDealState implements PlayerState {
 		}
 		// This notification should never arrive in this state. 
 		freeze();
-		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the WaitingFirstDeal state"));
+		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the WaitingPlayedCard state"));
 		return true;
 	}
 
@@ -217,6 +240,7 @@ public class WaitingFirstDealState implements PlayerState {
 					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
 			return;
 		}
-		// Nothing to do.
+		if (currentPlayer == player)
+			recomputeLabelMessage();
 	}
 }

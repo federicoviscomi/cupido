@@ -100,7 +100,7 @@ public class EndOfTrickState implements PlayerState {
 							if (player == 0)
 								stateManager.transitionToYourTurn(hand);
 							else
-								stateManager.transitionToWaitingDeal(hand);
+								stateManager.transitionToWaitingPlayedCard(hand);
 						} else
 							stateManager.transitionToGameEnded();
 					}

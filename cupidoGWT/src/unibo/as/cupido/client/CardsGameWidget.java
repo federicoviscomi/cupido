@@ -33,10 +33,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	// The height of the players' labels that contain usernames and scores.
 	private static final int playerLabelHeight = 20;
 
-	// The distance between the center of the bottom player's dealt cards and
-	// the
-	// bottom of the screen.
-	private static final int dealtCardsOffset = 260;
+	// The distance between the center of the bottom player's played cards and
+	// the bottom of the screen.
+	private static final int playedCardsOffset = 260;
 
 	// The distance between the center of the bottom player's hand and the
 	// bottom of the screen.
@@ -171,7 +170,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			switch (state) {
 			case HAND:
 				return player;
-			case DEALT:
+			case PLAYED:
 				return player + 4;
 			}
 			throw new IllegalStateException();
@@ -188,7 +187,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 
 		public enum State {
-			HAND, DEALT
+			HAND, PLAYED
 		}
 
 		/**
@@ -330,7 +329,7 @@ public class CardsGameWidget extends AbsolutePanel {
 				CardWidget cardWidget = new CardWidget(playerStatus.playedCard,
 						90 * player);
 				movableWidgets.cards.add(cardWidget);
-				cardRoles.put(cardWidget, new CardRole(CardRole.State.DEALT,
+				cardRoles.put(cardWidget, new CardRole(CardRole.State.PLAYED,
 						false, player));
 				add(cardWidget, 0, 0);
 			}
@@ -584,17 +583,17 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * The player `player' deals the card `card'. The card must be an uncovered
+	 * The player `player' plays the card `card'. The card must be an uncovered
 	 * card in the specified player's hand.
 	 * 
 	 * The corresponding animation will be executed at the next call to
 	 * runPendingAnimations().
 	 */
-	public void dealCard(int player, Card card) {
+	public void playCard(int player, Card card) {
 
 		if (frozen) {
 			System.out
-					.println("Client: notice: dealCard() was called while frozen, ignoring it.");
+					.println("Client: notice: playCard() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -619,7 +618,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 		assert widget != null;
 
-		cardRoles.get(widget).state = CardRole.State.DEALT;
+		cardRoles.get(widget).state = CardRole.State.PLAYED;
 		cardRoles.get(widget).isRaised = false;
 
 		// Note: this may already be `true'.
@@ -628,7 +627,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	/**
 	 * The player `player' picks up the card `card' that was previously in the
-	 * DEALT state in front of him. The card must not be covered.
+	 * PLAYED state in front of him. The card must not be covered.
 	 * 
 	 * The corresponding animation will be executed at the next call to
 	 * runPendingAnimations().
@@ -652,7 +651,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			Card candidateCard = candidateWidget.getCard();
 			if (card.equals(candidateCard)) {
 				CardRole role = cardRoles.get(candidateWidget);
-				if (role.player == player && role.state == CardRole.State.DEALT) {
+				if (role.player == player && role.state == CardRole.State.PLAYED) {
 					// Found a match
 					widget = candidateWidget;
 					break;
@@ -758,7 +757,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * Runs an animation in which the dealt cards move towards the specified
+	 * Runs an animation in which the played cards move towards the specified
 	 * player, until they go off screen. After the animation, but before
 	 * triggering the listener, such cards are removed.
 	 * 
@@ -800,16 +799,16 @@ public class CardsGameWidget extends AbsolutePanel {
 				// towards
 				// the bottom player.
 
-				// Move the dealt cards off-screen.
+				// Move the played cards off-screen.
 
-				final List<CardWidget> dealtCards = new ArrayList<CardWidget>();
+				final List<CardWidget> playedCards = new ArrayList<CardWidget>();
 
 				for (Entry<CardWidget, Position> e : tableLayout.cards
 						.entrySet()) {
-					if (cardRoles.get(e.getKey()).state == CardRole.State.DEALT) {
-						dealtCards.add(e.getKey());
+					if (cardRoles.get(e.getKey()).state == CardRole.State.PLAYED) {
+						playedCards.add(e.getKey());
 						e.getValue().y += (tableSize + CardWidget.cardHeight
-								/ 2 - dealtCardsOffset);
+								/ 2 - playedCardsOffset);
 					}
 				}
 
@@ -818,8 +817,8 @@ public class CardsGameWidget extends AbsolutePanel {
 				for (int i = 0; i < player; i++)
 					rotateTableLayout(tableLayout, tableSize);
 
-				// Let the dealt cards slide below hands' cards.
-				for (CardWidget widget : dealtCards) {
+				// Let the played cards slide below hands' cards.
+				for (CardWidget widget : playedCards) {
 					tableLayout.cards.get(widget).z -= defaultZIndex / 2;
 					previousTableLayout.cards.get(widget).z -= defaultZIndex / 2;
 				}
@@ -834,7 +833,7 @@ public class CardsGameWidget extends AbsolutePanel {
 							@Override
 							public void onComplete() {
 								// Remove the widgets for the off-screen cards.
-								for (CardWidget widget : dealtCards) {
+								for (CardWidget widget : playedCards) {
 									movableWidgets.cards.remove(widget);
 									previousTableLayout.cards.remove(widget);
 									cardRoles.remove(widget);
@@ -892,8 +891,8 @@ public class CardsGameWidget extends AbsolutePanel {
 		int offset;
 
 		switch (state) {
-		case DEALT:
-			offset = dealtCardsOffset;
+		case PLAYED:
+			offset = playedCardsOffset;
 			break;
 		case HAND:
 			offset = handCardsOffset;

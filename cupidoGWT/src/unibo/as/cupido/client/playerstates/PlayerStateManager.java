@@ -26,11 +26,11 @@ public interface PlayerStateManager {
 	public int getFirstPlayerInTrick();
 
 	/**
-	 * @return The ordered list containing the cards dealt in the current trick.
+	 * @return The ordered list containing the cards played in the current trick.
 	 */
-	public List<Card> getDealtCards();
+	public List<Card> getPlayedCards();
 
-	public void addDealtCard(int player, Card card);
+	public void addPlayedCard(int player, Card card);
 
 	public void goToNextTrick();
 
@@ -54,11 +54,11 @@ public interface PlayerStateManager {
 
 	public void transitionToEndOfTrick(List<Card> hand);
 
-	public void transitionToFirstDealer(List<Card> hand);
+	public void transitionToFirstLeader(List<Card> hand);
 
-	public void transitionToWaitingDeal(List<Card> hand);
+	public void transitionToWaitingPlayedCard(List<Card> hand);
 
-	public void transitionToWaitingFirstDeal(List<Card> hand);
+	public void transitionToWaitingFirstLead(List<Card> hand);
 
 	public void transitionToYourTurn(List<Card> hand);
 

@@ -63,7 +63,7 @@ public class EndOfTrickState implements ViewerState {
 						if (stateManager.getRemainingTricks() == 0)
 							stateManager.transitionToGameEnded();
 						else
-							stateManager.transitionToWaitingDeal();
+							stateManager.transitionToWaitingPlayedCard();
 					}
 				});
 	}

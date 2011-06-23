@@ -25,7 +25,7 @@ public class YourTurnState implements PlayerState {
 	private PlayerStateManager stateManager;
 	private CardsGameWidget cardsGameWidget;
 
-	private boolean dealtCard = false;
+	private boolean playedCard = false;
 	private List<Card> hand;
 
 	private boolean frozen = false;
@@ -84,14 +84,14 @@ public class YourTurnState implements PlayerState {
 	public void activate() {
 	}
 
-	private static boolean canDealCard(Card card, List<Card> dealtCards,
+	private static boolean canPlayCard(Card card, List<Card> playedCards,
 			List<Card> hand, boolean areHeartsBroken) {
 
-		if (dealtCards.size() == 0) {
+		if (playedCards.size() == 0) {
 			// This is the first card in the trick.
 
 			// If this was the first trick in the game, the active state
-			// would be FirstDealer.
+			// would be FirstLeader.
 			assert hand.size() < 13;
 
 			if (areHeartsBroken)
@@ -107,7 +107,7 @@ public class YourTurnState implements PlayerState {
 		// with the
 		// same suit, if possible.
 
-		Card.Suit suit = dealtCards.get(0).suit;
+		Card.Suit suit = playedCards.get(0).suit;
 
 		boolean hasSameSuit = false;
 
@@ -120,7 +120,7 @@ public class YourTurnState implements PlayerState {
 		if (hasSameSuit)
 			return card.suit == suit;
 
-		// The player has no card with that suit, so he is allowed to deal any
+		// The player has no card with that suit, so he is allowed to play any
 		// card.
 
 		return true;
@@ -161,22 +161,22 @@ public class YourTurnState implements PlayerState {
 			return;
 		}
 
-		if (dealtCard)
+		if (playedCard)
 			return;
 		if (player != 0)
 			return;
 
-		if (!canDealCard(card, stateManager.getDealtCards(), hand,
+		if (!canPlayCard(card, stateManager.getPlayedCards(), hand,
 				stateManager.areHeartsBroken()))
 			return;
 
-		dealtCard = true;
+		playedCard = true;
 
 		hand.remove(card);
 
-		stateManager.addDealtCard(player, card);
+		stateManager.addPlayedCard(player, card);
 
-		cardsGameWidget.dealCard(player, card);
+		cardsGameWidget.playCard(player, card);
 		cardsGameWidget.runPendingAnimations(2000,
 				new GWTAnimation.AnimationCompletedListener() {
 					@Override
@@ -188,10 +188,10 @@ public class YourTurnState implements PlayerState {
 							return;
 						}
 
-						if (stateManager.getDealtCards().size() == 4)
+						if (stateManager.getPlayedCards().size() == 4)
 							stateManager.transitionToEndOfTrick(hand);
 						else
-							stateManager.transitionToWaitingDeal(hand);
+							stateManager.transitionToWaitingPlayedCard(hand);
 					}
 				});
 
@@ -235,8 +235,8 @@ public class YourTurnState implements PlayerState {
 					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
 			return false;
 		}
-		if (dealtCard) {
-			// The animation for the card dealing is still in progress, let
+		if (playedCard) {
+			// The animation for the card playing is still in progress, let
 			// the next state handle this.
 			return false;
 		} else {
@@ -254,7 +254,7 @@ public class YourTurnState implements PlayerState {
 					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
-		if (dealtCard) {
+		if (playedCard) {
 			// Let the next state handle this.
 			return false;
 		}
