@@ -69,16 +69,18 @@ public class SingleTableManager implements TableInterface {
 			IllegalArgumentException, FullTableException, NotCreatorException,
 			IllegalStateException {
 		try {
-			String botName = "_bot." + userName + "." + position;
+
+			String[] botNames = {"", "cupido", "venere", "marte"};
 			InitialTableStatus initialTableStatus = playersManager
 					.getInitialTableStatus(position);
 
-			NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus,
-					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
+			NonRemoteBot bot = new NonRemoteBot(botNames[position],
+					initialTableStatus, gtm.getLTMInterface(
+							table.tableDescriptor.ltmId).getTable(
 							table.tableDescriptor.id));
-			viewers.notifyBotJoined(botName, position);
+			viewers.notifyBotJoined(botNames[position], position);
 
-			playersManager.addBot(userName, position, bot);
+			playersManager.addBot(userName, position, bot, botNames[position]);
 			if (playersManager.playersCount() == 4) {
 				startNotifierThread.setGameStarted();
 			}

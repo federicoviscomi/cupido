@@ -89,10 +89,11 @@ public class PlayersManager {
 	}
 
 	public void addBot(String userName, int position,
-			BotNotificationInterface bot) throws FullTableException,
-			PositionFullException, NotCreatorException {
+			BotNotificationInterface bot, String botName)
+			throws FullTableException, PositionFullException,
+			NotCreatorException {
 
-		if (playersCount > 4)
+		if (playersCount >= 4)
 			throw new FullTableException();
 		if (position < 1 || position > 3 || userName == null)
 			throw new IllegalArgumentException();
@@ -103,8 +104,6 @@ public class PlayersManager {
 					+ players[Positions.OWNER.ordinal()] + ". Current user: "
 					+ userName);
 
-		String botName = "_bot." + userName + "." + position;
-		
 		/*
 		 * notify every players but the one who is adding the bot and the bot
 		 * itself
@@ -113,8 +112,7 @@ public class PlayersManager {
 			if (i != position) {
 				if (players[i] != null) {
 					try {
-						players[i].sni.notifyPlayerJoined("_bot." + userName
-								+ "." + position, true, 0,
+						players[i].sni.notifyPlayerJoined(botName, true, 0,
 								toRelativePosition(position, i));
 					} catch (RemoteException e) {
 						System.err.println(" " + players[i].name
@@ -122,9 +120,8 @@ public class PlayersManager {
 						removalThread.addRemoval(i);
 					}
 				} else if (nonRemoteBotsInfo[i] != null) {
-					nonRemoteBotsInfo[i].bot.notifyPlayerJoined("_bot."
-							+ userName + "." + position, true, 0,
-							toRelativePosition(position, i));
+					nonRemoteBotsInfo[i].bot.notifyPlayerJoined(botName, true,
+							0, toRelativePosition(position, i));
 				}
 			}
 		}
@@ -177,9 +174,8 @@ public class PlayersManager {
 						removalThread.addRemoval(i);
 					}
 				} else if (nonRemoteBotsInfo[i] != null) {
-					nonRemoteBotsInfo[i].bot.notifyPlayerJoined("_bot."
-							+ playerName + "." + position, false, score,
-							toRelativePosition(position, i));
+					nonRemoteBotsInfo[i].bot.notifyPlayerJoined(playerName,
+							false, score, toRelativePosition(position, i));
 				}
 			}
 		}
