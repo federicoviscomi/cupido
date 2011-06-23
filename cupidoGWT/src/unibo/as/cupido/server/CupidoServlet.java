@@ -836,14 +836,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void addBot(int position) throws PositionFullException,
+	public String addBot(int position) throws PositionFullException,
 			FullTableException, NotCreatorException, IllegalArgumentException,
 			UserNotAuthenticatedException, FatalException, NoSuchTableException {
 
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
-		if (httpSession == null) {
-			return;
-		}
+		assert httpSession != null;
 		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 			throw new UserNotAuthenticatedException();
 		}
@@ -852,7 +850,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new NoSuchTableException();
 		}
 		try {
-			ti.addBot((String) httpSession.getAttribute(USERNAME), position);
+			return ti.addBot((String) httpSession.getAttribute(USERNAME), position);
 		} catch (PositionFullException e) {
 			throw e;
 		} catch (IllegalArgumentException e) {

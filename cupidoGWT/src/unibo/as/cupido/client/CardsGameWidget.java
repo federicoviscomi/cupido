@@ -392,7 +392,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			PlayerData playerInfo = players.get(i);
 			String s;
 			if (playerInfo.isBot)
-				s = "bot";
+				s = playerInfo.name;
 			else
 				s = playerInfo.name + " (" + playerInfo.score + ")";
 			movableWidgets.playerNames.get(i).setText(s);
@@ -1211,10 +1211,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			{
 				SafeHtmlBuilder builder = new SafeHtmlBuilder();
 				builder.appendHtmlConstant("<b>");
-				if (players.get(i).isBot)
-					builder.appendEscaped("bot");
-				else
-					builder.appendEscaped(players.get(i).name);
+				builder.appendEscaped(players.get(i).name);
 				builder.appendHtmlConstant("</b>");
 				HTML userLabel = new HTML(builder.toSafeHtml());
 				userLabel.setWidth("128px");
@@ -1228,7 +1225,6 @@ public class CardsGameWidget extends AbsolutePanel {
 				matchPointsLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 				grid.setWidget(i + 1, 1, matchPointsLabel);
 			}
-
 			
 			if (!players.get(i).isBot) {
 				SafeHtmlBuilder builder = new SafeHtmlBuilder();

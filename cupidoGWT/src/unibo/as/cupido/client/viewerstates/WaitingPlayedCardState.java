@@ -44,15 +44,11 @@ public class WaitingPlayedCardState implements ViewerState {
 
 		final HTML text;
 
-		if (playerInfo.isBot)
-			text = new HTML("Attendi che il bot giochi");
-		else {
-			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
-			safeHtmlBuilder.appendEscaped(playerInfo.name);
-			safeHtmlBuilder.appendHtmlConstant(" giochi.");
-			text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
-		}
+		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+		safeHtmlBuilder.appendEscaped(playerInfo.name);
+		safeHtmlBuilder.appendHtmlConstant(" giochi.");
+		text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
 
 		text.setWidth("120px");
 		text.setWordWrap(true);

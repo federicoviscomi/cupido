@@ -101,15 +101,11 @@ public class WaitingPlayedCardState implements PlayerState {
 		
 		assert currentPlayer != 0;
 		
-		if (playerInfo.isBot)
-			text = new HTML("Attendi che il bot giochi");
-		else {
-			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
-			safeHtmlBuilder.appendEscaped(playerInfo.name);
-			safeHtmlBuilder.appendHtmlConstant(" giochi.");
-			text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
-		}
+		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+		safeHtmlBuilder.appendEscaped(playerInfo.name);
+		safeHtmlBuilder.appendHtmlConstant(" giochi.");
+		text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
 	}
 
 	@Override

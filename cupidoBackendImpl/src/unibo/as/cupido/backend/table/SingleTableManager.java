@@ -64,17 +64,19 @@ public class SingleTableManager implements TableInterface {
 	}
 
 	@Override
-	public synchronized void addBot(String userName, int position)
+	public synchronized String addBot(String userName, int position)
 			throws PositionFullException, RemoteException,
 			IllegalArgumentException, FullTableException, NotCreatorException,
 			IllegalStateException {
 		try {
 
 			String[] botNames = {"", "cupido", "venere", "marte"};
+			String botName = botNames[position];
+			
 			InitialTableStatus initialTableStatus = playersManager
 					.getInitialTableStatus(position);
 
-			NonRemoteBot bot = new NonRemoteBot(botNames[position],
+			NonRemoteBot bot = new NonRemoteBot(botName,
 					initialTableStatus, gtm.getLTMInterface(
 							table.tableDescriptor.ltmId).getTable(
 							table.tableDescriptor.id));
@@ -85,6 +87,8 @@ public class SingleTableManager implements TableInterface {
 				startNotifierThread.setGameStarted();
 			}
 			gtm.notifyTableJoin(table.tableDescriptor);
+			
+			return botName;
 		} catch (NoSuchTableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,6 +100,8 @@ public class SingleTableManager implements TableInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		// FIXME: This must never be reached.
+		return "";
 	}
 
 	@Override

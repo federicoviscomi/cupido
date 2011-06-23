@@ -203,8 +203,9 @@ public interface CupidoInterface extends RemoteService {
 	 *             if user is not at the table
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
+	 * @return The name of the bot.
 	 */
-	public void addBot(int position) throws PositionFullException,
+	public String addBot(int position) throws PositionFullException,
 			FullTableException, NotCreatorException, IllegalArgumentException,
 			NoSuchTableException, UserNotAuthenticatedException, FatalException;
 

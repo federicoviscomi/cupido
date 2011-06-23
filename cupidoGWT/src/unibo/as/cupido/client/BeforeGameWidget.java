@@ -178,7 +178,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 			@Override
 			public void onClick(ClickEvent event) {
 				remove(button);
-				cupidoService.addBot(position + 1, new AsyncCallback<Void>() {
+				cupidoService.addBot(position + 1, new AsyncCallback<String>() {
 					@Override
 					public void onFailure(Throwable caught) {
 						try {
@@ -207,8 +207,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 					}
 
 					@Override
-					public void onSuccess(Void result) {
-						addBot(position);
+					public void onSuccess(String name) {
+						addBot(position, name);
 					}
 				});
 			}
@@ -271,9 +271,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 				&& initialTableStatus.opponents[2] != null;
 	}
 
-	private void addBot(int position) {
-		// The name is ignored, but it must not be null.
-		initialTableStatus.opponents[position] = "";
+	private void addBot(int position, String name) {
+		initialTableStatus.opponents[position] = name;
 		initialTableStatus.whoIsBot[position] = true;
 
 		if (isOwner) {
@@ -283,7 +282,12 @@ public class BeforeGameWidget extends AbsolutePanel {
 		}
 
 		assert labels.get(position).getText().isEmpty();
-		labels.get(position).setHTML("<b><big>bot</big></b>");
+
+		SafeHtmlBuilder builder = new SafeHtmlBuilder();
+		builder.appendHtmlConstant("<b><big>");
+		builder.appendEscaped(name);
+		builder.appendHtmlConstant("</big></b>");
+		labels.get(position).setHTML(builder.toSafeHtml());
 
 		if (isTableFull())
 			listener.onTableFull();
@@ -321,7 +325,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 			return;
 		}
 		if (isBot)
-			addBot(position);
+			addBot(position, name);
 		else
 			addPlayer(name, points, position);
 	}
