@@ -51,7 +51,7 @@ public class WaitingFirstLeadState implements PlayerState {
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
 		text = new HTML(
-				"Attendi che il giocatore che ha il due di picche lo giochi.");
+				"Attendi che il giocatore che ha il due di fiori lo giochi.");
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
