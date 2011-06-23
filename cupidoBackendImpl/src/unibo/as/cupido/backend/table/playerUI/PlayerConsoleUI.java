@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
+import unibo.as.cupido.common.exception.PlayerNotFoundException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -39,10 +40,11 @@ public class PlayerConsoleUI {
 			"play", "-a", "--arbitrary", "play an arbitrary card",
 			"addbot POSITION", "", "",
 			"add a bot in specified absolute position", "join", "", "",
-			"join an arbitrary table", "help", "", "", "print this help");
+			"join an arbitrary table", "help", "", "", "print this help",
+			"leave", "", "", "leave the table(if any)");
 
 	private static final String[] allCommands = { "create", "join", "list",
-			"login", "pass", "play", "addbot", "help", "exit", "sleep" };
+			"login", "pass", "play", "addbot", "help", "exit", "sleep", "leave" };
 
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
@@ -168,7 +170,18 @@ public class PlayerConsoleUI {
 					e.printStackTrace();
 				}
 			} else if (logged) {
-				if (command[0].equals("join")) {
+				if (command[0].equals("leave")) {
+					try {
+						if (remoteBot.singleTableManager != null) {
+							remoteBot.singleTableManager.leaveTable(playerName);
+						} else {
+							out.println("there is no table to leave!");
+						}
+					} catch (PlayerNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else if (command[0].equals("join")) {
 					try {
 						TableInfoForClient tableInfo = gtm.getTableList()
 								.iterator().next();
@@ -177,6 +190,7 @@ public class PlayerConsoleUI {
 								tableInfo.tableDescriptor.id);
 						remoteBot.initialTableStatus = remoteBot.singleTableManager
 								.joinTable(playerName, remoteBot);
+						out.println("successfully joined " + tableInfo);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -210,6 +224,8 @@ public class PlayerConsoleUI {
 					try {
 						remoteBot.singleTableManager = gtm.createTable(
 								playerName, botNotification);
+						out.println("successfully created table "
+								+ remoteBot.singleTableManager);
 					} catch (AllLTMBusyException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -257,16 +273,21 @@ public class PlayerConsoleUI {
 				}
 			} else {// not logged
 				if (command[0].equals("login")) {
-					logged = true;
-					playerName = command[1];
-					// TODO really check the database
-					remoteBot = new RemoteBot(new InitialTableStatus(
-							new String[3], new int[3], new boolean[3]), null,
-							playerName);
-					botNotification = (Bot) UnicastRemoteObject
-							.exportObject(remoteBot);
-					out.println("successfully logged in " + playerName);
-					out.flush();
+					if (command.length < 2) {
+						out.println("missing user name");
+						out.flush();
+					} else {
+						logged = true;
+						playerName = command[1];
+						// TODO really check the database
+						remoteBot = new RemoteBot(new InitialTableStatus(
+								new String[3], new int[3], new boolean[3]),
+								null, playerName);
+						botNotification = (Bot) UnicastRemoteObject
+								.exportObject(remoteBot);
+						out.println("successfully logged in " + playerName);
+						out.flush();
+					}
 				} else {
 					out.println("log first!");
 					out.println(USAGE);
@@ -279,8 +300,11 @@ public class PlayerConsoleUI {
 
 	private void exit(int exitStatus) {
 		try {
+			if (remoteBot != null) {
+				remoteBot.singleTableManager.leaveTable(playerName);
+			}
 			in.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			//
 		}
 		out.close();
