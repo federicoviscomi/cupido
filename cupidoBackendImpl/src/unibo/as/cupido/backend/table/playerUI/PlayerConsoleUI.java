@@ -42,7 +42,7 @@ public class PlayerConsoleUI {
 			"join an arbitrary table", "help", "", "", "print this help");
 
 	private static final String[] allCommands = { "create", "join", "list",
-			"login", "pass", "play", "addbot", "help", "exit" };
+			"login", "pass", "play", "addbot", "help", "exit", "sleep" };
 
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
@@ -126,16 +126,21 @@ public class PlayerConsoleUI {
 						out.println("\n1 sintax error\n " + USAGE);
 						out.flush();
 					} else {
-						boolean recognizedCommand = false;
-						for (String c : allCommands) {
-							if (c.equals(command[0])) {
-								recognizedCommand = true;
-							}
-						}
-						if (!recognizedCommand) {
-							out.println(command[0] + ": command not found");
-							out.println(USAGE);
+						command[0] = command[0].trim();
+						if (command[0].length() == 0) {
 							error = true;
+						} else {
+							boolean recognizedCommand = false;
+							for (String c : allCommands) {
+								if (c.equals(command[0])) {
+									recognizedCommand = true;
+								}
+							}
+							if (!recognizedCommand) {
+								out.println(command[0] + ": command not found");
+								out.println(USAGE);
+								error = true;
+							}
 						}
 					}
 				} catch (IllegalOptionValueException e) {
