@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import unibo.as.cupido.backend.GlobalChatImpl;
@@ -122,7 +123,9 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 			/* store created table */
 			allTables.addTable(table.second, chosenLTM);
-
+			
+			// FIXME does not check for duplicate creator!
+			
 			return table.first;
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -143,7 +146,11 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 	@Override
 	public Collection<TableInfoForClient> getTableList() throws RemoteException {
-		return allTables.getAllTables();
+		ArrayList<TableInfoForClient> list = new ArrayList<TableInfoForClient>();
+		for (TableInfoForClient tifc : allTables.getAllTables())
+			if (tifc.freePosition != 0)
+				list.add(tifc);
+		return list;
 	}
 
 	@Override
