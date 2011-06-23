@@ -148,23 +148,23 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
-		for (int i = 0; i < cards.length; i++)
-			this.cards.add(cards[i]);
 		synchronized (lock) {
+			for (int i = 0; i < cards.length; i++)
+				this.cards.add(cards[i]);
 			if (!ableToPass) {
 				ableToPass = true;
 				lock.notify();
 			}
 		}
-		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			synchronized (lock) {
+		synchronized (lock) {
+			if (this.cards.contains(CardsManager.twoOfClubs)) {
 				firstDealer = 3;
 				ableToPlay = true;
 				lock.notify();
 			}
+			out.println("\nplay starts. " + userName + " cards are:"
+					+ this.cards.toString());
 		}
-		out.println("\nplay starts. " + userName + " cards are:"
-				+ this.cards.toString());
 	}
 
 	@Override

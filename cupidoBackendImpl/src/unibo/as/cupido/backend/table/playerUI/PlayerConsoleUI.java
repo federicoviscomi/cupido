@@ -15,13 +15,11 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
@@ -63,8 +61,6 @@ public class PlayerConsoleUI {
 	private boolean logged = false;
 	private Bot botNotification;
 	private RemoteBot remoteBot;
-	private TableInfoForClient tableInfo;
-	private TableInterface tableInterface;
 
 	public PlayerConsoleUI() throws Exception {
 		this(new BufferedReader(new InputStreamReader(System.in)),
@@ -143,12 +139,13 @@ public class PlayerConsoleUI {
 				out.flush();
 			} else if (command[0].equals("join")) {
 				try {
-					tableInfo = gtm.getTableList().iterator().next();
-					tableInterface = gtm.getLTMInterface(
+					TableInfoForClient tableInfo = gtm.getTableList()
+							.iterator().next();
+					remoteBot.singleTableManager = gtm.getLTMInterface(
 							tableInfo.tableDescriptor.ltmId).getTable(
 							tableInfo.tableDescriptor.id);
-					remoteBot.initialTableStatus = tableInterface.joinTable(
-							playerName, remoteBot);
+					remoteBot.initialTableStatus = remoteBot.singleTableManager
+							.joinTable(playerName, remoteBot);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
