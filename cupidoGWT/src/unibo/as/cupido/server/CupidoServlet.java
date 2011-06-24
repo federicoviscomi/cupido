@@ -2,6 +2,7 @@ package unibo.as.cupido.server;
 
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -285,6 +286,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				g.playersTotalPoints = playersTotalPoint;
 				cometSession.enqueue(g);
 				httpSession.removeAttribute(TI);
+				try {
+					//FIXME can value true cause problems?
+					UnicastRemoteObject.unexportObject((Remote) httpSession.getAttribute(SNI), true);
+				} catch (RemoteException e) {
+					System.out.println("SNI: on notifyGameEnded() catched RemoteException while unexporting obj ->"+e.getMessage());
+					//e.printStackTrace();
+				}
 				httpSession.removeAttribute(SNI);
 			}
 		};
@@ -768,6 +776,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new NoSuchTableException();
 		}
 		httpSession.removeAttribute(TI);
+		try {
+			UnicastRemoteObject.unexportObject((Remote) httpSession.getAttribute(SNI), false);
+		} catch (RemoteException e) {
+			System.out.println("Servlet: on leavetable() catched RemoteException while unexporting obj ->"+e.getMessage());
+			//e.printStackTrace();
+		}
 		httpSession.removeAttribute(SNI);
 	}
 
