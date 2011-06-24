@@ -77,7 +77,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		usernameBox = new TextBox();
 		usernameBox.setWidth("200px");
 		usernameBox.addKeyPressHandler(new KeyPressHandler() {
-			private String lastContent = "";
+			private String lastContent = null;
 
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
