@@ -100,7 +100,7 @@ public interface ServletNotificationsInterface extends Remote {
 	 * notified. If joined player is a bot it is added to the table by table
 	 * creator. In this case the table creator is not notified of this event
 	 * because he already knows.
-	 * 
+	 * This notification is not sent when a bot join an already started game.
 	 * @param playerName
 	 *            of the joined player
 	 * @param isBot
@@ -116,12 +116,24 @@ public interface ServletNotificationsInterface extends Remote {
 	 *            positions next to the player who received the notification in
 	 *            clockwise order.
 	 * @throws RemoteException
+	 * @see notifyPlayerJoined
 	 */
 	public void notifyPlayerJoined(String playerName, boolean isBot, int score,
 			int position) throws RemoteException;
 
 	/**
-	 * When a player leaves the table every other players and viewer get
+	 * If a player left the table when game is already started, it's replaced
+	 * with a bot called {@link botName}.
+	 * 
+	 * @param position
+	 *            position of the player who has left
+	 * @param botName
+	 *            name of the joining bot
+	 */
+	public void notifyPlayerReplaced(String botName, int position);
+
+	/**
+	 * When a player leaves the table BEFORE the game starts, every other players and viewer get
 	 * notified.
 	 * 
 	 * @param playerName

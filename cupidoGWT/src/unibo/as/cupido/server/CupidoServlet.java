@@ -218,6 +218,23 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				j.position = position;
 				cometSession.enqueue(j);
 			}
+			
+			/**
+			 * Notify NewPlayerJoined at the client.
+			 * 
+			 * @see NewPlayerJoined
+			 */
+			@Override
+			public void notifyPlayerReplaced(String botName, int position) {
+				if (httpSession == null || cometSession == null) {
+					System.out.println("SerletNotInterf: session null");
+					return;
+				}
+				NewPlayerJoined j = new NewPlayerJoined();
+				j.name = botName;
+				j.isBot = true;
+				cometSession.enqueue(j);
+			}
 
 			/**
 			 * Notify CardPlayed at the client.
