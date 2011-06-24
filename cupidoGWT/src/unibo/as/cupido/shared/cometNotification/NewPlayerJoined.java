@@ -19,6 +19,12 @@ package unibo.as.cupido.shared.cometNotification;
 
 import java.io.Serializable;
 
+/**
+ * This notification in sent when a player or a bot joins the table.
+ * If the game is already started, NewPlayerJoined is sent with {@link isBot}==true and it means: player in position {@link position}
+ * has left the game, and a bot has entered the game.
+ * If {@link isBot}==true, the variable {@link points} is meaningless.
+ */
 public class NewPlayerJoined implements Serializable {
 
 	private static final long serialVersionUID = 1L;
