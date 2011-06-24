@@ -765,7 +765,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 
 		try {
-			ti.leaveTable(USERNAME);
+			ti.leaveTable((String) httpSession.getAttribute(USERNAME));
 		} catch (RemoteException e) {
 			System.out
 					.println("Servlet: onLeaveTable catched RemoteException ->"
