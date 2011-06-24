@@ -2,8 +2,8 @@ package unibo.as.cupido.client.viewerstates;
 
 import java.util.List;
 
-import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.client.CardsGameWidget;
+import unibo.as.cupido.common.structures.Card;
 
 public interface ViewerStateManager {
 
@@ -26,11 +26,11 @@ public interface ViewerStateManager {
 	public int getFirstPlayerInTrick();
 
 	/**
-	 * @return The ordered list containing the cards dealt in the current trick.
+	 * @return The ordered list containing the cards played in the current trick.
 	 */
-	public List<Card> getDealtCards();
+	public List<Card> getPlayedCards();
 
-	public void addDealtCard(int player, Card card);
+	public void addPlayedCard(int player, Card card);
 
 	public void goToNextTrick();
 
@@ -51,12 +51,12 @@ public interface ViewerStateManager {
 
 	public void transitionToEndOfTrick();
 
-	public void transitionToWaitingFirstDeal();
+	public void transitionToWaitingFirstLead();
 
 	public void transitionToGameEnded();
 
-	public void transitionToWaitingDeal();
-	
+	public void transitionToWaitingPlayedCard();
+
 	public void freeze();
 
 	public void handleCardPlayed(Card card, int playerPosition);

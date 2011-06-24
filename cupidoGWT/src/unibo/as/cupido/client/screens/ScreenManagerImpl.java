@@ -36,7 +36,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	// This is used to check that no screen switches occur while switching
 	// screen.
 	boolean switchingScreen = false;
-	
+
 	CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
 
 	CometMessageListener cometMessageListener;
@@ -57,60 +57,75 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 				System.out
 						.println("cupidoService.openCometConnection() succeeded.");
 
-				CupidoCometListener cometListener = new CupidoCometListener(new CometListener() {
+				CupidoCometListener cometListener = new CupidoCometListener(
+						new CometListener() {
 
-					@Override
-					public void onConnected(int heartbeat) {
-					}
-
-					@Override
-					public void onDisconnected() {
-					}
-
-					@Override
-					public void onError(Throwable exception, boolean connected) {
-					}
-
-					@Override
-					public void onHeartbeat() {
-					}
-
-					@Override
-					public void onRefresh() {
-					}
-
-					@Override
-					public void onMessage(List<? extends Serializable> messages) {
-						for (Serializable message : messages) {
-							if (message instanceof CardPassed) {
-								CardPassed x = (CardPassed)message;
-								cometMessageListener.onCardPassed(x.cards);
-							} else if (message instanceof CardPlayed) {
-								CardPlayed x = (CardPlayed)message;
-								cometMessageListener.onCardPlayed(x.card, x.playerPosition);
-							} else if (message instanceof GameEnded) {
-								GameEnded x = (GameEnded)message;
-								cometMessageListener.onGameEnded(x.matchPoints, x.playersTotalPoints);
-							} else if (message instanceof GameStarted) {
-								GameStarted x = (GameStarted)message;
-								cometMessageListener.onGameStarted(x.myCards);
-							} else if (message instanceof NewLocalChatMessage) {
-								NewLocalChatMessage x = (NewLocalChatMessage)message;
-								cometMessageListener.onNewLocalChatMessage(x.user, x.message);
-							} else if (message instanceof NewPlayerJoined) {
-								NewPlayerJoined x = (NewPlayerJoined)message;
-								cometMessageListener.onNewPlayerJoined(x.name, x.isBot, x.points, x.position);
-							} else if (message instanceof PlayerLeft) {
-								PlayerLeft x = (PlayerLeft)message;
-								cometMessageListener.onPlayerLeft(x.player);
-							} else {
-								displayGeneralErrorScreen(new Exception("Unhandled comet message: " + message.toString()));
-								break;
+							@Override
+							public void onConnected(int heartbeat) {
 							}
-						}
-					}
 
-				});
+							@Override
+							public void onDisconnected() {
+							}
+
+							@Override
+							public void onError(Throwable exception,
+									boolean connected) {
+							}
+
+							@Override
+							public void onHeartbeat() {
+							}
+
+							@Override
+							public void onRefresh() {
+							}
+
+							@Override
+							public void onMessage(
+									List<? extends Serializable> messages) {
+								for (Serializable message : messages) {
+									if (message instanceof CardPassed) {
+										CardPassed x = (CardPassed) message;
+										cometMessageListener
+												.onCardPassed(x.cards);
+									} else if (message instanceof CardPlayed) {
+										CardPlayed x = (CardPlayed) message;
+										cometMessageListener.onCardPlayed(
+												x.card, x.playerPosition);
+									} else if (message instanceof GameEnded) {
+										GameEnded x = (GameEnded) message;
+										cometMessageListener.onGameEnded(
+												x.matchPoints,
+												x.playersTotalPoints);
+									} else if (message instanceof GameStarted) {
+										GameStarted x = (GameStarted) message;
+										cometMessageListener
+												.onGameStarted(x.myCards);
+									} else if (message instanceof NewLocalChatMessage) {
+										NewLocalChatMessage x = (NewLocalChatMessage) message;
+										cometMessageListener
+												.onNewLocalChatMessage(x.user,
+														x.message);
+									} else if (message instanceof NewPlayerJoined) {
+										NewPlayerJoined x = (NewPlayerJoined) message;
+										cometMessageListener.onNewPlayerJoined(
+												x.name, x.isBot, x.points,
+												x.position);
+									} else if (message instanceof PlayerLeft) {
+										PlayerLeft x = (PlayerLeft) message;
+										cometMessageListener
+												.onPlayerLeft(x.player);
+									} else {
+										displayGeneralErrorScreen(new Exception(
+												"Unhandled comet message: "
+														+ message.toString()));
+										break;
+									}
+								}
+							}
+
+						});
 
 				CometSerializer serializer = GWT
 						.create(CupidoCometSerializer.class);
@@ -119,7 +134,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 						.getModuleBaseURL() + "comet", serializer,
 						cometListener);
 				cometClient.start();
-				
+
 				System.out.println("Client: Comet client started ("
 						+ GWT.getModuleBaseURL() + "comet).");
 
@@ -147,7 +162,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
-		
+
 	}
 
 	@Override
@@ -162,16 +177,17 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
-		
+
 	}
-	
+
 	@Override
 	public void displayMainMenuScreen(String username) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		MainMenuScreen screen = new MainMenuScreen(this, username, cupidoService);
+		MainMenuScreen screen = new MainMenuScreen(this, username,
+				cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -208,12 +224,14 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	}
 
 	@Override
-	public void displayTableScreen(String username, boolean isOwner, InitialTableStatus initialTableStatus) {
+	public void displayTableScreen(String username, boolean isOwner,
+			InitialTableStatus initialTableStatus, int userScore) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		TableScreen screen = new TableScreen(this, username, isOwner, initialTableStatus, cupidoService);
+		TableScreen screen = new TableScreen(this, username, isOwner,
+				initialTableStatus, userScore, cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -222,13 +240,14 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	}
 
 	@Override
-	public void displayObservedTableScreen(String username, ObservedGameStatus observedGameStatus) {
+	public void displayObservedTableScreen(String username,
+			ObservedGameStatus observedGameStatus) {
 		assert !switchingScreen;
-		switchingScreen = true;	
+		switchingScreen = true;
 
 		removeCurrentScreen();
-		ObservedTableScreen screen = new ObservedTableScreen(this, username, observedGameStatus,
-				cupidoService);
+		ObservedTableScreen screen = new ObservedTableScreen(this, username,
+				observedGameStatus, cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -262,21 +281,23 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
 		switchingScreen = false;
 	}
-	
+
 	@Override
-	public void displayTableListScreen(String username, Collection<TableInfoForClient> tableCollection) {
+	public void displayTableListScreen(String username,
+			Collection<TableInfoForClient> tableCollection) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		TableListScreen screen = new TableListScreen(this, username, tableCollection, cupidoService);
+		TableListScreen screen = new TableListScreen(this, username,
+				tableCollection, cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
 	}
-	
+
 	@Override
 	public void setListener(CometMessageListener listener) {
 		cometMessageListener = listener;

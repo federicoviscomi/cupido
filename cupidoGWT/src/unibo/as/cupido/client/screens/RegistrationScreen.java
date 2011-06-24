@@ -1,10 +1,9 @@
 package unibo.as.cupido.client.screens;
 
-import unibo.as.cupido.common.exception.DuplicateUserNameException;
-import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
-import com.google.gwt.user.client.Window;
+import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.FatalException;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -14,6 +13,7 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
@@ -27,7 +27,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 
 	private CupidoInterfaceAsync cupidoService;
 	private ScreenManager screenManager;
-	
+
 	private TextBox usernameBox;
 	private PasswordTextBox passwordBox;
 	private PasswordTextBox passwordConfirmBox;
@@ -37,28 +37,28 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 
 	private HTML checkUsernameAvailabilityLabel;
 	private PushButton checkUsernameAvailability;
-	
+
 	private boolean frozen = false;
 
 	public RegistrationScreen(final ScreenManager screenManager,
 			final CupidoInterfaceAsync cupidoService) {
 		setHeight((Cupido.height - 280) + "px");
 		setWidth(Cupido.width + "px");
-		
+
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
-		
+
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
-		
+
 		setHorizontalAlignment(ALIGN_CENTER);
 
 		DOM.setStyleAttribute(getElement(), "marginTop", "100px");
-		
+
 		add(new HTML("<h1>Registrazione a Cupido</h1>"));
-		
+
 		Grid grid = new Grid(3, 4);
-		
+
 		HTML usernameLabel = new HTML("Nome utente:");
 		usernameLabel.setWidth("200px");
 		usernameLabel.setHorizontalAlignment(ALIGN_RIGHT);
@@ -73,18 +73,19 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		passwordConfirmLabel.setWidth("200px");
 		passwordConfirmLabel.setHorizontalAlignment(ALIGN_RIGHT);
 		grid.setWidget(2, 0, passwordConfirmLabel);
-		
+
 		usernameBox = new TextBox();
 		usernameBox.setWidth("200px");
 		usernameBox.addKeyPressHandler(new KeyPressHandler() {
 			private String lastContent = "";
+
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				if (usernameBox.getText().equals(lastContent))
 					return;
 				lastContent = usernameBox.getText();
 				okButton.setEnabled(false);
-				checkUsernameAvailability.setEnabled(true); 
+				checkUsernameAvailability.setEnabled(true);
 				checkUsernameAvailabilityLabel.setText("");
 			}
 		});
@@ -113,7 +114,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 			}
 		});
 		grid.setWidget(2, 1, passwordConfirmBox);
-		
+
 		checkUsernameAvailability = new PushButton();
 		checkUsernameAvailability.setHTML("Controlla disponibilit&agrave;");
 		checkUsernameAvailability.setEnabled(false);
@@ -124,13 +125,13 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 			}
 		});
 		grid.setWidget(0, 2, checkUsernameAvailability);
-		
+
 		checkUsernameAvailabilityLabel = new HTML();
 		checkUsernameAvailabilityLabel.setWidth("200px");
 		grid.setWidget(0, 3, checkUsernameAvailabilityLabel);
-		
+
 		add(grid);
-		
+
 		HorizontalPanel bottomPanel = new HorizontalPanel();
 		bottomPanel.setSpacing(50);
 		add(bottomPanel);
@@ -154,149 +155,166 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		});
 		bottomPanel.add(okButton);
 	}
-	
+
 	private void checkUsername() {
-		
+
 		usernameBox.setEnabled(false);
 		checkUsernameAvailability.setEnabled(false);
 		checkUsernameAvailabilityLabel.setText("Controllo in corso...");
 		assert !okButton.isEnabled();
-		cupidoService.isUserRegistered(usernameBox.getText(), new AsyncCallback<Boolean>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				if (frozen) {
-					System.out.println("Client: notice: the onFailure() event was received while frozen, ignoring it.");
-					return;
-				}
-				screenManager.displayGeneralErrorScreen(caught);
-			}
-
-			@Override
-			public void onSuccess(Boolean isRegistered) {
-				if (frozen) {
-					System.out.println("Client: notice: the onSuccess() event was received while frozen, ignoring it.");
-					return;
-				}
-				checkUsernameAvailability.setEnabled(false);
-				usernameBox.setEnabled(true);
-				if (isRegistered) {
-					checkUsernameAvailabilityLabel.setText("");
-					// Remove the focus, so if the user dismisses the alert with Enter, it
-					// won't be fired again.
-					usernameBox.setFocus(false);
-					passwordBox.setFocus(false);
-					passwordConfirmBox.setFocus(false);
-					okButton.setFocus(false);
-					
-					Window.alert("Il nome utente che hai scelto \350 gi\340 stato usato; provane un altro.");
-				} else {
-					checkUsernameAvailabilityLabel.setText("Disponibile");
-					okButton.setEnabled(true);
-				}
-			}
-		});
-	}
-	
-	private void tryRegistering() {
-		if (usernameBox.getText().isEmpty()) {
-			// Remove the focus, so if the user dismisses the alert with Enter, it
-			// won't be fired again.
-			usernameBox.setFocus(false);
-			passwordBox.setFocus(false);
-			passwordConfirmBox.setFocus(false);
-			okButton.setFocus(false);
-			
-			Window.alert("Non hai inserito il nome utente. Inseriscilo e riprova.");
-			return;
-		}
-		if (passwordBox.getText().isEmpty()) {
-			// Remove the focus, so if the user dismisses the alert with Enter, it
-			// won't be fired again.
-			usernameBox.setFocus(false);
-			passwordBox.setFocus(false);
-			passwordConfirmBox.setFocus(false);
-			okButton.setFocus(false);
-			
-			Window.alert("Non hai inserito la password. Inseriscila e riprova.");
-			return;
-		}
-		if (!passwordBox.getText().equals(passwordConfirmBox.getText())) {
-			// Remove the focus, so if the user dismisses the alert with Enter, it
-			// won't be fired again.
-			usernameBox.setFocus(false);
-			passwordBox.setFocus(false);
-			passwordConfirmBox.setFocus(false);
-			okButton.setFocus(false);
-			
-			Window.alert("Le password inserite non corrispondono, riprova ad inserirle.");
-			return;
-		}
-		
-		usernameBox.setEnabled(false);
-		passwordBox.setEnabled(false);
-		passwordConfirmBox.setEnabled(false);
-		okButton.setEnabled(false);
-		abortButton.setEnabled(false);
-		
-		cupidoService.registerUser(usernameBox.getText(), passwordBox.getText(),
-				new AsyncCallback<Void>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				if (frozen) {
-					System.out.println("Client: notice: the onFailure() event was received while frozen, ignoring it.");
-					return;
-				}
-				try {
-					throw caught;
-				} catch (DuplicateUserNameException e) {
-					Window.alert("L'username che hai scelto non \350 pi\371 disponibile, scegline un altro.");
-					usernameBox.setEnabled(true);
-					passwordBox.setEnabled(true);
-					passwordConfirmBox.setEnabled(true);
-					okButton.setEnabled(false);
-					abortButton.setEnabled(true);
-					usernameBox.setFocus(true);
-					checkUsernameAvailabilityLabel.setText("");
-				} catch (Throwable e) {
-					screenManager.displayGeneralErrorScreen(e);
-				}
-			}
-
-			@Override
-			public void onSuccess(Void result) {
-				if (frozen) {
-					System.out.println("Client: notice: the onSuccess() event was received while frozen, ignoring it.");
-					return;
-				}
-				
-				final String username = usernameBox.getText();
-				
-				cupidoService.login(username, passwordBox.getText(), new AsyncCallback<Boolean>() {
+		cupidoService.isUserRegistered(usernameBox.getText(),
+				new AsyncCallback<Boolean>() {
 					@Override
 					public void onFailure(Throwable caught) {
 						if (frozen) {
-							System.out.println("Client: notice: the onFailure() event was received while frozen, ignoring it.");
+							System.out
+									.println("Client: notice: the onFailure() event was received while frozen, ignoring it.");
 							return;
 						}
 						screenManager.displayGeneralErrorScreen(caught);
 					}
 
 					@Override
-					public void onSuccess(Boolean successful) {
+					public void onSuccess(Boolean isRegistered) {
 						if (frozen) {
-							System.out.println("Client: notice: the onSuccess() event was received while frozen, ignoring it.");
+							System.out
+									.println("Client: notice: the onSuccess() event was received while frozen, ignoring it.");
 							return;
 						}
-						if (successful)
-							screenManager.displayMainMenuScreen(username);
-						else
-							screenManager.displayGeneralErrorScreen(new FatalException("The very same username-password pair used for registering didn't work for logging in."));
+						checkUsernameAvailability.setEnabled(false);
+						usernameBox.setEnabled(true);
+						if (isRegistered) {
+							checkUsernameAvailabilityLabel.setText("");
+							// Remove the focus, so if the user dismisses the
+							// alert with Enter, it
+							// won't be fired again.
+							usernameBox.setFocus(false);
+							passwordBox.setFocus(false);
+							passwordConfirmBox.setFocus(false);
+							okButton.setFocus(false);
+
+							Window.alert("Il nome utente che hai scelto \350 gi\340 stato usato; provane un altro.");
+						} else {
+							checkUsernameAvailabilityLabel
+									.setText("Disponibile");
+							okButton.setEnabled(true);
+						}
 					}
 				});
-			}
-			
-		});
+	}
+
+	private void tryRegistering() {
+		if (usernameBox.getText().isEmpty()) {
+			// Remove the focus, so if the user dismisses the alert with Enter,
+			// it
+			// won't be fired again.
+			usernameBox.setFocus(false);
+			passwordBox.setFocus(false);
+			passwordConfirmBox.setFocus(false);
+			okButton.setFocus(false);
+
+			Window.alert("Non hai inserito il nome utente. Inseriscilo e riprova.");
+			return;
+		}
+		if (passwordBox.getText().isEmpty()) {
+			// Remove the focus, so if the user dismisses the alert with Enter,
+			// it
+			// won't be fired again.
+			usernameBox.setFocus(false);
+			passwordBox.setFocus(false);
+			passwordConfirmBox.setFocus(false);
+			okButton.setFocus(false);
+
+			Window.alert("Non hai inserito la password. Inseriscila e riprova.");
+			return;
+		}
+		if (!passwordBox.getText().equals(passwordConfirmBox.getText())) {
+			// Remove the focus, so if the user dismisses the alert with Enter,
+			// it
+			// won't be fired again.
+			usernameBox.setFocus(false);
+			passwordBox.setFocus(false);
+			passwordConfirmBox.setFocus(false);
+			okButton.setFocus(false);
+
+			Window.alert("Le password inserite non corrispondono, riprova ad inserirle.");
+			return;
+		}
+
+		usernameBox.setEnabled(false);
+		passwordBox.setEnabled(false);
+		passwordConfirmBox.setEnabled(false);
+		okButton.setEnabled(false);
+		abortButton.setEnabled(false);
+
+		cupidoService.registerUser(usernameBox.getText(),
+				passwordBox.getText(), new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						if (frozen) {
+							System.out
+									.println("Client: notice: the onFailure() event was received while frozen, ignoring it.");
+							return;
+						}
+						try {
+							throw caught;
+						} catch (DuplicateUserNameException e) {
+							Window.alert("L'username che hai scelto non \350 pi\371 disponibile, scegline un altro.");
+							usernameBox.setEnabled(true);
+							passwordBox.setEnabled(true);
+							passwordConfirmBox.setEnabled(true);
+							okButton.setEnabled(false);
+							abortButton.setEnabled(true);
+							usernameBox.setFocus(true);
+							checkUsernameAvailabilityLabel.setText("");
+						} catch (Throwable e) {
+							screenManager.displayGeneralErrorScreen(e);
+						}
+					}
+
+					@Override
+					public void onSuccess(Void result) {
+						if (frozen) {
+							System.out
+									.println("Client: notice: the onSuccess() event was received while frozen, ignoring it.");
+							return;
+						}
+
+						final String username = usernameBox.getText();
+
+						cupidoService.login(username, passwordBox.getText(),
+								new AsyncCallback<Boolean>() {
+									@Override
+									public void onFailure(Throwable caught) {
+										if (frozen) {
+											System.out
+													.println("Client: notice: the onFailure() event was received while frozen, ignoring it.");
+											return;
+										}
+										screenManager
+												.displayGeneralErrorScreen(caught);
+									}
+
+									@Override
+									public void onSuccess(Boolean successful) {
+										if (frozen) {
+											System.out
+													.println("Client: notice: the onSuccess() event was received while frozen, ignoring it.");
+											return;
+										}
+										if (successful)
+											screenManager
+													.displayMainMenuScreen(username);
+										else
+											screenManager
+													.displayGeneralErrorScreen(new FatalException(
+															"The very same username-password pair used for registering didn't work for logging in."));
+									}
+								});
+					}
+
+				});
 	}
 
 	@Override
@@ -313,7 +331,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		abortButton.setEnabled(false);
 
 		checkUsernameAvailability.setEnabled(false);
-		
+
 		frozen = true;
 	}
 }

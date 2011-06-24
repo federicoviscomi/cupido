@@ -23,22 +23,23 @@ public class LoginScreen extends VerticalPanel implements Screen {
 
 	private ScreenManager screenManager;
 	private CupidoInterfaceAsync cupidoService;
-	
+
 	private TextBox usernameBox;
 	private PasswordTextBox passwordBox;
 	private PushButton okButton;
 	private PushButton registerButton;
-	
+
 	private boolean frozen = false;
 
-	public LoginScreen(final ScreenManager screenManager, CupidoInterfaceAsync cupidoService) {
-		
+	public LoginScreen(final ScreenManager screenManager,
+			CupidoInterfaceAsync cupidoService) {
+
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
-		
+
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
-		
+
 		setHeight((Cupido.height - 200) + "px");
 		setWidth((Cupido.width - 200) + "px");
 
@@ -46,12 +47,12 @@ public class LoginScreen extends VerticalPanel implements Screen {
 
 		DOM.setStyleAttribute(getElement(), "marginLeft", "100px");
 		DOM.setStyleAttribute(getElement(), "marginTop", "100px");
-		
+
 		add(new HTML("<h1>Login</h1>"));
-		
+
 		Grid grid = new Grid(2, 2);
 		grid.setCellSpacing(20);
-		
+
 		HTML usernameLabel = new HTML("Nome utente:");
 		usernameLabel.setHorizontalAlignment(ALIGN_RIGHT);
 		grid.setWidget(0, 0, usernameLabel);
@@ -85,11 +86,11 @@ public class LoginScreen extends VerticalPanel implements Screen {
 		grid.setWidget(1, 1, passwordBox);
 
 		add(grid);
-		
+
 		HorizontalPanel bottomPanel = new HorizontalPanel();
 		bottomPanel.setSpacing(50);
 		add(bottomPanel);
-		
+
 		registerButton = new PushButton("Registrati");
 		registerButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -98,7 +99,7 @@ public class LoginScreen extends VerticalPanel implements Screen {
 			}
 		});
 		bottomPanel.add(registerButton);
-		
+
 		okButton = new PushButton("OK");
 		okButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -107,31 +108,33 @@ public class LoginScreen extends VerticalPanel implements Screen {
 			}
 		});
 		bottomPanel.add(okButton);
-		
+
 	}
-	
+
 	private void tryLogin() {
 		final String username = usernameBox.getText();
-		cupidoService.login(username, passwordBox.getText(), new AsyncCallback<Boolean>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				screenManager.displayGeneralErrorScreen(caught);
-			}
+		cupidoService.login(username, passwordBox.getText(),
+				new AsyncCallback<Boolean>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						screenManager.displayGeneralErrorScreen(caught);
+					}
 
-			@Override
-			public void onSuccess(Boolean successful) {
-				if (successful)
-					screenManager.displayMainMenuScreen(username);
-				else {
-					// Remove the focus, so if the user dismisses the alert with Enter, it
-					// won't be fired again.
-					usernameBox.setFocus(false);
-					passwordBox.setFocus(false);
-					okButton.setFocus(false);
-					Window.alert("La password che hai inserito non \350 corretta. Riprova.");
-				}
-			}
-		});
+					@Override
+					public void onSuccess(Boolean successful) {
+						if (successful)
+							screenManager.displayMainMenuScreen(username);
+						else {
+							// Remove the focus, so if the user dismisses the
+							// alert with Enter, it
+							// won't be fired again.
+							usernameBox.setFocus(false);
+							passwordBox.setFocus(false);
+							okButton.setFocus(false);
+							Window.alert("La password che hai inserito non \350 corretta. Riprova.");
+						}
+					}
+				});
 	}
 
 	@Override

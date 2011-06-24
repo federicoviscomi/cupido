@@ -10,7 +10,7 @@ public class LoadingScreen extends VerticalPanel implements Screen {
 	public LoadingScreen(ScreenManager screenManager) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
-		
+
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
 

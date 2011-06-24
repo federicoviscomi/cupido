@@ -1,7 +1,7 @@
 package unibo.as.cupido.client;
 
-import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.client.screens.MainMenuScreen;
+import unibo.as.cupido.common.structures.ChatMessage;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -25,7 +25,7 @@ public class GlobalChatWidget extends AbsolutePanel {
 	private PushButton sendButton;
 	private ChatListener listener;
 	private boolean frozen = false;
-	
+
 	public interface ChatListener {
 		public void sendMessage(String message);
 	}
@@ -50,9 +50,8 @@ public class GlobalChatWidget extends AbsolutePanel {
 		int sendButtonWidth = 50;
 
 		messageField = new TextBox();
-		messageField
-				.setWidth((MainMenuScreen.chatWidth - sendButtonWidth)
-						+ "px");
+		messageField.setWidth((MainMenuScreen.chatWidth - sendButtonWidth)
+				+ "px");
 		messageField.addKeyUpHandler(new KeyUpHandler() {
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
@@ -82,20 +81,21 @@ public class GlobalChatWidget extends AbsolutePanel {
 			return;
 
 		listener.sendMessage(messageField.getText());
-		
+
 		messageField.setText("");
 		messageField.setFocus(true);
 	}
 
 	public void setLastMessages(ChatMessage[] messages) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: setLastMessages() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: setLastMessages() was called while frozen, ignoring it.");
 			return;
 		}
-		
+
 		SafeHtmlBuilder x = new SafeHtmlBuilder();
-		
+
 		for (ChatMessage message : messages) {
 			x.appendHtmlConstant("<p><b>");
 			x.appendEscaped(message.userName);
@@ -103,11 +103,11 @@ public class GlobalChatWidget extends AbsolutePanel {
 			x.appendEscaped(message.message);
 			x.appendHtmlConstant("</p>");
 		}
-		
+
 		messageList.setHTML(x.toSafeHtml().asString());
 		messagesPanel.scrollToBottom();
 	}
-	
+
 	public void freeze() {
 		messageField.setEnabled(false);
 		sendButton.setEnabled(false);

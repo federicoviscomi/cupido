@@ -64,17 +64,19 @@ public class SingleTableManager implements TableInterface {
 	}
 
 	@Override
-	public synchronized void addBot(String userName, int position)
+	public synchronized String addBot(String userName, int position)
 			throws PositionFullException, RemoteException,
 			IllegalArgumentException, FullTableException, NotCreatorException,
 			IllegalStateException {
 		try {
 
 			String[] botNames = {"", "cupido", "venere", "marte"};
+			String botName = botNames[position];
+			
 			InitialTableStatus initialTableStatus = playersManager
 					.getInitialTableStatus(position);
 
-			NonRemoteBot bot = new NonRemoteBot(botNames[position],
+			NonRemoteBot bot = new NonRemoteBot(botName,
 					initialTableStatus, gtm.getLTMInterface(
 							table.tableDescriptor.ltmId).getTable(
 							table.tableDescriptor.id));
@@ -85,6 +87,8 @@ public class SingleTableManager implements TableInterface {
 				startNotifierThread.setGameStarted();
 			}
 			gtm.notifyTableJoin(table.tableDescriptor);
+			
+			return botName;
 		} catch (NoSuchTableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,6 +100,8 @@ public class SingleTableManager implements TableInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		// FIXME: This must never be reached.
+		return "";
 	}
 
 	@Override
@@ -119,7 +125,6 @@ public class SingleTableManager implements TableInterface {
 	public synchronized void leaveTable(Integer i) throws RemoteException,
 			PlayerNotFoundException {
 		this.leaveTable(playersManager.getPlayerName(i));
-
 	}
 
 	@Override
@@ -128,21 +133,27 @@ public class SingleTableManager implements TableInterface {
 		if (userName == null)
 			throw new IllegalArgumentException();
 
-		if (table.owner.equals(userName)) {
-			endNotifierThread.interrupt();
-			this.notifyGameEndedPrematurely();
-		} else {
-			playersManager.removePlayer(userName);
-			viewers.notifyPlayerLeft(userName);
-			try {
-				gtm.notifyTableLeft(table.tableDescriptor);
-			} catch (NoSuchTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (EmptyTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (viewers.isAViewer(userName)) {
+			viewers.removeViewer(userName);
+			return;
+		}
+		if (cardsManager.gameEnded()) {
+			throw new IllegalStateException(
+					"game ended, cannot call leaveTable");
+		}
+		try {
+			if (table.owner.equals(userName)) {
+				this.notifyGameEndedPrematurely();
+			} else {
+				int position = playersManager.getPlayerPosition(userName);
+				playersManager.removePlayer(userName);
+				viewers.notifyPlayerLeft(userName);
+				// gtm.notifyTableLeft(table.tableDescriptor);
+				this.addBot(userName + "_bot_", position);
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

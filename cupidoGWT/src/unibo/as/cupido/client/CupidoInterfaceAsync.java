@@ -41,7 +41,7 @@ public interface CupidoInterfaceAsync {
 
 	void passCards(Card[] cards, AsyncCallback<Void> callback);
 
-	void addBot(int position, AsyncCallback<Void> callback);
+	void addBot(int position, AsyncCallback<String> callback);
 
 	void viewLastMessages(AsyncCallback<ChatMessage[]> callback);
 

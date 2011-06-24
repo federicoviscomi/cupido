@@ -16,6 +16,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.NoSuchElementException;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
@@ -30,21 +32,25 @@ public class PlayerConsoleUI {
 
 	private static final String USAGE = String.format(FORMAT + FORMAT + FORMAT
 			+ FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT
-			+ FORMAT + FORMAT + FORMAT, "COMMAND", "OPT", "LONG_OPT",
-			"DESCRIPTION", "create", "", "", "create a new table", "exit", "",
-			"", "", "list", "-p", "--players", "list all player in the table",
-			"list", "-c", "--cards", "list this player cards", "list", "-t",
-			"--tables", "list all tables", "login NAME PASSWORD", "", "", "",
-			"pass", "-a", "--arbitrary", "pass arbitrary cards",
-			"pass CARD1 CARD2 CARD3", "-c", "--card", "pass specified cards",
-			"play", "-a", "--arbitrary", "play an arbitrary card",
-			"addbot POSITION", "", "",
+			+ FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT, "COMMAND",
+			"OPT", "LONG_OPT", "DESCRIPTION", "create", "", "",
+			"create a new table", "exit", "", "", "", "list", "-p",
+			"--players", "list all player in the table", "list", "-c",
+			"--cards", "list this player cards", "list", "-t", "--tables",
+			"list all tables", "login NAME PASSWORD", "", "", "", "pass", "-a",
+			"--arbitrary", "pass arbitrary cards", "pass CARD1 CARD2 CARD3",
+			"-c", "--card", "pass specified cards", "play", "-a",
+			"--arbitrary", "play an arbitrary card", "addbot POSITION", "", "",
 			"add a bot in specified absolute position", "join", "", "",
 			"join an arbitrary table", "help", "", "", "print this help",
-			"leave", "", "", "leave the table(if any)");
+			"leave", "", "", "leave the table(if any)", "view", "", "",
+			"view an arbitrary table in the GTM", "TODOjoin table descriptor",
+			"", "", "joins specified table", "TODOview table descriptor", "",
+			"", "views specified table");
 
 	private static final String[] allCommands = { "create", "join", "list",
-			"login", "pass", "play", "addbot", "help", "exit", "sleep", "leave" };
+			"login", "pass", "play", "addbot", "help", "exit", "sleep",
+			"leave", "view" };
 
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
@@ -170,7 +176,27 @@ public class PlayerConsoleUI {
 					e.printStackTrace();
 				}
 			} else if (logged) {
-				if (command[0].equals("leave")) {
+				if (command[0].equals("view")) {
+					try {
+						TableInfoForClient next = gtm.getTableList().iterator()
+								.next();
+						remoteBot.observedGameStatus = gtm
+								.getLTMInterface(next.tableDescriptor.ltmId)
+								.getTable(next.tableDescriptor.id)
+								.viewTable(playerName, remoteBot);
+						out.println("viewing table "
+								+ remoteBot.observedGameStatus
+								+ "\n press a key to exit");
+						System.in.read();
+						remoteBot.singleTableManager.leaveTable(playerName);
+					} catch (NoSuchElementException e) {
+						out.println("there is no table to view");
+						out.flush();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else if (command[0].equals("leave")) {
 					try {
 						if (remoteBot.singleTableManager != null) {
 							remoteBot.singleTableManager.leaveTable(playerName);
@@ -303,14 +329,6 @@ public class PlayerConsoleUI {
 			in.close();
 		} catch (Exception e) {
 			//
-		}
-		if (remoteBot != null) {
-			try {
-				remoteBot.singleTableManager.leaveTable(playerName);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
 		}
 		out.close();
 		System.exit(exitStatus);

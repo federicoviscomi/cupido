@@ -8,17 +8,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import unibo.as.cupido.client.playerstates.PlayerStateManager.PlayerInfo;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class CardsGameWidget extends AbsolutePanel {
@@ -29,10 +34,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	// The height of the players' labels that contain usernames and scores.
 	private static final int playerLabelHeight = 20;
 
-	// The distance between the center of the bottom player's dealt cards and
-	// the
-	// bottom of the screen.
-	private static final int dealtCardsOffset = 260;
+	// The distance between the center of the bottom player's played cards and
+	// the bottom of the screen.
+	private static final int playedCardsOffset = 260;
 
 	// The distance between the center of the bottom player's hand and the
 	// bottom of the screen.
@@ -70,7 +74,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * Informations about the players. The first element refers to the bottom
 	 * player, and the other elements are sorted clockwise.
 	 */
-	private List<PlayerData> players;
+	private List<PlayerData> players = new ArrayList<PlayerData>();
 
 	/**
 	 * The size of the table (width and height) in pixels.
@@ -86,7 +90,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	private GameEventListener listener;
 
 	private Widget cornerWidget = null;
-	
+
 	private boolean frozen = false;
 
 	/**
@@ -167,7 +171,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			switch (state) {
 			case HAND:
 				return player;
-			case DEALT:
+			case PLAYED:
 				return player + 4;
 			}
 			throw new IllegalStateException();
@@ -184,7 +188,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 
 		public enum State {
-			HAND, DEALT
+			HAND, PLAYED
 		}
 
 		/**
@@ -285,14 +289,9 @@ public class CardsGameWidget extends AbsolutePanel {
 			playerData.isBot = playerStatus.isBot;
 			playerData.name = playerStatus.name;
 			playerData.score = playerStatus.score;
+			players.add(playerData);
 
-			String s;
-			if (playerData.isBot)
-				s = "bot";
-			else
-				s = playerData.name + " (" + playerData.score + ")";
-
-			Label playerLabel = new Label(s);
+			Label playerLabel = new Label();
 			playerLabel.setWordWrap(false);
 			playerLabel.setWidth(playerLabelWidth + "px");
 			playerLabel.setHeight(playerLabelHeight + "px");
@@ -332,7 +331,7 @@ public class CardsGameWidget extends AbsolutePanel {
 				CardWidget cardWidget = new CardWidget(playerStatus.playedCard,
 						90 * player);
 				movableWidgets.cards.add(cardWidget);
-				cardRoles.put(cardWidget, new CardRole(CardRole.State.DEALT,
+				cardRoles.put(cardWidget, new CardRole(CardRole.State.PLAYED,
 						false, player));
 				add(cardWidget, 0, 0);
 			}
@@ -358,7 +357,7 @@ public class CardsGameWidget extends AbsolutePanel {
 						if (runningAnimation)
 							// Clicking a card during an animation does nothing.
 							return;
-						
+
 						if (frozen)
 							return;
 
@@ -384,8 +383,22 @@ public class CardsGameWidget extends AbsolutePanel {
 					tableLayout.names.get(player));
 
 		previousTableLayout = tableLayout;
+		
+		updateLabels();
 	}
-
+	
+	private void updateLabels() {
+		for (int i = 0; i < 4; i++) {
+			PlayerData playerInfo = players.get(i);
+			String s;
+			if (playerInfo.isBot)
+				s = playerInfo.name;
+			else
+				s = playerInfo.name + " (" + playerInfo.score + ")";
+			movableWidgets.playerNames.get(i).setText(s);
+		}
+	}
+	
 	private static Position interpolatePosition(Position startPosition,
 			Position endPosition, double progress) {
 		Position position = new Position();
@@ -413,9 +426,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	 */
 	public void runPendingAnimations(int duration,
 			GWTAnimation.AnimationCompletedListener animationCompletedListener) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: runPendingAnimations() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: runPendingAnimations() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -478,10 +492,11 @@ public class CardsGameWidget extends AbsolutePanel {
 	public void revealCoveredCard(int player, Card card) {
 
 		if (frozen) {
-			System.out.println("Client: notice: revealCoveredCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: revealCoveredCard() was called while frozen, ignoring it.");
 			return;
 		}
-		
+
 		assert !runningAnimation;
 		assert !someAnimationsPending;
 
@@ -527,9 +542,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * NOTE: There must be no animations pending when this method is called.
 	 */
 	public void coverCard(int player, Card card) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: coverCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: coverCard() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -569,19 +585,20 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * The player `player' deals the card `card'. The card must be an uncovered
+	 * The player `player' plays the card `card'. The card must be an uncovered
 	 * card in the specified player's hand.
 	 * 
 	 * The corresponding animation will be executed at the next call to
 	 * runPendingAnimations().
 	 */
-	public void dealCard(int player, Card card) {
+	public void playCard(int player, Card card) {
 
 		if (frozen) {
-			System.out.println("Client: notice: dealCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: playCard() was called while frozen, ignoring it.");
 			return;
 		}
-		
+
 		assert card != null;
 		assert !runningAnimation;
 
@@ -603,7 +620,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 		assert widget != null;
 
-		cardRoles.get(widget).state = CardRole.State.DEALT;
+		cardRoles.get(widget).state = CardRole.State.PLAYED;
 		cardRoles.get(widget).isRaised = false;
 
 		// Note: this may already be `true'.
@@ -612,15 +629,16 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	/**
 	 * The player `player' picks up the card `card' that was previously in the
-	 * DEALT state in front of him. The card must not be covered.
+	 * PLAYED state in front of him. The card must not be covered.
 	 * 
 	 * The corresponding animation will be executed at the next call to
 	 * runPendingAnimations().
 	 */
 	public void pickCard(int player, Card card) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: pickCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: pickCard() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -635,7 +653,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			Card candidateCard = candidateWidget.getCard();
 			if (card.equals(candidateCard)) {
 				CardRole role = cardRoles.get(candidateWidget);
-				if (role.player == player && role.state == CardRole.State.DEALT) {
+				if (role.player == player && role.state == CardRole.State.PLAYED) {
 					// Found a match
 					widget = candidateWidget;
 					break;
@@ -660,9 +678,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * runPendingAnimations().
 	 */
 	public void raiseCard(int player, Card card) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: raiseCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: raiseCard() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -703,9 +722,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * runPendingAnimations().
 	 */
 	public void lowerRaisedCard(int player, Card card) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: lowerRaisedCard() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: lowerRaisedCard() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -739,7 +759,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * Runs an animation in which the dealt cards move towards the specified
+	 * Runs an animation in which the played cards move towards the specified
 	 * player, until they go off screen. After the animation, but before
 	 * triggering the listener, such cards are removed.
 	 * 
@@ -754,9 +774,10 @@ public class CardsGameWidget extends AbsolutePanel {
 			int waitTime,
 			final int animationTime,
 			final GWTAnimation.AnimationCompletedListener animationCompletedListener) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: animateTrickTaking() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: animateTrickTaking() was called while frozen, ignoring it.");
 			return;
 		}
 
@@ -780,16 +801,16 @@ public class CardsGameWidget extends AbsolutePanel {
 				// towards
 				// the bottom player.
 
-				// Move the dealt cards off-screen.
+				// Move the played cards off-screen.
 
-				final List<CardWidget> dealtCards = new ArrayList<CardWidget>();
+				final List<CardWidget> playedCards = new ArrayList<CardWidget>();
 
 				for (Entry<CardWidget, Position> e : tableLayout.cards
 						.entrySet()) {
-					if (cardRoles.get(e.getKey()).state == CardRole.State.DEALT) {
-						dealtCards.add(e.getKey());
+					if (cardRoles.get(e.getKey()).state == CardRole.State.PLAYED) {
+						playedCards.add(e.getKey());
 						e.getValue().y += (tableSize + CardWidget.cardHeight
-								/ 2 - dealtCardsOffset);
+								/ 2 - playedCardsOffset);
 					}
 				}
 
@@ -798,8 +819,8 @@ public class CardsGameWidget extends AbsolutePanel {
 				for (int i = 0; i < player; i++)
 					rotateTableLayout(tableLayout, tableSize);
 
-				// Let the dealt cards slide below hands' cards.
-				for (CardWidget widget : dealtCards) {
+				// Let the played cards slide below hands' cards.
+				for (CardWidget widget : playedCards) {
 					tableLayout.cards.get(widget).z -= defaultZIndex / 2;
 					previousTableLayout.cards.get(widget).z -= defaultZIndex / 2;
 				}
@@ -814,7 +835,7 @@ public class CardsGameWidget extends AbsolutePanel {
 							@Override
 							public void onComplete() {
 								// Remove the widgets for the off-screen cards.
-								for (CardWidget widget : dealtCards) {
+								for (CardWidget widget : playedCards) {
 									movableWidgets.cards.remove(widget);
 									previousTableLayout.cards.remove(widget);
 									cardRoles.remove(widget);
@@ -872,8 +893,8 @@ public class CardsGameWidget extends AbsolutePanel {
 		int offset;
 
 		switch (state) {
-		case DEALT:
-			offset = dealtCardsOffset;
+		case PLAYED:
+			offset = playedCardsOffset;
 			break;
 		case HAND:
 			offset = handCardsOffset;
@@ -1122,21 +1143,112 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	public void setCornerWidget(Widget cornerWidget) {
-		
+
 		if (frozen) {
-			System.out.println("Client: notice: setCornerWidget() was called while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: setCornerWidget() was called while frozen, ignoring it.");
 			return;
 		}
-		
+
 		if (this.cornerWidget != null)
 			remove(this.cornerWidget);
-		
+
 		this.cornerWidget = cornerWidget;
 		cornerWidget.setWidth("200px");
 		cornerWidget.setHeight("200px");
 		add(cornerWidget, tableSize - 200, tableSize - 200);
 	}
 	
+	/**
+	 * Displays the points and the new users' scores.
+	 * 
+	 * Both parameters are arrays of size 4, containing information
+	 * regarding each player. The first elements contain information
+	 * about the bottom player, and other elements contain information
+	 * about the other players, in clockwise order.
+	 * 
+	 * The totalScore array contains unspecified values for bots.
+	 */
+	public void displayScores(int[] matchPoints, int[] totalScore) {
+		assert matchPoints.length == 4;
+		assert totalScore.length == 4;
+				
+		final int gridHeight = 200;
+		final int gridWidth = 400;
+		
+		Grid grid = new Grid(5, 3);
+		grid.setCellSpacing(0);
+		grid.setBorderWidth(1);
+		grid.setWidth(gridWidth + "px");
+		grid.setHeight(gridHeight + "px");
+		add(grid, tableSize/2 - gridWidth/2, tableSize/2 - gridHeight/2);
+		DOM.setStyleAttribute(grid.getElement(), "background", "white");
+		DOM.setStyleAttribute(grid.getElement(), "borderLeftStyle", "solid");
+		DOM.setStyleAttribute(grid.getElement(), "borderRightStyle", "solid");
+		DOM.setStyleAttribute(grid.getElement(), "borderBottomStyle", "solid");
+		DOM.setStyleAttribute(grid.getElement(), "borderTopStyle", "solid");
+		DOM.setStyleAttribute(grid.getElement(), "borderLeftWidth", "1px");
+		DOM.setStyleAttribute(grid.getElement(), "borderRightWidth", "1px");
+		DOM.setStyleAttribute(grid.getElement(), "borderBottomWidth", "1px");
+		DOM.setStyleAttribute(grid.getElement(), "borderTopWidth", "1px");
+		
+		{
+			HTML userLabel = new HTML("<b>Utente</b>");
+			userLabel.setWidth("128px");
+			userLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			grid.setWidget(0, 1, userLabel);
+			HTML matchPointsLabel = new HTML("<b>Punteggio<br />della partita</b>");
+			matchPointsLabel.setWidth("118px");
+			matchPointsLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			grid.setWidget(0, 1, matchPointsLabel);
+			HTML totalScoreLabel = new HTML("<b>Nuovo punteggio<br/>globale</b>");
+			totalScoreLabel.setWidth("148px");
+			totalScoreLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			grid.setWidget(0, 2, totalScoreLabel);
+		}
+		
+		for (int i = 0; i < 4; i++) {
+			{
+				SafeHtmlBuilder builder = new SafeHtmlBuilder();
+				builder.appendHtmlConstant("<b>");
+				builder.appendEscaped(players.get(i).name);
+				builder.appendHtmlConstant("</b>");
+				HTML userLabel = new HTML(builder.toSafeHtml());
+				userLabel.setWidth("128px");
+				userLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				grid.setWidget(i + 1, 0, userLabel);
+			}
+			
+			{
+				HTML matchPointsLabel = new HTML("" + matchPoints[i]);
+				matchPointsLabel.setWidth("118px");
+				matchPointsLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				grid.setWidget(i + 1, 1, matchPointsLabel);
+			}
+			
+			if (!players.get(i).isBot) {
+				SafeHtmlBuilder builder = new SafeHtmlBuilder();
+				builder.append(totalScore[i]);
+				builder.appendEscaped(" (");
+				int change = totalScore[i] - players.get(i).score;
+				if (change > 0)
+					builder.append('+');
+				builder.append(change);
+				builder.appendEscaped(")");
+				HTML totalScoreLabel = new HTML(builder.toSafeHtml());
+				totalScoreLabel.setWidth("148px");
+				totalScoreLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				grid.setWidget(i + 1, 2, totalScoreLabel);
+			}
+		}
+		
+		for (int i = 0; i < 4; i++) {
+			players.get(i).score = totalScore[i];
+		}
+		
+		updateLabels();
+	}
+
 	public void freeze() {
 		frozen = true;
 	}

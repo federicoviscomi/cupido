@@ -4,17 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import unibo.as.cupido.common.exception.NoSuchTableException;
-import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
-import unibo.as.cupido.client.CardsGameWidget.GameEventListener;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GWTAnimation;
-import unibo.as.cupido.client.RandomCardGenerator;
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -31,19 +30,22 @@ public class CardPassingWaitingState implements PlayerState {
 	private PlayerStateManager stateManager;
 
 	private List<Card> hand;
-	
+
 	private boolean frozen = false;
 
 	private CupidoInterfaceAsync cupidoService;
 
+	private boolean eventReceived = false;
+
 	public CardPassingWaitingState(CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, List<Card> hand, final CupidoInterfaceAsync cupidoService) {
+			final PlayerStateManager stateManager, List<Card> hand,
+			final CupidoInterfaceAsync cupidoService) {
 
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.hand = hand;
 		this.cupidoService = cupidoService;
-		
+
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -66,7 +68,8 @@ public class CardPassingWaitingState implements PlayerState {
 						try {
 							throw caught;
 						} catch (NoSuchTableException e) {
-							// The table has been destroyed in the meantime, nothing to do.
+							// The table has been destroyed in the meantime,
+							// nothing to do.
 						} catch (Throwable e) {
 							stateManager.onFatalException(e);
 						}
@@ -83,7 +86,7 @@ public class CardPassingWaitingState implements PlayerState {
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
-	
+
 	@Override
 	public void activate() {
 	}
@@ -97,7 +100,8 @@ public class CardPassingWaitingState implements PlayerState {
 	@Override
 	public void handleAnimationStart() {
 		if (frozen) {
-			System.out.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
 		exitButton.setEnabled(false);
@@ -106,7 +110,8 @@ public class CardPassingWaitingState implements PlayerState {
 	@Override
 	public void handleAnimationEnd() {
 		if (frozen) {
-			System.out.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
 		exitButton.setEnabled(true);
@@ -116,30 +121,39 @@ public class CardPassingWaitingState implements PlayerState {
 	public void handleCardClicked(int player, Card card, State state,
 			boolean isRaised) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
+			System.out
+					.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
 			return;
 		}
 	}
-	
+
 	@Override
 	public boolean handleCardPassed(Card[] passedCards) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		List<Card> cards = new ArrayList<Card>();
 		
+		if (eventReceived) {
+			// Let the next state handle this.
+			// It is an error, but the animation is running and it can't be handled right now.
+			return false;
+		}
+		
+		eventReceived = true;
+		
+		List<Card> cards = new ArrayList<Card>();
+
 		for (Card card : passedCards)
 			cards.add(card);
-		
+
 		hand.addAll(cards);
 
-		Collections.sort(cards,
-				CardsGameWidget.getCardComparator());
+		Collections.sort(cards, CardsGameWidget.getCardComparator());
 
 		for (int i = 0; i < 3; i++)
-			cardsGameWidget.revealCoveredCard(0,
-					cards.get(3 - i - 1));
+			cardsGameWidget.revealCoveredCard(0, cards.get(3 - i - 1));
 
 		for (Card card : passedCards)
 			cardsGameWidget.pickCard(0, card);
@@ -150,59 +164,65 @@ public class CardPassingWaitingState implements PlayerState {
 					public void onComplete() {
 						boolean found = false;
 						for (Card card : hand)
-							if (card.suit == Card.Suit.CLUBS
-									&& card.value == 2) {
+							if (card.suit == Card.Suit.CLUBS && card.value == 2) {
 								found = true;
 								break;
 							}
 						if (found)
-							stateManager.transitionToFirstDealer(hand);
+							stateManager.transitionToFirstLeader(hand);
 						else
-							stateManager
-									.transitionToWaitingFirstDeal(hand);
+							stateManager.transitionToWaitingFirstLead(hand);
 					}
 				});
-		
+
 		return true;
 	}
 
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
+		// Let the next state handle this.
 		return false;
 	}
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		if (eventReceived) {
+			// Let the next state handle this.
+			return false;
+		}
+		stateManager.exit();
+		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
+		return true;
 	}
 
 	@Override
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen) {
-			System.out.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
+			System.out
+					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
+		// Let the next state handle this.
 		return false;
 	}
 
 	@Override
-	public boolean handlePlayerLeft(String player) {
+	public void handlePlayerLeft(int player) {
 		if (frozen) {
-			System.out.println("Client: notice: the handlePlayerLeft() event was received while frozen, deferring it.");
-			return false;
+			System.out
+					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
+			return;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// Nothing to do.
 	}
 }

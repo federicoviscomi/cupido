@@ -15,6 +15,7 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
 
 public class RemoteBot implements Bot, Serializable {
 
@@ -36,6 +37,7 @@ public class RemoteBot implements Bot, Serializable {
 	PrintWriter out;
 	private final Object lock = new Object();
 	private int points = 0;
+	public ObservedGameStatus observedGameStatus;
 
 	public RemoteBot(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, final String userName)
@@ -180,7 +182,7 @@ public class RemoteBot implements Bot, Serializable {
 	public synchronized void notifyPlayerJoined(String name, boolean isBot,
 			int point, int position) {
 		if (name == null || position < 0 || position > 2)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(name + " " + position);
 		if (initialTableStatus.opponents[position] != null)
 			throw new IllegalArgumentException("Unable to add player " + name
 					+ " in player " + userName + " beacuse ITS: "

@@ -83,8 +83,9 @@ public interface TableInterface extends Remote {
 	 *             of the table. TODO e' necessaria questa eccezione?
 	 * @throws IllegalStateException
 	 *             if game status is ENDED
+	 * @return The name of the bot.
 	 */
-	void addBot(String userName, int position) throws PositionFullException,
+	String addBot(String userName, int position) throws PositionFullException,
 			RemoteException, IllegalArgumentException, FullTableException,
 			NotCreatorException, IllegalStateException;
 

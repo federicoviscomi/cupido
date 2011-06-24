@@ -1,8 +1,5 @@
 package unibo.as.cupido.client.playerstates;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import unibo.as.cupido.client.CardsGameWidget;
@@ -14,6 +11,7 @@ import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
@@ -22,116 +20,49 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class CardPassingState implements PlayerState {
+public class WaitingPlayedCardState implements PlayerState {
 
-	List<Card> raisedCards = new ArrayList<Card>();
-	/**
-	 * Whether the user has already confirmed to pass the selected cards.
-	 */
-	boolean confirmed = false;
-	private PushButton okButton;
 	private PushButton exitButton;
+
 	private CardsGameWidget cardsGameWidget;
 
-	private boolean frozen = false;
-	private CupidoInterfaceAsync cupidoService;
 	private PlayerStateManager stateManager;
 
-	public CardPassingState(final CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, final List<Card> hand,
+	private List<Card> hand;
+
+	private final int currentPlayer;
+
+	private boolean frozen = false;
+
+	private CupidoInterfaceAsync cupidoService;
+
+	private boolean eventReceived = false;
+
+	private HTML text;
+
+	public WaitingPlayedCardState(CardsGameWidget cardsGameWidget,
+			final PlayerStateManager stateManager, List<Card> hand,
 			final CupidoInterfaceAsync cupidoService) {
 
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
+		this.hand = hand;
 		this.cupidoService = cupidoService;
 
-		VerticalPanel cornerWidget = new VerticalPanel();
-		cornerWidget.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		cornerWidget
-				.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		VerticalPanel panel = new VerticalPanel();
+		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		
+		currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager
+				.getPlayedCards().size()) % 4;
+		
+		text = new HTML();
+		
+		recomputeLabelMessage();
 
-		final HTML text = new HTML("Seleziona le tre carte da passare.");
 		text.setWidth("120px");
 		text.setWordWrap(true);
-		cornerWidget.add(text);
-
-		okButton = new PushButton("OK");
-		okButton.setEnabled(false);
-		okButton.setWidth("80px");
-		okButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				assert raisedCards.size() == 3;
-				assert !confirmed;
-
-				text.setText("");
-
-				confirmed = true;
-
-				Card[] cards = new Card[3];
-				for (int i = 0; i < 3; i++)
-					cards[i] = raisedCards.get(i);
-
-				cupidoService.passCards(cards, new AsyncCallback<Void>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						try {
-							throw caught;
-						} catch (NoSuchTableException e) {
-							// The owner has left the table, so the game was
-							// interrupted.
-						} catch (Throwable e) {
-							stateManager.onFatalException(e);
-						}
-					}
-
-					@Override
-					public void onSuccess(Void result) {
-					}
-				});
-
-				for (Card card : raisedCards)
-					cardsGameWidget.playCard(0, card);
-
-				cardsGameWidget.runPendingAnimations(1500,
-						new GWTAnimation.AnimationCompletedListener() {
-							@Override
-							public void onComplete() {
-
-								if (frozen) {
-									System.out
-											.println("Client: notice: the onComplete() event was received while frozen, ignoring it.");
-									return;
-								}
-
-								List<Card> sortedList = new ArrayList<Card>();
-								for (Card card : raisedCards)
-									sortedList.add(card);
-
-								final Comparator<Card> cardComparator = CardsGameWidget
-										.getCardComparator();
-								Collections.sort(sortedList, cardComparator);
-
-								// Uncover the cards in reverse order, to
-								// respect the precondition
-								// for CardsGameWidget.coverCard().
-								for (int i = 0; i < 3; i++)
-									cardsGameWidget.coverCard(0,
-											sortedList.get(3 - i - 1));
-
-								for (Card card : raisedCards) {
-									boolean removedSomething = hand
-											.remove(card);
-									assert removedSomething;
-								}
-
-								stateManager
-										.transitionToCardPassingWaiting(hand);
-							}
-						});
-			}
-		});
-		cornerWidget.add(okButton);
+		panel.add(text);
 
 		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
@@ -159,9 +90,22 @@ public class CardPassingState implements PlayerState {
 				});
 			}
 		});
-		cornerWidget.add(exitButton);
+		panel.add(exitButton);
 
-		cardsGameWidget.setCornerWidget(cornerWidget);
+		cardsGameWidget.setCornerWidget(panel);
+	}
+	
+	private void recomputeLabelMessage() {
+		PlayerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
+				.get(currentPlayer);
+		
+		assert currentPlayer != 0;
+		
+		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+		safeHtmlBuilder.appendEscaped(playerInfo.name);
+		safeHtmlBuilder.appendHtmlConstant(" giochi.");
+		text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
 	}
 
 	@Override
@@ -170,7 +114,6 @@ public class CardPassingState implements PlayerState {
 
 	@Override
 	public void freeze() {
-		okButton.setEnabled(false);
 		exitButton.setEnabled(false);
 		frozen = true;
 	}
@@ -182,7 +125,6 @@ public class CardPassingState implements PlayerState {
 					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
-		okButton.setEnabled(false);
 		exitButton.setEnabled(false);
 	}
 
@@ -193,8 +135,7 @@ public class CardPassingState implements PlayerState {
 					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
-		okButton.setEnabled(!confirmed && raisedCards.size() == 3);
-		exitButton.setEnabled(!confirmed);
+		exitButton.setEnabled(true);
 	}
 
 	@Override
@@ -205,29 +146,6 @@ public class CardPassingState implements PlayerState {
 					.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
 			return;
 		}
-		if (state == State.PLAYED)
-			return;
-		if (player != 0 || card == null)
-			return;
-
-		if (isRaised) {
-			boolean found = raisedCards.remove(card);
-			assert found;
-			cardsGameWidget.lowerRaisedCard(0, card);
-		} else {
-			if (raisedCards.size() == 3)
-				// Never raise more than 3 cards at once.
-				return;
-			raisedCards.add(card);
-			cardsGameWidget.raiseCard(0, card);
-		}
-
-		cardsGameWidget.runPendingAnimations(200,
-				new GWTAnimation.AnimationCompletedListener() {
-					@Override
-					public void onComplete() {
-					}
-				});
 	}
 
 	@Override
@@ -237,8 +155,10 @@ public class CardPassingState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// Let the next state handle this.
-		return false;
+		// This notification should never arrive in this state. 
+		freeze();
+		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the WaitingPlayedCard state"));
+		return true;
 	}
 
 	@Override
@@ -248,13 +168,35 @@ public class CardPassingState implements PlayerState {
 					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
 			return false;
 		}
-		if (confirmed) {
-			// Let the next state handle this.
+
+		if (eventReceived)
+			// The next state will handle this.
 			return false;
-		}
-		// This notification should never arrive in this state. 
-		freeze();
-		stateManager.onFatalException(new Exception("The CardPlayed notification was received when the client was in the CardPassing state"));
+
+		eventReceived = true;
+
+		// playerPosition was in the [0-2] interval, now it is between 1 and 3.
+		++playerPosition;
+
+		stateManager.addPlayedCard(playerPosition, card);
+
+		cardsGameWidget.revealCoveredCard(playerPosition, card);
+
+		cardsGameWidget.playCard(playerPosition, card);
+		cardsGameWidget.runPendingAnimations(2000,
+				new GWTAnimation.AnimationCompletedListener() {
+					@Override
+					public void onComplete() {
+						if (stateManager.getPlayedCards().size() == 4)
+							stateManager.transitionToEndOfTrick(hand);
+						else {
+							if (currentPlayer == 3)
+								stateManager.transitionToYourTurn(hand);
+							else
+								stateManager.transitionToWaitingPlayedCard(hand);
+						}
+					}
+				});
 		return true;
 	}
 
@@ -265,7 +207,7 @@ public class CardPassingState implements PlayerState {
 					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
-		if (confirmed) {
+		if (eventReceived) {
 			// Let the next state handle this.
 			return false;
 		}
@@ -281,8 +223,10 @@ public class CardPassingState implements PlayerState {
 					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// Let the next state handle this.
-		return false;
+		// This notification should never arrive in this state. 
+		freeze();
+		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the WaitingPlayedCard state"));
+		return true;
 	}
 
 	@Override
@@ -292,6 +236,7 @@ public class CardPassingState implements PlayerState {
 					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
 			return;
 		}
-		// Nothing to do.
+		if (currentPlayer == player)
+			recomputeLabelMessage();
 	}
 }

@@ -6,12 +6,6 @@ package unibo.as.cupido.client;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import unibo.as.cupido.common.structures.Card;
-import unibo.as.cupido.common.structures.ChatMessage;
-import unibo.as.cupido.common.structures.InitialTableStatus;
-import unibo.as.cupido.common.structures.ObservedGameStatus;
-import unibo.as.cupido.common.structures.RankingEntry;
-import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.FullTableException;
@@ -22,6 +16,12 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.ChatMessage;
+import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.RankingEntry;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -106,8 +106,8 @@ public interface CupidoInterface extends RemoteService {
 	 */
 	public InitialTableStatus joinTable(String server, int tableId)
 			throws FullTableException, NoSuchTableException,
-			DuplicateUserNameException, NoSuchServerException, UserNotAuthenticatedException,
-			FatalException;
+			DuplicateUserNameException, NoSuchServerException,
+			UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * 
@@ -147,7 +147,8 @@ public interface CupidoInterface extends RemoteService {
 	 *             if player is not playing or viewing a game
 	 * @throws FatalException
 	 */
-	void leaveTable() throws UserNotAuthenticatedException, NoSuchTableException, FatalException;
+	void leaveTable() throws UserNotAuthenticatedException,
+			NoSuchTableException, FatalException;
 
 	/**
 	 * 
@@ -199,13 +200,14 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws IllegalArgumentException
 	 *             if position value is out of valid range
 	 * @throws NoSuchTableException
-	 * 			   if user is not at the table
+	 *             if user is not at the table
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
+	 * @return The name of the bot.
 	 */
-	public void addBot(int position) throws PositionFullException, FullTableException,
-			NotCreatorException, IllegalArgumentException, NoSuchTableException,
-			UserNotAuthenticatedException, FatalException;
+	public String addBot(int position) throws PositionFullException,
+			FullTableException, NotCreatorException, IllegalArgumentException,
+			NoSuchTableException, UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * 
@@ -213,8 +215,8 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	public ChatMessage[] viewLastMessages() throws UserNotAuthenticatedException,
-			FatalException;
+	public ChatMessage[] viewLastMessages()
+			throws UserNotAuthenticatedException, FatalException;
 
 	/**
 	 * Sends a message to the table chat
