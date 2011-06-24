@@ -37,6 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class ScoresScreen extends VerticalPanel implements Screen {
 
 	private boolean frozen = false;
+	private PushButton exitButton;
 
 	public ScoresScreen(final ScreenManager screenManager,
 			final String username, ArrayList<RankingEntry> topRanks,
@@ -86,7 +87,7 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 
 		panel.add(constructVerticalDots());
 
-		PushButton exitButton = new PushButton("Torna al menu");
+		exitButton = new PushButton("Torna al menu");
 		exitButton.setWidth("200px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -139,6 +140,7 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 
 	@Override
 	public void freeze() {
+		exitButton.setEnabled(false);
 		frozen = true;
 	}
 }
