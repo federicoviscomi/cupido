@@ -70,7 +70,7 @@ public class SingleTableManager implements TableInterface {
 			IllegalStateException {
 		try {
 
-			String[] botNames = {"", "cupido", "venere", "marte"};
+			String[] botNames = { "", "cupido", "venere", "marte" };
 			InitialTableStatus initialTableStatus = playersManager
 					.getInitialTableStatus(position);
 
@@ -119,7 +119,6 @@ public class SingleTableManager implements TableInterface {
 	public synchronized void leaveTable(Integer i) throws RemoteException,
 			PlayerNotFoundException {
 		this.leaveTable(playersManager.getPlayerName(i));
-
 	}
 
 	@Override
@@ -131,6 +130,8 @@ public class SingleTableManager implements TableInterface {
 		if (table.owner.equals(userName)) {
 			endNotifierThread.interrupt();
 			this.notifyGameEndedPrematurely();
+		} else if (viewers.isAViewer(userName)) {
+			viewers.removeViewer(userName);
 		} else {
 			playersManager.removePlayer(userName);
 			viewers.notifyPlayerLeft(userName);
