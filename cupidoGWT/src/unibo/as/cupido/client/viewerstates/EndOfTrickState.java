@@ -129,7 +129,7 @@ public class EndOfTrickState implements ViewerState {
 					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
 			return false;
 		}
-		
+
 		// Let the next state handle this.
 		return false;
 	}

@@ -117,13 +117,13 @@ public class YourTurnState implements PlayerState {
 
 			// The player must not play hearts, if possible.
 			boolean hasOnlyHearts = true;
-			
+
 			for (Card x : hand)
 				if (x.suit != Card.Suit.HEARTS) {
 					hasOnlyHearts = false;
 					break;
 				}
-			
+
 			if (hasOnlyHearts)
 				return true;
 			else
@@ -249,9 +249,11 @@ public class YourTurnState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the YourTurn state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The CardPassed notification was received when the client was in the YourTurn state"));
 		return true;
 	}
 
@@ -267,9 +269,11 @@ public class YourTurnState implements PlayerState {
 			// the next state handle this.
 			return false;
 		} else {
-			// This notification should never arrive in this state. 
+			// This notification should never arrive in this state.
 			freeze();
-			stateManager.onFatalException(new Exception("The CardPlayed notification was received when the client was in the YourTurn state"));
+			stateManager
+					.onFatalException(new Exception(
+							"The CardPlayed notification was received when the client was in the YourTurn state"));
 			return true;
 		}
 	}
@@ -297,9 +301,11 @@ public class YourTurnState implements PlayerState {
 					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the YourTurn state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The GameStarted notification was received when the client was in the YourTurn state"));
 		return true;
 	}
 

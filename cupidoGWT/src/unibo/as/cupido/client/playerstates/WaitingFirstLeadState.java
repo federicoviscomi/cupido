@@ -151,9 +151,11 @@ public class WaitingFirstLeadState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the WaitingFirstLead state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The CardPassed notification was received when the client was in the WaitingFirstLead state"));
 		return true;
 	}
 
@@ -221,9 +223,11 @@ public class WaitingFirstLeadState implements PlayerState {
 					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the WaitingFirstLead state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The GameStarted notification was received when the client was in the WaitingFirstLead state"));
 		return true;
 	}
 

@@ -139,11 +139,11 @@ public class FirstLeaderState implements PlayerState {
 			return;
 		if (card.suit != Card.Suit.CLUBS || card.value != 2)
 			return;
-		
-		if (playedCard )
+
+		if (playedCard)
 			// The user has already played a card.
 			return;
-		
+
 		playedCard = true;
 
 		text.setText("");
@@ -190,9 +190,11 @@ public class FirstLeaderState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the FirstLeader state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The CardPassed notification was received when the client was in the FirstLeader state"));
 		return true;
 	}
 
@@ -207,9 +209,11 @@ public class FirstLeaderState implements PlayerState {
 			// Let the next state handle this.
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPlayed notification was received when the client was in the FirstLeader state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The CardPlayed notification was received when the client was in the FirstLeader state"));
 		return true;
 	}
 
@@ -236,9 +240,11 @@ public class FirstLeaderState implements PlayerState {
 					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the FirstLeader state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The GameStarted notification was received when the client was in the FirstLeader state"));
 		return true;
 	}
 

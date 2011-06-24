@@ -43,7 +43,8 @@ public interface PlayerStateManager {
 	public int getFirstPlayerInTrick();
 
 	/**
-	 * @return The ordered list containing the cards played in the current trick.
+	 * @return The ordered list containing the cards played in the current
+	 *         trick.
 	 */
 	public List<Card> getPlayedCards();
 

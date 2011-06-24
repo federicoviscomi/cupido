@@ -65,7 +65,7 @@ public class WaitingPlayedCardState implements ViewerState {
 		label.setWordWrap(true);
 		panel.add(label);
 		recomputeLabelMessage();
-		
+
 		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
@@ -81,7 +81,7 @@ public class WaitingPlayedCardState implements ViewerState {
 
 	private void recomputeLabelMessage() {
 		ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
-		.get(currentPlayer);
+				.get(currentPlayer);
 		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
 		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
 		safeHtmlBuilder.appendEscaped(playerInfo.name);
@@ -126,13 +126,13 @@ public class WaitingPlayedCardState implements ViewerState {
 					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
 			return false;
 		}
-		
+
 		if (eventReceived)
 			// Let the next state handle this.
 			return false;
-		
-		eventReceived  = true;
-		
+
+		eventReceived = true;
+
 		stateManager.addPlayedCard(playerPosition, card);
 
 		cardsGameWidget.revealCoveredCard(playerPosition, card);
@@ -158,11 +158,11 @@ public class WaitingPlayedCardState implements ViewerState {
 					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
 			return false;
 		}
-		
+
 		if (eventReceived)
 			// Let the next state handle this.
 			return false;
-		
+
 		stateManager.exit();
 		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 		return true;

@@ -211,7 +211,8 @@ public class TableListScreen extends VerticalPanel implements Screen {
 					@Override
 					public void onSuccess(final RankingEntry rankingEntry) {
 						TableDescriptor descriptor = tableInfoForClient.tableDescriptor;
-						cupidoService.joinTable(descriptor.ltmId, descriptor.id,
+						cupidoService.joinTable(descriptor.ltmId,
+								descriptor.id,
 								new AsyncCallback<InitialTableStatus>() {
 									@Override
 									public void onFailure(Throwable caught) {
@@ -226,17 +227,21 @@ public class TableListScreen extends VerticalPanel implements Screen {
 													.displayMainMenuScreen(username);
 											Window.alert("Il tavolo in cui volevi entrare non esiste pi\371.");
 										} catch (Throwable e) {
-											screenManager.displayGeneralErrorScreen(e);
+											screenManager
+													.displayGeneralErrorScreen(e);
 										}
 									}
 
 									@Override
 									public void onSuccess(
 											InitialTableStatus initialTableStatus) {
-										// TODO: Can Comet notifications arrive before
-										// that    the screen is switched?
-										screenManager.displayTableScreen(username,
-												false, initialTableStatus, rankingEntry.points);
+										// TODO: Can Comet notifications arrive
+										// before
+										// that the screen is switched?
+										screenManager.displayTableScreen(
+												username, false,
+												initialTableStatus,
+												rankingEntry.points);
 									}
 								});
 					}

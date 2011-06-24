@@ -215,13 +215,14 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	}
 
 	@Override
-	public void displayScoresScreen(String username, ArrayList<RankingEntry> topRanks,
-			ArrayList<RankingEntry> localRanks) {
+	public void displayScoresScreen(String username,
+			ArrayList<RankingEntry> topRanks, ArrayList<RankingEntry> localRanks) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		ScoresScreen screen = new ScoresScreen(this, username, topRanks, localRanks);
+		ScoresScreen screen = new ScoresScreen(this, username, topRanks,
+				localRanks);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);

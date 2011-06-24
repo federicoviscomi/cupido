@@ -63,8 +63,8 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 * Initialize the state manager. The current user is a viewer.
 	 */
 	public ViewerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			LocalChatWidget chatWidget,
-			ObservedGameStatus observedGameStatus, String username) {
+			LocalChatWidget chatWidget, ObservedGameStatus observedGameStatus,
+			String username) {
 
 		this.username = username;
 		this.screenManager = screenManager;
@@ -167,9 +167,9 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 					.println("Client: notice: the transitionToGameEnded() method was called while frozen, ignoring it.");
 			return;
 		}
-		
+
 		chatWidget.freeze();
-		
+
 		transitionTo(new GameEndedState(cardsGameWidget, this));
 	}
 
@@ -318,7 +318,8 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		while (i < 4 && players.get(i).name.equals(player))
 			i++;
 		if (i == 4) {
-			onFatalException(new Exception("An invalid PlayerLeft notification was received."));
+			onFatalException(new Exception(
+					"An invalid PlayerLeft notification was received."));
 			return;
 		}
 		PlayerInfo x = players.get(i);
@@ -327,7 +328,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		// TODO: Update cardsGameWidget with the new player information.
 		currentState.handlePlayerLeft(i);
 	}
-		
+
 	private void sendPendingNotifications() {
 		List<Serializable> list = pendingNotifications;
 		// Note that this may be modified in the calls to handle*() methods

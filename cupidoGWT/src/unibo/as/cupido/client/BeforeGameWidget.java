@@ -109,8 +109,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 */
 	public BeforeGameWidget(int tableSize, String username,
 			String bottomUserName, boolean isOwner,
-			InitialTableStatus initialTableStatus,
-			int[] scores, CupidoInterfaceAsync cupidoService, final Listener listener) {
+			InitialTableStatus initialTableStatus, int[] scores,
+			CupidoInterfaceAsync cupidoService, final Listener listener) {
 
 		this.tableSize = tableSize;
 		this.isOwner = isOwner;

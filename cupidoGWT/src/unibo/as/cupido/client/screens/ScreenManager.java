@@ -45,8 +45,8 @@ public interface ScreenManager {
 	/**
 	 * Shows the scores' screen instead of the current one.
 	 */
-	public void displayScoresScreen(String username, ArrayList<RankingEntry> topRanks,
-			ArrayList<RankingEntry> localRanks);
+	public void displayScoresScreen(String username,
+			ArrayList<RankingEntry> topRanks, ArrayList<RankingEntry> localRanks);
 
 	/**
 	 * Shows the about screen instead of the current one.

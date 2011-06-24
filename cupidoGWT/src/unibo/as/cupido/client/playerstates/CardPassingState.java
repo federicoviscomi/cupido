@@ -269,9 +269,11 @@ public class CardPassingState implements PlayerState {
 			// Let the next state handle this.
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPlayed notification was received when the client was in the CardPassing state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The CardPlayed notification was received when the client was in the CardPassing state"));
 		return true;
 	}
 

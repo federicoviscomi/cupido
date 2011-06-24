@@ -69,14 +69,14 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 * Initialize the state manager. The current user is a player, and his hand
 	 * cards are `cards'.
 	 * 
-	 * @param scores The four users' scores, starting from the bottom
-	 *               player and in clockwise order. The scores in initialTableStatus
-	 *               are ignored.
+	 * @param scores
+	 *            The four users' scores, starting from the bottom player and in
+	 *            clockwise order. The scores in initialTableStatus are ignored.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			LocalChatWidget chatWidget,
-			InitialTableStatus initialTableStatus, int[] scores, Card[] cards,
-			String username, CupidoInterfaceAsync cupidoService) {
+			LocalChatWidget chatWidget, InitialTableStatus initialTableStatus,
+			int[] scores, Card[] cards, String username,
+			CupidoInterfaceAsync cupidoService) {
 		this.username = username;
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
@@ -274,7 +274,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		}
 
 		chatWidget.freeze();
-		
+
 		transitionTo(new GameEndedState(cardsGameWidget, this, cupidoService));
 	}
 
@@ -442,7 +442,8 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		while (i < 4 && players.get(i).name.equals(player))
 			i++;
 		if (i == 4) {
-			onFatalException(new Exception("An invalid PlayerLeft notification was received."));
+			onFatalException(new Exception(
+					"An invalid PlayerLeft notification was received."));
 			return;
 		}
 		PlayerInfo x = players.get(i);

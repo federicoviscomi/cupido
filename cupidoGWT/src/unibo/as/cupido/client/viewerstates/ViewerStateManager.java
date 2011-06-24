@@ -43,7 +43,8 @@ public interface ViewerStateManager {
 	public int getFirstPlayerInTrick();
 
 	/**
-	 * @return The ordered list containing the cards played in the current trick.
+	 * @return The ordered list containing the cards played in the current
+	 *         trick.
 	 */
 	public List<Card> getPlayedCards();
 
@@ -61,7 +62,7 @@ public interface ViewerStateManager {
 	 * Exits from the game.
 	 */
 	public void exit();
-	
+
 	/**
 	 * Reacts to a fatal exception.
 	 */

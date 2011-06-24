@@ -105,13 +105,13 @@ public class WaitingFirstLeadState implements ViewerState {
 					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
 			return false;
 		}
-		
+
 		if (eventReceived)
 			// Let the next state handle this.
 			return false;
-		
+
 		eventReceived = true;
-		
+
 		stateManager.addPlayedCard(playerPosition, card);
 
 		cardsGameWidget.revealCoveredCard(playerPosition, card);
@@ -136,7 +136,7 @@ public class WaitingFirstLeadState implements ViewerState {
 		if (eventReceived)
 			// Let the next state handle this.
 			return false;
-		
+
 		stateManager.exit();
 		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 		return true;

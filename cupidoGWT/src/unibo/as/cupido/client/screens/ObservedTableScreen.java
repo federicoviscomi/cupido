@@ -77,7 +77,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		tableWidget = new HeartsObservedTableWidget(Cupido.height, username,
 				screenManager, chatWidget, observedGameStatus, cupidoService);
 		add(tableWidget, 0, 0);
-		
+
 		screenManager.setListener(new CometMessageListener() {
 			@Override
 			public void onNewLocalChatMessage(String user, String message) {
@@ -128,7 +128,8 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 							.println("Client: notice: the onNewPlayerJoined() event was received while frozen, ignoring it.");
 					return;
 				}
-				tableWidget.handleNewPlayerJoined(name, isBot, points, position);
+				tableWidget
+						.handleNewPlayerJoined(name, isBot, points, position);
 			}
 
 			@Override

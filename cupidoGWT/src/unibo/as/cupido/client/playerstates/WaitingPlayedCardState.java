@@ -69,12 +69,12 @@ public class WaitingPlayedCardState implements PlayerState {
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		
+
 		currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager
 				.getPlayedCards().size()) % 4;
-		
+
 		text = new HTML();
-		
+
 		recomputeLabelMessage();
 
 		text.setWidth("120px");
@@ -111,13 +111,13 @@ public class WaitingPlayedCardState implements PlayerState {
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
-	
+
 	private void recomputeLabelMessage() {
 		PlayerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
 				.get(currentPlayer);
-		
+
 		assert currentPlayer != 0;
-		
+
 		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
 		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
 		safeHtmlBuilder.appendEscaped(playerInfo.name);
@@ -172,9 +172,11 @@ public class WaitingPlayedCardState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the WaitingPlayedCard state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The CardPassed notification was received when the client was in the WaitingPlayedCard state"));
 		return true;
 	}
 
@@ -210,7 +212,8 @@ public class WaitingPlayedCardState implements PlayerState {
 							if (currentPlayer == 3)
 								stateManager.transitionToYourTurn(hand);
 							else
-								stateManager.transitionToWaitingPlayedCard(hand);
+								stateManager
+										.transitionToWaitingPlayedCard(hand);
 						}
 					}
 				});
@@ -240,9 +243,11 @@ public class WaitingPlayedCardState implements PlayerState {
 					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the WaitingPlayedCard state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The GameStarted notification was received when the client was in the WaitingPlayedCard state"));
 		return true;
 	}
 

@@ -49,8 +49,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	 * @param username
 	 */
 	public HeartsObservedTableWidget(int tableSize, final String username,
-			final ScreenManager screenManager,
-			LocalChatWidget chatWidget,
+			final ScreenManager screenManager, LocalChatWidget chatWidget,
 			ObservedGameStatus observedGameStatus,
 			CupidoInterfaceAsync cupidoService) {
 
@@ -70,11 +69,11 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		for (int i = 0; i < 3; i++)
 			assert observedGameStatus.playerStatus[i + 1] == null
 					|| observedGameStatus.playerStatus[i + 1].name != null;
-		
+
 		for (int i = 0; i < 3; i++)
 			if (observedGameStatus.playerStatus[i + 1] != null)
 				numPlayers++;
-		
+
 		if (numPlayers == 4) {
 			startGame(username, observedGameStatus);
 			return;
@@ -99,8 +98,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 		beforeGameWidget = new BeforeGameWidget(tableSize, username,
 				observedGameStatus.playerStatus[0].name, false,
-				initialTableStatus, initialTableStatus.playerScores, cupidoService,
-				new BeforeGameWidget.Listener() {
+				initialTableStatus, initialTableStatus.playerScores,
+				cupidoService, new BeforeGameWidget.Listener() {
 					@Override
 					public void onTableFull() {
 						if (frozen) {
@@ -198,7 +197,9 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 			return;
 		}
 		if (beforeGameWidget != null) {
-			screenManager.displayGeneralErrorScreen(new Exception("A CardPlayed notification was received before the game start."));
+			screenManager
+					.displayGeneralErrorScreen(new Exception(
+							"A CardPlayed notification was received before the game start."));
 		} else {
 			stateManager.handleCardPlayed(card, playerPosition);
 		}
@@ -238,10 +239,14 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 			return;
 		}
 		if (beforeGameWidget != null) {
-			// The -1 is needed for the different meaning that `position' has for viewers.
-			beforeGameWidget.handleNewPlayerJoined(name, isBot, points, position - 1);
+			// The -1 is needed for the different meaning that `position' has
+			// for viewers.
+			beforeGameWidget.handleNewPlayerJoined(name, isBot, points,
+					position - 1);
 		} else {
-			screenManager.displayGeneralErrorScreen(new Exception("A NewPlayerJoined notification was received while viewing an already-started game."));
+			screenManager
+					.displayGeneralErrorScreen(new Exception(
+							"A NewPlayerJoined notification was received while viewing an already-started game."));
 		}
 	}
 }

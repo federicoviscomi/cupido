@@ -53,7 +53,7 @@ public interface ViewerState {
 	 * transition, until it is handled.
 	 */
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
-	
+
 	public void handlePlayerLeft(int player);
 
 }
