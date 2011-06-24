@@ -121,6 +121,17 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 			}
 
 			@Override
+			public void onNewPlayerJoined(String name, boolean isBot,
+					int points, int position) {
+				if (frozen) {
+					System.out
+							.println("Client: notice: the onNewPlayerJoined() event was received while frozen, ignoring it.");
+					return;
+				}
+				tableWidget.handleNewPlayerJoined(name, isBot, points, position);
+			}
+
+			@Override
 			public void onGameStarted(Card[] myCards) {
 				if (frozen) {
 					System.out
@@ -129,18 +140,6 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 				}
 				System.out
 						.println("Client: ObservedTableScreen: warning: received a GameStarted notification while observing a table, it was ingored.");
-			}
-
-			@Override
-			public void onNewPlayerJoined(String name, boolean isBot,
-					int points, int position) {
-				if (frozen) {
-					System.out
-							.println("Client: notice: the onNewPlayerJoined() event was received while frozen, ignoring it.");
-					return;
-				}
-				System.out
-						.println("Client: ObservedTableScreen: warning: received a NewPlayerJoined notification while observing a table, it was ingored.");
 			}
 
 			@Override

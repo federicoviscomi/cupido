@@ -24,6 +24,7 @@ import unibo.as.cupido.common.structures.Card;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -32,13 +33,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class WaitingFirstLeadState implements ViewerState {
 
-	// FIXME: Remove this button when the servlet is ready.
-	private PushButton continueButton;
 	private PushButton exitButton;
 	private ViewerStateManager stateManager;
 	private CardsGameWidget cardsGameWidget;
 
 	private boolean frozen = false;
+	private boolean eventReceived = false;
 
 	public WaitingFirstLeadState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
@@ -54,23 +54,6 @@ public class WaitingFirstLeadState implements ViewerState {
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
-
-		// FIXME: Remove this button when the servlet is ready.
-		continueButton = new PushButton("[DEBUG] Continua");
-		continueButton.setEnabled(false);
-		continueButton.setWidth("80px");
-		continueButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				int player = Random.nextInt(4);
-				Card card = new Card();
-				card.suit = Card.Suit.CLUBS;
-				card.value = 2;
-
-				handleCardPlayed(card, player);
-			}
-		});
-		panel.add(continueButton);
 
 		exitButton = new PushButton("Esci");
 		exitButton.setEnabled(false);
@@ -92,7 +75,6 @@ public class WaitingFirstLeadState implements ViewerState {
 
 	@Override
 	public void freeze() {
-		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
 		frozen = true;
 	}
@@ -104,7 +86,6 @@ public class WaitingFirstLeadState implements ViewerState {
 					.println("Client: notice: the handleAnimationStart() method was called while frozen, ignoring it.");
 			return;
 		}
-		continueButton.setEnabled(false);
 		exitButton.setEnabled(false);
 	}
 
@@ -115,7 +96,6 @@ public class WaitingFirstLeadState implements ViewerState {
 					.println("Client: notice: the handleAnimationEnd() method was called while frozen, ignoring it.");
 			return;
 		}
-		continueButton.setEnabled(true);
 		exitButton.setEnabled(true);
 	}
 
@@ -126,6 +106,13 @@ public class WaitingFirstLeadState implements ViewerState {
 					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
 			return false;
 		}
+		
+		if (eventReceived)
+			// Let the next state handle this.
+			return false;
+		
+		eventReceived = true;
+		
 		stateManager.addPlayedCard(playerPosition, card);
 
 		cardsGameWidget.revealCoveredCard(playerPosition, card);
@@ -147,18 +134,22 @@ public class WaitingFirstLeadState implements ViewerState {
 					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		if (eventReceived)
+			// Let the next state handle this.
+			return false;
+		
+		stateManager.exit();
+		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
+		return true;
 	}
 
 	@Override
-	public boolean handlePlayerLeft(String player) {
+	public void handlePlayerLeft(int player) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the PlayerLeft event was received while frozen, deferring it.");
-			return false;
+					.println("Client: notice: the PlayerLeft event was received while frozen, ignoring it.");
+			return;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// Nothing to do.
 	}
 }

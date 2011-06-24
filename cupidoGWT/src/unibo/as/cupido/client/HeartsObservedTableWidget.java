@@ -23,6 +23,7 @@ import unibo.as.cupido.client.viewerstates.ViewerStateManagerImpl;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.PlayerStatus;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -73,7 +74,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		for (int i = 0; i < 3; i++)
 			if (observedGameStatus.playerStatus[i + 1] != null)
 				numPlayers++;
-
+		
 		if (numPlayers == 4) {
 			startGame(username, observedGameStatus);
 			return;
@@ -155,8 +156,10 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		observedGameStatus.playerStatus[0].numOfCardsInHand = 13;
 
 		for (int i = 0; i < 3; i++) {
+			observedGameStatus.playerStatus[i + 1] = new PlayerStatus();
 			observedGameStatus.playerStatus[i + 1].isBot = initialTableStatus.whoIsBot[i];
 			observedGameStatus.playerStatus[i + 1].name = initialTableStatus.opponents[i];
+			observedGameStatus.playerStatus[i + 1].playedCard = null;
 			observedGameStatus.playerStatus[i + 1].numOfCardsInHand = 13;
 			observedGameStatus.playerStatus[i + 1].score = initialTableStatus.playerScores[i + 1];
 		}
@@ -194,7 +197,11 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 					.println("Client: notice: received a CardPlayed notification while frozen, ignoring it.");
 			return;
 		}
-		stateManager.handleCardPlayed(card, playerPosition);
+		if (beforeGameWidget != null) {
+			screenManager.displayGeneralErrorScreen(new Exception("A CardPlayed notification was received before the game start."));
+		} else {
+			stateManager.handleCardPlayed(card, playerPosition);
+		}
 	}
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
@@ -203,7 +210,11 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 					.println("Client: notice: received a GameEnded notification while frozen, ignoring it.");
 			return;
 		}
-		stateManager.handleGameEnded(matchPoints, playersTotalPoints);
+		if (beforeGameWidget != null) {
+			beforeGameWidget.handleGameEnded(matchPoints, playersTotalPoints);
+		} else {
+			stateManager.handleGameEnded(matchPoints, playersTotalPoints);
+		}
 	}
 
 	public void handlePlayerLeft(String player) {
@@ -212,6 +223,25 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 					.println("Client: notice: received a PlayerLeft notification while frozen, ignoring it.");
 			return;
 		}
-		stateManager.handlePlayerLeft(player);
+		if (beforeGameWidget != null) {
+			beforeGameWidget.handlePlayerLeft(player);
+		} else {
+			stateManager.handlePlayerLeft(player);
+		}
+	}
+
+	public void handleNewPlayerJoined(String name, boolean isBot, int points,
+			int position) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: received a NewPlayerJoined notification while frozen, ignoring it.");
+			return;
+		}
+		if (beforeGameWidget != null) {
+			// The -1 is needed for the different meaning that `position' has for viewers.
+			beforeGameWidget.handleNewPlayerJoined(name, isBot, points, position - 1);
+		} else {
+			screenManager.displayGeneralErrorScreen(new Exception("A NewPlayerJoined notification was received while viewing an already-started game."));
+		}
 	}
 }

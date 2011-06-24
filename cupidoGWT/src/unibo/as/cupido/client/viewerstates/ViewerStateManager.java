@@ -61,6 +61,11 @@ public interface ViewerStateManager {
 	 * Exits from the game.
 	 */
 	public void exit();
+	
+	/**
+	 * Reacts to a fatal exception.
+	 */
+	public void onFatalException(Throwable e);
 
 	public List<PlayerInfo> getPlayerInfo();
 

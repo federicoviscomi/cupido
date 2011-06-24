@@ -30,7 +30,7 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
 import unibo.as.cupido.shared.cometNotification.GameEnded;
-import unibo.as.cupido.shared.cometNotification.PlayerLeft;
+import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -99,15 +99,16 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 			players.add(playerInfo);
 		}
 
-		// NOTE: It may be -1, but it's not an issue here.
 		firstPlayerInTrick = observedGameStatus.firstDealerInTrick;
 
-		for (int i = 0; i < 4; i++) {
-			Card card = observedGameStatus.playerStatus[(firstPlayerInTrick + i) % 4].playedCard;
-			if (card != null)
-				playedCards.add(card);
-			else
-				break;
+		if (firstPlayerInTrick != -1) {
+			for (int i = 0; i < 4; i++) {
+				Card card = observedGameStatus.playerStatus[(firstPlayerInTrick + i) % 4].playedCard;
+				if (card != null)
+					playedCards.add(card);
+				else
+					break;
+			}
 		}
 
 		remainingTricks = observedGameStatus.playerStatus[0].numOfCardsInHand;
@@ -257,6 +258,11 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	}
 
 	@Override
+	public void onFatalException(Throwable e) {
+		screenManager.displayGeneralErrorScreen(e);
+	}
+
+	@Override
 	public CardsGameWidget getWidget() {
 		return cardsGameWidget;
 	}
@@ -309,11 +315,20 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 					.println("Client: notice: the handlePlayerLeft() method was called while frozen, ignoring it.");
 			return;
 		}
-		boolean handled = currentState.handlePlayerLeft(player);
-		if (!handled)
-			pendingNotifications.add(new PlayerLeft(player));
+		int i = 1;
+		while (i < 4 && players.get(i).name.equals(player))
+			i++;
+		if (i == 4) {
+			onFatalException(new Exception("An invalid PlayerLeft notification was received."));
+			return;
+		}
+		PlayerInfo x = players.get(i);
+		x.isBot = true;
+		x.name = null;
+		// TODO: Update cardsGameWidget with the new player information.
+		currentState.handlePlayerLeft(i);
 	}
-
+		
 	private void sendPendingNotifications() {
 		List<Serializable> list = pendingNotifications;
 		// Note that this may be modified in the calls to handle*() methods
@@ -328,10 +343,6 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 			} else if (x instanceof GameEnded) {
 				GameEnded message = (GameEnded) x;
 				handleGameEnded(message.matchPoints, message.playersTotalPoints);
-
-			} else if (x instanceof PlayerLeft) {
-				PlayerLeft message = (PlayerLeft) x;
-				handlePlayerLeft(message.player);
 
 			} else {
 				assert false;

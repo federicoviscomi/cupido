@@ -53,11 +53,7 @@ public interface ViewerState {
 	 * transition, until it is handled.
 	 */
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
+	
+	public void handlePlayerLeft(int player);
 
-	/**
-	 * Returns false if this event can't be handled right now, but it can be
-	 * handled in a later state. It will be notified again at each state
-	 * transition, until it is handled.
-	 */
-	public boolean handlePlayerLeft(String player);
 }

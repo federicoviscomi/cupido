@@ -34,19 +34,29 @@ public class GameEndedState implements ViewerState {
 
 	private boolean frozen = false;
 
+	private CardsGameWidget cardsGameWidget;
+
+	private boolean eventReceived = false;
+
+	private ViewerStateManager stateManager;
+
 	public GameEndedState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
+		
+		this.cardsGameWidget = cardsGameWidget;
+		this.stateManager = stateManager;
+		
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		// FIXME: Display the scores in some way.
 		final HTML text = new HTML("La partita &egrave; finita");
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
 
 		exitButton = new PushButton("Esci");
+		exitButton.setEnabled(false);
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -96,8 +106,10 @@ public class GameEndedState implements ViewerState {
 					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// This notification should never arrive in this state. 
+		freeze();
+		stateManager.onFatalException(new Exception("The CardPlayed notification was received when the client was in the GameEnded state"));
+		return true;
 	}
 
 	@Override
@@ -107,18 +119,26 @@ public class GameEndedState implements ViewerState {
 					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		
+		if (eventReceived) {
+			stateManager.onFatalException(new Exception("Received another GameEnded notification."));
+			return true;
+		}
+		
+		eventReceived = true;
+		
+		exitButton.setEnabled(true);
+		cardsGameWidget.displayScores(matchPoints, playersTotalPoints);
+		return true;
 	}
 
 	@Override
-	public boolean handlePlayerLeft(String player) {
+	public void handlePlayerLeft(int player) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the PlayerLeft event was received while frozen, deferring it.");
-			return false;
+					.println("Client: notice: the PlayerLeft event was received while frozen, ignoring it.");
+			return;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// Nothing to do.
 	}
 }
