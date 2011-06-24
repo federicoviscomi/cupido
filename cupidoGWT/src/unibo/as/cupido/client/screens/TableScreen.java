@@ -28,9 +28,6 @@ public class TableScreen extends AbsolutePanel implements Screen {
 		setWidth(Cupido.width + "px");
 
 		assert Cupido.height == Cupido.width - chatWidth;
-		tableWidget = new HeartsTableWidget(Cupido.height, username,
-				initialTableStatus, isOwner, userScore, screenManager, cupidoService);
-		add(tableWidget, 0, 0);
 
 		chatWidget = new LocalChatWidget(username,
 				new LocalChatWidget.MessageSender() {
@@ -51,6 +48,10 @@ public class TableScreen extends AbsolutePanel implements Screen {
 		chatWidget.setHeight(Cupido.height + "px");
 		chatWidget.setWidth(chatWidth + "px");
 		add(chatWidget, Cupido.width - chatWidth, 0);
+		
+		tableWidget = new HeartsTableWidget(Cupido.height, username,
+				initialTableStatus, isOwner, userScore, screenManager, chatWidget, cupidoService);
+		add(tableWidget, 0, 0);
 
 		screenManager.setListener(new CometMessageListener() {
 			@Override

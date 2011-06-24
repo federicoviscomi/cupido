@@ -7,6 +7,7 @@ import java.util.List;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
+import unibo.as.cupido.client.LocalChatWidget;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -45,6 +46,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	private boolean frozen = false;
 	private CupidoInterfaceAsync cupidoService;
+	private LocalChatWidget chatWidget;
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
@@ -55,11 +57,13 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 *               are ignored.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
+			LocalChatWidget chatWidget,
 			InitialTableStatus initialTableStatus, int[] scores, Card[] cards,
 			String username, CupidoInterfaceAsync cupidoService) {
 		this.username = username;
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
+		this.chatWidget = chatWidget;
 
 		for (String opponent : initialTableStatus.opponents)
 			assert opponent != null;
@@ -252,6 +256,8 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 
+		chatWidget.freeze();
+		
 		transitionTo(new GameEndedState(cardsGameWidget, this, cupidoService));
 	}
 

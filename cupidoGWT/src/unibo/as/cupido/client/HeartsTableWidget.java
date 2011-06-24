@@ -24,6 +24,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 	private String username;
 	private CupidoInterfaceAsync cupidoService;
 	private int[] scores;
+	private LocalChatWidget chatWidget;
 
 	/**
 	 * 
@@ -37,11 +38,13 @@ public class HeartsTableWidget extends AbsolutePanel {
 	public HeartsTableWidget(int tableSize, final String username,
 			InitialTableStatus initialTableStatus, final boolean isOwner,
 			int userScore, final ScreenManager screenManager,
+			LocalChatWidget chatWidget,
 			final CupidoInterfaceAsync cupidoService) {
 
 		this.username = username;
 		this.tableSize = tableSize;
 		this.screenManager = screenManager;
+		this.chatWidget = chatWidget;
 		this.cupidoService = cupidoService;
 
 		setWidth(tableSize + "px");
@@ -143,7 +146,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		beforeGameWidget = null;
 
 		stateManager = new PlayerStateManagerImpl(tableSize, screenManager,
-				initialTableStatus, scores, myCards, username, cupidoService);
+				chatWidget, initialTableStatus, scores, myCards, username, cupidoService);
 
 		cardsGameWidget = stateManager.getWidget();
 		add(cardsGameWidget, 0, 0);

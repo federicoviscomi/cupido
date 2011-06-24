@@ -6,6 +6,7 @@ import java.util.List;
 
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
+import unibo.as.cupido.client.LocalChatWidget;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
@@ -40,15 +41,18 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 * The (ordered) list of cards played in the current trick.
 	 */
 	private List<Card> playedCards = new ArrayList<Card>();
+	private LocalChatWidget chatWidget;
 
 	/**
 	 * Initialize the state manager. The current user is a viewer.
 	 */
 	public ViewerStateManagerImpl(int tableSize, ScreenManager screenManager,
+			LocalChatWidget chatWidget,
 			ObservedGameStatus observedGameStatus, String username) {
 
 		this.username = username;
 		this.screenManager = screenManager;
+		this.chatWidget = chatWidget;
 		this.cardsGameWidget = new CardsGameWidget(tableSize,
 				observedGameStatus, null, new VerticalPanel(),
 				new CardsGameWidget.GameEventListener() {
@@ -146,6 +150,9 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 					.println("Client: notice: the transitionToGameEnded() method was called while frozen, ignoring it.");
 			return;
 		}
+		
+		chatWidget.freeze();
+		
 		transitionTo(new GameEndedState(cardsGameWidget, this));
 	}
 
