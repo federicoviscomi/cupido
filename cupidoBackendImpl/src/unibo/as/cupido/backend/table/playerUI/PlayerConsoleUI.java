@@ -1,3 +1,20 @@
+/*  Cupido - An online Hearts game.
+ *  Copyright (C) 2011 Lorenzo Belli, Marco Poletti, Federico Viscomi
+ *  
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package unibo.as.cupido.backend.table.playerUI;
 
 import jargs.gnu.CmdLineParser;
@@ -17,6 +34,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
@@ -166,8 +184,10 @@ public class PlayerConsoleUI {
 				out.println(USAGE);
 				out.flush();
 			} else if (command[0].equals("exit")) {
+				out.println("bye!");
 				exit(0);
 			} else if (command[0].equals("sleep")) {
+				out.println("...");
 				out.flush();
 				try {
 					Thread.sleep(Integer.parseInt(command[1]));
@@ -200,6 +220,8 @@ public class PlayerConsoleUI {
 					try {
 						if (remoteBot.singleTableManager != null) {
 							remoteBot.singleTableManager.leaveTable(playerName);
+							out.println("table " + remoteBot.singleTableManager
+									+ " left");
 						} else {
 							out.println("there is no table to leave!");
 						}
@@ -266,8 +288,12 @@ public class PlayerConsoleUI {
 					boolean listCards = (parser.getOptionValue(cardsOption) == null ? false
 							: true);
 					if (listTables) {
-						out.println(Arrays.toString(gtm.getTableList().toArray(
-								new TableInfoForClient[1])));
+						out.println("tables list follows:");
+						Iterator<TableInfoForClient> list = gtm.getTableList()
+								.iterator();
+						while (list.hasNext()) {
+							out.println(list.next());
+						}
 					} else if (listPlayers) {
 						out.println(remoteBot.initialTableStatus);
 					} else if (listCards) {
