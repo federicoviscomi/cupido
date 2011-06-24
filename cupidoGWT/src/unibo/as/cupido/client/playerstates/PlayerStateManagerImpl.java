@@ -449,7 +449,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		PlayerInfo x = players.get(i);
 		x.isBot = true;
 		x.name = null;
-		// TODO: Update cardsGameWidget with the new player information.
+		cardsGameWidget.setBot(i, x.name);
 		currentState.handlePlayerLeft(i);
 	}
 

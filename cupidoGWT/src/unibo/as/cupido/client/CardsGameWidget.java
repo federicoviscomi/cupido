@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import unibo.as.cupido.client.playerstates.PlayerStateManager.PlayerInfo;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
@@ -1275,5 +1276,11 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	public void freeze() {
 		frozen = true;
+	}
+
+	public void setBot(int i, String name) {
+		players.get(i).isBot = true;
+		players.get(i).name = name;
+		updateLabels();
 	}
 }

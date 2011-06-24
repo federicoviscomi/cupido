@@ -325,7 +325,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		PlayerInfo x = players.get(i);
 		x.isBot = true;
 		x.name = null;
-		// TODO: Update cardsGameWidget with the new player information.
+		cardsGameWidget.setBot(i, x.name);
 		currentState.handlePlayerLeft(i);
 	}
 
