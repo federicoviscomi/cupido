@@ -42,6 +42,8 @@ public class GameEndedState implements PlayerState {
 
 	private CardsGameWidget cardsGameWidget;
 
+	private boolean eventReceived = false;
+
 	public GameEndedState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager,
 			final CupidoInterfaceAsync cupidoService) {
@@ -148,6 +150,13 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
+		if (eventReceived) {
+			stateManager.onFatalException(new Exception("Received another GameEnded notification."));
+			return true;
+		}
+		
+		eventReceived  = true;
+		
 		exitButton.setEnabled(true);
 		cardsGameWidget.displayScores(matchPoints, playersTotalPoints);
 		return true;
