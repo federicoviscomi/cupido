@@ -21,6 +21,10 @@ import java.io.Serializable;
 
 public class PositionFullException extends Exception implements Serializable {
 
+	public PositionFullException(String string) {
+		super(string);
+	}
+
 	private static final long serialVersionUID = 1L;
 
 }

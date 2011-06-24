@@ -48,24 +48,35 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
 public class PlayerConsoleUI {
 	private static final String FORMAT = "%-20.20s %-3.3s %-10.10s %-30.30s\n";
 
-	private static final String USAGE = String.format(FORMAT + FORMAT + FORMAT
-			+ FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT
-			+ FORMAT + FORMAT + FORMAT + FORMAT + FORMAT + FORMAT, "COMMAND",
-			"OPT", "LONG_OPT", "DESCRIPTION", "create", "", "",
-			"create a new table", "exit", "", "", "", "list", "-p",
-			"--players", "list all player in the table", "list", "-c",
-			"--cards", "list this player cards", "list", "-t", "--tables",
-			"list all tables", "login NAME PASSWORD", "", "", "", "pass", "-a",
-			"--arbitrary", "pass arbitrary cards", "pass CARD1 CARD2 CARD3",
-			"-c", "--card", "pass specified cards", "play", "-a",
-			"--arbitrary", "play an arbitrary card", "addbot POSITION", "", "",
-			"add a bot in specified absolute position", "join", "", "",
-			"join an arbitrary table", "help", "", "", "print this help",
-			"leave", "", "", "leave the table(if any)", "view", "", "",
-			"view an arbitrary table in the GTM", "TODOjoin table descriptor",
-			"", "", "joins specified table", "TODOview table descriptor", "",
-			"", "views specified table");
-
+	private static final String USAGE = String.format(FORMAT, "COMMAND", "OPT",
+			"LONG_OPT", "DESCRIPTION")
+			+ String.format(FORMAT, "create", "", "", "create a new table")
+			+ String.format(FORMAT, "exit", "", "", "")
+			+ String.format(FORMAT, "list", "-p", "--players",
+					"list all player in the table")
+			+ String.format(FORMAT, "list", "-c", "--cards",
+					"list this player cards")
+			+ String.format(FORMAT, "list", "-t", "--tables", "list all tables")
+			+ String.format(FORMAT, "login NAME PASSWORD", "", "", "")
+			+ String.format(FORMAT, "pass", "-a", "--arbitrary",
+					"pass arbitrary cards")
+			+ String.format(FORMAT, "passTODO s1 v1 s2 v2 s3 v3", "-c",
+					"--card", "pass specified cards cards ")
+			+ String.format(FORMAT, "play", "-a", "--arbitrary",
+					"play an arbitrary card")
+			+ String.format(FORMAT, "play suit value", "", "",
+					"play specified card")
+			+ String.format(FORMAT, "addbot POSITION", "", "",
+					"add a bot in specified absolute position")
+			+ String.format(FORMAT, "join", "", "", "join an arbitrary table")
+			+ String.format(FORMAT, "help", "", "", "print this help")
+			+ String.format(FORMAT, "leave", "", "", "leave the table(if any)")
+			+ String.format(FORMAT, "view", "", "",
+					"view an arbitrary table in the GTM")
+			+ String.format(FORMAT, "TODOjoin TABLE", "", "",
+					"joins specified table")
+			+ String.format(FORMAT, "TODOview TABLE", "", "",
+					"views specified table");
 	private static final String[] allCommands = { "create", "join", "list",
 			"login", "pass", "play", "addbot", "help", "exit", "sleep",
 			"leave", "view" };
@@ -295,13 +306,19 @@ public class PlayerConsoleUI {
 							out.println(list.next());
 						}
 					} else if (listPlayers) {
+						out.println("players list follows:");
 						out.println(remoteBot.initialTableStatus);
 					} else if (listCards) {
-						out.print("\n"
-								+ Arrays.toString(remoteBot.cards
-										.toArray(new Card[13]))
-								+ ". \nround cards: "
-								+ Arrays.toString(remoteBot.playedCard));
+						if (remoteBot.cards == null) {
+							out.println("you don't have any cards");
+						} else {
+							out.print("\nplayer cards "
+									+ remoteBot.cards.toString()
+									+ ". \nround cards: "
+									+ Arrays.toString(remoteBot.playedCard));
+						}
+					} else {
+						out.println("what to list?");
 					}
 					out.flush();
 				} else if (command[0].equals("addbot")) {
