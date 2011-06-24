@@ -80,13 +80,17 @@ public class WaitingPlayedCardState implements ViewerState {
 	}
 
 	private void recomputeLabelMessage() {
-		ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
-				.get(currentPlayer);
-		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
-		safeHtmlBuilder.appendEscaped(playerInfo.name);
-		safeHtmlBuilder.appendHtmlConstant(" giochi.");
-		label.setHTML(safeHtmlBuilder.toSafeHtml());
+		if (eventReceived)
+			label.setHTML("");
+		else {
+			ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
+					.get(currentPlayer);
+			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+			safeHtmlBuilder.appendEscaped(playerInfo.name);
+			safeHtmlBuilder.appendHtmlConstant(" giochi.");
+			label.setHTML(safeHtmlBuilder.toSafeHtml());
+		}
 	}
 
 	@Override
@@ -132,6 +136,8 @@ public class WaitingPlayedCardState implements ViewerState {
 			return false;
 
 		eventReceived = true;
+		
+		recomputeLabelMessage();
 
 		stateManager.addPlayedCard(playerPosition, card);
 

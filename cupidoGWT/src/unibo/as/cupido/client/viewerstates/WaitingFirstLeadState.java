@@ -38,6 +38,7 @@ public class WaitingFirstLeadState implements ViewerState {
 
 	private boolean frozen = false;
 	private boolean eventReceived = false;
+	private HTML text;
 
 	public WaitingFirstLeadState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
@@ -49,7 +50,7 @@ public class WaitingFirstLeadState implements ViewerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		final HTML text = new HTML("Attendi l'inizio del gioco.");
+		text = new HTML("Attendi l'inizio del gioco.");
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
@@ -111,6 +112,8 @@ public class WaitingFirstLeadState implements ViewerState {
 			return false;
 
 		eventReceived = true;
+		
+		text.setHTML("");
 
 		stateManager.addPlayedCard(playerPosition, card);
 
