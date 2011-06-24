@@ -155,7 +155,7 @@ public interface DatabaseInterface {
 			throws SQLException, IllegalArgumentException;
 
 	
-	public final int NUMLOCALRANKENTRIES = 10;
+	public final int NUMLOCALRANKENTRIES = 7;
 
 	/**
 	 * Returns one chunk the global rank that contains from four position before

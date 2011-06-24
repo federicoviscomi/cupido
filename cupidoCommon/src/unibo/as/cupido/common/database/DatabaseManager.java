@@ -115,7 +115,7 @@ public class DatabaseManager implements DatabaseInterface {
 		if (userName == null)
 			throw new IllegalArgumentException();
 		int userRank = getUserRank(userName).rank;
-		int from = (userRank - 5);
+		int from = (userRank - NUMLOCALRANKENTRIES/2);
 		from = (from >= 0 ? from : 0);
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet chunk = statement
