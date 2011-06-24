@@ -17,6 +17,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
@@ -166,8 +167,10 @@ public class PlayerConsoleUI {
 				out.println(USAGE);
 				out.flush();
 			} else if (command[0].equals("exit")) {
+				out.println("bye!");
 				exit(0);
 			} else if (command[0].equals("sleep")) {
+				out.println("...");
 				out.flush();
 				try {
 					Thread.sleep(Integer.parseInt(command[1]));
@@ -200,6 +203,8 @@ public class PlayerConsoleUI {
 					try {
 						if (remoteBot.singleTableManager != null) {
 							remoteBot.singleTableManager.leaveTable(playerName);
+							out.println("table " + remoteBot.singleTableManager
+									+ " left");
 						} else {
 							out.println("there is no table to leave!");
 						}
@@ -266,8 +271,12 @@ public class PlayerConsoleUI {
 					boolean listCards = (parser.getOptionValue(cardsOption) == null ? false
 							: true);
 					if (listTables) {
-						out.println(Arrays.toString(gtm.getTableList().toArray(
-								new TableInfoForClient[1])));
+						out.println("tables list follows:");
+						Iterator<TableInfoForClient> list = gtm.getTableList()
+								.iterator();
+						while (list.hasNext()) {
+							out.println(list.next());
+						}
 					} else if (listPlayers) {
 						out.println(remoteBot.initialTableStatus);
 					} else if (listCards) {
