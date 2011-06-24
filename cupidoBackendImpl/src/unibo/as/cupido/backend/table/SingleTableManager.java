@@ -61,6 +61,9 @@ public class SingleTableManager implements TableInterface {
 	private final GlobalTableManagerInterface gtm;
 	private final StartNotifierThread startNotifierThread;
 	private final EndNotifierThread endNotifierThread;
+	private boolean gameStarted = false;
+
+	public static final String[] botNames = { "", "cupido", "venere", "marte" };
 
 	public SingleTableManager(ServletNotificationsInterface snf,
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
@@ -87,15 +90,13 @@ public class SingleTableManager implements TableInterface {
 			IllegalStateException {
 		try {
 
-			String[] botNames = {"", "cupido", "venere", "marte"};
 			String botName = botNames[position];
-			
+
 			InitialTableStatus initialTableStatus = playersManager
 					.getInitialTableStatus(position);
 
-			NonRemoteBot bot = new NonRemoteBot(botName,
-					initialTableStatus, gtm.getLTMInterface(
-							table.tableDescriptor.ltmId).getTable(
+			NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus,
+					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
 							table.tableDescriptor.id));
 			viewers.notifyBotJoined(botNames[position], position);
 
@@ -104,7 +105,7 @@ public class SingleTableManager implements TableInterface {
 				startNotifierThread.setGameStarted();
 			}
 			gtm.notifyTableJoin(table.tableDescriptor);
-			
+
 			return botName;
 		} catch (NoSuchTableException e) {
 			// TODO Auto-generated catch block
@@ -162,16 +163,29 @@ public class SingleTableManager implements TableInterface {
 			if (table.owner.equals(userName)) {
 				this.notifyGameEndedPrematurely();
 			} else {
-				int position = playersManager.getPlayerPosition(userName);
-				playersManager.removePlayer(userName);
-				viewers.notifyPlayerLeft(userName);
-				// gtm.notifyTableLeft(table.tableDescriptor);
-				this.addBot(userName + "_bot_", position);
+				if (gameStarted) {
+					this.replacePlayer(userName);
+				} else {
+					playersManager.removePlayer(userName);
+					viewers.notifyPlayerLeft(userName);
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void replacePlayer(String playerName) {
+		int position = playerName.getPlayerPosition(playerName);
+		String botName = botNames[position];
+		NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus, gtm
+				.getLTMInterface(table.tableDescriptor.ltmId).getTable(
+						table.tableDescriptor.id));
+		viewers.notifyBotJoined(botNames[position], position);
+
+		playersManager.notifyPlayerReplacement(playerName);
+		viewers.notifyPlayerReplacement(playerName);
 	}
 
 	private void notifyGameEndedPrematurely() {
@@ -207,6 +221,7 @@ public class SingleTableManager implements TableInterface {
 	}
 
 	synchronized void notifyGameStarted() {
+		gameStarted = true;
 		playersManager.notifyGameStarted(cardsManager.getCards());
 	}
 

@@ -46,6 +46,42 @@ public class NonRemoteBot implements BotNotificationInterface {
 	private PrintWriter out;
 	private int points = 0;
 
+	/** game started */
+	public NonRemoteBot(final String botName,
+			InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager) throws IOException {
+		this.botName = botName;
+		this.initialTableStatus = initialTableStatus;
+		this.singleTableManager = singleTableManager;
+
+		ArrayList<Card> cards;
+		Card[] playedCard = new Card[4];
+
+		private int turn = 0;
+		private int playedCardCount = 0;
+		private int firstDealer = -1;
+		private boolean alreadyGotCards = false;
+		private boolean brokenHearted = false;
+		private PrintWriter out;
+		private int points = 0;
+
+		cardPlayingThread = new NonRemoteBotCardPlayingThread(this, botName);
+		cardPlayingThread.start();
+
+		File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
+				+ botName);
+		outputFile.delete();
+		outputFile.createNewFile();
+		out = new PrintWriter(new FileWriter(outputFile));
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				System.err.println("shuting down non remote bot " + botName);
+				out.close();
+			}
+		});
+	}
+
 	public NonRemoteBot(final String botName,
 			InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager) throws IOException {
