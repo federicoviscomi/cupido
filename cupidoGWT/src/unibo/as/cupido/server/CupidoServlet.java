@@ -1,7 +1,25 @@
+/*  Cupido - An online Hearts game.
+ *  Copyright (C) 2011 Lorenzo Belli, Marco Poletti, Federico Viscomi
+ *  
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package unibo.as.cupido.server;
 
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -285,6 +303,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				g.playersTotalPoints = playersTotalPoint;
 				cometSession.enqueue(g);
 				httpSession.removeAttribute(TI);
+				try {
+					//FIXME can value true cause problems?
+					UnicastRemoteObject.unexportObject((Remote) httpSession.getAttribute(SNI), true);
+				} catch (RemoteException e) {
+					System.out.println("SNI: on notifyGameEnded() catched RemoteException while unexporting obj ->"+e.getMessage());
+					//e.printStackTrace();
+				}
 				httpSession.removeAttribute(SNI);
 			}
 		};
@@ -757,7 +782,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 
 		try {
-			ti.leaveTable(USERNAME);
+			ti.leaveTable((String) httpSession.getAttribute(USERNAME));
 		} catch (RemoteException e) {
 			System.out
 					.println("Servlet: onLeaveTable catched RemoteException ->"
@@ -768,6 +793,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new NoSuchTableException();
 		}
 		httpSession.removeAttribute(TI);
+		try {
+			UnicastRemoteObject.unexportObject((Remote) httpSession.getAttribute(SNI), false);
+		} catch (RemoteException e) {
+			System.out.println("Servlet: on leavetable() catched RemoteException while unexporting obj ->"+e.getMessage());
+			//e.printStackTrace();
+		}
 		httpSession.removeAttribute(SNI);
 	}
 

@@ -1,3 +1,20 @@
+/*  Cupido - An online Hearts game.
+ *  Copyright (C) 2011 Lorenzo Belli, Marco Poletti, Federico Viscomi
+ *  
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package unibo.as.cupido.common.interfaces;
 
 import java.sql.SQLException;
@@ -137,17 +154,18 @@ public interface DatabaseInterface {
 	public ArrayList<RankingEntry> getTopRank(int size)
 			throws SQLException, IllegalArgumentException;
 
+	
+	public final int NUMLOCALRANKENTRIES = 7;
+
 	/**
 	 * Returns one chunk the global rank that contains from four position before
 	 * <code>userName</code> to five position after the <code>userName</code>.
 	 * 
 	 * 
-	 * TODO this methods troubles me
-	 * 
 	 * @param userName
 	 *            the user who wants the rank
-	 * @return a list of size twenty, the first half contains the first chunk
-	 *         and the second half contains the second chunk
+	 * @return a list of size {@link NUMLOCALRANKENTRIES} with user
+	 *         {@link userName} in the middle.
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>

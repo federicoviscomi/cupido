@@ -1,3 +1,20 @@
+/*  Cupido - An online Hearts game.
+ *  Copyright (C) 2011 Lorenzo Belli, Marco Poletti, Federico Viscomi
+ *  
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package unibo.as.cupido.common.database;
 
 import java.sql.DriverManager;
@@ -27,9 +44,9 @@ public class DatabaseManager implements DatabaseInterface {
 
 	private String passDB = "cupido";
 	private String host = "localhost";
-	// TODO handle statement.close() problem
 	private Statement statement;
 	private Connection connection;
+	private final int NUMLOCALRANKENTRIES = DatabaseInterface.NUMLOCALRANKENTRIES;
 	
 	public DatabaseManager() {
 		try {
@@ -41,10 +58,10 @@ public class DatabaseManager implements DatabaseInterface {
 					+ ".");
 			statement = (Statement) connection.createStatement();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("DBManager: on DatabaseManager() catched ClassNotFoundException");
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			System.out.println("DBManager: on DatabaseManager() catched SQLException");
 			e.printStackTrace();
 		}
 
@@ -57,8 +74,6 @@ public class DatabaseManager implements DatabaseInterface {
 			throw new IllegalArgumentException();
 		if (this.contains(userName))
 			throw new DuplicateUserNameException(userName);
-		// TODO is there any way to exploit return value of
-		// statement.executeUpdate in order not to use this.contains?
 		statement.executeUpdate("INSERT INTO User VALUE ('" + userName + "', '"
 				+ password + "', 0);");
 	}
@@ -68,12 +83,14 @@ public class DatabaseManager implements DatabaseInterface {
 		try {
 			statement.close();
 		} catch (SQLException e) {
-			//
+			System.out.println("DBManager: on close() catched SQLException");
+			e.printStackTrace();
 		}
 		try {
 			connection.close();
 		} catch (SQLException e) {
-			//
+			System.out.println("DBManager: on close() catched SQLException");
+			e.printStackTrace();
 		}
 	}
 
@@ -98,14 +115,13 @@ public class DatabaseManager implements DatabaseInterface {
 		if (userName == null)
 			throw new IllegalArgumentException();
 		int userRank = getUserRank(userName).rank;
-		int from = (userRank - 5);
-		from = from >= 0 ? from : 0;
-		int to = userRank + 4;
+		int from = (userRank - NUMLOCALRANKENTRIES/2);
+		from = (from >= 0 ? from : 0);
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet chunk = statement
 				.executeQuery("SELECT * FROM " +
 						"(SELECT @rank:=@rank+1 AS rank, name, score from User USE INDEX (scoreIndex) ORDER BY score DESC)" +
-						"AS globalList LIMIT "+ from + ", " + to + " ;");
+						"AS globalList LIMIT "+ from + ", " + NUMLOCALRANKENTRIES + " ;");
 
 		ArrayList<RankingEntry> rank = new ArrayList<RankingEntry>(10);
 		while (chunk.next()) {
@@ -136,7 +152,6 @@ public class DatabaseManager implements DatabaseInterface {
 	public ArrayList<RankingEntry> getTopRank(int size) throws SQLException {
 		if (size <= 0)
 			throw new IllegalArgumentException();
-		// FIXME does this really work?
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet topChunk = statement
 				.executeQuery("SELECT @rank:=@rank+1 AS rank, name, score  "
@@ -202,7 +217,7 @@ public class DatabaseManager implements DatabaseInterface {
 			}
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			System.out.println("DBManager: on print() catched SQLException");
 			e.printStackTrace();
 		}
 	}

@@ -1,3 +1,20 @@
+/*  Cupido - An online Hearts game.
+ *  Copyright (C) 2011 Lorenzo Belli, Marco Poletti, Federico Viscomi
+ *  
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package unibo.as.cupido.backend.table;
 
 import java.io.IOException;
@@ -125,7 +142,6 @@ public class SingleTableManager implements TableInterface {
 	public synchronized void leaveTable(Integer i) throws RemoteException,
 			PlayerNotFoundException {
 		this.leaveTable(playersManager.getPlayerName(i));
-
 	}
 
 	@Override
@@ -134,21 +150,27 @@ public class SingleTableManager implements TableInterface {
 		if (userName == null)
 			throw new IllegalArgumentException();
 
-		if (table.owner.equals(userName)) {
-			endNotifierThread.interrupt();
-			this.notifyGameEndedPrematurely();
-		} else {
-			playersManager.removePlayer(userName);
-			viewers.notifyPlayerLeft(userName);
-			try {
-				gtm.notifyTableLeft(table.tableDescriptor);
-			} catch (NoSuchTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (EmptyTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (viewers.isAViewer(userName)) {
+			viewers.removeViewer(userName);
+			return;
+		}
+		if (cardsManager.gameEnded()) {
+			throw new IllegalStateException(
+					"game ended, cannot call leaveTable");
+		}
+		try {
+			if (table.owner.equals(userName)) {
+				this.notifyGameEndedPrematurely();
+			} else {
+				int position = playersManager.getPlayerPosition(userName);
+				playersManager.removePlayer(userName);
+				viewers.notifyPlayerLeft(userName);
+				// gtm.notifyTableLeft(table.tableDescriptor);
+				this.addBot(userName + "_bot_", position);
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

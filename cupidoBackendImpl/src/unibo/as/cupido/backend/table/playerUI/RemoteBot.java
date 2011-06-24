@@ -1,3 +1,20 @@
+/*  Cupido - An online Hearts game.
+ *  Copyright (C) 2011 Lorenzo Belli, Marco Poletti, Federico Viscomi
+ *  
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package unibo.as.cupido.backend.table.playerUI;
 
 import java.io.File;
@@ -15,6 +32,7 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.common.structures.ObservedGameStatus;
 
 public class RemoteBot implements Bot, Serializable {
 
@@ -36,6 +54,7 @@ public class RemoteBot implements Bot, Serializable {
 	PrintWriter out;
 	private final Object lock = new Object();
 	private int points = 0;
+	public ObservedGameStatus observedGameStatus;
 
 	public RemoteBot(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, final String userName)
@@ -180,7 +199,7 @@ public class RemoteBot implements Bot, Serializable {
 	public synchronized void notifyPlayerJoined(String name, boolean isBot,
 			int point, int position) {
 		if (name == null || position < 0 || position > 2)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(name + " " + position);
 		if (initialTableStatus.opponents[position] != null)
 			throw new IllegalArgumentException("Unable to add player " + name
 					+ " in player " + userName + " beacuse ITS: "

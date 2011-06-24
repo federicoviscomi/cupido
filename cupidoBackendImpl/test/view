@@ -1,0 +1,5 @@
+login topo
+sleep 1000
+view
+sleep 10000
+exit
