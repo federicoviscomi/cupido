@@ -84,9 +84,11 @@ public class CardsManager {
 
 	void addCardsInformationForViewers(ObservedGameStatus observedGameStatus) {
 		for (int i = 0; i < 4; i++) {
-			observedGameStatus.playerStatus[i].numOfCardsInHand = cards[i]
-					.size();
-			observedGameStatus.playerStatus[i].playedCard = cardPlayed[i];
+			if (observedGameStatus.playerStatus[i] != null) {
+				observedGameStatus.playerStatus[i].numOfCardsInHand = cards[i]
+						.size();
+				observedGameStatus.playerStatus[i].playedCard = cardPlayed[i];
+			}
 		}
 		if (observedGameStatus.firstDealerInTrick != -1) {
 			if (!allPlayerPassedCards()) {

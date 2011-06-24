@@ -118,4 +118,8 @@ public class ViewersSwarm {
 		snfs.remove(viewerName);
 	}
 
+	public boolean isAViewer(String userName) {
+		return snfs.containsKey(userName);
+	}
+
 }
