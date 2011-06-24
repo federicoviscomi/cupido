@@ -175,7 +175,30 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		scoresButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenManager.displayScoresScreen(username);
+				freeze();
+				cupidoService.getTopRank(new AsyncCallback<ArrayList<RankingEntry>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						screenManager.displayGeneralErrorScreen(caught);
+					}
+
+					@Override
+					public void onSuccess(final ArrayList<RankingEntry> topRanks) {
+						// The screen is already frozen, there's no need
+						// to freeze it again.
+						cupidoService.getLocalRank(new AsyncCallback<ArrayList<RankingEntry>>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								screenManager.displayGeneralErrorScreen(caught);
+							}
+
+							@Override
+							public void onSuccess(ArrayList<RankingEntry> localRanks) {
+								screenManager.displayScoresScreen(username, topRanks, localRanks);
+							}
+						});
+					}
+				});
 			}
 		});
 		panel.add(scoresButton);

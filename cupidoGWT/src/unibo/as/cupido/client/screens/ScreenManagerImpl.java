@@ -1,6 +1,7 @@
 package unibo.as.cupido.client.screens;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.shared.cometNotification.CardPassed;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
@@ -196,12 +198,13 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	}
 
 	@Override
-	public void displayScoresScreen(String username) {
+	public void displayScoresScreen(String username, ArrayList<RankingEntry> topRanks,
+			ArrayList<RankingEntry> localRanks) {
 		assert !switchingScreen;
 		switchingScreen = true;
 
 		removeCurrentScreen();
-		ScoresScreen screen = new ScoresScreen(this);
+		ScoresScreen screen = new ScoresScreen(this, username, topRanks, localRanks);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
