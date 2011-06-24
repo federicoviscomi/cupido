@@ -27,7 +27,6 @@ public class DatabaseManager implements DatabaseInterface {
 
 	private String passDB = "cupido";
 	private String host = "localhost";
-	// TODO handle statement.close() problem
 	private Statement statement;
 	private Connection connection;
 	private final int NUMLOCALRANKENTRIES = DatabaseInterface.NUMLOCALRANKENTRIES;
@@ -42,10 +41,10 @@ public class DatabaseManager implements DatabaseInterface {
 					+ ".");
 			statement = (Statement) connection.createStatement();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("DBManager: on DatabaseManager() catched ClassNotFoundException");
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			System.out.println("DBManager: on DatabaseManager() catched SQLException");
 			e.printStackTrace();
 		}
 
@@ -58,8 +57,6 @@ public class DatabaseManager implements DatabaseInterface {
 			throw new IllegalArgumentException();
 		if (this.contains(userName))
 			throw new DuplicateUserNameException(userName);
-		// TODO is there any way to exploit return value of
-		// statement.executeUpdate in order not to use this.contains?
 		statement.executeUpdate("INSERT INTO User VALUE ('" + userName + "', '"
 				+ password + "', 0);");
 	}
@@ -69,12 +66,14 @@ public class DatabaseManager implements DatabaseInterface {
 		try {
 			statement.close();
 		} catch (SQLException e) {
-			//
+			System.out.println("DBManager: on close() catched SQLException");
+			e.printStackTrace();
 		}
 		try {
 			connection.close();
 		} catch (SQLException e) {
-			//
+			System.out.println("DBManager: on close() catched SQLException");
+			e.printStackTrace();
 		}
 	}
 
@@ -100,7 +99,7 @@ public class DatabaseManager implements DatabaseInterface {
 			throw new IllegalArgumentException();
 		int userRank = getUserRank(userName).rank;
 		int from = (userRank - 5);
-		from = from >= 0 ? from : 0;
+		from = (from >= 0 ? from : 0);
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet chunk = statement
 				.executeQuery("SELECT * FROM " +
@@ -136,7 +135,6 @@ public class DatabaseManager implements DatabaseInterface {
 	public ArrayList<RankingEntry> getTopRank(int size) throws SQLException {
 		if (size <= 0)
 			throw new IllegalArgumentException();
-		// FIXME does this really work?
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet topChunk = statement
 				.executeQuery("SELECT @rank:=@rank+1 AS rank, name, score  "
@@ -202,7 +200,7 @@ public class DatabaseManager implements DatabaseInterface {
 			}
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			System.out.println("DBManager: on print() catched SQLException");
 			e.printStackTrace();
 		}
 	}
