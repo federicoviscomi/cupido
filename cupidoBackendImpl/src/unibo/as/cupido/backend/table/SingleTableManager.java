@@ -127,23 +127,27 @@ public class SingleTableManager implements TableInterface {
 		if (userName == null)
 			throw new IllegalArgumentException();
 
-		if (table.owner.equals(userName)) {
-			endNotifierThread.interrupt();
-			this.notifyGameEndedPrematurely();
-		} else if (viewers.isAViewer(userName)) {
+		if (viewers.isAViewer(userName)) {
 			viewers.removeViewer(userName);
-		} else {
-			playersManager.removePlayer(userName);
-			viewers.notifyPlayerLeft(userName);
-			try {
-				gtm.notifyTableLeft(table.tableDescriptor);
-			} catch (NoSuchTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (EmptyTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			return;
+		}
+		if (cardsManager.gameEnded()) {
+			throw new IllegalStateException(
+					"game ended, cannot call leaveTable");
+		}
+		try {
+			if (table.owner.equals(userName)) {
+				this.notifyGameEndedPrematurely();
+			} else {
+				int position = playersManager.getPlayerPosition(userName);
+				playersManager.removePlayer(userName);
+				viewers.notifyPlayerLeft(userName);
+				// gtm.notifyTableLeft(table.tableDescriptor);
+				this.addBot(userName + "_bot_", position);
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

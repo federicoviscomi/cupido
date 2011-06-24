@@ -330,14 +330,6 @@ public class PlayerConsoleUI {
 		} catch (Exception e) {
 			//
 		}
-		if (remoteBot != null) {
-			try {
-				remoteBot.singleTableManager.leaveTable(playerName);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 		out.close();
 		System.exit(exitStatus);
 	}
