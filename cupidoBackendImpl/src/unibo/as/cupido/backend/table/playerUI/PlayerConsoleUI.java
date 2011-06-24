@@ -167,8 +167,10 @@ public class PlayerConsoleUI {
 				out.println(USAGE);
 				out.flush();
 			} else if (command[0].equals("exit")) {
+				out.println("bye!");
 				exit(0);
 			} else if (command[0].equals("sleep")) {
+				out.println("...");
 				out.flush();
 				try {
 					Thread.sleep(Integer.parseInt(command[1]));
