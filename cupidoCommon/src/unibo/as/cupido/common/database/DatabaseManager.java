@@ -30,6 +30,7 @@ public class DatabaseManager implements DatabaseInterface {
 	// TODO handle statement.close() problem
 	private Statement statement;
 	private Connection connection;
+	private final int NUMLOCALRANKENTRIES = DatabaseInterface.NUMLOCALRANKENTRIES;
 	
 	public DatabaseManager() {
 		try {
@@ -100,12 +101,11 @@ public class DatabaseManager implements DatabaseInterface {
 		int userRank = getUserRank(userName).rank;
 		int from = (userRank - 5);
 		from = from >= 0 ? from : 0;
-		int to = userRank + 4;
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet chunk = statement
 				.executeQuery("SELECT * FROM " +
 						"(SELECT @rank:=@rank+1 AS rank, name, score from User USE INDEX (scoreIndex) ORDER BY score DESC)" +
-						"AS globalList LIMIT "+ from + ", " + to + " ;");
+						"AS globalList LIMIT "+ from + ", " + NUMLOCALRANKENTRIES + " ;");
 
 		ArrayList<RankingEntry> rank = new ArrayList<RankingEntry>(10);
 		while (chunk.next()) {
