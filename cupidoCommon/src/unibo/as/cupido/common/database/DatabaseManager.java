@@ -98,14 +98,14 @@ public class DatabaseManager implements DatabaseInterface {
 		if (userName == null)
 			throw new IllegalArgumentException();
 		int userRank = getUserRank(userName).rank;
-		int from = (userRank - 4);
+		int from = (userRank - 5);
 		from = from >= 0 ? from : 0;
 		int to = userRank + 4;
 		statement.executeUpdate("SET @rank=0;");
 		ResultSet chunk = statement
 				.executeQuery("SELECT * FROM " +
 						"(SELECT @rank:=@rank+1 AS rank, name, score from User USE INDEX (scoreIndex) ORDER BY score DESC)" +
-						"AS globalList WHERE (rank >= "+ from + ") AND (rank <= " + to + ") ;");
+						"AS globalList LIMIT "+ from + ", " + to + " ;");
 
 		ArrayList<RankingEntry> rank = new ArrayList<RankingEntry>(10);
 		while (chunk.next()) {
