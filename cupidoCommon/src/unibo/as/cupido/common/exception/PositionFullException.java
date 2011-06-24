@@ -25,6 +25,10 @@ public class PositionFullException extends Exception implements Serializable {
 		super(string);
 	}
 
+	public PositionFullException() {
+		// 
+	}
+
 	private static final long serialVersionUID = 1L;
 
 }

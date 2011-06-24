@@ -130,7 +130,7 @@ public interface ServletNotificationsInterface extends Remote {
 	 * @param botName
 	 *            name of the joining bot
 	 */
-	public void notifyPlayerReplaced(String botName, int position);
+	public void notifyPlayerReplaced(String botName, int position) throws RemoteException;
 
 	/**
 	 * When a player leaves the table BEFORE the game starts, every other players and viewer get

@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+import unibo.as.cupido.backend.table.bot.BotNotificationInterface;
 import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
@@ -34,6 +35,7 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
+import unibo.as.cupido.common.exception.PositionEmptyException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
@@ -62,6 +64,8 @@ public class SingleTableManager implements TableInterface {
 	private final StartNotifierThread startNotifierThread;
 	private final EndNotifierThread endNotifierThread;
 	private boolean gameStarted = false;
+	private String owner;
+	private boolean[] passCardsNotificationSent = new boolean[4];
 
 	public static final String[] botNames = { "", "cupido", "venere", "marte" };
 
@@ -73,7 +77,8 @@ public class SingleTableManager implements TableInterface {
 			throw new IllegalArgumentException(snf + " " + table + " " + gtm);
 		this.table = table;
 		this.gtm = gtm;
-		playersManager = new PlayersManager(table.owner, snf,
+		this.owner = table.owner;
+		playersManager = new PlayersManager(owner, snf,
 				databaseManager.getPlayerScore(table.owner), new RemovalThread(
 						this), databaseManager);
 		startNotifierThread = new StartNotifierThread(this);
@@ -101,6 +106,7 @@ public class SingleTableManager implements TableInterface {
 			viewers.notifyBotJoined(botNames[position], position);
 
 			playersManager.addBot(userName, position, bot, botNames[position]);
+			playersManager.notifyBotJoined(botName, position);
 			if (playersManager.playersCount() == 4) {
 				startNotifierThread.setGameStarted();
 			}
@@ -132,6 +138,7 @@ public class SingleTableManager implements TableInterface {
 			throw new IllegalArgumentException();
 		int score = databaseManager.getPlayerScore(userName);
 		int position = playersManager.addPlayer(userName, snf, score);
+		playersManager.notifyPlayerJoined(userName, score, position);
 		viewers.notifyPlayerJoined(userName, score, position);
 		if (playersManager.playersCount() == 4) {
 			startNotifierThread.setGameStarted();
@@ -167,6 +174,7 @@ public class SingleTableManager implements TableInterface {
 					this.replacePlayer(userName);
 				} else {
 					playersManager.removePlayer(userName);
+					playersManager.notifyPlayerLeft(userName);
 					viewers.notifyPlayerLeft(userName);
 				}
 			}
@@ -176,16 +184,40 @@ public class SingleTableManager implements TableInterface {
 		}
 	}
 
-	private void replacePlayer(String playerName) {
-		int position = playerName.getPlayerPosition(playerName);
-		String botName = botNames[position];
-		NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus, gtm
-				.getLTMInterface(table.tableDescriptor.ltmId).getTable(
-						table.tableDescriptor.id));
-		viewers.notifyBotJoined(botNames[position], position);
+	private void replacePlayer(String playerName)
+			throws PlayerNotFoundException {
+		try {
+			int position = playersManager.getPlayerPosition(playerName);
+			String botName = SingleTableManager.botNames[position];
+			playersManager.removePlayer(playerName);
+			NonRemoteBot bot;
+			if (cardsManager.hasPassedCards(position)) {
+				int nextPlayer = cardsManager.whoShouldPlay();
+				bot = new NonRemoteBot(botName,
+						playersManager.getInitialTableStatus(position), this,
+						nextPlayer);
+			} else {
+				bot = new NonRemoteBot(botName,
+						playersManager.getInitialTableStatus(position), this,
+						passCardsNotificationSent[position]);
+			}
 
-		playersManager.notifyPlayerReplacement(playerName);
-		viewers.notifyPlayerReplacement(playerName);
+			playersManager.addBot(owner, position, bot, botName);
+			playersManager.notifyPlayerReplaced(playerName, botName, position);
+			viewers.notifyPlayerReplaced(playerName, position);
+		} catch (PositionFullException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PositionEmptyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FullTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotCreatorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void notifyGameEndedPrematurely() {
@@ -238,6 +270,7 @@ public class SingleTableManager implements TableInterface {
 		int position = playersManager.getPlayerPosition(userName);
 		cardsManager.setCardPassing(position, cards);
 		int receiver = (position + 1) % 4;
+		passCardsNotificationSent[receiver] = true;
 		playersManager.notifyPassedCards(receiver, cards);
 	}
 
