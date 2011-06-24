@@ -152,13 +152,18 @@ public class BeforeGameWidget extends AbsolutePanel {
 		add(labels.get(2), tableSize - 10 - playerLabelWidth, tableSize / 2
 				- playerLabelHeight / 2);
 
-		bottomLabel.setHTML(constructLabelHtml(bottomUserName, scores[0]));
+		bottomLabel.setHTML(constructPlayerLabelHtml(bottomUserName, scores[0]));
 
 		for (int i = 0; i < 3; i++)
 			if (initialTableStatus.opponents[i] != null) {
-				labels.get(i).setHTML(
-						constructLabelHtml(initialTableStatus.opponents[i],
-								scores[i + 1]));
+				if (initialTableStatus.whoIsBot[i]) {
+					labels.get(i).setHTML(
+							constructBotLabelHtml(initialTableStatus.opponents[i]));
+				} else {
+					labels.get(i).setHTML(
+							constructPlayerLabelHtml(initialTableStatus.opponents[i],
+									scores[i + 1]));
+				}
 			} else {
 				if (isOwner)
 					addBotButton(i);
@@ -247,7 +252,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 		}
 	}
 
-	private static String constructLabelHtml(String username, int points) {
+	private static String constructPlayerLabelHtml(String username, int points) {
 		SafeHtmlBuilder builder = new SafeHtmlBuilder();
 		builder.appendHtmlConstant("<b><big>");
 		builder.appendEscaped(username);
@@ -258,25 +263,25 @@ public class BeforeGameWidget extends AbsolutePanel {
 		return builder.toSafeHtml().asString();
 	}
 
+	private static String constructBotLabelHtml(String username) {
+		SafeHtmlBuilder builder = new SafeHtmlBuilder();
+		builder.appendHtmlConstant("<b><big>");
+		builder.appendEscaped(username);
+		builder.appendHtmlConstant("</big></b>");
+
+		return builder.toSafeHtml().asString();
+	}
+
 	private void addPlayer(String username, int points, int position) {
 
 		initialTableStatus.opponents[position] = username;
 		initialTableStatus.playerScores[position + 1] = points;
 		initialTableStatus.whoIsBot[position] = false;
 
-		SafeHtmlBuilder builder = new SafeHtmlBuilder();
-		builder.appendHtmlConstant("<b><big>");
-		builder.appendEscaped(username);
-		builder.appendHtmlConstant(" (");
-		builder.append(points);
-		builder.appendHtmlConstant(")</big></b>");
-
-		String s = builder.toSafeHtml().asString();
-
 		if (buttons.get(position) != null)
 			remove(buttons.get(position));
 		assert labels.get(position).getText().isEmpty();
-		labels.get(position).setHTML(s);
+		labels.get(position).setHTML(constructPlayerLabelHtml(username, points));
 
 		if (isTableFull())
 			listener.onTableFull();
@@ -300,11 +305,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 		assert labels.get(position).getText().isEmpty();
 
-		SafeHtmlBuilder builder = new SafeHtmlBuilder();
-		builder.appendHtmlConstant("<b><big>");
-		builder.appendEscaped(name);
-		builder.appendHtmlConstant("</big></b>");
-		labels.get(position).setHTML(builder.toSafeHtml());
+		labels.get(position).setHTML(constructBotLabelHtml(name));
 
 		if (isTableFull())
 			listener.onTableFull();
