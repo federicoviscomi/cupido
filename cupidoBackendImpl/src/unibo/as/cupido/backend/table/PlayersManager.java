@@ -22,11 +22,13 @@ import java.sql.SQLException;
 
 import unibo.as.cupido.backend.table.bot.BotNotificationInterface;
 import unibo.as.cupido.common.database.DatabaseManager;
+import unibo.as.cupido.common.exception.AttempToReplaceABotException;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
+import unibo.as.cupido.common.exception.PositionEmptyException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface.Positions;
@@ -406,6 +408,45 @@ public class PlayersManager {
 			}
 		}
 		return newScore;
+	}
+
+	public void notifyPlayerReplacement(String playerName) {
+
+		if (playersCount >= 4)
+			throw new FullTableException();
+
+		int position = getPlayerPosition(playerName);
+		if (nonRemoteBotsInfo[position] != null)
+			throw new PositionFullException("attemp to replace a bot");
+		if (players[position] == null)
+			throw new PositionEmptyException(
+					"attemp to replace a non existing player");
+
+		players[position] = null;
+		String botName = SingleTableManager.botNames[position];
+		
+		for (int i = 1; i < 4; i++) {
+			if (i != position) {
+				if (players[i] != null) {
+					try {
+						players[i].sni.notifyPlayerReplaced(botName,
+								toRelativePosition(position, i));
+					} catch (RemoteException e) {
+						System.err.println(" " + players[i].name
+								+ " is unreachable. Removing from table");
+						removalThread.addRemoval(i);
+					}
+				} else if (nonRemoteBotsInfo[i] != null) {
+					nonRemoteBotsInfo[i].bot.notifyPlayerReplaced(botName,
+							toRelativePosition(position, i));
+				}
+			}
+		}
+
+		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(botName, bot);
+		playersCount++;
+		removalThread.remove();
+
 	}
 
 }
