@@ -30,7 +30,6 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
 import unibo.as.cupido.shared.cometNotification.GameEnded;
-import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
 
 import com.google.gwt.user.client.ui.VerticalPanel;
 
