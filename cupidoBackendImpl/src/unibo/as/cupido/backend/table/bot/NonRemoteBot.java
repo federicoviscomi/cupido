@@ -35,8 +35,10 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 public class NonRemoteBot implements BotNotificationInterface {
 
 	private final String botName;
-	private final TableInterface tableInterface;
+	private TableInterface tableInterface;
 	private final InitialTableStatus initialTableStatus;
+	private final PrintWriter out;
+
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
 	private final NonRemoteBotCardPlayingThread cardPlayingThread;
@@ -45,16 +47,16 @@ public class NonRemoteBot implements BotNotificationInterface {
 	private int firstDealer = -1;
 	private boolean alreadyGotCards = false;
 	private boolean brokenHearted = false;
-	private PrintWriter out;
+
 	private int points = 0;
 
 	public NonRemoteBot(final String botName,
-			InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager) throws IOException {
+			InitialTableStatus initialTableStatus, TableInterface tableInterface)
+			throws IOException {
 
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
-		this.tableInterface = singleTableManager;
+		this.tableInterface = tableInterface;
 		this.cardPlayingThread = new NonRemoteBotCardPlayingThread(this,
 				botName);
 
@@ -72,28 +74,6 @@ public class NonRemoteBot implements BotNotificationInterface {
 		});
 
 		cardPlayingThread.start();
-	}
-
-	public NonRemoteBot(String botName, InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager, int nextPlayer) {
-		this.botName = botName;
-		this.initialTableStatus = initialTableStatus;
-		this.tableInterface = singleTableManager;
-		this.cardPlayingThread = new NonRemoteBotCardPlayingThread(this,
-				botName);
-
-	}
-
-	public NonRemoteBot(String botName, InitialTableStatus initialTableStatus,
-			TableInterface singleTableManager,
-			boolean getPassedCardsNotification) {
-
-		this.botName = botName;
-		this.initialTableStatus = initialTableStatus;
-		this.tableInterface = singleTableManager;
-		this.cardPlayingThread = new NonRemoteBotCardPlayingThread(this,
-				botName);
-
 	}
 
 	private ArrayList<Card> chooseValidCards() {
@@ -300,8 +280,23 @@ public class NonRemoteBot implements BotNotificationInterface {
 	}
 
 	@Override
-	public void notifyPlayerReplaced(String botName, int relativePosition) {
-		throw new UnsupportedOperationException("throws not implemented yet");
+	public synchronized void notifyPlayerReplaced(String botName, int position) {
+		out.print("\n" + botName + ": "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + botName + ", " + position + ")");
+
+		if (botName == null || position < 0 || position > 2)
+			throw new IllegalArgumentException(position + " " + botName);
+
+		if (initialTableStatus.opponents[position] == null)
+			throw new IllegalArgumentException();
+		initialTableStatus.opponents[position] = botName;
+		initialTableStatus.whoIsBot[position] = true;
+	}
+
+	@Override
+	public void activate(TableInterface tableInterface) {
+		this.tableInterface = tableInterface;
 	}
 
 }

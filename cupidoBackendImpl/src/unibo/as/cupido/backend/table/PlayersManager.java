@@ -17,10 +17,12 @@
 
 package unibo.as.cupido.backend.table;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import unibo.as.cupido.backend.table.bot.BotNotificationInterface;
+import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FullTableException;
@@ -30,6 +32,7 @@ import unibo.as.cupido.common.exception.PlayerNotFoundException;
 import unibo.as.cupido.common.exception.PositionEmptyException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.interfaces.TableInterface.Positions;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
@@ -91,6 +94,7 @@ public class PlayersManager {
 	private int playersCount = 1;
 	private final RemovalThread removalThread;
 	private final DatabaseManager databaseManager;
+	private NonRemoteBotInfo[] botReplacement = new NonRemoteBotInfo[4];
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
 			int score, RemovalThread removalThread,
@@ -180,6 +184,16 @@ public class PlayersManager {
 			}
 		}
 
+		String fakeBotReplacement = SingleTableManager.botNames[position];
+		try {
+			botReplacement[position] = new NonRemoteBotInfo(fakeBotReplacement,
+					new NonRemoteBot(fakeBotReplacement,
+							this.getInitialTableStatus(position),
+							new FakeSingleTableManager()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		players[position] = new PlayerInfo(playerName, score, sni);
 		playersCount++;
 		return position;
@@ -431,5 +445,11 @@ public class PlayersManager {
 				}
 			}
 		}
+	}
+
+	public void replacePlayer(String playerName, int position,
+			TableInterface tableInterface) throws PlayerNotFoundException {
+		removePlayer(playerName);
+		botReplacement[position].bot.activate(tableInterface);
 	}
 }

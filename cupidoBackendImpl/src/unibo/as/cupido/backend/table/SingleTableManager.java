@@ -189,20 +189,11 @@ public class SingleTableManager implements TableInterface {
 		try {
 			int position = playersManager.getPlayerPosition(playerName);
 			String botName = SingleTableManager.botNames[position];
-			playersManager.removePlayer(playerName);
-			NonRemoteBot bot;
-			if (cardsManager.hasPassedCards(position)) {
-				int nextPlayer = cardsManager.whoShouldPlay();
-				bot = new NonRemoteBot(botName,
-						playersManager.getInitialTableStatus(position), this,
-						nextPlayer);
-			} else {
-				bot = new NonRemoteBot(botName,
-						playersManager.getInitialTableStatus(position), this,
-						passCardsNotificationSent[position]);
-			}
-
-			playersManager.addBot(owner, position, bot, botName);
+			playersManager.replacePlayer(
+					playerName,
+					position,
+					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
+							table.tableDescriptor.id));
 			playersManager.notifyPlayerReplaced(playerName, botName, position);
 			viewers.notifyPlayerReplaced(playerName, position);
 		} catch (PositionFullException e) {
@@ -211,10 +202,13 @@ public class SingleTableManager implements TableInterface {
 		} catch (PositionEmptyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (FullTableException e) {
+		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (NotCreatorException e) {
+		} catch (NoSuchTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchLTMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

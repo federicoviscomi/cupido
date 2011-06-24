@@ -17,6 +17,7 @@
 
 package unibo.as.cupido.backend.table.bot;
 
+import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 
 public interface BotNotificationInterface {
@@ -104,5 +105,7 @@ public interface BotNotificationInterface {
 	public void notifyPlayerLeft(String playerName);
 
 	public void notifyPlayerReplaced(String botName, int relativePosition);
+
+	public void activate(TableInterface tableInterface);
 
 }
