@@ -139,4 +139,16 @@ public class ViewersSwarm {
 		return snfs.containsKey(userName);
 	}
 
+	public void notifyPlayerReplaced(String botName, int position) {
+		for (ServletNotificationsInterface snf : snfs.values()) {
+			try {
+				snf.notifyPlayerReplaced(botName, position);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(-1);
+			}
+		}
+	}
+
 }

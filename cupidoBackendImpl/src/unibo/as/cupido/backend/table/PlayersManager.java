@@ -22,7 +22,6 @@ import java.sql.SQLException;
 
 import unibo.as.cupido.backend.table.bot.BotNotificationInterface;
 import unibo.as.cupido.common.database.DatabaseManager;
-import unibo.as.cupido.common.exception.AttempToReplaceABotException;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
@@ -123,6 +122,11 @@ public class PlayersManager {
 					+ players[Positions.OWNER.ordinal()] + ". Current user: "
 					+ userName);
 
+		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(botName, bot);
+		playersCount++;
+	}
+
+	public void notifyBotJoined(String botName, int position) {
 		/*
 		 * notify every players but the one who is adding the bot and the bot
 		 * itself
@@ -144,10 +148,6 @@ public class PlayersManager {
 				}
 			}
 		}
-
-		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(botName, bot);
-		playersCount++;
-		removalThread.remove();
 	}
 
 	public int addPlayer(String playerName, ServletNotificationsInterface sni,
@@ -180,6 +180,12 @@ public class PlayersManager {
 			}
 		}
 
+		players[position] = new PlayerInfo(playerName, score, sni);
+		playersCount++;
+		return position;
+	}
+
+	public void notifyPlayerJoined(String playerName, int score, int position) {
 		/* notify every players but the one who is joining */
 		for (int i = 0; i < 4; i++) {
 			if (i != position) {
@@ -198,11 +204,6 @@ public class PlayersManager {
 				}
 			}
 		}
-
-		players[position] = new PlayerInfo(playerName, score, sni);
-		playersCount++;
-		removalThread.remove();
-		return position;
 	}
 
 	public void addPlayersInformationForViewers(
@@ -354,7 +355,9 @@ public class PlayersManager {
 			throw new IllegalStateException();
 		playersCount--;
 		players[position] = null;
+	}
 
+	public void notifyPlayerLeft(String playerName) {
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null) {
 				try {
@@ -410,21 +413,8 @@ public class PlayersManager {
 		return newScore;
 	}
 
-	public void notifyPlayerReplacement(String playerName) {
-
-		if (playersCount >= 4)
-			throw new FullTableException();
-
-		int position = getPlayerPosition(playerName);
-		if (nonRemoteBotsInfo[position] != null)
-			throw new PositionFullException("attemp to replace a bot");
-		if (players[position] == null)
-			throw new PositionEmptyException(
-					"attemp to replace a non existing player");
-
-		players[position] = null;
-		String botName = SingleTableManager.botNames[position];
-		
+	public void notifyPlayerReplaced(String playerLeftName, String botName,
+			int position) throws PositionFullException, PositionEmptyException {
 		for (int i = 1; i < 4; i++) {
 			if (i != position) {
 				if (players[i] != null) {
@@ -432,21 +422,14 @@ public class PlayersManager {
 						players[i].sni.notifyPlayerReplaced(botName,
 								toRelativePosition(position, i));
 					} catch (RemoteException e) {
-						System.err.println(" " + players[i].name
-								+ " is unreachable. Removing from table");
-						removalThread.addRemoval(i);
+						//
 					}
-				} else if (nonRemoteBotsInfo[i] != null) {
+				} else if (nonRemoteBotsInfo[i] != null
+						&& !nonRemoteBotsInfo[i].botName.equals(botName)) {
 					nonRemoteBotsInfo[i].bot.notifyPlayerReplaced(botName,
 							toRelativePosition(position, i));
 				}
 			}
 		}
-
-		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(botName, bot);
-		playersCount++;
-		removalThread.remove();
-
 	}
-
 }

@@ -103,4 +103,6 @@ public interface BotNotificationInterface {
 	 */
 	public void notifyPlayerLeft(String playerName);
 
+	public void notifyPlayerReplaced(String botName, int relativePosition);
+
 }
