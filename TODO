@@ -2,3 +2,5 @@
   from waiting endlessly instead of dealing a card.
 * Add to the local (and maybe also the global) chat some notifications to
   let others know when a user joins the chat or leaves it.
+* Keep the local chat usable even at the end of the game, before the users
+  exit.
