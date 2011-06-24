@@ -137,17 +137,18 @@ public interface DatabaseInterface {
 	public ArrayList<RankingEntry> getTopRank(int size)
 			throws SQLException, IllegalArgumentException;
 
+	
+	public final int NUMLOCALRANKENTRIES = 10;
+
 	/**
 	 * Returns one chunk the global rank that contains from four position before
 	 * <code>userName</code> to five position after the <code>userName</code>.
 	 * 
 	 * 
-	 * TODO this methods troubles me
-	 * 
 	 * @param userName
 	 *            the user who wants the rank
-	 * @return a list of size twenty, the first half contains the first chunk
-	 *         and the second half contains the second chunk
+	 * @return a list of size {@link NUMLOCALRANKENTRIES} with user
+	 *         {@link userName} in the middle.
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>
