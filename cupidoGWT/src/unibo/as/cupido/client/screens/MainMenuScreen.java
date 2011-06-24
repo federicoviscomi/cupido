@@ -147,20 +147,6 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		});
 		panel.add(tableButton);
 
-		PushButton errorButton = new PushButton(
-				"Vai alla schermata Errore generico");
-		errorButton.setWidth("250px");
-		buttons.add(errorButton);
-		errorButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				screenManager
-						.displayGeneralErrorScreen(new IllegalStateException(
-								"An example error message"));
-			}
-		});
-		panel.add(errorButton);
-
 		PushButton tableListButton = new PushButton("Vai alla lista dei tavoli");
 		tableListButton.setWidth("250px");
 		buttons.add(tableListButton);
