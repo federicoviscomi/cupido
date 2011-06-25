@@ -867,6 +867,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw e;
 		} catch (IllegalMoveException e) {
 			throw e;
+		} catch (NoSuchPlayerException e) {
+			throw new FatalException();
 		}
 	}
 
@@ -897,6 +899,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					.println("Servlet: on playCard() catched RemoteException ->"
 							+ e.getMessage());
 			// e.printStackTrace();
+			throw new FatalException();
+		} catch (NoSuchPlayerException e) {
 			throw new FatalException();
 		}
 	}
