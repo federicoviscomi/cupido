@@ -418,10 +418,10 @@ public class PlayersManager {
 					nonRemoteBotsInfo[i].bot.notifyPlayerReplaced(botName,
 							toRelativePosition(position, i));
 				}
-			}
-			if (botReplacement[i] != null) {
-				botReplacement[i].bot.notifyPlayerReplaced(botName,
-						toRelativePosition(position, i));
+				if (botReplacement[i] != null) {
+					botReplacement[i].bot.notifyPlayerReplaced(botName,
+							toRelativePosition(position, i));
+				}
 			}
 		}
 	}
@@ -520,24 +520,15 @@ public class PlayersManager {
 		for (int i = 1; i < 4; i++) {
 			if (players[i] != null) {
 				try {
-					System.out
-							.println("game ended prematurely. notifing player"
-									+ i);
 					players[i].sni.notifyGameEnded(null, null);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else if (nonRemoteBotsInfo[i] != null) {
-				System.out
-				.println("game ended prematurely. notifing bot"
-						+ i);
 				nonRemoteBotsInfo[i].bot.notifyGameEnded(null, null);
-			}
+			} 
 			if (botReplacement[i] != null) {
-				System.out
-				.println("game ended prematurely. notifing bot replacement"
-						+ i);
 				botReplacement[i].bot.notifyGameEnded(null, null);
 			}
 		}
