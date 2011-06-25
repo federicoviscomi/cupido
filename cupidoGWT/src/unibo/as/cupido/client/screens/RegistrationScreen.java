@@ -29,6 +29,8 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -75,6 +77,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		add(new HTML("<h1>Registrazione a Cupido</h1>"));
 
 		Grid grid = new Grid(3, 4);
+		grid.setCellSpacing(5);
 
 		HTML usernameLabel = new HTML("Nome utente:");
 		usernameLabel.setWidth("200px");
@@ -93,22 +96,17 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 
 		usernameBox = new TextBox();
 		usernameBox.setWidth("200px");
-		usernameBox.addKeyPressHandler(new KeyPressHandler() {
+		usernameBox.addKeyUpHandler(new KeyUpHandler() {
 			private String lastContent = "";
 
 			@Override
-			public void onKeyPress(KeyPressEvent event) {
+			public void onKeyUp(KeyUpEvent event) {
 				if (usernameBox.getText().equals(lastContent))
 					return;
 				lastContent = usernameBox.getText();
 				okButton.setEnabled(false);
 				checkUsernameAvailability.setEnabled(true);
 				checkUsernameAvailabilityLabel.setText("");
-			}
-		});
-		usernameBox.addKeyUpHandler(new KeyUpHandler() {
-			@Override
-			public void onKeyUp(KeyUpEvent event) {
 				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
 					checkUsername();
 			}
@@ -144,16 +142,18 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		grid.setWidget(0, 2, checkUsernameAvailability);
 
 		checkUsernameAvailabilityLabel = new HTML();
-		checkUsernameAvailabilityLabel.setWidth("200px");
+		checkUsernameAvailabilityLabel.setWidth("120px");
 		grid.setWidget(0, 3, checkUsernameAvailabilityLabel);
 
 		add(grid);
 
 		HorizontalPanel bottomPanel = new HorizontalPanel();
+		bottomPanel.setHorizontalAlignment(ALIGN_CENTER);
 		bottomPanel.setSpacing(50);
 		add(bottomPanel);
 
 		abortButton = new PushButton("Annulla");
+		abortButton.setWidth("100px");
 		abortButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -163,6 +163,7 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		bottomPanel.add(abortButton);
 
 		okButton = new PushButton("OK");
+		okButton.setWidth("100px");
 		okButton.setEnabled(false);
 		okButton.addClickHandler(new ClickHandler() {
 			@Override

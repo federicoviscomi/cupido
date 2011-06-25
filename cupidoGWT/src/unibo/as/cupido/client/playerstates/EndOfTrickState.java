@@ -28,7 +28,6 @@ import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -117,7 +116,8 @@ public class EndOfTrickState implements PlayerState {
 							if (player == 0)
 								stateManager.transitionToYourTurn(hand);
 							else
-								stateManager.transitionToWaitingPlayedCard(hand);
+								stateManager
+										.transitionToWaitingPlayedCard(hand);
 						} else
 							stateManager.transitionToGameEnded();
 					}
@@ -167,9 +167,11 @@ public class EndOfTrickState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the EndOfTrick state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The CardPassed notification was received when the client was in the EndOfTrick state"));
 		return true;
 	}
 
@@ -202,9 +204,11 @@ public class EndOfTrickState implements PlayerState {
 					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the EndOfTrick state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The GameStarted notification was received when the client was in the EndOfTrick state"));
 		return true;
 	}
 

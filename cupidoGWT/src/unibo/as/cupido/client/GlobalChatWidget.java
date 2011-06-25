@@ -18,6 +18,7 @@
 package unibo.as.cupido.client;
 
 import unibo.as.cupido.client.screens.MainMenuScreen;
+import unibo.as.cupido.client.screens.TableScreen;
 import unibo.as.cupido.common.structures.ChatMessage;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,6 +29,7 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PushButton;
@@ -55,19 +57,21 @@ public class GlobalChatWidget extends AbsolutePanel {
 
 		messagesPanel = new ScrollPanel();
 		messagesPanel.setWidth((MainMenuScreen.chatWidth - 20) + "px");
-		messagesPanel.setHeight((Cupido.height - bottomRowHeight) + "px");
+		messagesPanel.setHeight((Cupido.height - bottomRowHeight - 5) + "px");
 		add(messagesPanel, 10, 0);
 
 		messageList = new HTML("<p><i>Benvenuto nella chat</i></p>");
 		messagesPanel.add(messageList);
 
 		HorizontalPanel bottomRow = new HorizontalPanel();
+		bottomRow.setSpacing(5);
 		bottomRow.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		bottomRow.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		int sendButtonWidth = 50;
+		int sendButtonWidth = 30;
 
 		messageField = new TextBox();
-		messageField.setWidth((MainMenuScreen.chatWidth - sendButtonWidth)
+		messageField.setWidth((MainMenuScreen.chatWidth - sendButtonWidth - 40)
 				+ "px");
 		messageField.addKeyUpHandler(new KeyUpHandler() {
 			@Override
@@ -88,9 +92,9 @@ public class GlobalChatWidget extends AbsolutePanel {
 		});
 		bottomRow.add(sendButton);
 
-		bottomRow.setWidth(MainMenuScreen.chatWidth + "px");
+		bottomRow.setWidth((MainMenuScreen.chatWidth - 10) + "px");
 		bottomRow.setHeight(bottomRowHeight + "px");
-		add(bottomRow, 0, (Cupido.height - bottomRowHeight));
+		add(bottomRow, 0, (Cupido.height - bottomRowHeight - 5));
 	}
 
 	private void sendMessage() {

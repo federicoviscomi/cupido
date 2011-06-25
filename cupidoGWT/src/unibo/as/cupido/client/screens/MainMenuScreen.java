@@ -128,38 +128,33 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 							public void onSuccess(
 									final InitialTableStatus initialTableStatus) {
 								// Get the user's score, too.
-								// The screen is already frozen, so there's no need to freeze it again.
-								cupidoService.getMyRank(new AsyncCallback<RankingEntry>() {
-									@Override
-									public void onFailure(Throwable caught) {
-										screenManager.displayGeneralErrorScreen(caught);
-									}
+								// The screen is already frozen, so there's no
+								// need to freeze it again.
+								cupidoService
+										.getMyRank(new AsyncCallback<RankingEntry>() {
+											@Override
+											public void onFailure(
+													Throwable caught) {
+												screenManager
+														.displayGeneralErrorScreen(caught);
+											}
 
-									@Override
-									public void onSuccess(RankingEntry rankingEntry) {
-										screenManager.displayTableScreen(username,
-												true, initialTableStatus, rankingEntry.points);
-									}
-								});
+											@Override
+											public void onSuccess(
+													RankingEntry rankingEntry) {
+												screenManager
+														.displayTableScreen(
+																username,
+																true,
+																initialTableStatus,
+																rankingEntry.points);
+											}
+										});
 							}
 						});
 			}
 		});
 		panel.add(tableButton);
-
-		PushButton errorButton = new PushButton(
-				"Vai alla schermata Errore generico");
-		errorButton.setWidth("250px");
-		buttons.add(errorButton);
-		errorButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				screenManager
-						.displayGeneralErrorScreen(new IllegalStateException(
-								"An example error message"));
-			}
-		});
-		panel.add(errorButton);
 
 		PushButton tableListButton = new PushButton("Vai alla lista dei tavoli");
 		tableListButton.setWidth("250px");
@@ -192,7 +187,40 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		scoresButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				screenManager.displayScoresScreen(username);
+				freeze();
+				cupidoService
+						.getTopRank(new AsyncCallback<ArrayList<RankingEntry>>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								screenManager.displayGeneralErrorScreen(caught);
+							}
+
+							@Override
+							public void onSuccess(
+									final ArrayList<RankingEntry> topRanks) {
+								// The screen is already frozen, there's no need
+								// to freeze it again.
+								cupidoService
+										.getLocalRank(new AsyncCallback<ArrayList<RankingEntry>>() {
+											@Override
+											public void onFailure(
+													Throwable caught) {
+												screenManager
+														.displayGeneralErrorScreen(caught);
+											}
+
+											@Override
+											public void onSuccess(
+													ArrayList<RankingEntry> localRanks) {
+												screenManager
+														.displayScoresScreen(
+																username,
+																topRanks,
+																localRanks);
+											}
+										});
+							}
+						});
 			}
 		});
 		panel.add(scoresButton);

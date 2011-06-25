@@ -24,6 +24,7 @@ import java.util.List;
 import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
+import unibo.as.cupido.client.LocalChatWidget;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -62,21 +63,24 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	private boolean frozen = false;
 	private CupidoInterfaceAsync cupidoService;
+	private LocalChatWidget chatWidget;
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
 	 * cards are `cards'.
 	 * 
-	 * @param scores The four users' scores, starting from the bottom
-	 *               player and in clockwise order. The scores in initialTableStatus
-	 *               are ignored.
+	 * @param scores
+	 *            The four users' scores, starting from the bottom player and in
+	 *            clockwise order. The scores in initialTableStatus are ignored.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			InitialTableStatus initialTableStatus, int[] scores, Card[] cards,
-			String username, CupidoInterfaceAsync cupidoService) {
+			LocalChatWidget chatWidget, InitialTableStatus initialTableStatus,
+			int[] scores, Card[] cards, String username,
+			CupidoInterfaceAsync cupidoService) {
 		this.username = username;
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
+		this.chatWidget = chatWidget;
 
 		for (String opponent : initialTableStatus.opponents)
 			assert opponent != null;
@@ -269,6 +273,8 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 
+		chatWidget.freeze();
+
 		transitionTo(new GameEndedState(cardsGameWidget, this, cupidoService));
 	}
 
@@ -436,13 +442,14 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		while (i < 4 && players.get(i).name.equals(player))
 			i++;
 		if (i == 4) {
-			onFatalException(new Exception("An invalid PlayerLeft notification was received."));
+			onFatalException(new Exception(
+					"An invalid PlayerLeft notification was received."));
 			return;
 		}
 		PlayerInfo x = players.get(i);
 		x.isBot = true;
 		x.name = null;
-		// TODO: Update cardsGameWidget with the new player information.
+		cardsGameWidget.setBot(i, x.name);
 		currentState.handlePlayerLeft(i);
 	}
 

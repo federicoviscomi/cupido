@@ -40,7 +40,6 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class CardsGameWidget extends AbsolutePanel {
@@ -400,10 +399,10 @@ public class CardsGameWidget extends AbsolutePanel {
 					tableLayout.names.get(player));
 
 		previousTableLayout = tableLayout;
-		
+
 		updateLabels();
 	}
-	
+
 	private void updateLabels() {
 		for (int i = 0; i < 4; i++) {
 			PlayerData playerInfo = players.get(i);
@@ -415,7 +414,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			movableWidgets.playerNames.get(i).setText(s);
 		}
 	}
-	
+
 	private static Position interpolatePosition(Position startPosition,
 			Position endPosition, double progress) {
 		Position position = new Position();
@@ -670,7 +669,8 @@ public class CardsGameWidget extends AbsolutePanel {
 			Card candidateCard = candidateWidget.getCard();
 			if (card.equals(candidateCard)) {
 				CardRole role = cardRoles.get(candidateWidget);
-				if (role.player == player && role.state == CardRole.State.PLAYED) {
+				if (role.player == player
+						&& role.state == CardRole.State.PLAYED) {
 					// Found a match
 					widget = candidateWidget;
 					break;
@@ -1175,30 +1175,30 @@ public class CardsGameWidget extends AbsolutePanel {
 		cornerWidget.setHeight("200px");
 		add(cornerWidget, tableSize - 200, tableSize - 200);
 	}
-	
+
 	/**
 	 * Displays the points and the new users' scores.
 	 * 
-	 * Both parameters are arrays of size 4, containing information
-	 * regarding each player. The first elements contain information
-	 * about the bottom player, and other elements contain information
-	 * about the other players, in clockwise order.
+	 * Both parameters are arrays of size 4, containing information regarding
+	 * each player. The first elements contain information about the bottom
+	 * player, and other elements contain information about the other players,
+	 * in clockwise order.
 	 * 
 	 * The totalScore array contains unspecified values for bots.
 	 */
 	public void displayScores(int[] matchPoints, int[] totalScore) {
 		assert matchPoints.length == 4;
 		assert totalScore.length == 4;
-				
+
 		final int gridHeight = 200;
 		final int gridWidth = 400;
-		
+
 		Grid grid = new Grid(5, 3);
 		grid.setCellSpacing(0);
 		grid.setBorderWidth(1);
 		grid.setWidth(gridWidth + "px");
 		grid.setHeight(gridHeight + "px");
-		add(grid, tableSize/2 - gridWidth/2, tableSize/2 - gridHeight/2);
+		add(grid, tableSize / 2 - gridWidth / 2, tableSize / 2 - gridHeight / 2);
 		DOM.setStyleAttribute(grid.getElement(), "background", "white");
 		DOM.setStyleAttribute(grid.getElement(), "borderLeftStyle", "solid");
 		DOM.setStyleAttribute(grid.getElement(), "borderRightStyle", "solid");
@@ -1208,22 +1208,27 @@ public class CardsGameWidget extends AbsolutePanel {
 		DOM.setStyleAttribute(grid.getElement(), "borderRightWidth", "1px");
 		DOM.setStyleAttribute(grid.getElement(), "borderBottomWidth", "1px");
 		DOM.setStyleAttribute(grid.getElement(), "borderTopWidth", "1px");
-		
+
 		{
 			HTML userLabel = new HTML("<b>Utente</b>");
 			userLabel.setWidth("128px");
-			userLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			userLabel
+					.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			grid.setWidget(0, 1, userLabel);
-			HTML matchPointsLabel = new HTML("<b>Punteggio<br />della partita</b>");
+			HTML matchPointsLabel = new HTML(
+					"<b>Punteggio<br />della partita</b>");
 			matchPointsLabel.setWidth("118px");
-			matchPointsLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			matchPointsLabel
+					.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			grid.setWidget(0, 1, matchPointsLabel);
-			HTML totalScoreLabel = new HTML("<b>Nuovo punteggio<br/>globale</b>");
+			HTML totalScoreLabel = new HTML(
+					"<b>Nuovo punteggio<br/>globale</b>");
 			totalScoreLabel.setWidth("148px");
-			totalScoreLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			totalScoreLabel
+					.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			grid.setWidget(0, 2, totalScoreLabel);
 		}
-		
+
 		for (int i = 0; i < 4; i++) {
 			{
 				SafeHtmlBuilder builder = new SafeHtmlBuilder();
@@ -1232,17 +1237,19 @@ public class CardsGameWidget extends AbsolutePanel {
 				builder.appendHtmlConstant("</b>");
 				HTML userLabel = new HTML(builder.toSafeHtml());
 				userLabel.setWidth("128px");
-				userLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				userLabel
+						.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 				grid.setWidget(i + 1, 0, userLabel);
 			}
-			
+
 			{
 				HTML matchPointsLabel = new HTML("" + matchPoints[i]);
 				matchPointsLabel.setWidth("118px");
-				matchPointsLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				matchPointsLabel
+						.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 				grid.setWidget(i + 1, 1, matchPointsLabel);
 			}
-			
+
 			if (!players.get(i).isBot) {
 				SafeHtmlBuilder builder = new SafeHtmlBuilder();
 				builder.append(totalScore[i]);
@@ -1254,19 +1261,26 @@ public class CardsGameWidget extends AbsolutePanel {
 				builder.appendEscaped(")");
 				HTML totalScoreLabel = new HTML(builder.toSafeHtml());
 				totalScoreLabel.setWidth("148px");
-				totalScoreLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				totalScoreLabel
+						.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 				grid.setWidget(i + 1, 2, totalScoreLabel);
 			}
 		}
-		
+
 		for (int i = 0; i < 4; i++) {
 			players.get(i).score = totalScore[i];
 		}
-		
+
 		updateLabels();
 	}
 
 	public void freeze() {
 		frozen = true;
+	}
+
+	public void setBot(int i, String name) {
+		players.get(i).isBot = true;
+		players.get(i).name = name;
+		updateLabels();
 	}
 }

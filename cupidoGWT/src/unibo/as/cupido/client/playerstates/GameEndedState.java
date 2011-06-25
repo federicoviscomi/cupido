@@ -42,6 +42,8 @@ public class GameEndedState implements PlayerState {
 
 	private CardsGameWidget cardsGameWidget;
 
+	private boolean eventReceived = false;
+
 	public GameEndedState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager,
 			final CupidoInterfaceAsync cupidoService) {
@@ -49,7 +51,7 @@ public class GameEndedState implements PlayerState {
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.cupidoService = cupidoService;
-		
+
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -122,9 +124,11 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPassed notification was received when the client was in the GameEnded state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The CardPassed notification was received when the client was in the GameEnded state"));
 		return true;
 	}
 
@@ -135,9 +139,11 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The CardPlayed notification was received when the client was in the GameEnded state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The CardPlayed notification was received when the client was in the GameEnded state"));
 		return true;
 	}
 
@@ -148,6 +154,14 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
 			return false;
 		}
+		if (eventReceived) {
+			stateManager.onFatalException(new Exception(
+					"Two GameEnded notifications were received while the client was in the GameEnded state."));
+			return true;
+		}
+
+		eventReceived = true;
+
 		exitButton.setEnabled(true);
 		cardsGameWidget.displayScores(matchPoints, playersTotalPoints);
 		return true;
@@ -160,9 +174,11 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
 			return false;
 		}
-		// This notification should never arrive in this state. 
+		// This notification should never arrive in this state.
 		freeze();
-		stateManager.onFatalException(new Exception("The GameStarted notification was received when the client was in the GameEnded state"));
+		stateManager
+				.onFatalException(new Exception(
+						"The GameStarted notification was received when the client was in the GameEnded state"));
 		return true;
 	}
 

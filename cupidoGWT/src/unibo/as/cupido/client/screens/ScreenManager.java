@@ -17,10 +17,12 @@
 
 package unibo.as.cupido.client.screens;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
+import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
 public interface ScreenManager {
@@ -43,7 +45,8 @@ public interface ScreenManager {
 	/**
 	 * Shows the scores' screen instead of the current one.
 	 */
-	public void displayScoresScreen(String username);
+	public void displayScoresScreen(String username,
+			ArrayList<RankingEntry> topRanks, ArrayList<RankingEntry> localRanks);
 
 	/**
 	 * Shows the about screen instead of the current one.

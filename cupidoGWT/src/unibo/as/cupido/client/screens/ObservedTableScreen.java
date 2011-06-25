@@ -48,9 +48,6 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		screenManager.setListener(new CometMessageListener());
 
 		assert Cupido.height == Cupido.width - chatWidth;
-		tableWidget = new HeartsObservedTableWidget(Cupido.height, username,
-				screenManager, observedGameStatus, cupidoService);
-		add(tableWidget, 0, 0);
 
 		chatWidget = new LocalChatWidget(username,
 				new LocalChatWidget.MessageSender() {
@@ -76,6 +73,10 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		chatWidget.setHeight(Cupido.height + "px");
 		chatWidget.setWidth(chatWidth + "px");
 		add(chatWidget, Cupido.width - chatWidth, 0);
+
+		tableWidget = new HeartsObservedTableWidget(Cupido.height, username,
+				screenManager, chatWidget, observedGameStatus, cupidoService);
+		add(tableWidget, 0, 0);
 
 		screenManager.setListener(new CometMessageListener() {
 			@Override
@@ -120,6 +121,18 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 			}
 
 			@Override
+			public void onNewPlayerJoined(String name, boolean isBot,
+					int points, int position) {
+				if (frozen) {
+					System.out
+							.println("Client: notice: the onNewPlayerJoined() event was received while frozen, ignoring it.");
+					return;
+				}
+				tableWidget
+						.handleNewPlayerJoined(name, isBot, points, position);
+			}
+
+			@Override
 			public void onGameStarted(Card[] myCards) {
 				if (frozen) {
 					System.out
@@ -128,18 +141,6 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 				}
 				System.out
 						.println("Client: ObservedTableScreen: warning: received a GameStarted notification while observing a table, it was ingored.");
-			}
-
-			@Override
-			public void onNewPlayerJoined(String name, boolean isBot,
-					int points, int position) {
-				if (frozen) {
-					System.out
-							.println("Client: notice: the onNewPlayerJoined() event was received while frozen, ignoring it.");
-					return;
-				}
-				System.out
-						.println("Client: ObservedTableScreen: warning: received a NewPlayerJoined notification while observing a table, it was ingored.");
 			}
 
 			@Override

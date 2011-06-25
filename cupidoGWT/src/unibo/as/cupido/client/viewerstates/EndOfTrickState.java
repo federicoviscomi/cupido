@@ -118,7 +118,7 @@ public class EndOfTrickState implements ViewerState {
 					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
+		// Let the next state handle this.
 		return false;
 	}
 
@@ -129,18 +129,18 @@ public class EndOfTrickState implements ViewerState {
 					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
 			return false;
 		}
-		// TODO Auto-generated method stub
+
+		// Let the next state handle this.
 		return false;
 	}
 
 	@Override
-	public boolean handlePlayerLeft(String player) {
+	public void handlePlayerLeft(int player) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the PlayerLeft event was received while frozen, deferring it.");
-			return false;
+					.println("Client: notice: the PlayerLeft event was received while frozen, ignoring it.");
+			return;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		// Nothing to do.
 	}
 }

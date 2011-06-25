@@ -151,15 +151,16 @@ public class CardPassingWaitingState implements PlayerState {
 					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
 			return false;
 		}
-		
+
 		if (eventReceived) {
 			// Let the next state handle this.
-			// It is an error, but the animation is running and it can't be handled right now.
+			// It is an error, but the animation is running and it can't be
+			// handled right now.
 			return false;
 		}
-		
+
 		eventReceived = true;
-		
+
 		List<Card> cards = new ArrayList<Card>();
 
 		for (Card card : passedCards)
