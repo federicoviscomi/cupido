@@ -19,13 +19,6 @@ play -a
 sleep 1000
 play -a
 sleep 1000
-play -a
+leave
 sleep 1000
-play -a
-sleep 1000
-play -a
-slepp 1000
-play -a
-sleep 1000
-play -a
-sleep 1000
+exit
