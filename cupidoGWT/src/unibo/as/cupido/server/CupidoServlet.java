@@ -18,6 +18,7 @@
 package unibo.as.cupido.server;
 
 import java.rmi.AccessException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -311,6 +312,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			@Override
 			public void notifyGameEnded(int[] matchPoints,
 					int[] playersTotalPoint) {
+				//FIXME remove this println
+				System.out.println("SNI notifyGameEnded called");
 				if (httpSession == null || cometSession == null) {
 					System.out.println("SerletNotInterf: session null");
 					return;
@@ -322,9 +325,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				httpSession.removeAttribute(TI);
 				try {
 					//FIXME can value true cause problems?
-					UnicastRemoteObject.unexportObject((Remote) httpSession.getAttribute(SNI), true);
-				} catch (RemoteException e) {
-					System.out.println("SNI: on notifyGameEnded() catched RemoteException while unexporting obj ->"+e.getMessage());
+					UnicastRemoteObject.unexportObject((ServletNotificationsInterface) httpSession.getAttribute(SNI), true);
+				} catch (NoSuchObjectException e) {
+					System.out.println("SNI: on notifyGameEnded() catched NoSuchObjectException while unexporting obj ->"+e.getMessage());
 					//e.printStackTrace();
 				}
 				httpSession.removeAttribute(SNI);
@@ -605,8 +608,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 			ServletNotificationsInterface sni = getServletNotificationsInterface(
 					httpSession, cometSession);
-			UnicastRemoteObject.exportObject(sni);
 			httpSession.setAttribute(SNI, sni);
+			UnicastRemoteObject
+					.exportObject((ServletNotificationsInterface) httpSession
+							.getAttribute(SNI));
 			String username = (String) httpSession.getAttribute(USERNAME);
 			TableInterface ti = gtm.createTable(username, sni);
 			httpSession.setAttribute(TI, ti);
@@ -811,10 +816,14 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 		httpSession.removeAttribute(TI);
 		try {
-			UnicastRemoteObject.unexportObject((Remote) httpSession.getAttribute(SNI), false);
-		} catch (RemoteException e) {
-			System.out.println("Servlet: on leavetable() catched RemoteException while unexporting obj ->"+e.getMessage());
-			//e.printStackTrace();
+			UnicastRemoteObject.unexportObject(
+					(ServletNotificationsInterface) httpSession
+							.getAttribute(SNI), true);
+		} catch (NoSuchObjectException e) {
+			System.out
+					.println("Servlet: on leavetable() catched NoSuchObjectException while unexporting obj ->"
+							+ e.getMessage());
+			e.printStackTrace();
 		}
 		httpSession.removeAttribute(SNI);
 	}
