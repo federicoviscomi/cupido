@@ -157,7 +157,11 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	@Override
 	public LocalTableManagerInterface getLTMInterface(String ltmId)
 			throws RemoteException, NoSuchLTMException {
-		return allTables.getLTMInterface(ltmId);
+		LocalTableManagerInterface ltmInterface = allTables
+				.getLTMInterface(ltmId);
+		if (ltmInterface == null)
+			throw new NoSuchLTMException(ltmId);
+		return ltmInterface;
 	}
 
 	@Override
@@ -182,7 +186,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	@Override
 	public void notifyTableDestruction(TableDescriptor tableDescriptor,
 			LocalTableManagerInterface ltm) throws RemoteException,
-			NoSuchLTMInterfaceException {
+			NoSuchLTMInterfaceException, NoSuchTableException {
 		System.out.println("gtm. destroying table " + tableDescriptor);
 		allTables.removeTable(tableDescriptor);
 		ltmSwarm.decreaseTableCount(ltm);

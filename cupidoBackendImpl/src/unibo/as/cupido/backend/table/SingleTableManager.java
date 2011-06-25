@@ -25,6 +25,7 @@ import java.util.Arrays;
 import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
@@ -33,6 +34,7 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
+import unibo.as.cupido.common.exception.PositionEmptyException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
@@ -91,7 +93,6 @@ public class SingleTableManager implements TableInterface {
 			IllegalArgumentException, FullTableException, NotCreatorException,
 			IllegalStateException {
 		try {
-
 			String botName = botNames[position];
 
 			InitialTableStatus initialTableStatus = playersManager
@@ -163,21 +164,17 @@ public class SingleTableManager implements TableInterface {
 			throw new IllegalStateException(
 					"game ended, cannot call leaveTable");
 		}
-		try {
-			if (table.owner.equals(userName)) {
-				this.notifyGameEndedPrematurely();
+
+		if (table.owner.equals(userName)) {
+			this.notifyGameEndedPrematurely();
+		} else {
+			if (gameStarted) {
+				this.replacePlayer(userName);
 			} else {
-				if (gameStarted) {
-					this.replacePlayer(userName);
-				} else {
-					playersManager.removePlayer(userName);
-					playersManager.notifyPlayerLeft(userName);
-					viewers.notifyPlayerLeft(userName);
-				}
+				playersManager.removePlayer(userName);
+				playersManager.notifyPlayerLeft(userName);
+				viewers.notifyPlayerLeft(userName);
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -213,6 +210,9 @@ public class SingleTableManager implements TableInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchLTMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchTableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -265,10 +265,23 @@ public class SingleTableManager implements TableInterface {
 							table.tableDescriptor.id));
 			playersManager.notifyPlayerReplaced(playerName, botName, position);
 			viewers.notifyPlayerReplaced(playerName, position);
-		} catch (Exception e) {
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchLTMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PositionFullException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PositionEmptyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 
 	@Override
@@ -283,7 +296,7 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized ObservedGameStatus viewTable(String viewerName,
-			ServletNotificationsInterface snf) throws NoSuchTableException,
+			ServletNotificationsInterface snf) throws DuplicateViewerException,
 			RemoteException {
 		if (viewerName == null || snf == null)
 			throw new IllegalArgumentException();

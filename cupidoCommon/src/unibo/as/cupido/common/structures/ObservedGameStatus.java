@@ -53,4 +53,13 @@ public class ObservedGameStatus implements Serializable {
 		this.playerStatus = ogs;
 		this.firstDealerInTrick = firstDealerInTrick;
 	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < 4; i++)
+			if (playerStatus[i] != null)
+				sb.append(playerStatus[i].toString());
+		return sb.toString();
+	}
 }

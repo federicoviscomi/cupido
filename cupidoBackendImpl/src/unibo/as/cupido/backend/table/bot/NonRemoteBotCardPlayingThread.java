@@ -48,7 +48,7 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 					bot.playNextCard();
 				}
 			}
-		} catch (Exception e) {
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

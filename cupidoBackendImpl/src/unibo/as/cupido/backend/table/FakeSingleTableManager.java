@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
@@ -18,8 +19,14 @@ import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 
-public class FakeSingleTableManager implements TableInterface {
+public final class FakeSingleTableManager implements TableInterface {
 
+	public static final TableInterface defaultInstance = new FakeSingleTableManager();
+
+	private FakeSingleTableManager(){
+		//
+	}
+	
 	@Override
 	public String addBot(String userName, int position)
 			throws PositionFullException, RemoteException,
@@ -69,8 +76,8 @@ public class FakeSingleTableManager implements TableInterface {
 
 	@Override
 	public ObservedGameStatus viewTable(String userName,
-			ServletNotificationsInterface snf) throws NoSuchTableException,
-			RemoteException {
+			ServletNotificationsInterface snf) throws RemoteException,
+			DuplicateViewerException {
 		throw new IllegalStateException(
 				"a replacement bot should not call this before it is awoken");
 	}

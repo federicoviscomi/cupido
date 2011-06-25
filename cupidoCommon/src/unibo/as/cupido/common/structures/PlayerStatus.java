@@ -50,4 +50,11 @@ public class PlayerStatus implements Serializable {
 		this.numOfCardsInHand = numOfCardsInHand;
 		this.isBot = isBot;
 	}
+
+	@Override
+	public String toString() {
+		return "[" + "name=" + name + ", score=" + score + ", card played="
+				+ playedCard + ", cards count=" + numOfCardsInHand
+				+ ", is bot=" + isBot + "]";
+	}
 }

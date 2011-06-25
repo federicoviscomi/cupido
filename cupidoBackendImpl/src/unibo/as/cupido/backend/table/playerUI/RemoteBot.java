@@ -238,16 +238,20 @@ public class RemoteBot implements Bot, Serializable {
 				Card[] cardsToPass = new Card[3];
 				for (int i = 0; i < 3; i++)
 					cardsToPass[i] = cards.remove(0);
-				try {
-					singleTableManager.passCards(userName, cardsToPass);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				singleTableManager.passCards(userName, cardsToPass);
 			}
-		} catch (InterruptedException e1) {
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}

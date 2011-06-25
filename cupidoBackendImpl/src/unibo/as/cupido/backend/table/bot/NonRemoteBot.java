@@ -221,35 +221,27 @@ public class NonRemoteBot implements BotNotificationInterface {
 	}
 
 	public synchronized void playNextCard() {
-		try {
-			// out.println("\n" + botName + " plays ");
-			// out.println(" count:" + playedCardCount + " turn:" + turn+
-			// " first:" + firstDealer + " broken hearted "+ brokenHearted +
-			// " turn cards:"+ Arrays.toString(playedCard) + "\n owned "+
-			// cards.toString());
-			out.println(" count:" + playedCardCount + " turn:" + turn
-					+ " first:" + firstDealer + " broken hearted "
-					+ brokenHearted + " turn cards:"
-					+ Arrays.toString(playedCard));
+		// out.println("\n" + botName + " plays ");
+		// out.println(" count:" + playedCardCount + " turn:" + turn+
+		// " first:" + firstDealer + " broken hearted "+ brokenHearted +
+		// " turn cards:"+ Arrays.toString(playedCard) + "\n owned "+
+		// cards.toString());
+		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
+				+ firstDealer + " broken hearted " + brokenHearted
+				+ " turn cards:" + Arrays.toString(playedCard));
 
-			/** choose a valid card */
-			Card cardToPlay = choseCard();
+		/** choose a valid card */
+		Card cardToPlay = choseCard();
 
-			this.playCard(cardToPlay);
+		this.playCard(cardToPlay);
 
-			// out.println(" count:" + playedCardCount + " turn:" + turn+
-			// " first:" + firstDealer + " broken hearted "+ brokenHearted +
-			// " turn cards:"+ Arrays.toString(playedCard) + " played " +
-			// cardToPlay+ "\n owned " + cards.toString());
-			out.println(" count:" + playedCardCount + " turn:" + turn
-					+ " first:" + firstDealer + " broken hearted "
-					+ brokenHearted + " turn cards:"
-					+ Arrays.toString(playedCard));
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// out.println(" count:" + playedCardCount + " turn:" + turn+
+		// " first:" + firstDealer + " broken hearted "+ brokenHearted +
+		// " turn cards:"+ Arrays.toString(playedCard) + " played " +
+		// cardToPlay+ "\n owned " + cards.toString());
+		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
+				+ firstDealer + " broken hearted " + brokenHearted
+				+ " turn cards:" + Arrays.toString(playedCard));
 	}
 
 	private void setCardPlayed(Card card, int playerPosition) {
@@ -318,7 +310,13 @@ public class NonRemoteBot implements BotNotificationInterface {
 		try {
 			setCardsPassed(cardsToPass);
 			tableInterface.passCards(botName, cardsToPass);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
