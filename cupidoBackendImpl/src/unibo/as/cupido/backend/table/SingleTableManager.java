@@ -22,11 +22,9 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import unibo.as.cupido.backend.table.bot.BotNotificationInterface;
 import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
-import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
@@ -35,7 +33,6 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
-import unibo.as.cupido.common.exception.PositionEmptyException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
@@ -184,46 +181,23 @@ public class SingleTableManager implements TableInterface {
 		}
 	}
 
-	private void replacePlayer(String playerName)
-			throws PlayerNotFoundException {
-		try {
-			int position = playersManager.getPlayerPosition(playerName);
-			String botName = SingleTableManager.botNames[position];
-			playersManager.removePlayer(playerName);
-			NonRemoteBot bot;
-			if (cardsManager.hasPassedCards(position)) {
-				int nextPlayer = cardsManager.whoShouldPlay();
-				bot = new NonRemoteBot(botName,
-						playersManager.getInitialTableStatus(position), this,
-						nextPlayer);
-			} else {
-				bot = new NonRemoteBot(botName,
-						playersManager.getInitialTableStatus(position), this,
-						passCardsNotificationSent[position]);
-			}
-
-			playersManager.addBot(owner, position, bot, botName);
-			playersManager.notifyPlayerReplaced(playerName, botName, position);
-			viewers.notifyPlayerReplaced(playerName, position);
-		} catch (PositionFullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (PositionEmptyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FullTableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotCreatorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void notifyGameEnded() {
+		int[] matchPoints = cardsManager.getMatchPoints();
+		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
+		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
+		viewers.notifyGameEnded(matchPoints, playersTotalPoint);
+		this.notifyTableDestruction();
 	}
 
 	private void notifyGameEndedPrematurely() {
 		playersManager.notifyGameEnded(null, null);
 		viewers.notifyGameEnded(null, null);
 		this.notifyTableDestruction();
+	}
+
+	synchronized void notifyGameStarted() {
+		gameStarted = true;
+		playersManager.notifyGameStarted(cardsManager.getCards());
 	}
 
 	private void notifyTableDestruction() {
@@ -242,19 +216,6 @@ public class SingleTableManager implements TableInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public void notifyGameEnded() {
-		int[] matchPoints = cardsManager.getMatchPoints();
-		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
-		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
-		viewers.notifyGameEnded(matchPoints, playersTotalPoint);
-		this.notifyTableDestruction();
-	}
-
-	synchronized void notifyGameStarted() {
-		gameStarted = true;
-		playersManager.notifyGameStarted(cardsManager.getCards());
 	}
 
 	@Override
@@ -287,6 +248,24 @@ public class SingleTableManager implements TableInterface {
 		viewers.notifyPlayedCard(playerPosition, card);
 		if (cardsManager.gameEnded()) {
 			endNotifierThread.setGameEnded();
+		}
+	}
+
+	private void replacePlayer(String playerName)
+			throws PlayerNotFoundException {
+		try {
+			int position = playersManager.getPlayerPosition(playerName);
+			String botName = SingleTableManager.botNames[position];
+			playersManager.replacePlayer(
+					playerName,
+					position,
+					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
+							table.tableDescriptor.id));
+			playersManager.notifyPlayerReplaced(playerName, botName, position);
+			viewers.notifyPlayerReplaced(playerName, position);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

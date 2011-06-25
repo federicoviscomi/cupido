@@ -26,7 +26,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import unibo.as.cupido.backend.GlobalChatImpl;
@@ -140,9 +139,9 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 			/* store created table */
 			allTables.addTable(table.second, chosenLTM);
-			
+
 			// FIXME does not check for duplicate creator!
-			
+
 			return table.first;
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -196,6 +195,13 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 		allTables.decreaseFreePosition(tableDescriptor);
 	}
 
+	@Override
+	public void notifyTableLeft(TableDescriptor tableDescriptor)
+			throws RemoteException, NoSuchTableException, EmptyTableException {
+		System.out.println("gtm. a player left " + tableDescriptor);
+		allTables.increaseFreePosition(tableDescriptor);
+	}
+
 	public void shutDown() {
 		try {
 			registry.unbind(globalTableManagerName);
@@ -212,12 +218,5 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void notifyTableLeft(TableDescriptor tableDescriptor)
-			throws RemoteException, NoSuchTableException, EmptyTableException {
-		System.out.println("gtm. a player left " + tableDescriptor);
-		allTables.increaseFreePosition(tableDescriptor);
 	}
 }

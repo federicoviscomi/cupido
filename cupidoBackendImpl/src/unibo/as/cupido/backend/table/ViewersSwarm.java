@@ -40,6 +40,10 @@ public class ViewersSwarm {
 		snfs.put(viewerName, snf);
 	}
 
+	public boolean isAViewer(String userName) {
+		return snfs.containsKey(userName);
+	}
+
 	public void notifyBotJoined(String botName, int position) {
 		for (ServletNotificationsInterface snf : snfs.values()) {
 			try {
@@ -113,6 +117,18 @@ public class ViewersSwarm {
 		}
 	}
 
+	public void notifyPlayerReplaced(String botName, int position) {
+		for (ServletNotificationsInterface snf : snfs.values()) {
+			try {
+				snf.notifyPlayerReplaced(botName, position);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(-1);
+			}
+		}
+	}
+
 	public void notifyViewerJoined(String userName) {
 		for (ServletNotificationsInterface snf : snfs.values()) {
 			try {
@@ -133,22 +149,6 @@ public class ViewersSwarm {
 
 	public void removeViewer(String viewerName) {
 		snfs.remove(viewerName);
-	}
-
-	public boolean isAViewer(String userName) {
-		return snfs.containsKey(userName);
-	}
-
-	public void notifyPlayerReplaced(String botName, int position) {
-		for (ServletNotificationsInterface snf : snfs.values()) {
-			try {
-				snf.notifyPlayerReplaced(botName, position);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
-			}
-		}
 	}
 
 }

@@ -19,7 +19,6 @@ package unibo.as.cupido.backend.gtm;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,10 +64,6 @@ public class AllTables {
 		return ltmMap.get(ltmId);
 	}
 
-	public void removeTable(TableDescriptor tableDescriptor) {
-		tifc.remove(tableDescriptor);
-	}
-
 	public void increaseFreePosition(TableDescriptor tableDescriptor)
 			throws EmptyTableException {
 		TableInfoForClient tableInfoForClient = tifc.get(tableDescriptor);
@@ -77,6 +72,10 @@ public class AllTables {
 		} else {
 			tableInfoForClient.freePosition++;
 		}
+	}
+
+	public void removeTable(TableDescriptor tableDescriptor) {
+		tifc.remove(tableDescriptor);
 	}
 
 }

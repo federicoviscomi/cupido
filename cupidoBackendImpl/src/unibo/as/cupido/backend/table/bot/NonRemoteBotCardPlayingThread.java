@@ -27,8 +27,6 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 
 	public NonRemoteBotCardPlayingThread(NonRemoteBot bot, String botName) {
 		super("NonRemoteBotCardPlayingThread " + botName);
-		ableToPlay = ableToPass;
-		ableToPass = ableToPlay;
 		this.bot = bot;
 	}
 

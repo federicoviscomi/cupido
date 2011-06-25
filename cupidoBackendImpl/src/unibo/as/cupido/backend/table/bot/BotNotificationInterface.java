@@ -17,9 +17,12 @@
 
 package unibo.as.cupido.backend.table.bot;
 
+import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 
 public interface BotNotificationInterface {
+
+	public void activate(TableInterface tableInterface);
 
 	/**
 	 * End of the game is notified to the servlet. Every players and every

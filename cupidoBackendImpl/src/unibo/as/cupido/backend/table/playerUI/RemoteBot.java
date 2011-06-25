@@ -222,6 +222,13 @@ public class RemoteBot implements Bot, Serializable {
 	}
 
 	@Override
+	public void notifyPlayerReplaced(String botName, int position)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("not implemented yet");
+	}
+
+	@Override
 	public void passCards() {
 		try {
 			synchronized (lock) {
@@ -313,13 +320,6 @@ public class RemoteBot implements Bot, Serializable {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void notifyPlayerReplaced(String botName, int position)
-			throws RemoteException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("not implemented yet");
 	}
 
 }

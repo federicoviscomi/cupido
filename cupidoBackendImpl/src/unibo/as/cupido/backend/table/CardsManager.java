@@ -181,6 +181,10 @@ public class CardsManager {
 		return points;
 	}
 
+	public boolean hasPassedCards(int position) {
+		return allPassedCards[position] != null;
+	}
+
 	private void passCards() {
 		for (int i = 0; i < 4; i++) {
 			cards[i].addAll(Arrays.asList(allPassedCards[(i + 3) % 4]));
@@ -263,10 +267,6 @@ public class CardsManager {
 			}
 			Arrays.fill(cardPlayed, null);
 		}
-	}
-
-	public boolean hasPassedCards(int position) {
-		return allPassedCards[position] != null;
 	}
 
 	public int whoShouldPlay() {
