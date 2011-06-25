@@ -32,6 +32,7 @@ import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
+import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
 import unibo.as.cupido.common.exception.PositionEmptyException;
@@ -162,7 +163,12 @@ public class SingleTableManager implements TableInterface {
 		}
 		if (viewers.isAViewer(userName)) {
 			System.out.println("viewer " + userName + " left");
-			viewers.removeViewer(userName);
+			try {
+				viewers.removeViewer(userName);
+			} catch (NoSuchViewerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if (table.owner.equals(userName)) {
 			System.out.println("owner " + userName + " left");
 			playersManager.notifyGameEndedPrematurely();

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import unibo.as.cupido.common.exception.DuplicateViewerException;
+import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
@@ -39,6 +40,8 @@ public class ViewersSwarm {
 
 	public void addViewer(String viewerName, ServletNotificationsInterface snf)
 			throws DuplicateViewerException {
+		if (viewerName == null || snf == null)
+			throw new IllegalArgumentException();
 		if (snfs.put(viewerName, snf) != null)
 			throw new DuplicateViewerException();
 	}
@@ -144,14 +147,11 @@ public class ViewersSwarm {
 		}
 	}
 
-	private void print() {
-		for (Entry<String, ServletNotificationsInterface> e : snfs.entrySet()) {
-			System.out.print("\n\t[" + e.getKey() + ", " + e.getValue() + "]");
-		}
-	}
-
-	public void removeViewer(String viewerName) {
-		snfs.remove(viewerName);
+	public void removeViewer(String viewerName) throws NoSuchViewerException {
+		if (viewerName == null)
+			throw new IllegalArgumentException();
+		if (snfs.remove(viewerName) == null)
+			throw new NoSuchViewerException();
 	}
 
 	public void notifyGameEndedPrematurely() {
