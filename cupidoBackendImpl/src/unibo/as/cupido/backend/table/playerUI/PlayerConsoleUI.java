@@ -33,16 +33,22 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
+import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
+import unibo.as.cupido.common.exception.FullPositionException;
+import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.NoSuchUserException;
+import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -84,7 +90,7 @@ public class PlayerConsoleUI {
 			"login", "pass", "play", "addbot", "help", "exit", "sleep",
 			"leave", "view" };
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
 			new PlayerConsoleUI().execute();
 		} else if (args.length == 1) {
@@ -108,7 +114,7 @@ public class PlayerConsoleUI {
 	private boolean joinedATable = false;
 	private boolean viewedATable = false;
 
-	public PlayerConsoleUI() throws Exception {
+	public PlayerConsoleUI() {
 		this(new BufferedReader(new InputStreamReader(System.in)),
 				new PrintWriter(System.out));
 	}
@@ -213,7 +219,10 @@ public class PlayerConsoleUI {
 				out.flush();
 				try {
 					Thread.sleep(Integer.parseInt(command[1]));
-				} catch (Exception e) {
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -251,10 +260,15 @@ public class PlayerConsoleUI {
 					}
 				} else if (command[0].equals("leave")) {
 					try {
-						if (remoteBot.singleTableManager != null) {
+						if (remoteBot != null) {
 							remoteBot.singleTableManager.leaveTable(playerName);
 							out.println("table " + remoteBot.singleTableManager
 									+ " left");
+						} else if (remoteViewer != null) {
+							remoteViewer.singleTableManager
+									.leaveTable(playerName);
+							out.println("table "
+									+ remoteViewer.singleTableManager + " left");
 						} else {
 							out.println("there is no table to leave!");
 						}
@@ -281,7 +295,28 @@ public class PlayerConsoleUI {
 						out.println("successfully joined " + tableInfo);
 					} catch (NoSuchElementException e) {
 						out.println("no table to join!");
-					} catch (Exception e) {
+					} catch (NoSuchTableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchLTMException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalStateException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (FullTableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (DuplicateUserNameException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchUserException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -371,7 +406,19 @@ public class PlayerConsoleUI {
 							position--;
 							remoteBot.addBot(position);
 						}
-					} catch (Exception e) {
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalStateException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (FullPositionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (FullTableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NotCreatorException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -416,8 +463,9 @@ public class PlayerConsoleUI {
 	private void exit(int exitStatus) {
 		try {
 			in.close();
-		} catch (Exception e) {
-			//
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		out.close();
 		System.exit(exitStatus);

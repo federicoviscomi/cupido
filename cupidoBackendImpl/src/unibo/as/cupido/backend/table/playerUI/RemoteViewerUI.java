@@ -17,7 +17,7 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
 public class RemoteViewerUI implements ServletNotificationsInterface {
 
 	private final String viewerName;
-	private final TableInterface singleTableManager;
+	final TableInterface singleTableManager;
 	private final ObservedGameStatus observedGameStatus;
 
 	public RemoteViewerUI(String viewerName,
@@ -34,7 +34,8 @@ public class RemoteViewerUI implements ServletNotificationsInterface {
 		observedGameStatus = singleTableManager.viewTable(viewerName,
 				(ServletNotificationsInterface) UnicastRemoteObject
 						.exportObject(this));
-		System.out.println(observedGameStatus);
+		System.out.println("viewing table\n" + observedGameStatus
+				+ "\n press a key to exit");
 	}
 
 	@Override

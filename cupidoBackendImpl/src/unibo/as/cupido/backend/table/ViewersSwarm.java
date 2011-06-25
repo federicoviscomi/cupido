@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import unibo.as.cupido.common.exception.DuplicateViewerException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.structures.Card;
@@ -127,7 +128,8 @@ public class ViewersSwarm {
 		}
 	}
 
-	public void notifyPlayerReplaced(String botName, int position) {
+	public void notifyPlayerReplaced(String botName, int position)
+			throws NoSuchPlayerException {
 		for (ServletNotificationsInterface snf : snfs.values()) {
 			try {
 				snf.notifyPlayerReplaced(botName, position);

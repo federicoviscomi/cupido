@@ -123,15 +123,16 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	@Override
 	public synchronized void notifyGameEnded(int[] matchPoints,
 			int[] playersTotalPoint) {
-		out.println("\n" + botName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + Arrays.toString(matchPoints) + ", "
+		out.println("\n" + botName + ": notifyGameEnded("
+				+ Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
 		cardPlayingThread.interrupt();
 	}
 
 	@Override
 	public synchronized void notifyGameStarted(Card[] cards) {
+		out.println("\n" + botName + ": notifyGameStarted("
+				+ Arrays.toString(cards) + ")");
 		this.cards = new ArrayList<Card>(13);
 		for (int i = 0; i < cards.length; i++)
 			this.cards.add(cards[i]);
@@ -142,6 +143,8 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
+		out.println("\n" + botName + ": notifyPassedCards("
+				+ Arrays.toString(cards) + ")");
 		if (alreadyGotCards)
 			throw new IllegalArgumentException("passing cards twice to player "
 					+ botName);
@@ -159,22 +162,16 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		// out.println("\n" + botName + " player " + playerPosition+
-		// " played card " + card);
-		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
-				+ firstDealer + " broken hearted " + brokenHearted
-				+ " turn cards:" + Arrays.toString(playedCard));
-
+		out.println("\n" + botName + ": notifyPlayedCard(" + card + ", "
+				+ playerPosition + ")");
 		setCardPlayed(card, playerPosition);
-
-		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
-				+ firstDealer + " broken hearted " + brokenHearted
-				+ " turn cards:" + Arrays.toString(playedCard));
 	}
 
 	@Override
 	public synchronized void notifyPlayerJoined(String name, boolean isBot,
 			int point, int position) {
+		out.println("\n" + botName + ": notifyPlayerJoined(" + name + ", "
+				+ isBot + ")");
 		if (name == null || position < 0 || position > 2)
 			throw new IllegalArgumentException("illegal position " + position
 					+ ". " + name + " " + isBot);
@@ -202,21 +199,22 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	@Override
-	public synchronized void notifyPlayerReplaced(String botName, int position) {
-		out.print("\n" + botName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + botName + ", " + position + ")");
+	public synchronized void notifyPlayerReplaced(String botName, int position)
+			throws NoSuchPlayerException {
+		out.print("\n" + botName + ": notifyPlayerReplaced(" + botName + ", "
+				+ position + ")");
 
 		if (botName == null || position < 0 || position > 2)
 			throw new IllegalArgumentException(position + " " + botName);
 
 		if (initialTableStatus.opponents[position] == null)
-			throw new IllegalArgumentException();
+			throw new NoSuchPlayerException();
 		initialTableStatus.opponents[position] = botName;
 		initialTableStatus.whoIsBot[position] = true;
 	}
 
 	public synchronized void passCards() {
+		out.println("\n" + botName + ": passCards()");
 		Card[] cardsToPass = new Card[3];
 		for (int i = 0; i < 3; i++)
 			cardsToPass[i] = cards.get(i);
@@ -224,6 +222,8 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	public synchronized void passCards(Card[] cardsToPass) {
+		out.println("\n" + botName + ": passCards("
+				+ Arrays.toString(cardsToPass) + ")");
 		try {
 			setCardsPassed(cardsToPass);
 			tableInterface.passCards(botName, cardsToPass);
@@ -243,6 +243,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	public synchronized void playCard(Card card) {
+		out.println("\n" + botName + ": playCard(" + card + ")");
 		try {
 			setCardPlayed(card, 3);
 			tableInterface.playCard(botName, card);
@@ -262,27 +263,12 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	public synchronized void playNextCard() {
-		// out.println("\n" + botName + " plays ");
-		// out.println(" count:" + playedCardCount + " turn:" + turn+
-		// " first:" + firstDealer + " broken hearted "+ brokenHearted +
-		// " turn cards:"+ Arrays.toString(playedCard) + "\n owned "+
-		// cards.toString());
-		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
-				+ firstDealer + " broken hearted " + brokenHearted
-				+ " turn cards:" + Arrays.toString(playedCard));
+		out.println("\n" + botName + ": playNextCard()");
 
 		/** choose a valid card */
 		Card cardToPlay = choseCard();
 
 		this.playCard(cardToPlay);
-
-		// out.println(" count:" + playedCardCount + " turn:" + turn+
-		// " first:" + firstDealer + " broken hearted "+ brokenHearted +
-		// " turn cards:"+ Arrays.toString(playedCard) + " played " +
-		// cardToPlay+ "\n owned " + cards.toString());
-		out.println(" count:" + playedCardCount + " turn:" + turn + " first:"
-				+ firstDealer + " broken hearted " + brokenHearted
-				+ " turn cards:" + Arrays.toString(playedCard));
 	}
 
 	private void setCardPlayed(Card card, int playerPosition) {

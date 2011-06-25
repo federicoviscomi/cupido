@@ -224,9 +224,17 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public void notifyPlayerReplaced(String botName, int position)
-			throws RemoteException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("not implemented yet");
+			throws RemoteException, NoSuchPlayerException {
+		out.print("\n" + botName + ": notifyPlayerReplaced(" + botName + ", "
+				+ position + ")");
+
+		if (botName == null || position < 0 || position > 2)
+			throw new IllegalArgumentException(position + " " + botName);
+
+		if (initialTableStatus.opponents[position] == null)
+			throw new NoSuchPlayerException();
+		initialTableStatus.opponents[position] = botName;
+		initialTableStatus.whoIsBot[position] = true;
 	}
 
 	@Override

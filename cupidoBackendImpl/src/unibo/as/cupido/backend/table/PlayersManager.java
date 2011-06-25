@@ -442,8 +442,9 @@ public class PlayersManager {
 	}
 
 	public void notifyPlayerReplaced(String playerLeftName, String botName,
-			int position) throws FullPositionException, EmptyPositionException {
-		for (int i = 1; i < 4; i++) {
+			int position) throws FullPositionException, EmptyPositionException,
+			NoSuchPlayerException {
+		for (int i = 0; i < 4; i++) {
 			if (i != position) {
 				if (players[i] == null) {
 					throw new IllegalStateException("missing player " + i);
