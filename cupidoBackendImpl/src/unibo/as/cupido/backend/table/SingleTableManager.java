@@ -175,10 +175,12 @@ public class SingleTableManager implements TableInterface {
 			viewers.notifyGameEndedPrematurely();
 			this.notifyTableDestruction();
 		} else if (gameStarted) {
-			System.out.println("player " + userName + " left after game start. replaycing...");
+			System.out.println("player " + userName
+					+ " left after game start. replaycing...");
 			this.replacePlayer(userName);
 		} else {
-			System.out.println("player " + userName + " left before game start");
+			System.out
+					.println("player " + userName + " left before game start");
 			playersManager.removePlayer(userName);
 			playersManager.notifyPlayerLeft(userName);
 			viewers.notifyPlayerLeft(userName);

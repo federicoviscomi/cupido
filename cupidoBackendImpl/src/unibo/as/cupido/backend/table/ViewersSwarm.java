@@ -75,6 +75,10 @@ public class ViewersSwarm {
 		snfs = null;
 	}
 
+	public void notifyGameEndedPrematurely() {
+		this.notifyGameEnded(null, null);
+	}
+
 	public void notifyNewLocalChatMessage(ChatMessage message) {
 		for (Entry<String, ServletNotificationsInterface> snf : snfs.entrySet()) {
 			try {
@@ -152,10 +156,6 @@ public class ViewersSwarm {
 			throw new IllegalArgumentException();
 		if (snfs.remove(viewerName) == null)
 			throw new NoSuchViewerException();
-	}
-
-	public void notifyGameEndedPrematurely() {
-		this.notifyGameEnded(null, null);
 	}
 
 }

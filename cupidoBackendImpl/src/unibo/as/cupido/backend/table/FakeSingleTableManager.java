@@ -23,10 +23,10 @@ public final class FakeSingleTableManager implements TableInterface {
 
 	public static final TableInterface defaultInstance = new FakeSingleTableManager();
 
-	private FakeSingleTableManager(){
+	private FakeSingleTableManager() {
 		//
 	}
-	
+
 	@Override
 	public String addBot(String userName, int position)
 			throws PositionFullException, RemoteException,

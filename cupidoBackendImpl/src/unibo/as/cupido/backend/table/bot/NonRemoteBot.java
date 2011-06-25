@@ -17,7 +17,6 @@
 
 package unibo.as.cupido.backend.table.bot;
 
-import java.awt.List;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -220,6 +219,38 @@ public class NonRemoteBot implements BotNotificationInterface {
 		this.passCards(cardsToPass);
 	}
 
+	public synchronized void passCards(Card[] cardsToPass) {
+		try {
+			setCardsPassed(cardsToPass);
+			tableInterface.passCards(botName, cardsToPass);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void playCard(Card card) {
+		try {
+			setCardPlayed(card, 3);
+			tableInterface.playCard(botName, card);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalMoveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public synchronized void playNextCard() {
 		// out.println("\n" + botName + " plays ");
 		// out.println(" count:" + playedCardCount + " turn:" + turn+
@@ -288,38 +319,6 @@ public class NonRemoteBot implements BotNotificationInterface {
 			throw new IllegalArgumentException();
 		for (int i = 0; i < 3; i++)
 			cards.remove(cardsToPass[i]);
-	}
-
-	public synchronized void playCard(Card card) {
-		try {
-			setCardPlayed(card, 3);
-			tableInterface.playCard(botName, card);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalMoveException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public synchronized void passCards(Card[] cardsToPass) {
-		try {
-			setCardsPassed(cardsToPass);
-			tableInterface.passCards(botName, cardsToPass);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }

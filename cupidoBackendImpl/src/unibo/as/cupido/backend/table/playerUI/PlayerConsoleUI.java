@@ -38,8 +38,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
-import unibo.as.cupido.backend.table.FakeSingleTableManager;
-import unibo.as.cupido.backend.table.SingleTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;

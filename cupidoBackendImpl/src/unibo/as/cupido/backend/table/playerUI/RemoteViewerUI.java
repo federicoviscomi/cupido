@@ -1,16 +1,9 @@
 package unibo.as.cupido.backend.table.playerUI;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.Arrays;
 
-import unibo.as.cupido.backend.table.CardsManager;
-import unibo.as.cupido.backend.table.bot.BotNotificationInterface;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
@@ -18,9 +11,7 @@ import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
-import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
-import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
 public class RemoteViewerUI implements ServletNotificationsInterface {

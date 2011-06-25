@@ -285,6 +285,24 @@ public class PlayersManager {
 		}
 	}
 
+	public void notifyGameEndedPrematurely() {
+		for (int i = 1; i < 4; i++) {
+			if (players[i] != null) {
+				try {
+					players[i].sni.notifyGameEnded(null, null);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else if (nonRemoteBotsInfo[i] != null) {
+				nonRemoteBotsInfo[i].bot.notifyGameEnded(null, null);
+			}
+			if (botReplacement[i] != null) {
+				botReplacement[i].bot.notifyGameEnded(null, null);
+			}
+		}
+	}
+
 	public void notifyGameStarted(Card[][] cards) {
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null) {
@@ -440,6 +458,20 @@ public class PlayersManager {
 		players[position] = null;
 	}
 
+	public void replacementBotPassCards(int position, Card[] cards) {
+		if (botReplacement[position] == null)
+			return;
+		NonRemoteBot nrb = (NonRemoteBot) botReplacement[position].bot;
+		nrb.passCards(cards);
+	}
+
+	public void replacementBotPlayCard(int position, Card card) {
+		if (botReplacement[position] == null)
+			return;
+		NonRemoteBot nrb = (NonRemoteBot) botReplacement[position].bot;
+		nrb.playCard(card);
+	}
+
 	public void replacePlayer(String playerName, int position,
 			TableInterface tableInterface) throws PlayerNotFoundException {
 		try {
@@ -500,37 +532,5 @@ public class PlayersManager {
 			}
 		}
 		return newScore;
-	}
-
-	public void replacementBotPlayCard(int position, Card card) {
-		if (botReplacement[position] == null)
-			return;
-		NonRemoteBot nrb = (NonRemoteBot) botReplacement[position].bot;
-		nrb.playCard(card);
-	}
-
-	public void replacementBotPassCards(int position, Card[] cards) {
-		if (botReplacement[position] == null)
-			return;
-		NonRemoteBot nrb = (NonRemoteBot) botReplacement[position].bot;
-		nrb.passCards(cards);
-	}
-
-	public void notifyGameEndedPrematurely() {
-		for (int i = 1; i < 4; i++) {
-			if (players[i] != null) {
-				try {
-					players[i].sni.notifyGameEnded(null, null);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else if (nonRemoteBotsInfo[i] != null) {
-				nonRemoteBotsInfo[i].bot.notifyGameEnded(null, null);
-			} 
-			if (botReplacement[i] != null) {
-				botReplacement[i].bot.notifyGameEnded(null, null);
-			}
-		}
 	}
 }
