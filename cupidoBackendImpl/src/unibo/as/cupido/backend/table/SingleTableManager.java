@@ -156,25 +156,26 @@ public class SingleTableManager implements TableInterface {
 		if (userName == null)
 			throw new IllegalArgumentException();
 
-		if (viewers.isAViewer(userName)) {
-			viewers.removeViewer(userName);
-			return;
-		}
 		if (cardsManager.gameEnded()) {
 			throw new IllegalStateException(
 					"game ended, cannot call leaveTable");
 		}
-
-		if (table.owner.equals(userName)) {
-			this.notifyGameEndedPrematurely();
+		if (viewers.isAViewer(userName)) {
+			System.out.println("viewer " + userName + " left");
+			viewers.removeViewer(userName);
+		} else if (table.owner.equals(userName)) {
+			System.out.println("owner " + userName + " left");
+			playersManager.notifyGameEndedPrematurely();
+			viewers.notifyGameEndedPrematurely();
+			this.notifyTableDestruction();
+		} else if (gameStarted) {
+			System.out.println("player " + userName + " left after game start. replaycing...");
+			this.replacePlayer(userName);
 		} else {
-			if (gameStarted) {
-				this.replacePlayer(userName);
-			} else {
-				playersManager.removePlayer(userName);
-				playersManager.notifyPlayerLeft(userName);
-				viewers.notifyPlayerLeft(userName);
-			}
+			System.out.println("player " + userName + " left before game start");
+			playersManager.removePlayer(userName);
+			playersManager.notifyPlayerLeft(userName);
+			viewers.notifyPlayerLeft(userName);
 		}
 	}
 
@@ -183,12 +184,6 @@ public class SingleTableManager implements TableInterface {
 		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
 		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
 		viewers.notifyGameEnded(matchPoints, playersTotalPoint);
-		this.notifyTableDestruction();
-	}
-
-	private void notifyGameEndedPrematurely() {
-		playersManager.notifyGameEnded(null, null);
-		viewers.notifyGameEnded(null, null);
 		this.notifyTableDestruction();
 	}
 

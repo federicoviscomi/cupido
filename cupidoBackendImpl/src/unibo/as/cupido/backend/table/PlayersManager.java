@@ -263,14 +263,9 @@ public class PlayersManager {
 	}
 
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-		int i = 0;
-		if (matchPoints == null && playersTotalPoint == null) {
-			i++;
-		} else if (matchPoints == null || playersTotalPoint == null) {
-			throw new IllegalArgumentException(matchPoints + " "
-					+ playersTotalPoint);
-		}
-		for (; i < 4; i++) {
+		if (matchPoints == null || playersTotalPoint == null)
+			throw new IllegalArgumentException();
+		for (int i = 0; i < 4; i++) {
 			if (players[i] != null) {
 				try {
 					players[i].sni.notifyGameEnded(matchPoints,
@@ -519,5 +514,32 @@ public class PlayersManager {
 			return;
 		NonRemoteBot nrb = (NonRemoteBot) botReplacement[position].bot;
 		nrb.passCards(cards);
+	}
+
+	public void notifyGameEndedPrematurely() {
+		for (int i = 1; i < 4; i++) {
+			if (players[i] != null) {
+				try {
+					System.out
+							.println("game ended prematurely. notifing player"
+									+ i);
+					players[i].sni.notifyGameEnded(null, null);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else if (nonRemoteBotsInfo[i] != null) {
+				System.out
+				.println("game ended prematurely. notifing bot"
+						+ i);
+				nonRemoteBotsInfo[i].bot.notifyGameEnded(null, null);
+			}
+			if (botReplacement[i] != null) {
+				System.out
+				.println("game ended prematurely. notifing bot replacement"
+						+ i);
+				botReplacement[i].bot.notifyGameEnded(null, null);
+			}
+		}
 	}
 }

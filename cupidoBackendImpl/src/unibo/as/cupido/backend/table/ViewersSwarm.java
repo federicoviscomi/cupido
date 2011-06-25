@@ -154,4 +154,8 @@ public class ViewersSwarm {
 		snfs.remove(viewerName);
 	}
 
+	public void notifyGameEndedPrematurely() {
+		this.notifyGameEnded(null, null);
+	}
+
 }

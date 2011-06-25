@@ -39,6 +39,7 @@ import java.util.NoSuchElementException;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
 import unibo.as.cupido.backend.table.FakeSingleTableManager;
+import unibo.as.cupido.backend.table.SingleTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
@@ -234,7 +235,6 @@ public class PlayerConsoleUI {
 						out.flush();
 						Thread.sleep(200);
 						System.in.read();
-						remoteBot.singleTableManager.leaveTable(playerName);
 					} catch (NoSuchElementException e) {
 						out.println("there is no table to view");
 						out.flush();
@@ -248,9 +248,6 @@ public class PlayerConsoleUI {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (PlayerNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
