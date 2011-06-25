@@ -29,7 +29,6 @@ import unibo.as.cupido.backend.table.CardsManager;
 import unibo.as.cupido.backend.table.NonRemoteBotInterface;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
-import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
@@ -142,6 +141,13 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	@Override
+	public void notifyLocalChatMessage(ChatMessage message)
+			throws RemoteException {
+		throw new UnsupportedOperationException(
+				"a replacementBot shold not be notified of chat messages");
+	}
+
+	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
 		out.println("\n" + botName + ": notifyPassedCards("
 				+ Arrays.toString(cards) + ")");
@@ -221,6 +227,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.passCards(cardsToPass);
 	}
 
+	@Override
 	public synchronized void passCards(Card[] cardsToPass) {
 		out.println("\n" + botName + ": passCards("
 				+ Arrays.toString(cardsToPass) + ")");
@@ -242,6 +249,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		}
 	}
 
+	@Override
 	public synchronized void playCard(Card card) {
 		out.println("\n" + botName + ": playCard(" + card + ")");
 		try {
@@ -315,13 +323,6 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			throw new IllegalArgumentException();
 		for (int i = 0; i < 3; i++)
 			cards.remove(cardsToPass[i]);
-	}
-
-	@Override
-	public void notifyLocalChatMessage(ChatMessage message)
-			throws RemoteException {
-		throw new UnsupportedOperationException(
-				"a replacementBot shold not be notified of chat messages");
 	}
 
 }

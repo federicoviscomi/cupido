@@ -18,7 +18,6 @@
 package unibo.as.cupido.backend.table;
 
 import java.io.IOException;
-import java.nio.channels.IllegalSelectorException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 

@@ -47,6 +47,13 @@ public final class FakeSingleTableManager implements TableInterface {
 	}
 
 	@Override
+	public void leaveTable(String userName) throws RemoteException,
+			NoSuchPlayerException {
+		throw new IllegalStateException(
+				"a replacement inactiveReplacementBot should not call this before it is awoken");
+	}
+
+	@Override
 	public void passCards(String userName, Card[] cards)
 			throws IllegalArgumentException, IllegalStateException,
 			RemoteException {
@@ -71,13 +78,6 @@ public final class FakeSingleTableManager implements TableInterface {
 	public ObservedGameStatus viewTable(String userName,
 			ServletNotificationsInterface snf) throws RemoteException,
 			DuplicateViewerException {
-		throw new IllegalStateException(
-				"a replacement inactiveReplacementBot should not call this before it is awoken");
-	}
-
-	@Override
-	public void leaveTable(String userName) throws RemoteException,
-			NoSuchPlayerException {
 		throw new IllegalStateException(
 				"a replacement inactiveReplacementBot should not call this before it is awoken");
 	}
