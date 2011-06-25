@@ -232,6 +232,7 @@ public class SingleTableManager implements TableInterface {
 		cardsManager.setCardPassing(position, cards);
 		int receiver = (position + 1) % 4;
 		passCardsNotificationSent[receiver] = true;
+		playersManager.replacementBotPassCards(position, cards);
 		playersManager.notifyPassedCards(receiver, cards);
 	}
 
@@ -244,6 +245,7 @@ public class SingleTableManager implements TableInterface {
 					+ " card " + card);
 		int playerPosition = playersManager.getPlayerPosition(userName);
 		cardsManager.playCard(playerPosition, card);
+		playersManager.replacementBotPlayCard(playerPosition, card);
 		playersManager.notifyPlayedCard(userName, card);
 		viewers.notifyPlayedCard(playerPosition, card);
 		if (cardsManager.gameEnded()) {

@@ -497,4 +497,18 @@ public class PlayersManager {
 		}
 		return newScore;
 	}
+
+	public void replacementBotPlayCard(int position, Card card) {
+		if (botReplacement[position] == null)
+			return;
+		NonRemoteBot nrb = (NonRemoteBot) botReplacement[position].bot;
+		nrb.playCard(card);
+	}
+
+	public void replacementBotPassCards(int position, Card[] cards) {
+		if (botReplacement[position] == null)
+			return;
+		NonRemoteBot nrb = (NonRemoteBot) botReplacement[position].bot;
+		nrb.passCards(cards);
+	}
 }

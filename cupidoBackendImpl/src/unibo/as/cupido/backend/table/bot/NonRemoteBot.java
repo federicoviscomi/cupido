@@ -17,14 +17,17 @@
 
 package unibo.as.cupido.backend.table.bot;
 
+import java.awt.List;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import unibo.as.cupido.backend.table.CardsManager;
+import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
@@ -213,13 +216,8 @@ public class NonRemoteBot implements BotNotificationInterface {
 	public synchronized void passCards() {
 		Card[] cardsToPass = new Card[3];
 		for (int i = 0; i < 3; i++)
-			cardsToPass[i] = cards.remove(0);
-		try {
-			tableInterface.passCards(botName, cardsToPass);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			cardsToPass[i] = cards.get(i);
+		this.passCards(cardsToPass);
 	}
 
 	public synchronized void playNextCard() {
@@ -237,11 +235,7 @@ public class NonRemoteBot implements BotNotificationInterface {
 			/** choose a valid card */
 			Card cardToPlay = choseCard();
 
-			/** play chosen card */
-			tableInterface.playCard(botName, cardToPlay);
-
-			/** update status */
-			setCardPlayed(cardToPlay, 3);
+			this.playCard(cardToPlay);
 
 			// out.println(" count:" + playedCardCount + " turn:" + turn+
 			// " first:" + firstDealer + " broken hearted "+ brokenHearted +
@@ -294,6 +288,39 @@ public class NonRemoteBot implements BotNotificationInterface {
 			if (playerPosition == 2) {
 				cardPlayingThread.setAbleToPlay();
 			}
+		}
+	}
+
+	private void setCardsPassed(Card[] cardsToPass) {
+		if (cardsToPass.length != 3)
+			throw new IllegalArgumentException();
+		for (int i = 0; i < 3; i++)
+			cards.remove(cardsToPass[i]);
+	}
+
+	public synchronized void playCard(Card card) {
+		try {
+			setCardPlayed(card, 3);
+			tableInterface.playCard(botName, card);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalMoveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void passCards(Card[] cardsToPass) {
+		try {
+			setCardsPassed(cardsToPass);
+			tableInterface.passCards(botName, cardsToPass);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
