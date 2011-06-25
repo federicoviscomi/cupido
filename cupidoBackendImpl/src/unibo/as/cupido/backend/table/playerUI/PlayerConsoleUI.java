@@ -223,16 +223,14 @@ public class PlayerConsoleUI {
 					try {
 						// TODO really check the database
 
-						TableInfoForClient tableInfo = gtm.getTableList().iterator()
-								.next();
+						TableInfoForClient tableInfo = gtm.getTableList()
+								.iterator().next();
 						LocalTableManagerInterface ltmInterface = gtm
 								.getLTMInterface(tableInfo.tableDescriptor.ltmId);
 
-						remoteViewer = new RemoteViewerUI(playerName, ltmInterface, tableInfo);
+						remoteViewer = new RemoteViewerUI(playerName,
+								ltmInterface, tableInfo);
 
-						out.println("viewing table "
-								+ remoteBot.observedGameStatus
-								+ "\n press a key to exit");
 						out.flush();
 						Thread.sleep(200);
 						System.in.read();
@@ -255,7 +253,7 @@ public class PlayerConsoleUI {
 					} catch (PlayerNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} 
+					}
 				} else if (command[0].equals("leave")) {
 					try {
 						if (remoteBot.singleTableManager != null) {
@@ -271,7 +269,6 @@ public class PlayerConsoleUI {
 					}
 				} else if (command[0].equals("join")) {
 					try {
-
 						// TODO really check the database
 						remoteBot = new RemoteBot(new InitialTableStatus(
 								new String[3], new int[3], new boolean[3]),
@@ -287,6 +284,8 @@ public class PlayerConsoleUI {
 						remoteBot.initialTableStatus = remoteBot.singleTableManager
 								.joinTable(playerName, remoteBot);
 						out.println("successfully joined " + tableInfo);
+					} catch (NoSuchElementException e) {
+						out.println("no table to join!");
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
