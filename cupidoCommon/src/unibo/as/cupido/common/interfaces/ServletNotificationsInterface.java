@@ -43,7 +43,7 @@ public interface ServletNotificationsInterface extends Remote {
 	/**
 	 * Start of the game is notified to the servlet. When the game in a table
 	 * can start a player in the table gets exactly one of this notification and
-	 * from this notification he konws what his cards are.
+	 * from this notification he knows what his cards are.
 	 * 
 	 * @param cards
 	 *            the starting hand of the player

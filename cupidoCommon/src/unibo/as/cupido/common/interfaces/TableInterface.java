@@ -26,6 +26,7 @@ import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
@@ -119,8 +120,8 @@ public interface TableInterface extends Remote {
 	 * @throws NoSuchTableException
 	 *             TODO what's the meaning of this?
 	 * @throws IllegalStateException
-	 *             if game status is not {@link GameStatus}.INIT
-	 *             FIXME: are not this and FullTableException threw in the same case?
+	 *             if game status is not {@link GameStatus}.INIT FIXME: are not
+	 *             this and FullTableException threw in the same case?
 	 * @throws IllegalArgumentException
 	 *             if an argument is null
 	 * @throws DuplicateUserNameException
@@ -173,7 +174,8 @@ public interface TableInterface extends Remote {
 	 * @throws RemoteException
 	 */
 	void passCards(String userName, Card[] cards)
-			throws IllegalArgumentException, IllegalStateException, RemoteException;
+			throws IllegalArgumentException, IllegalStateException,
+			RemoteException;
 
 	/**
 	 * Player <code>platerName</code> plays card <code>card</code>.
@@ -234,7 +236,7 @@ public interface TableInterface extends Remote {
 	 * @throws NoSuchTableException
 	 */
 	public ObservedGameStatus viewTable(String userName,
-			ServletNotificationsInterface snf) throws NoSuchTableException,
+			ServletNotificationsInterface snf) throws DuplicateViewerException,
 			RemoteException;
 
 }

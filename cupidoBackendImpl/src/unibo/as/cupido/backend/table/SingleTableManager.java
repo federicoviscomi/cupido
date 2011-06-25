@@ -25,6 +25,7 @@ import java.util.Arrays;
 import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
@@ -92,7 +93,6 @@ public class SingleTableManager implements TableInterface {
 			IllegalArgumentException, FullTableException, NotCreatorException,
 			IllegalStateException {
 		try {
-
 			String botName = botNames[position];
 
 			InitialTableStatus initialTableStatus = playersManager
@@ -255,34 +255,32 @@ public class SingleTableManager implements TableInterface {
 
 	private void replacePlayer(String playerName)
 			throws PlayerNotFoundException {
-
-
-			try {
-				int position = playersManager.getPlayerPosition(playerName);
-				String botName = SingleTableManager.botNames[position];
-				playersManager.replacePlayer(
-						playerName,
-						position,
-						gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
-								table.tableDescriptor.id));
-				playersManager.notifyPlayerReplaced(playerName, botName, position);
-				viewers.notifyPlayerReplaced(playerName, position);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchLTMException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (PositionFullException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (PositionEmptyException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		try {
+			int position = playersManager.getPlayerPosition(playerName);
+			String botName = SingleTableManager.botNames[position];
+			playersManager.replacePlayer(
+					playerName,
+					position,
+					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
+							table.tableDescriptor.id));
+			playersManager.notifyPlayerReplaced(playerName, botName, position);
+			viewers.notifyPlayerReplaced(playerName, position);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchLTMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PositionFullException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PositionEmptyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -298,7 +296,7 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized ObservedGameStatus viewTable(String viewerName,
-			ServletNotificationsInterface snf) throws NoSuchTableException,
+			ServletNotificationsInterface snf) throws DuplicateViewerException,
 			RemoteException {
 		if (viewerName == null || snf == null)
 			throw new IllegalArgumentException();
