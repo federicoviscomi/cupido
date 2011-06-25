@@ -265,4 +265,12 @@ public class CardsManager {
 		}
 	}
 
+	public boolean hasPassedCards(int position) {
+		return allPassedCards[position] != null;
+	}
+
+	public int whoShouldPlay() {
+		return (firstDealerInTurn + playedCardsCount + 4) % 4;
+	}
+
 }

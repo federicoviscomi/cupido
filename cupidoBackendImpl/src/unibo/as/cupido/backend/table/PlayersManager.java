@@ -27,6 +27,7 @@ import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
+import unibo.as.cupido.common.exception.PositionEmptyException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface.Positions;
@@ -121,6 +122,11 @@ public class PlayersManager {
 					+ players[Positions.OWNER.ordinal()] + ". Current user: "
 					+ userName);
 
+		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(botName, bot);
+		playersCount++;
+	}
+
+	public void notifyBotJoined(String botName, int position) {
 		/*
 		 * notify every players but the one who is adding the bot and the bot
 		 * itself
@@ -142,10 +148,6 @@ public class PlayersManager {
 				}
 			}
 		}
-
-		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(botName, bot);
-		playersCount++;
-		removalThread.remove();
 	}
 
 	public int addPlayer(String playerName, ServletNotificationsInterface sni,
@@ -178,6 +180,12 @@ public class PlayersManager {
 			}
 		}
 
+		players[position] = new PlayerInfo(playerName, score, sni);
+		playersCount++;
+		return position;
+	}
+
+	public void notifyPlayerJoined(String playerName, int score, int position) {
 		/* notify every players but the one who is joining */
 		for (int i = 0; i < 4; i++) {
 			if (i != position) {
@@ -196,11 +204,6 @@ public class PlayersManager {
 				}
 			}
 		}
-
-		players[position] = new PlayerInfo(playerName, score, sni);
-		playersCount++;
-		removalThread.remove();
-		return position;
 	}
 
 	public void addPlayersInformationForViewers(
@@ -352,7 +355,9 @@ public class PlayersManager {
 			throw new IllegalStateException();
 		playersCount--;
 		players[position] = null;
+	}
 
+	public void notifyPlayerLeft(String playerName) {
 		for (int i = 0; i < 4; i++) {
 			if (players[i] != null) {
 				try {
@@ -408,4 +413,23 @@ public class PlayersManager {
 		return newScore;
 	}
 
+	public void notifyPlayerReplaced(String playerLeftName, String botName,
+			int position) throws PositionFullException, PositionEmptyException {
+		for (int i = 1; i < 4; i++) {
+			if (i != position) {
+				if (players[i] != null) {
+					try {
+						players[i].sni.notifyPlayerReplaced(botName,
+								toRelativePosition(position, i));
+					} catch (RemoteException e) {
+						//
+					}
+				} else if (nonRemoteBotsInfo[i] != null
+						&& !nonRemoteBotsInfo[i].botName.equals(botName)) {
+					nonRemoteBotsInfo[i].bot.notifyPlayerReplaced(botName,
+							toRelativePosition(position, i));
+				}
+			}
+		}
+	}
 }

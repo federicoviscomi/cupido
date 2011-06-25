@@ -24,6 +24,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.naming.OperationNotSupportedException;
+
 import unibo.as.cupido.backend.table.CardsManager;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
@@ -33,7 +35,7 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 public class NonRemoteBot implements BotNotificationInterface {
 
 	private final String botName;
-	private final TableInterface singleTableManager;
+	private final TableInterface tableInterface;
 	private final InitialTableStatus initialTableStatus;
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
@@ -49,11 +51,12 @@ public class NonRemoteBot implements BotNotificationInterface {
 	public NonRemoteBot(final String botName,
 			InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager) throws IOException {
+
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
-		cardPlayingThread = new NonRemoteBotCardPlayingThread(this, botName);
-		cardPlayingThread.start();
-		this.singleTableManager = singleTableManager;
+		this.tableInterface = singleTableManager;
+		this.cardPlayingThread = new NonRemoteBotCardPlayingThread(this,
+				botName);
 
 		File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
 				+ botName);
@@ -67,6 +70,30 @@ public class NonRemoteBot implements BotNotificationInterface {
 				out.close();
 			}
 		});
+
+		cardPlayingThread.start();
+	}
+
+	public NonRemoteBot(String botName, InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager, int nextPlayer) {
+		this.botName = botName;
+		this.initialTableStatus = initialTableStatus;
+		this.tableInterface = singleTableManager;
+		this.cardPlayingThread = new NonRemoteBotCardPlayingThread(this,
+				botName);
+
+	}
+
+	public NonRemoteBot(String botName, InitialTableStatus initialTableStatus,
+			TableInterface singleTableManager,
+			boolean getPassedCardsNotification) {
+
+		this.botName = botName;
+		this.initialTableStatus = initialTableStatus;
+		this.tableInterface = singleTableManager;
+		this.cardPlayingThread = new NonRemoteBotCardPlayingThread(this,
+				botName);
+
 	}
 
 	private ArrayList<Card> chooseValidCards() {
@@ -190,7 +217,7 @@ public class NonRemoteBot implements BotNotificationInterface {
 		for (int i = 0; i < 3; i++)
 			cardsToPass[i] = cards.remove(0);
 		try {
-			singleTableManager.passCards(botName, cardsToPass);
+			tableInterface.passCards(botName, cardsToPass);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -213,7 +240,7 @@ public class NonRemoteBot implements BotNotificationInterface {
 			Card cardToPlay = choseCard();
 
 			/** play chosen card */
-			singleTableManager.playCard(botName, cardToPlay);
+			tableInterface.playCard(botName, cardToPlay);
 
 			/** update status */
 			setCardPlayed(cardToPlay, 3);
@@ -270,6 +297,11 @@ public class NonRemoteBot implements BotNotificationInterface {
 				cardPlayingThread.setAbleToPlay();
 			}
 		}
+	}
+
+	@Override
+	public void notifyPlayerReplaced(String botName, int relativePosition) {
+		throw new UnsupportedOperationException("throws not implemented yet");
 	}
 
 }

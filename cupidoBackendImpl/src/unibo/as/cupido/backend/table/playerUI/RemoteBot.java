@@ -315,4 +315,11 @@ public class RemoteBot implements Bot, Serializable {
 		}
 	}
 
+	@Override
+	public void notifyPlayerReplaced(String botName, int position)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("not implemented yet");
+	}
+
 }
