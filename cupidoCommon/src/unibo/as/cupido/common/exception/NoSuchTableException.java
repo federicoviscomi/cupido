@@ -25,6 +25,10 @@ public class NoSuchTableException extends Exception implements Serializable {
 		super(string);
 	}
 
+	public NoSuchTableException() {
+		//
+	}
+
 	private static final long serialVersionUID = 1L;
 
 }

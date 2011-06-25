@@ -33,6 +33,7 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.PlayerNotFoundException;
+import unibo.as.cupido.common.exception.PositionEmptyException;
 import unibo.as.cupido.common.exception.PositionFullException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
@@ -163,21 +164,17 @@ public class SingleTableManager implements TableInterface {
 			throw new IllegalStateException(
 					"game ended, cannot call leaveTable");
 		}
-		try {
-			if (table.owner.equals(userName)) {
-				this.notifyGameEndedPrematurely();
+
+		if (table.owner.equals(userName)) {
+			this.notifyGameEndedPrematurely();
+		} else {
+			if (gameStarted) {
+				this.replacePlayer(userName);
 			} else {
-				if (gameStarted) {
-					this.replacePlayer(userName);
-				} else {
-					playersManager.removePlayer(userName);
-					playersManager.notifyPlayerLeft(userName);
-					viewers.notifyPlayerLeft(userName);
-				}
+				playersManager.removePlayer(userName);
+				playersManager.notifyPlayerLeft(userName);
+				viewers.notifyPlayerLeft(userName);
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -213,6 +210,9 @@ public class SingleTableManager implements TableInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchLTMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchTableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -255,20 +255,35 @@ public class SingleTableManager implements TableInterface {
 
 	private void replacePlayer(String playerName)
 			throws PlayerNotFoundException {
-		try {
-			int position = playersManager.getPlayerPosition(playerName);
-			String botName = SingleTableManager.botNames[position];
-			playersManager.replacePlayer(
-					playerName,
-					position,
-					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
-							table.tableDescriptor.id));
-			playersManager.notifyPlayerReplaced(playerName, botName, position);
-			viewers.notifyPlayerReplaced(playerName, position);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+
+			try {
+				int position = playersManager.getPlayerPosition(playerName);
+				String botName = SingleTableManager.botNames[position];
+				playersManager.replacePlayer(
+						playerName,
+						position,
+						gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
+								table.tableDescriptor.id));
+				playersManager.notifyPlayerReplaced(playerName, botName, position);
+				viewers.notifyPlayerReplaced(playerName, position);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchLTMException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (PositionFullException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (PositionEmptyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 	}
 
 	@Override
