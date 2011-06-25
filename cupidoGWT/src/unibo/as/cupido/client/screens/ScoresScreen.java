@@ -52,24 +52,25 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 
 		VerticalPanel panelContainer = new VerticalPanel();
 		panelContainer.setHorizontalAlignment(ALIGN_LEFT);
-		panelContainer.setWidth("320px");
-		panelContainer.setHeight("420px");
+		panelContainer.setWidth("325px");
+		panelContainer.setHeight("425px");
 		add(panelContainer);
 
 		// If the user font causes the scores not to fit in the panel,
 		// display vertical scrollbars instead of overflow.
 		ScrollPanel scrollPanel = new ScrollPanel();
+		scrollPanel.setAlwaysShowScrollBars(false);
 		scrollPanel.setWidth("320px");
 		scrollPanel.setHeight("420px");
 		panelContainer.add(scrollPanel);
+		DOM.setStyleAttribute(scrollPanel.getElement(), "borderWidth", "1px");
+		DOM.setStyleAttribute(scrollPanel.getElement(), "borderStyle", "solid");
 
 		FlowPanel panel = new FlowPanel();
-		panel.setWidth("320px");
-		panel.setHeight("420px");
+		panel.setWidth("300px");
+		panel.setHeight("400px");
 		scrollPanel.add(panel);
 		DOM.setStyleAttribute(panel.getElement(), "padding", "10px");
-		DOM.setStyleAttribute(panel.getElement(), "borderWidth", "1px");
-		DOM.setStyleAttribute(panel.getElement(), "borderStyle", "solid");
 
 		for (RankingEntry entry : topRanks)
 			panel.add(constructRow(entry, entry.username.equals(username)));
@@ -101,7 +102,7 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 	private Widget constructVerticalDots() {
 		VerticalPanel boxContainer = new VerticalPanel();
 		boxContainer.setVerticalAlignment(ALIGN_MIDDLE);
-		boxContainer.setWidth("300px");
+		boxContainer.setWidth("290px");
 		boxContainer.setHeight("30px");
 		SimplePanel box = new SimplePanel();
 		box.setWidth("260px");
@@ -126,6 +127,7 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 		builder.append(entry.points);
 		builder.appendHtmlConstant("<br />");
 		HTML row = new HTML(builder.toSafeHtml());
+		row.setWidth("290px");
 		DOM.setStyleAttribute(row.getElement(), "padding", "2px");
 		if (highlight) {
 			DOM.setStyleAttribute(row.getElement(), "borderWidth", "1px");

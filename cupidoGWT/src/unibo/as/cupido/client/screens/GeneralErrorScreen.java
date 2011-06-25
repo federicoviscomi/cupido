@@ -41,7 +41,7 @@ public class GeneralErrorScreen extends AbsolutePanel implements Screen {
 		SafeHtmlBuilder htmlBuilder = new SafeHtmlBuilder();
 		htmlBuilder.appendHtmlConstant("<h1>Si è verificato un errore</h1>");
 		htmlBuilder
-				.appendHtmlConstant("<p>Ricaricare la pagina per tornare a Cupido.</p>");
+				.appendHtmlConstant("<p>Ricarica la pagina per tornare a Cupido.</p>");
 		htmlBuilder
 				.appendHtmlConstant("<br>Questi sono i dati relativi all'errore: l'eccezione<br>");
 		htmlBuilder.appendEscaped(e.toString());

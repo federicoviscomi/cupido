@@ -27,6 +27,7 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PushButton;
@@ -65,14 +66,16 @@ public class LocalChatWidget extends AbsolutePanel {
 		messagesPanel.add(messageList);
 
 		HorizontalPanel bottomRow = new HorizontalPanel();
+		bottomRow.setSpacing(5);
 		bottomRow.setWidth(TableScreen.chatWidth + "px");
 		bottomRow.setHeight(bottomRowHeight + "px");
 		bottomRow.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		bottomRow.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		int sendButtonWidth = 50;
+		int sendButtonWidth = 30;
 
 		messageField = new TextBox();
-		messageField.setWidth((TableScreen.chatWidth - sendButtonWidth) + "px");
+		messageField.setWidth((TableScreen.chatWidth - sendButtonWidth - 40) + "px");
 		messageField.addKeyUpHandler(new KeyUpHandler() {
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
@@ -92,7 +95,7 @@ public class LocalChatWidget extends AbsolutePanel {
 		});
 		bottomRow.add(sendButton);
 
-		add(bottomRow, 0, (Cupido.height - bottomRowHeight));
+		add(bottomRow, 0, (Cupido.height - bottomRowHeight - 5));
 	}
 
 	private void sendMessage() {

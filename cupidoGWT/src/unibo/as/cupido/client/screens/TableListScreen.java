@@ -142,6 +142,7 @@ public class TableListScreen extends VerticalPanel implements Screen {
 		DOM.setStyleAttribute(cellList.getElement(), "borderBottomWidth", "1px");
 
 		HorizontalPanel bottomPanel = new HorizontalPanel();
+		bottomPanel.setHorizontalAlignment(ALIGN_CENTER);
 		bottomPanel.setSpacing(50);
 		add(bottomPanel);
 
