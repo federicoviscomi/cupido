@@ -124,7 +124,7 @@ public class GameEndedState implements ViewerState {
 
 		if (eventReceived) {
 			stateManager.onFatalException(new Exception(
-					"Received another GameEnded notification."));
+					"Two GameEnded notifications were received while the client was in the GameEnded state."));
 			return true;
 		}
 
