@@ -50,6 +50,7 @@ import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
@@ -785,12 +786,15 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new FatalException();
 		} catch (NoSuchTableException e) {
 			throw e;
+		} catch (DuplicateViewerException e) {
+			throw new FatalException();
 		}
 	}
 
 	@Override
 	public void leaveTable() throws UserNotAuthenticatedException,
 			NoSuchTableException, FatalException {
+		System.out.println("Servlet: leaveTable() called");
 		HttpSession httpSession = getThreadLocalRequest().getSession();
 		if (httpSession == null) {
 			return;
