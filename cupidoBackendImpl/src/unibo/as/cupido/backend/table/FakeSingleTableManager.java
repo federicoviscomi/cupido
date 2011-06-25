@@ -25,7 +25,8 @@ public class FakeSingleTableManager implements TableInterface {
 			throws PositionFullException, RemoteException,
 			IllegalArgumentException, FullTableException, NotCreatorException,
 			IllegalStateException {
-		throw new IllegalStateException("a replacement bot should never call this");
+		throw new IllegalStateException(
+				"a replacement bot should never call this");
 	}
 
 	@Override
@@ -34,13 +35,15 @@ public class FakeSingleTableManager implements TableInterface {
 			NoSuchTableException, RemoteException, IllegalArgumentException,
 			IllegalStateException, DuplicateUserNameException, SQLException,
 			NoSuchUserException {
-		throw new IllegalStateException("a replacement bot should never call this");
+		throw new IllegalStateException(
+				"a replacement bot should never call this");
 	}
 
 	@Override
 	public void leaveTable(String userName) throws RemoteException,
 			PlayerNotFoundException {
-		throw new IllegalStateException("a replacement bot should not call this before it is awoken");
+		throw new IllegalStateException(
+				"a replacement bot should not call this before it is awoken");
 	}
 
 	@Override
@@ -60,14 +63,16 @@ public class FakeSingleTableManager implements TableInterface {
 	@Override
 	public void sendMessage(ChatMessage message) throws NoSuchUserException,
 			RemoteException {
-		throw new IllegalStateException("a replacement bot should not call this before it is awoken");
+		throw new IllegalStateException(
+				"a replacement bot should not call this before it is awoken");
 	}
 
 	@Override
 	public ObservedGameStatus viewTable(String userName,
 			ServletNotificationsInterface snf) throws NoSuchTableException,
 			RemoteException {
-		throw new IllegalStateException("a replacement bot should not call this before it is awoken");
+		throw new IllegalStateException(
+				"a replacement bot should not call this before it is awoken");
 	}
 
 }

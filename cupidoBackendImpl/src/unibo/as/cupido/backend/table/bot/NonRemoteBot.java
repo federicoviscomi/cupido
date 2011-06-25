@@ -24,8 +24,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.naming.OperationNotSupportedException;
-
 import unibo.as.cupido.backend.table.CardsManager;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
@@ -74,6 +72,11 @@ public class NonRemoteBot implements BotNotificationInterface {
 		});
 
 		cardPlayingThread.start();
+	}
+
+	@Override
+	public void activate(TableInterface tableInterface) {
+		this.tableInterface = tableInterface;
 	}
 
 	private ArrayList<Card> chooseValidCards() {
@@ -192,6 +195,21 @@ public class NonRemoteBot implements BotNotificationInterface {
 		out.println(initialTableStatus);
 	}
 
+	@Override
+	public synchronized void notifyPlayerReplaced(String botName, int position) {
+		out.print("\n" + botName + ": "
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + botName + ", " + position + ")");
+
+		if (botName == null || position < 0 || position > 2)
+			throw new IllegalArgumentException(position + " " + botName);
+
+		if (initialTableStatus.opponents[position] == null)
+			throw new IllegalArgumentException();
+		initialTableStatus.opponents[position] = botName;
+		initialTableStatus.whoIsBot[position] = true;
+	}
+
 	public synchronized void passCards() {
 		Card[] cardsToPass = new Card[3];
 		for (int i = 0; i < 3; i++)
@@ -277,26 +295,6 @@ public class NonRemoteBot implements BotNotificationInterface {
 				cardPlayingThread.setAbleToPlay();
 			}
 		}
-	}
-
-	@Override
-	public synchronized void notifyPlayerReplaced(String botName, int position) {
-		out.print("\n" + botName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + botName + ", " + position + ")");
-
-		if (botName == null || position < 0 || position > 2)
-			throw new IllegalArgumentException(position + " " + botName);
-
-		if (initialTableStatus.opponents[position] == null)
-			throw new IllegalArgumentException();
-		initialTableStatus.opponents[position] = botName;
-		initialTableStatus.whoIsBot[position] = true;
-	}
-
-	@Override
-	public void activate(TableInterface tableInterface) {
-		this.tableInterface = tableInterface;
 	}
 
 }

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import unibo.as.cupido.backend.gtm.GlobalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;

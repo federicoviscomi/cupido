@@ -22,6 +22,8 @@ import unibo.as.cupido.common.structures.Card;
 
 public interface BotNotificationInterface {
 
+	public void activate(TableInterface tableInterface);
+
 	/**
 	 * End of the game is notified to the servlet. Every players and every
 	 * viewers in the table get this notification.
@@ -105,7 +107,5 @@ public interface BotNotificationInterface {
 	public void notifyPlayerLeft(String playerName);
 
 	public void notifyPlayerReplaced(String botName, int relativePosition);
-
-	public void activate(TableInterface tableInterface);
 
 }
