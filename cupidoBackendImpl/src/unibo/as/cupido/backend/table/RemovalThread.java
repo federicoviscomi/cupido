@@ -21,7 +21,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import unibo.as.cupido.common.exception.PlayerNotFoundException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
+
 
 public class RemovalThread extends Thread {
 
@@ -67,7 +68,7 @@ public class RemovalThread extends Thread {
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (PlayerNotFoundException e) {
+		} catch (NoSuchPlayerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

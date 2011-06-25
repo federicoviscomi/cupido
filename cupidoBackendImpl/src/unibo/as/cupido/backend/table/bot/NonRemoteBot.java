@@ -27,12 +27,15 @@ import java.util.Arrays;
 
 import unibo.as.cupido.backend.table.CardsManager;
 import unibo.as.cupido.common.exception.IllegalMoveException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
+import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
-public class NonRemoteBot implements BotNotificationInterface {
+public class NonRemoteBot implements ServletNotificationsInterface {
 
 	private final String botName;
 	private TableInterface tableInterface;
@@ -68,7 +71,8 @@ public class NonRemoteBot implements BotNotificationInterface {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				System.err.println("shuting down non remote bot " + botName);
+				System.err.println("shuting down non remote replacementBot "
+						+ botName);
 				out.close();
 			}
 		});
@@ -76,7 +80,6 @@ public class NonRemoteBot implements BotNotificationInterface {
 		cardPlayingThread.start();
 	}
 
-	@Override
 	public void activate(TableInterface tableInterface) {
 		this.tableInterface = tableInterface;
 	}
@@ -232,6 +235,9 @@ public class NonRemoteBot implements BotNotificationInterface {
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NoSuchPlayerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -246,6 +252,9 @@ public class NonRemoteBot implements BotNotificationInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalMoveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchPlayerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -319,6 +328,13 @@ public class NonRemoteBot implements BotNotificationInterface {
 			throw new IllegalArgumentException();
 		for (int i = 0; i < 3; i++)
 			cards.remove(cardsToPass[i]);
+	}
+
+	@Override
+	public void notifyLocalChatMessage(ChatMessage message)
+			throws RemoteException {
+		throw new UnsupportedOperationException(
+				"a replacementBot shold not be notified of chat messages");
 	}
 
 }

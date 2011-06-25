@@ -18,6 +18,7 @@
 package unibo.as.cupido.backend.table;
 
 import java.io.IOException;
+import java.nio.channels.IllegalSelectorException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -26,17 +27,18 @@ import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
+import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.PlayerNotFoundException;
-import unibo.as.cupido.common.exception.PositionEmptyException;
-import unibo.as.cupido.common.exception.PositionFullException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
+import unibo.as.cupido.common.exception.EmptyPositionException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
@@ -66,6 +68,7 @@ public class SingleTableManager implements TableInterface {
 	private boolean gameStarted = false;
 	private String owner;
 	private boolean[] passCardsNotificationSent = new boolean[4];
+	private TableInterface tableInterface;
 
 	public static final String[] botNames = { "", "cupido", "venere", "marte" };
 
@@ -73,6 +76,7 @@ public class SingleTableManager implements TableInterface {
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
 			throws RemoteException, SQLException, NoSuchUserException,
 			NoSuchLTMException {
+
 		if (snf == null || table == null || gtm == null)
 			throw new IllegalArgumentException(snf + " " + table + " " + gtm);
 		this.table = table;
@@ -90,21 +94,24 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized String addBot(String userName, int position)
-			throws PositionFullException, RemoteException,
+			throws FullPositionException, RemoteException,
 			IllegalArgumentException, FullTableException, NotCreatorException,
 			IllegalStateException {
+		if (this.gameStarted)
+			throw new IllegalStateException();
 		try {
 			String botName = botNames[position];
 
 			InitialTableStatus initialTableStatus = playersManager
 					.getInitialTableStatus(position);
 
-			NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus,
-					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
-							table.tableDescriptor.id));
+			tableInterface = gtm.getLTMInterface(table.tableDescriptor.ltmId)
+					.getTable(table.tableDescriptor.id);
+
 			viewers.notifyBotJoined(botNames[position], position);
 
-			playersManager.addBot(userName, position, bot, botNames[position]);
+			playersManager.addBot(userName, position, botNames[position],
+					tableInterface);
 			playersManager.notifyBotJoined(botName, position);
 			if (playersManager.playersCount() == 4) {
 				startNotifierThread.setGameStarted();
@@ -133,27 +140,37 @@ public class SingleTableManager implements TableInterface {
 			NoSuchTableException, RemoteException, IllegalArgumentException,
 			IllegalStateException, DuplicateUserNameException, SQLException,
 			NoSuchUserException {
+		if (this.gameStarted)
+			throw new IllegalStateException();
 		if (userName == null || snf == null)
 			throw new IllegalArgumentException();
-		int score = databaseManager.getPlayerScore(userName);
-		int position = playersManager.addPlayer(userName, snf, score);
-		playersManager.notifyPlayerJoined(userName, score, position);
-		viewers.notifyPlayerJoined(userName, score, position);
-		if (playersManager.playersCount() == 4) {
-			startNotifierThread.setGameStarted();
+
+		try {
+			int score = databaseManager.getPlayerScore(userName);
+			int position = playersManager.addPlayer(userName, snf, score);
+			playersManager.notifyPlayerJoined(userName, score, position);
+			viewers.notifyPlayerJoined(userName, score, position);
+			if (playersManager.playersCount() == 4) {
+				startNotifierThread.setGameStarted();
+			}
+			gtm.notifyTableJoin(table.tableDescriptor);
+			return playersManager.getInitialTableStatus(position);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		gtm.notifyTableJoin(table.tableDescriptor);
-		return playersManager.getInitialTableStatus(position);
+		return null;
 	}
 
 	public synchronized void leaveTable(Integer i) throws RemoteException,
-			PlayerNotFoundException {
+			NoSuchPlayerException, NoSuchPlayerException {
 		this.leaveTable(playersManager.getPlayerName(i));
 	}
 
 	@Override
 	public synchronized void leaveTable(String userName)
-			throws RemoteException, PlayerNotFoundException {
+			throws RemoteException, NoSuchPlayerException {
 		if (userName == null)
 			throw new IllegalArgumentException();
 
@@ -223,7 +240,8 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized void passCards(String userName, Card[] cards)
-			throws IllegalArgumentException, RemoteException {
+			throws IllegalArgumentException, RemoteException,
+			NoSuchPlayerException {
 		/*
 		 * NOTE: userName is name of the player who passes cards. Not name of
 		 * the player who receives the cards!
@@ -242,7 +260,7 @@ public class SingleTableManager implements TableInterface {
 	@Override
 	public synchronized void playCard(String userName, Card card)
 			throws IllegalMoveException, RemoteException,
-			IllegalArgumentException {
+			IllegalArgumentException, NoSuchPlayerException {
 		if (userName == null || card == null)
 			throw new IllegalArgumentException("userName " + userName
 					+ " card " + card);
@@ -256,8 +274,7 @@ public class SingleTableManager implements TableInterface {
 		}
 	}
 
-	private void replacePlayer(String playerName)
-			throws PlayerNotFoundException {
+	private void replacePlayer(String playerName) throws NoSuchPlayerException {
 		try {
 			int position = playersManager.getPlayerPosition(playerName);
 			String botName = SingleTableManager.botNames[position];
@@ -277,10 +294,10 @@ public class SingleTableManager implements TableInterface {
 		} catch (NoSuchLTMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (PositionFullException e) {
+		} catch (FullPositionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (PositionEmptyException e) {
+		} catch (EmptyPositionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

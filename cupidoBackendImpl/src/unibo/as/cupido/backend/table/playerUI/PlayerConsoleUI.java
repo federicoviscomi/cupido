@@ -41,8 +41,8 @@ import unibo.as.cupido.backend.ltm.LocalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
-import unibo.as.cupido.common.exception.PlayerNotFoundException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -70,7 +70,7 @@ public class PlayerConsoleUI {
 			+ String.format(FORMAT, "play suit value", "", "",
 					"play specified card")
 			+ String.format(FORMAT, "addbot POSITION", "", "",
-					"add a bot in specified absolute position")
+					"add a inactiveReplacementBot in specified absolute position")
 			+ String.format(FORMAT, "join", "", "", "join an arbitrary table")
 			+ String.format(FORMAT, "help", "", "", "print this help")
 			+ String.format(FORMAT, "leave", "", "", "leave the table(if any)")
@@ -258,7 +258,7 @@ public class PlayerConsoleUI {
 						} else {
 							out.println("there is no table to leave!");
 						}
-					} catch (PlayerNotFoundException e) {
+					} catch (NoSuchPlayerException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -362,7 +362,7 @@ public class PlayerConsoleUI {
 				} else if (command[0].equals("addbot")) {
 					try {
 						if (command.length < 2) {
-							out.println("missin bot position");
+							out.println("missin inactiveReplacementBot position");
 							out.flush();
 						} else {
 							int position = Integer.parseInt(command[1]);

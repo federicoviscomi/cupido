@@ -7,11 +7,11 @@ import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.PlayerNotFoundException;
-import unibo.as.cupido.common.exception.PositionFullException;
+import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
@@ -29,11 +29,11 @@ public final class FakeSingleTableManager implements TableInterface {
 
 	@Override
 	public String addBot(String userName, int position)
-			throws PositionFullException, RemoteException,
+			throws FullPositionException, RemoteException,
 			IllegalArgumentException, FullTableException, NotCreatorException,
 			IllegalStateException {
 		throw new IllegalStateException(
-				"a replacement bot should never call this");
+				"a replacement inactiveReplacementBot should never call this");
 	}
 
 	@Override
@@ -43,14 +43,7 @@ public final class FakeSingleTableManager implements TableInterface {
 			IllegalStateException, DuplicateUserNameException, SQLException,
 			NoSuchUserException {
 		throw new IllegalStateException(
-				"a replacement bot should never call this");
-	}
-
-	@Override
-	public void leaveTable(String userName) throws RemoteException,
-			PlayerNotFoundException {
-		throw new IllegalStateException(
-				"a replacement bot should not call this before it is awoken");
+				"a replacement inactiveReplacementBot should never call this");
 	}
 
 	@Override
@@ -71,7 +64,7 @@ public final class FakeSingleTableManager implements TableInterface {
 	public void sendMessage(ChatMessage message) throws NoSuchUserException,
 			RemoteException {
 		throw new IllegalStateException(
-				"a replacement bot should not call this before it is awoken");
+				"a replacement inactiveReplacementBot should not call this before it is awoken");
 	}
 
 	@Override
@@ -79,7 +72,14 @@ public final class FakeSingleTableManager implements TableInterface {
 			ServletNotificationsInterface snf) throws RemoteException,
 			DuplicateViewerException {
 		throw new IllegalStateException(
-				"a replacement bot should not call this before it is awoken");
+				"a replacement inactiveReplacementBot should not call this before it is awoken");
+	}
+
+	@Override
+	public void leaveTable(String userName) throws RemoteException,
+			NoSuchPlayerException {
+		throw new IllegalStateException(
+				"a replacement inactiveReplacementBot should not call this before it is awoken");
 	}
 
 }
