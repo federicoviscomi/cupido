@@ -24,7 +24,7 @@ sleep 1000
 play -a
 sleep 1000
 play -a
-slepp 1000
+sleep 1000
 play -a
 sleep 1000
 play -a

@@ -79,7 +79,7 @@ public class PlayersManager {
 		 * interface of the inactiveReplacementBot who could replace this
 		 * player; otherwise this field is <code>null<code>.
 		 */
-		ServletNotificationsInterface inactiveReplacementBot;
+		NonRemoteBotInterface inactiveReplacementBot;
 
 		/**
 		 * <code>true</code> if this is a bot or an active
@@ -95,7 +95,7 @@ public class PlayersManager {
 
 		public PlayerInfo(String name, int score,
 				ServletNotificationsInterface notificationInterface,
-				ServletNotificationsInterface replacementBot) {
+				NonRemoteBotInterface replacementBot) {
 
 			if (name == null || notificationInterface == null
 					|| replacementBot == null)
@@ -111,6 +111,8 @@ public class PlayersManager {
 		}
 
 		public PlayerInfo(String name, ServletNotificationsInterface bot) {
+			if (name == null || bot == null)
+				throw new IllegalArgumentException();
 			this.name = name;
 			this.playerNotificationInterface = bot;
 			this.inactiveReplacementBot = null;
@@ -149,7 +151,7 @@ public class PlayersManager {
 		this.databaseManager = databaseManager;
 		this.removalThread = removalThread;
 
-		players[0] = new PlayerInfo(owner, score, snf, null);
+		players[0] = new PlayerInfo(owner, score, snf, new LoggerBot(owner));
 		removalThread.start();
 	}
 
@@ -476,23 +478,33 @@ public class PlayersManager {
 	}
 
 	public void replacementBotPassCards(int position, Card[] cards) {
-		if (position < 1 || position > 3 || cards == null)
+		if (position < 0 || position > 3 || cards == null)
 			throw new IllegalArgumentException();
-		if (players[position] == null || !players[position].isBot
-				|| !players[position].replaced)
+		if (players[position] == null)
 			throw new IllegalStateException();
-		((NonRemoteBot) players[position].inactiveReplacementBot)
-				.passCards(cards);
+		try {
+			if (players[position].isBot && players[position].replaced) {
+				players[position].inactiveReplacementBot.passCards(cards);
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void replacementBotPlayCard(int position, Card card) {
-		if (position < 1 || position > 3 || card == null)
+		if (position < 0 || position > 3 || card == null)
 			throw new IllegalArgumentException();
-		if (players[position] == null || !players[position].isBot
-				|| !players[position].replaced)
+		if (players[position] == null)
 			throw new IllegalStateException();
-		((NonRemoteBot) players[position].inactiveReplacementBot)
-				.playCard(card);
+		try {
+			if (players[position].isBot && players[position].replaced) {
+				players[position].inactiveReplacementBot.playCard(card);
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void replacePlayer(String playerName, int position,

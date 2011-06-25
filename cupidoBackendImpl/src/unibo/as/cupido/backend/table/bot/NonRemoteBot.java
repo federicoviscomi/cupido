@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import unibo.as.cupido.backend.table.CardsManager;
+import unibo.as.cupido.backend.table.NonRemoteBotInterface;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
@@ -35,7 +36,7 @@ import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
-public class NonRemoteBot implements ServletNotificationsInterface {
+public class NonRemoteBot implements NonRemoteBotInterface {
 
 	private final String botName;
 	private TableInterface tableInterface;
