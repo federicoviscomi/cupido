@@ -99,10 +99,11 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * @param ltm
 	 * @throws RemoteException
 	 * @throws NoSuchLTMInterfaceException
+	 * @throws NoSuchTableException 
 	 */
 	public void notifyTableDestruction(TableDescriptor tableDescriptor,
 			LocalTableManagerInterface ltm) throws RemoteException,
-			NoSuchLTMInterfaceException;
+			NoSuchLTMInterfaceException, NoSuchTableException;
 
 	/**
 	 * The components STM uses this method to notify the component GTM when a

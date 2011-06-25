@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
@@ -36,8 +37,10 @@ public class ViewersSwarm {
 		snfs = new HashMap<String, ServletNotificationsInterface>(4);
 	}
 
-	public void addViewer(String viewerName, ServletNotificationsInterface snf) {
-		snfs.put(viewerName, snf);
+	public void addViewer(String viewerName, ServletNotificationsInterface snf)
+			throws DuplicateViewerException {
+		if (snfs.put(viewerName, snf) != null)
+			throw new DuplicateViewerException();
 	}
 
 	public boolean isAViewer(String userName) {

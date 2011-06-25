@@ -24,6 +24,8 @@ import java.util.Map;
 
 import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.NoSuchLTMException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.structures.TableDescriptor;
 import unibo.as.cupido.common.structures.TableInfoForClient;
@@ -44,8 +46,10 @@ public class AllTables {
 	}
 
 	public void decreaseFreePosition(TableDescriptor tableDescriptor)
-			throws FullTableException {
+			throws FullTableException, NoSuchTableException {
 		TableInfoForClient tableInfoForClient = tifc.get(tableDescriptor);
+		if (tableInfoForClient == null)
+			throw new NoSuchTableException(tableDescriptor.toString());
 		if (tableInfoForClient.freePosition == 0) {
 			throw new FullTableException(tableDescriptor.toString());
 		} else {
@@ -65,8 +69,10 @@ public class AllTables {
 	}
 
 	public void increaseFreePosition(TableDescriptor tableDescriptor)
-			throws EmptyTableException {
+			throws EmptyTableException, NoSuchTableException {
 		TableInfoForClient tableInfoForClient = tifc.get(tableDescriptor);
+		if (tifc == null)
+			throw new NoSuchTableException(tableDescriptor.toString());
 		if (tableInfoForClient.freePosition == 3) {
 			throw new EmptyTableException(tableDescriptor.toString());
 		} else {
@@ -74,8 +80,10 @@ public class AllTables {
 		}
 	}
 
-	public void removeTable(TableDescriptor tableDescriptor) {
-		tifc.remove(tableDescriptor);
+	public void removeTable(TableDescriptor tableDescriptor)
+			throws NoSuchTableException {
+		if (tifc.remove(tableDescriptor) == null)
+			throw new NoSuchTableException(tableDescriptor.toString());
 	}
 
 }

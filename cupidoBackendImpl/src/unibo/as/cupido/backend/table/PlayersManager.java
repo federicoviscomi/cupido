@@ -127,6 +127,7 @@ public class PlayersManager {
 					+ userName);
 
 		nonRemoteBotsInfo[position] = new NonRemoteBotInfo(botName, bot);
+		botReplacement[position] = null;
 		playersCount++;
 	}
 
@@ -165,7 +166,7 @@ public class PlayersManager {
 			botReplacement[position] = new NonRemoteBotInfo(fakeBotReplacement,
 					new NonRemoteBot(fakeBotReplacement,
 							this.getInitialTableStatus(position),
-							new FakeSingleTableManager()));
+							FakeSingleTableManager.defaultInstance));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -262,7 +263,14 @@ public class PlayersManager {
 	}
 
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-		for (int i = 0; i < 4; i++) {
+		int i = 0;
+		if (matchPoints == null && playersTotalPoint == null) {
+			i++;
+		} else if (matchPoints == null || playersTotalPoint == null) {
+			throw new IllegalArgumentException(matchPoints + " "
+					+ playersTotalPoint);
+		}
+		for (; i < 4; i++) {
 			if (players[i] != null) {
 				try {
 					players[i].sni.notifyGameEnded(matchPoints,
@@ -382,7 +390,7 @@ public class PlayersManager {
 
 	public void notifyPlayerLeft(String playerName) {
 		for (int i = 0; i < 4; i++) {
-			if (players[i] != null) {
+			if (players[i] != null && !players[i].name.equals(playerName)) {
 				try {
 					players[i].sni.notifyPlayerLeft(playerName);
 				} catch (RemoteException e) {
@@ -402,7 +410,8 @@ public class PlayersManager {
 			int position) throws PositionFullException, PositionEmptyException {
 		for (int i = 1; i < 4; i++) {
 			if (i != position) {
-				if (players[i] != null) {
+				if (players[i] != null
+						&& !players[i].name.equals(playerLeftName)) {
 					try {
 						players[i].sni.notifyPlayerReplaced(botName,
 								toRelativePosition(position, i));

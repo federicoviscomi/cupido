@@ -1,5 +1,4 @@
-login topo
-sleep 1000
+login viewer
 view
-sleep 10000
+sleep 1000
 exit

@@ -24,6 +24,10 @@ package unibo.as.cupido.common.exception;
  * 
  */
 public class NoSuchLTMException extends Exception {
+	public NoSuchLTMException(String ltmId) {
+		super(ltmId);
+	}
+
 	private static final long serialVersionUID = 1L;
 
 }
