@@ -17,7 +17,17 @@
 
 package unibo.as.cupido.common.exception;
 
-public class PlayerNotFoundException extends Exception {
+import java.io.Serializable;
+
+public class FullPositionException extends Exception implements Serializable {
+
+	public FullPositionException(String string) {
+		super(string);
+	}
+
+	public FullPositionException() {
+		// 
+	}
 
 	private static final long serialVersionUID = 1L;
 

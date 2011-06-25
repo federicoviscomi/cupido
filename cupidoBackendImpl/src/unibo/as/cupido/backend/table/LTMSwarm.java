@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import unibo.as.cupido.backend.gtm.GlobalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
@@ -183,7 +182,7 @@ public class LTMSwarm implements Iterable<LocalTableManagerInterface> {
 		synchronized (swarm) {
 			int index = swarm.indexOf(Triple.getDefault(ltmi));
 			if (index < 0)
-				throw new NoSuchLTMInterfaceException();
+				throw new NoSuchLTMInterfaceException(ltmi.toString());
 			swarm.get(index).tableCount--;
 		}
 	}

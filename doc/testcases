@@ -1,6 +1,6 @@
-1: play a game with a human player and three bots ./deploy.sh ./runtest in different shells
-2: play a game with two human player and two bots ./deploy.sh ./runtest2 ./runtest3 in different shells
-3: view a game whit an automated "human" player and three bots ./deploy.sh ./runtest ./runtest5 in differnt shells
-4: play a game and after a while the creator leaves ./deploy.sh TODO in different shells
-5: play a game and after a while a non creator player leaves ./deploy.sh TODO
+1: play a game with an automated human player and three bots ./deploy.sh ./cupidoBackendImpl/test/runtest in different shells
+2: play a game with two automated human player and two bots ./deploy.sh ./cupidoBackendImpl/test/runtest2 ./cupidoBackendImpl/test/runtest3 in different shells
+3: view a game whit an automated player and three bots ./deploy.sh ./cupidoBackendImpl/test/runtest ./cupidoBackendImpl/test/runviewer in different shells
+4: play a game and after a while the creator leaves ./deploy.sh ./cupidoBackendImpl/test/runtest4 ./cupidoBackendImpl/test/runviewer
+5: play a game and after a while a non creator player leaves ./deploy.sh ./cupidoBackendImpl/test/runtest2 ./cupidoBackendImpl/test/runtest5 ./cupidoBackendImpl/test/runviewer
 

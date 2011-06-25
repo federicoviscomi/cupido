@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import unibo.as.cupido.backend.table.CardsManager;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
@@ -222,6 +223,21 @@ public class RemoteBot implements Bot, Serializable {
 	}
 
 	@Override
+	public void notifyPlayerReplaced(String botName, int position)
+			throws RemoteException, NoSuchPlayerException {
+		out.print("\n" + botName + ": notifyPlayerReplaced(" + botName + ", "
+				+ position + ")");
+
+		if (botName == null || position < 0 || position > 2)
+			throw new IllegalArgumentException(position + " " + botName);
+
+		if (initialTableStatus.opponents[position] == null)
+			throw new NoSuchPlayerException();
+		initialTableStatus.opponents[position] = botName;
+		initialTableStatus.whoIsBot[position] = true;
+	}
+
+	@Override
 	public void passCards() {
 		try {
 			synchronized (lock) {
@@ -231,16 +247,23 @@ public class RemoteBot implements Bot, Serializable {
 				Card[] cardsToPass = new Card[3];
 				for (int i = 0; i < 3; i++)
 					cardsToPass[i] = cards.remove(0);
-				try {
-					singleTableManager.passCards(userName, cardsToPass);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				singleTableManager.passCards(userName, cardsToPass);
 			}
-		} catch (InterruptedException e1) {
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchPlayerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
@@ -313,13 +336,6 @@ public class RemoteBot implements Bot, Serializable {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void notifyPlayerReplaced(String botName, int position)
-			throws RemoteException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("not implemented yet");
 	}
 
 }

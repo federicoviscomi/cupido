@@ -20,6 +20,7 @@ package unibo.as.cupido.common.interfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 
@@ -43,7 +44,7 @@ public interface ServletNotificationsInterface extends Remote {
 	/**
 	 * Start of the game is notified to the servlet. When the game in a table
 	 * can start a player in the table gets exactly one of this notification and
-	 * from this notification he konws what his cards are.
+	 * from this notification he knows what his cards are.
 	 * 
 	 * @param cards
 	 *            the starting hand of the player
@@ -99,8 +100,9 @@ public interface ServletNotificationsInterface extends Remote {
 	 * When a player joins a table, every other players and viewers get
 	 * notified. If joined player is a bot it is added to the table by table
 	 * creator. In this case the table creator is not notified of this event
-	 * because he already knows.
-	 * This notification is not sent when a bot join an already started game.
+	 * because he already knows. This notification is not sent when a bot join
+	 * an already started game.
+	 * 
 	 * @param playerName
 	 *            of the joined player
 	 * @param isBot
@@ -129,12 +131,14 @@ public interface ServletNotificationsInterface extends Remote {
 	 *            position of the player who has left
 	 * @param botName
 	 *            name of the joining bot
+	 * @throws NoSuchPlayerException
 	 */
-	public void notifyPlayerReplaced(String botName, int position) throws RemoteException;
+	public void notifyPlayerReplaced(String botName, int position)
+			throws RemoteException, NoSuchPlayerException;
 
 	/**
-	 * When a player leaves the table BEFORE the game starts, every other players and viewer get
-	 * notified.
+	 * When a player leaves the table BEFORE the game starts, every other
+	 * players and viewer get notified.
 	 * 
 	 * @param playerName
 	 *            the name of the player who left the table

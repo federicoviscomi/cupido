@@ -18,6 +18,7 @@
 package unibo.as.cupido.server;
 
 import java.rmi.AccessException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -49,17 +50,18 @@ import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.MaxNumTableReachedException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchServerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.PlayerNotFoundException;
-import unibo.as.cupido.common.exception.PositionFullException;
+import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.client.CupidoInterface;
@@ -76,21 +78,22 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 /**
  * Before calling other component's, CupidoServlet must check:
  * <ul>
- * <li> if users are authenticated
- * <li> if users are at a table or not
+ * <li>if users are authenticated
+ * <li>if users are at a table or not
  * </ul>
+ * 
  * @author Lorenzo Belli
- *
+ * 
  */
 public class CupidoServlet extends RemoteServiceServlet implements
 		CupidoInterface {
 
 	private static final long serialVersionUID = 1L;
 	/*
-	 * hostname and port of registry, default is 127.0.0.1:1099
-	 * GTMLookupName and GCLookupName are name for registry lookup
-	 * Values of GTMLookupName is defined in GlobalTableManagerInterface
-	 * Values of GCLookupName is defined in GlobalChatInterface
+	 * hostname and port of registry, default is 127.0.0.1:1099 GTMLookupName
+	 * and GCLookupName are name for registry lookup Values of GTMLookupName is
+	 * defined in GlobalTableManagerInterface Values of GCLookupName is defined
+	 * in GlobalChatInterface
 	 */
 	private static final String registryHost = "127.0.0.1";
 	private static final int registryPort = 1099;
@@ -110,7 +113,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	private static final String GTMI = "globalTableManagerInterface";
 	private static final String DBI = "databaseInterface";
 	private static final String SCL = "sessionClosedListener";
-	
+
 	private static final int NUMTOPRANKENTRIES = 10;
 
 	/**
@@ -149,7 +152,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		getServletContext().setAttribute(SCL, new SessionClosedListener() {
 			@Override
 			public void onSessionClosed(HttpSession hSession) {
-				//System.out.println("Servlet: onSessionClosed() was called.");
+				// System.out.println("Servlet: onSessionClosed() was called.");
 				// Notify player left at the table
 				TableInterface ti = (TableInterface) hSession.getAttribute(TI);
 				try {
@@ -159,7 +162,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					System.out
 							.println("Servlet: in SessionClosedListener catched RemoteException ->");
 					e.printStackTrace();
-				} catch (PlayerNotFoundException e) {
+				} catch (NoSuchPlayerException e) {
 					// Ignore
 					return;
 				}
@@ -218,7 +221,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				j.position = position;
 				cometSession.enqueue(j);
 			}
-			
+
 			/**
 			 * Notify NewPlayerJoined at the client.
 			 * 
@@ -311,6 +314,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			@Override
 			public void notifyGameEnded(int[] matchPoints,
 					int[] playersTotalPoint) {
+				// FIXME remove this println
+				System.out.println("SNI notifyGameEnded called");
 				if (httpSession == null || cometSession == null) {
 					System.out.println("SerletNotInterf: session null");
 					return;
@@ -321,11 +326,15 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				cometSession.enqueue(g);
 				httpSession.removeAttribute(TI);
 				try {
-					//FIXME can value true cause problems?
-					UnicastRemoteObject.unexportObject((Remote) httpSession.getAttribute(SNI), true);
-				} catch (RemoteException e) {
-					System.out.println("SNI: on notifyGameEnded() catched RemoteException while unexporting obj ->"+e.getMessage());
-					//e.printStackTrace();
+					// FIXME can value true cause problems?
+					UnicastRemoteObject.unexportObject(
+							(ServletNotificationsInterface) httpSession
+									.getAttribute(SNI), true);
+				} catch (NoSuchObjectException e) {
+					System.out
+							.println("SNI: on notifyGameEnded() catched NoSuchObjectException while unexporting obj ->"
+									+ e.getMessage());
+					// e.printStackTrace();
 				}
 				httpSession.removeAttribute(SNI);
 			}
@@ -400,8 +409,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * Send Message in Local chat.
-	 * TODO: IllegalArgumentExceptions never thrown. TODO: choose legal messages
+	 * Send Message in Local chat. TODO: IllegalArgumentExceptions never thrown.
+	 * TODO: choose legal messages
 	 */
 	@Override
 	public void sendLocalChatMessage(String message)
@@ -503,8 +512,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * Check in the database if the user with name {@link username} is
-	 * already registered.
+	 * Check in the database if the user with name {@link username} is already
+	 * registered.
 	 */
 	@Override
 	public boolean isUserRegistered(String username)
@@ -605,8 +614,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 			ServletNotificationsInterface sni = getServletNotificationsInterface(
 					httpSession, cometSession);
-			UnicastRemoteObject.exportObject(sni);
 			httpSession.setAttribute(SNI, sni);
+			UnicastRemoteObject
+					.exportObject((ServletNotificationsInterface) httpSession
+							.getAttribute(SNI));
 			String username = (String) httpSession.getAttribute(USERNAME);
 			TableInterface ti = gtm.createTable(username, sni);
 			httpSession.setAttribute(TI, ti);
@@ -780,12 +791,15 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new FatalException();
 		} catch (NoSuchTableException e) {
 			throw e;
+		} catch (DuplicateViewerException e) {
+			throw new FatalException();
 		}
 	}
 
 	@Override
 	public void leaveTable() throws UserNotAuthenticatedException,
 			NoSuchTableException, FatalException {
+		System.out.println("Servlet: leaveTable() called");
 		HttpSession httpSession = getThreadLocalRequest().getSession();
 		if (httpSession == null) {
 			return;
@@ -806,15 +820,19 @@ public class CupidoServlet extends RemoteServiceServlet implements
 							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
-		} catch (PlayerNotFoundException e) {
+		} catch (NoSuchPlayerException e) {
 			throw new NoSuchTableException();
 		}
 		httpSession.removeAttribute(TI);
 		try {
-			UnicastRemoteObject.unexportObject((Remote) httpSession.getAttribute(SNI), false);
-		} catch (RemoteException e) {
-			System.out.println("Servlet: on leavetable() catched RemoteException while unexporting obj ->"+e.getMessage());
-			//e.printStackTrace();
+			UnicastRemoteObject.unexportObject(
+					(ServletNotificationsInterface) httpSession
+							.getAttribute(SNI), true);
+		} catch (NoSuchObjectException e) {
+			System.out
+					.println("Servlet: on leavetable() catched NoSuchObjectException while unexporting obj ->"
+							+ e.getMessage());
+			e.printStackTrace();
 		}
 		httpSession.removeAttribute(SNI);
 	}
@@ -849,6 +867,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw e;
 		} catch (IllegalMoveException e) {
 			throw e;
+		} catch (NoSuchPlayerException e) {
+			throw new FatalException();
 		}
 	}
 
@@ -880,11 +900,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
+		} catch (NoSuchPlayerException e) {
+			throw new FatalException();
 		}
 	}
 
 	@Override
-	public String addBot(int position) throws PositionFullException,
+	public String addBot(int position) throws FullPositionException,
 			FullTableException, NotCreatorException, IllegalArgumentException,
 			UserNotAuthenticatedException, FatalException, NoSuchTableException {
 
@@ -898,8 +920,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new NoSuchTableException();
 		}
 		try {
-			return ti.addBot((String) httpSession.getAttribute(USERNAME), position);
-		} catch (PositionFullException e) {
+			return ti.addBot((String) httpSession.getAttribute(USERNAME),
+					position);
+		} catch (FullPositionException e) {
 			throw e;
 		} catch (IllegalArgumentException e) {
 			throw e;
@@ -920,6 +943,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	/**
 	 * Open Comet connection.
+	 * 
 	 * @see CometSession
 	 */
 	@Override
@@ -1039,7 +1063,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Invalidate httpSession.
 	 */

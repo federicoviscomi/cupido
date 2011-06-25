@@ -2,6 +2,4 @@
 
 CLASSPATH="cupidoGWT/war/WEB-INF/classes:cupidoBackendImpl/bin:cupidoCommon/bin:cupidoBackendImpl/jargs.jar"
 
-rmic -d cupidoBackendImpl/bin -classpath "$CLASSPATH" 'unibo.as.cupido.backend.table.playerUI.RemoteBot'
-
-java -classpath "$CLASSPATH" unibo.as.cupido.backend.table.playerUI.PlayerConsoleUI cupidoBackendImpl/test/createTableAndAddThreeBotNoSleep
+java -classpath "$CLASSPATH" unibo.as.cupido.backend.table.playerUI.PlayerConsoleUI cupidoBackendImpl/test/createTableAndAddThreeBotLeave

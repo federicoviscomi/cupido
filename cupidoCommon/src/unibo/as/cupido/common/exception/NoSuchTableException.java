@@ -21,6 +21,14 @@ import java.io.Serializable;
 
 public class NoSuchTableException extends Exception implements Serializable {
 
+	public NoSuchTableException(String string) {
+		super(string);
+	}
+
+	public NoSuchTableException() {
+		//
+	}
+
 	private static final long serialVersionUID = 1L;
 
 }

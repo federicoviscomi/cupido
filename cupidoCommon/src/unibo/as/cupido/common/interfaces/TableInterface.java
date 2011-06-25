@@ -26,13 +26,14 @@ import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.PlayerNotFoundException;
-import unibo.as.cupido.common.exception.PositionFullException;
+import unibo.as.cupido.common.exception.FullPositionException;
 
 /**
  * 
@@ -83,7 +84,7 @@ public interface TableInterface extends Remote {
 	 *            the creator of the table can add a bot
 	 * @param position
 	 *            the absolute position of the bot in the table
-	 * @throws PositionFullException
+	 * @throws FullPositionException
 	 *             if the position is occupied by another player
 	 * @throws RemoteException
 	 * @throws IllegalArgumentException
@@ -102,7 +103,7 @@ public interface TableInterface extends Remote {
 	 *             if game status is ENDED
 	 * @return The name of the bot.
 	 */
-	String addBot(String userName, int position) throws PositionFullException,
+	String addBot(String userName, int position) throws FullPositionException,
 			RemoteException, IllegalArgumentException, FullTableException,
 			NotCreatorException, IllegalStateException;
 
@@ -119,8 +120,8 @@ public interface TableInterface extends Remote {
 	 * @throws NoSuchTableException
 	 *             TODO what's the meaning of this?
 	 * @throws IllegalStateException
-	 *             if game status is not {@link GameStatus}.INIT
-	 *             FIXME: are not this and FullTableException threw in the same case?
+	 *             if game status is not {@link GameStatus}.INIT FIXME: are not
+	 *             this and FullTableException threw in the same case?
 	 * @throws IllegalArgumentException
 	 *             if an argument is null
 	 * @throws DuplicateUserNameException
@@ -146,11 +147,12 @@ public interface TableInterface extends Remote {
 	 * 
 	 * 
 	 * @param userName
-	 * @throws PlayerNotFoundException
+	 * @throws NoSuchPlayerException
 	 *             if player <code>userName</code> is not in the table
+	 * @throws NoSuchPlayerException
 	 */
 	void leaveTable(String userName) throws RemoteException,
-			PlayerNotFoundException;
+			NoSuchPlayerException;
 
 	/**
 	 * The user <code>userName</code> passes cards <code>cards</code> to the
@@ -158,6 +160,7 @@ public interface TableInterface extends Remote {
 	 * {@link Positions} or the next player is chosen by the method {@link
 	 * PasscardsPolicy.getNext(position)}?
 	 * 
+	 * @param userName
 	 * @param cards
 	 *            the cards passed
 	 * @throws IllegalArgumentException
@@ -171,9 +174,11 @@ public interface TableInterface extends Remote {
 	 * @throws IllegalStateException
 	 *             if the card must not be passed in this state of the game
 	 * @throws RemoteException
+	 * @throws NoSuchPlayerException
 	 */
 	void passCards(String userName, Card[] cards)
-			throws IllegalArgumentException, IllegalStateException, RemoteException;
+			throws IllegalArgumentException, IllegalStateException,
+			RemoteException, NoSuchPlayerException;
 
 	/**
 	 * Player <code>platerName</code> plays card <code>card</code>.
@@ -209,9 +214,10 @@ public interface TableInterface extends Remote {
 	 *             <li>if it's not this player turn</li>
 	 *             <li>if this player does not own the card</li>
 	 *             </ul>
+	 * @throws NoSuchPlayerException
 	 */
 	void playCard(String userName, Card card) throws IllegalMoveException,
-			RemoteException, IllegalArgumentException;
+			RemoteException, IllegalArgumentException, NoSuchPlayerException;
 
 	/**
 	 * Sends a message to the table chat
@@ -234,7 +240,7 @@ public interface TableInterface extends Remote {
 	 * @throws NoSuchTableException
 	 */
 	public ObservedGameStatus viewTable(String userName,
-			ServletNotificationsInterface snf) throws NoSuchTableException,
+			ServletNotificationsInterface snf) throws DuplicateViewerException,
 			RemoteException;
 
 }

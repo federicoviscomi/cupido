@@ -24,7 +24,7 @@ import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.PositionFullException;
+import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
@@ -205,7 +205,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 					public void onFailure(Throwable caught) {
 						try {
 							throw caught;
-						} catch (PositionFullException e) {
+						} catch (FullPositionException e) {
 							// The position has been occupied in the meantime,
 							// nothing to do.
 						} catch (FullTableException e) {

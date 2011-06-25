@@ -1,0 +1,24 @@
+login gatto miao
+join
+sleep 1000
+pass -a
+sleep 1000
+play -a
+sleep 1000
+play -a
+sleep 1000
+play -a
+sleep 1000
+play -a
+sleep 1000
+play -a
+sleep 1000
+play -a
+sleep 1000
+play -a
+sleep 1000
+play -a
+sleep 1000
+leave
+sleep 1000
+exit

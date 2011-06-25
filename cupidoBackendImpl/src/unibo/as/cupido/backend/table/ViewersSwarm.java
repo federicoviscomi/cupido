@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import unibo.as.cupido.common.exception.DuplicateViewerException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
+import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
@@ -36,8 +39,16 @@ public class ViewersSwarm {
 		snfs = new HashMap<String, ServletNotificationsInterface>(4);
 	}
 
-	public void addViewer(String viewerName, ServletNotificationsInterface snf) {
-		snfs.put(viewerName, snf);
+	public void addViewer(String viewerName, ServletNotificationsInterface snf)
+			throws DuplicateViewerException {
+		if (viewerName == null || snf == null)
+			throw new IllegalArgumentException();
+		if (snfs.put(viewerName, snf) != null)
+			throw new DuplicateViewerException();
+	}
+
+	public boolean isAViewer(String userName) {
+		return snfs.containsKey(userName);
 	}
 
 	public void notifyBotJoined(String botName, int position) {
@@ -63,6 +74,10 @@ public class ViewersSwarm {
 			}
 		}
 		snfs = null;
+	}
+
+	public void notifyGameEndedPrematurely() {
+		this.notifyGameEnded(null, null);
 	}
 
 	public void notifyNewLocalChatMessage(ChatMessage message) {
@@ -113,6 +128,19 @@ public class ViewersSwarm {
 		}
 	}
 
+	public void notifyPlayerReplaced(String botName, int position)
+			throws NoSuchPlayerException {
+		for (ServletNotificationsInterface snf : snfs.values()) {
+			try {
+				snf.notifyPlayerReplaced(botName, position);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(-1);
+			}
+		}
+	}
+
 	public void notifyViewerJoined(String userName) {
 		for (ServletNotificationsInterface snf : snfs.values()) {
 			try {
@@ -125,30 +153,11 @@ public class ViewersSwarm {
 		}
 	}
 
-	private void print() {
-		for (Entry<String, ServletNotificationsInterface> e : snfs.entrySet()) {
-			System.out.print("\n\t[" + e.getKey() + ", " + e.getValue() + "]");
-		}
-	}
-
-	public void removeViewer(String viewerName) {
-		snfs.remove(viewerName);
-	}
-
-	public boolean isAViewer(String userName) {
-		return snfs.containsKey(userName);
-	}
-
-	public void notifyPlayerReplaced(String botName, int position) {
-		for (ServletNotificationsInterface snf : snfs.values()) {
-			try {
-				snf.notifyPlayerReplaced(botName, position);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
-			}
-		}
+	public void removeViewer(String viewerName) throws NoSuchViewerException {
+		if (viewerName == null)
+			throw new IllegalArgumentException();
+		if (snfs.remove(viewerName) == null)
+			throw new NoSuchViewerException();
 	}
 
 }

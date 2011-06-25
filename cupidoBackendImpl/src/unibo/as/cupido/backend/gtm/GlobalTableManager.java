@@ -26,7 +26,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import unibo.as.cupido.backend.GlobalChatImpl;
@@ -140,9 +139,9 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 			/* store created table */
 			allTables.addTable(table.second, chosenLTM);
-			
+
 			// FIXME does not check for duplicate creator!
-			
+
 			return table.first;
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -158,7 +157,11 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	@Override
 	public LocalTableManagerInterface getLTMInterface(String ltmId)
 			throws RemoteException, NoSuchLTMException {
-		return allTables.getLTMInterface(ltmId);
+		LocalTableManagerInterface ltmInterface = allTables
+				.getLTMInterface(ltmId);
+		if (ltmInterface == null)
+			throw new NoSuchLTMException(ltmId);
+		return ltmInterface;
 	}
 
 	@Override
@@ -183,7 +186,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	@Override
 	public void notifyTableDestruction(TableDescriptor tableDescriptor,
 			LocalTableManagerInterface ltm) throws RemoteException,
-			NoSuchLTMInterfaceException {
+			NoSuchLTMInterfaceException, NoSuchTableException {
 		System.out.println("gtm. destroying table " + tableDescriptor);
 		allTables.removeTable(tableDescriptor);
 		ltmSwarm.decreaseTableCount(ltm);
@@ -194,6 +197,13 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			throws RemoteException, NoSuchTableException, FullTableException {
 		System.out.println("gtm. a player joined " + tableDescriptor);
 		allTables.decreaseFreePosition(tableDescriptor);
+	}
+
+	@Override
+	public void notifyTableLeft(TableDescriptor tableDescriptor)
+			throws RemoteException, NoSuchTableException, EmptyTableException {
+		System.out.println("gtm. a player left " + tableDescriptor);
+		allTables.increaseFreePosition(tableDescriptor);
 	}
 
 	public void shutDown() {
@@ -212,12 +222,5 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void notifyTableLeft(TableDescriptor tableDescriptor)
-			throws RemoteException, NoSuchTableException, EmptyTableException {
-		System.out.println("gtm. a player left " + tableDescriptor);
-		allTables.increaseFreePosition(tableDescriptor);
 	}
 }

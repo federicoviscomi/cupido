@@ -23,6 +23,7 @@ import jargs.gnu.CmdLineParser.UnknownOptionException;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,16 +33,24 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
-import unibo.as.cupido.common.exception.PlayerNotFoundException;
+import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.DuplicateViewerException;
+import unibo.as.cupido.common.exception.FullPositionException;
+import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.NoSuchLTMException;
+import unibo.as.cupido.common.exception.NoSuchPlayerException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.NoSuchUserException;
+import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
-import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
@@ -67,7 +76,7 @@ public class PlayerConsoleUI {
 			+ String.format(FORMAT, "play suit value", "", "",
 					"play specified card")
 			+ String.format(FORMAT, "addbot POSITION", "", "",
-					"add a bot in specified absolute position")
+					"add a inactiveReplacementBot in specified absolute position")
 			+ String.format(FORMAT, "join", "", "", "join an arbitrary table")
 			+ String.format(FORMAT, "help", "", "", "print this help")
 			+ String.format(FORMAT, "leave", "", "", "leave the table(if any)")
@@ -81,7 +90,7 @@ public class PlayerConsoleUI {
 			"login", "pass", "play", "addbot", "help", "exit", "sleep",
 			"leave", "view" };
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
 			new PlayerConsoleUI().execute();
 		} else if (args.length == 1) {
@@ -92,38 +101,46 @@ public class PlayerConsoleUI {
 	}
 
 	private LocalTableManager localTableManager = null;
-	private final GlobalTableManagerInterface gtm;
+	private GlobalTableManagerInterface gtm;
 	private String playerName;
 	private final BufferedReader in;
 	private final PrintWriter out;
 	private boolean logged = false;
 	private Bot botNotification;
 	private RemoteBot remoteBot;
+	private RemoteViewerUI remoteViewer;
 
 	private boolean createdATable = false;
 	private boolean joinedATable = false;
 	private boolean viewedATable = false;
 
-	public PlayerConsoleUI() throws Exception {
+	public PlayerConsoleUI() {
 		this(new BufferedReader(new InputStreamReader(System.in)),
 				new PrintWriter(System.out));
 	}
 
-	public PlayerConsoleUI(BufferedReader in, PrintWriter out)
-			throws AccessException, RemoteException, NotBoundException {
+	public PlayerConsoleUI(BufferedReader in, PrintWriter out) {
 		this.in = in;
 		this.out = out;
-		gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
-				.lookup(GlobalTableManagerInterface.globalTableManagerName);
+		try {
+			gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
+					.lookup(GlobalTableManagerInterface.globalTableManagerName);
+		} catch (AccessException e) {
+			out.println("cannot connect to gtm");
+		} catch (RemoteException e) {
+			out.println("cannot connect to gtm");
+		} catch (NotBoundException e) {
+			out.println("cannot connect to gtm");
+		}
 	}
 
-	public PlayerConsoleUI(String inputFileName) throws Exception {
+	public PlayerConsoleUI(String inputFileName) throws FileNotFoundException {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				inputFileName))), new PrintWriter(System.out));
 	}
 
 	public PlayerConsoleUI(String inputFileName, String outputFileName)
-			throws Exception {
+			throws FileNotFoundException {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				inputFileName))), new PrintWriter(new FileOutputStream(
 				outputFileName)));
@@ -202,46 +219,72 @@ public class PlayerConsoleUI {
 				out.flush();
 				try {
 					Thread.sleep(Integer.parseInt(command[1]));
-				} catch (Exception e) {
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else if (logged) {
 				if (command[0].equals("view")) {
 					try {
-						TableInfoForClient next = gtm.getTableList().iterator()
-								.next();
-						remoteBot.observedGameStatus = gtm
-								.getLTMInterface(next.tableDescriptor.ltmId)
-								.getTable(next.tableDescriptor.id)
-								.viewTable(playerName, remoteBot);
-						out.println("viewing table "
-								+ remoteBot.observedGameStatus
-								+ "\n press a key to exit");
+						// TODO really check the database
+
+						TableInfoForClient tableInfo = gtm.getTableList()
+								.iterator().next();
+						LocalTableManagerInterface ltmInterface = gtm
+								.getLTMInterface(tableInfo.tableDescriptor.ltmId);
+
+						remoteViewer = new RemoteViewerUI(playerName,
+								ltmInterface, tableInfo);
+
+						out.flush();
+						Thread.sleep(200);
 						System.in.read();
-						remoteBot.singleTableManager.leaveTable(playerName);
 					} catch (NoSuchElementException e) {
 						out.println("there is no table to view");
 						out.flush();
-					} catch (Exception e) {
+					} catch (NoSuchLTMException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchTableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (DuplicateViewerException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				} else if (command[0].equals("leave")) {
 					try {
-						if (remoteBot.singleTableManager != null) {
+						if (remoteBot != null) {
 							remoteBot.singleTableManager.leaveTable(playerName);
 							out.println("table " + remoteBot.singleTableManager
 									+ " left");
+						} else if (remoteViewer != null) {
+							remoteViewer.singleTableManager
+									.leaveTable(playerName);
+							out.println("table "
+									+ remoteViewer.singleTableManager + " left");
 						} else {
 							out.println("there is no table to leave!");
 						}
-					} catch (PlayerNotFoundException e) {
+					} catch (NoSuchPlayerException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				} else if (command[0].equals("join")) {
 					try {
+						// TODO really check the database
+						remoteBot = new RemoteBot(new InitialTableStatus(
+								new String[3], new int[3], new boolean[3]),
+								null, playerName);
+						botNotification = (Bot) UnicastRemoteObject
+								.exportObject(remoteBot);
+
 						TableInfoForClient tableInfo = gtm.getTableList()
 								.iterator().next();
 						remoteBot.singleTableManager = gtm.getLTMInterface(
@@ -250,7 +293,30 @@ public class PlayerConsoleUI {
 						remoteBot.initialTableStatus = remoteBot.singleTableManager
 								.joinTable(playerName, remoteBot);
 						out.println("successfully joined " + tableInfo);
-					} catch (Exception e) {
+					} catch (NoSuchElementException e) {
+						out.println("no table to join!");
+					} catch (NoSuchTableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchLTMException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalStateException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (FullTableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (DuplicateUserNameException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchUserException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -281,6 +347,13 @@ public class PlayerConsoleUI {
 					out.println("\n already logged in " + playerName);
 				} else if (command[0].equals("create")) {
 					try {
+						// TODO really check the database
+						remoteBot = new RemoteBot(new InitialTableStatus(
+								new String[3], new int[3], new boolean[3]),
+								null, playerName);
+						botNotification = (Bot) UnicastRemoteObject
+								.exportObject(remoteBot);
+
 						remoteBot.singleTableManager = gtm.createTable(
 								playerName, botNotification);
 						out.println("successfully created table "
@@ -324,7 +397,7 @@ public class PlayerConsoleUI {
 				} else if (command[0].equals("addbot")) {
 					try {
 						if (command.length < 2) {
-							out.println("missin bot position");
+							out.println("missin inactiveReplacementBot position");
 							out.flush();
 						} else {
 							int position = Integer.parseInt(command[1]);
@@ -333,7 +406,19 @@ public class PlayerConsoleUI {
 							position--;
 							remoteBot.addBot(position);
 						}
-					} catch (Exception e) {
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalStateException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (FullPositionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (FullTableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NotCreatorException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -346,16 +431,24 @@ public class PlayerConsoleUI {
 						out.println("missing user name");
 						out.flush();
 					} else {
-						logged = true;
 						playerName = command[1];
-						// TODO really check the database
-						remoteBot = new RemoteBot(new InitialTableStatus(
-								new String[3], new int[3], new boolean[3]),
-								null, playerName);
-						botNotification = (Bot) UnicastRemoteObject
-								.exportObject(remoteBot);
-						out.println("successfully logged in " + playerName);
-						out.flush();
+						if (gtm == null) {
+							try {
+								gtm = (GlobalTableManagerInterface) LocateRegistry
+										.getRegistry()
+										.lookup(GlobalTableManagerInterface.globalTableManagerName);
+							} catch (AccessException e) {
+								out.println("cannot connect to gtm");
+							} catch (RemoteException e) {
+								out.println("cannot connect to gtm");
+							} catch (NotBoundException e) {
+								out.println("cannot connect to gtm");
+							}
+						}
+						if (gtm != null) {
+							logged = true;
+							out.println("successfully logged in " + playerName);
+						}
 					}
 				} else {
 					out.println("log first!");
@@ -370,8 +463,9 @@ public class PlayerConsoleUI {
 	private void exit(int exitStatus) {
 		try {
 			in.close();
-		} catch (Exception e) {
-			//
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		out.close();
 		System.exit(exitStatus);

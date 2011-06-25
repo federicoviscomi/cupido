@@ -31,7 +31,7 @@ import unibo.as.cupido.common.exception.MaxNumTableReachedException;
 import unibo.as.cupido.common.exception.NoSuchServerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.PositionFullException;
+import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
@@ -98,6 +98,8 @@ public interface CupidoInterface extends RemoteService {
 	 *             if a table can't be created now (you can try again later)
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
+	 *             in case of errors, or if you are already viewing or playing
+	 *             at a table
 	 */
 	public InitialTableStatus createTable() throws MaxNumTableReachedException,
 			UserNotAuthenticatedException, FatalException;
@@ -137,6 +139,8 @@ public interface CupidoInterface extends RemoteService {
 	 *             if server is invalid
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
+	 *             in case of errors, or if you are already viewing or playing
+	 *             at a table
 	 */
 	public ObservedGameStatus viewTable(String server, int tableId)
 			throws NoSuchTableException, NoSuchServerException,
@@ -207,7 +211,7 @@ public interface CupidoInterface extends RemoteService {
 	 * 
 	 * @param position
 	 *            valid range is [1-3]
-	 * @throws PositionFullException
+	 * @throws FullPositionException
 	 *             if at the table in position (position) there is a human
 	 *             player
 	 * @throws FullTableException
@@ -222,7 +226,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws FatalException
 	 * @return The name of the bot.
 	 */
-	public String addBot(int position) throws PositionFullException,
+	public String addBot(int position) throws FullPositionException,
 			FullTableException, NotCreatorException, IllegalArgumentException,
 			NoSuchTableException, UserNotAuthenticatedException, FatalException;
 

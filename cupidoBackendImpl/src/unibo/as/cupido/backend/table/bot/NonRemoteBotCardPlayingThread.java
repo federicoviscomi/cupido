@@ -27,8 +27,6 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 
 	public NonRemoteBotCardPlayingThread(NonRemoteBot bot, String botName) {
 		super("NonRemoteBotCardPlayingThread " + botName);
-		ableToPlay = ableToPass;
-		ableToPass = ableToPlay;
 		this.bot = bot;
 	}
 
@@ -50,9 +48,8 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 					bot.playNextCard();
 				}
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (InterruptedException e) {
+			//
 		}
 	}
 
