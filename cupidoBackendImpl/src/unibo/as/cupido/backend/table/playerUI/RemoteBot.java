@@ -145,7 +145,7 @@ public class RemoteBot implements Bot, Serializable {
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
-
+		out.close();
 	}
 
 	@Override
@@ -272,7 +272,7 @@ public class RemoteBot implements Bot, Serializable {
 	}
 
 	@Override
-	public void playNextCard() throws GameEndedException{
+	public void playNextCard() throws GameEndedException {
 		try {
 			synchronized (lock) {
 				if (turn == 13) {
@@ -288,7 +288,7 @@ public class RemoteBot implements Bot, Serializable {
 
 				/** play chosen card */
 				singleTableManager.playCard(userName, cardToPlay);
-				
+
 				/** update status */
 				setCardPlayed(cardToPlay, 3);
 			}

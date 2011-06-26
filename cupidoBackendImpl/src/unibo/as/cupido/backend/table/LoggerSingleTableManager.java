@@ -20,11 +20,11 @@ import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 
-public final class FakeSingleTableManager implements TableInterface {
+public final class LoggerSingleTableManager implements TableInterface {
 
-	public static final TableInterface defaultInstance = new FakeSingleTableManager();
+	public static final TableInterface defaultInstance = new LoggerSingleTableManager();
 
-	private FakeSingleTableManager() {
+	private LoggerSingleTableManager() {
 		//
 	}
 
@@ -58,8 +58,8 @@ public final class FakeSingleTableManager implements TableInterface {
 	public void passCards(String userName, Card[] cards)
 			throws IllegalArgumentException, IllegalStateException,
 			RemoteException {
-		System.err.println("fake stm: passCards(" + userName + ", " + Arrays.toString(cards)
-				+ ")");
+		System.err.println("fake stm: passCards(" + userName + ", "
+				+ Arrays.toString(cards) + ")");
 	}
 
 	@Override

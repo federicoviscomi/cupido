@@ -182,7 +182,7 @@ public class SingleTableManager implements TableInterface {
 				e.printStackTrace();
 			}
 		} else if (table.owner.equals(userName)) {
-			System.out.println("owner " + userName
+			System.out.println("creator  " + userName
 					+ " left. Destroing table...");
 			playersManager.notifyGameEndedPrematurely();
 			viewers.notifyGameEndedPrematurely();

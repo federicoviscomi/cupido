@@ -17,17 +17,28 @@
 
 package unibo.as.cupido.backend.table.bot;
 
-public class NonRemoteBotCardPlayingThread extends Thread {
+public class NonRemoteBotController extends Thread {
 
-	private final NonRemoteBot bot;
-	boolean ableToPass = false;
-	boolean ableToPlay = false;
+	NonRemoteBot bot;
+	private boolean ableToPass = false;
+	private boolean ableToPlay = false;
+	Object lock = new Object();
+	private boolean gameEnded = false;
 
-	private Object lock = new Object();
-
-	public NonRemoteBotCardPlayingThread(NonRemoteBot bot, String botName) {
-		super("NonRemoteBotCardPlayingThread " + botName);
+	public NonRemoteBotController(NonRemoteBot bot, String botName) {
+		super("NonRemoteBotController " + botName);
+		if (bot == null || botName == null) {
+			throw new IllegalArgumentException();
+		}
 		this.bot = bot;
+	}
+
+	public NonRemoteBotController(String botName) {
+		super("NonRemoteBotController " + botName);
+		if (botName == null) {
+			throw new IllegalArgumentException();
+		}
+		this.bot = null;
 	}
 
 	@Override
@@ -37,15 +48,25 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 				while (!ableToPass) {
 					lock.wait();
 				}
-				bot.passCards();
+				if (gameEnded) {
+					return;
+				}
+				if (bot != null) {
+					bot.passCards();
+				}
 			}
 			for (int i = 0; i < 13; i++) {
 				synchronized (lock) {
 					while (!ableToPlay) {
 						lock.wait();
 					}
+					if (gameEnded) {
+						return;
+					}
 					ableToPlay = false;
-					bot.playNextCard();
+					if (bot != null) {
+						bot.playNextCard();
+					}
 				}
 			}
 		} catch (InterruptedException e) {
@@ -65,6 +86,13 @@ public class NonRemoteBotCardPlayingThread extends Thread {
 	public void setAbleToPlay() {
 		synchronized (lock) {
 			ableToPlay = true;
+			lock.notify();
+		}
+	}
+
+	public void setGameEnded() {
+		synchronized (lock) {
+			gameEnded = true;
 			lock.notify();
 		}
 	}

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import unibo.as.cupido.backend.table.CardsManager;
+import unibo.as.cupido.backend.table.LoggerSingleTableManager;
 import unibo.as.cupido.backend.table.NonRemoteBotInterface;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
@@ -44,7 +45,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
-	private final NonRemoteBotCardPlayingThread cardPlayingThread;
+	private final NonRemoteBotController cardPlayingThread;
 	private int turn = 0;
 	private int playedCardCount = 0;
 	private int firstDealer = -1;
@@ -53,14 +54,19 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	private int points = 0;
 
+	/**
+	 * Create a non active bot.
+	 * 
+	 * @param botName
+	 * @param initialTableStatus
+	 */
 	public NonRemoteBot(final String botName,
-			InitialTableStatus initialTableStatus, TableInterface tableInterface) {
+			InitialTableStatus initialTableStatus) {
 
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
-		this.tableInterface = tableInterface;
-		this.cardPlayingThread = new NonRemoteBotCardPlayingThread(this,
-				botName);
+		this.tableInterface = LoggerSingleTableManager.defaultInstance;
+		this.cardPlayingThread = new NonRemoteBotController(botName);
 
 		try {
 			File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
@@ -68,15 +74,35 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			outputFile.delete();
 			outputFile.createNewFile();
 			out = new PrintWriter(new FileWriter(outputFile));
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				@Override
-				public void run() {
-					System.err
-							.println("shuting down non remote replacementBot "
-									+ botName);
-					out.close();
-				}
-			});
+		} catch (IOException e) {
+			// not a real error
+			e.printStackTrace();
+			out = new PrintWriter(System.out);
+		}
+		cardPlayingThread.start();
+	}
+
+	/**
+	 * Create an active bot
+	 * 
+	 * @param botName
+	 * @param initialTableStatus
+	 * @param tableInterface
+	 */
+	public NonRemoteBot(final String botName,
+			InitialTableStatus initialTableStatus, TableInterface tableInterface) {
+
+		this.botName = botName;
+		this.initialTableStatus = initialTableStatus;
+		this.tableInterface = tableInterface;
+		this.cardPlayingThread = new NonRemoteBotController(this, botName);
+
+		try {
+			File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
+					+ botName);
+			outputFile.delete();
+			outputFile.createNewFile();
+			out = new PrintWriter(new FileWriter(outputFile));
 		} catch (IOException e) {
 			// not a real error
 			e.printStackTrace();
@@ -87,6 +113,9 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	public void activate(TableInterface tableInterface) {
 		this.tableInterface = tableInterface;
+		synchronized (cardPlayingThread.lock) {
+			this.cardPlayingThread.bot = this;
+		}
 	}
 
 	private ArrayList<Card> chooseValidCards() {
@@ -130,7 +159,8 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		out.println("\n" + botName + ": notifyGameEnded("
 				+ Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
-		cardPlayingThread.interrupt();
+		out.close();
+		cardPlayingThread.setGameEnded();
 	}
 
 	@Override

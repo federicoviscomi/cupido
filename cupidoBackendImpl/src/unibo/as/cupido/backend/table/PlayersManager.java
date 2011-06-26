@@ -124,14 +124,12 @@ public class PlayersManager {
 		public String toString() {
 			if (isBot) {
 				if (replaced) {
-					return "[name=" + name
-							+ ", is inactiveReplacementBot replacer]";
+					return "[name=" + name + ", bot replacer]";
 				} else {
-					return "[name=" + name + ", is a inactiveReplacementBot]";
+					return "[name=" + name + ", bot]";
 				}
 			} else {
-				return "[name=" + name + ", score=" + score
-						+ ", is not a inactiveReplacementBot]";
+				return "[name=" + name + ", score=" + score + ", human player]";
 			}
 		}
 	}
@@ -202,8 +200,7 @@ public class PlayersManager {
 		}
 
 		NonRemoteBot replacementBot = new NonRemoteBot(playerName,
-				this.getInitialTableStatus(position),
-				FakeSingleTableManager.defaultInstance);
+				this.getInitialTableStatus(position));
 
 		players[position] = new PlayerInfo(playerName, score, sni,
 				replacementBot);
@@ -307,9 +304,13 @@ public class PlayersManager {
 		for (int i = 1; i < 4; i++) {
 			if (players[i] != null) {
 				try {
+					System.out.println("game ended prematurely notifying "
+							+ players[i]);
 					players[i].playerNotificationInterface.notifyGameEnded(
 							null, null);
 					if (!players[i].isBot) {
+						System.out.println("game ended prematurely notifying "
+								+ players[i]);
 						players[i].inactiveReplacementBot.notifyGameEnded(null,
 								null);
 					}
@@ -464,6 +465,10 @@ public class PlayersManager {
 
 	public int playersCount() {
 		return playersCount;
+	}
+
+	public void print() {
+		System.out.println(Arrays.toString(players));
 	}
 
 	public void removePlayer(String playerName) throws NoSuchPlayerException {
