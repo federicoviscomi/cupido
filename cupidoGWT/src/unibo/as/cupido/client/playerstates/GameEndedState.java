@@ -36,8 +36,6 @@ public class GameEndedState implements PlayerState {
 
 	private boolean frozen = false;
 
-	private CupidoInterfaceAsync cupidoService;
-
 	private PlayerStateManager stateManager;
 
 	private CardsGameWidget cardsGameWidget;
@@ -50,8 +48,6 @@ public class GameEndedState implements PlayerState {
 
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
-		this.cupidoService = cupidoService;
-
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);

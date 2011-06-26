@@ -50,8 +50,6 @@ public class CardPassingWaitingState implements PlayerState {
 
 	private boolean frozen = false;
 
-	private CupidoInterfaceAsync cupidoService;
-
 	private boolean eventReceived = false;
 
 	private HTML text;
@@ -63,8 +61,6 @@ public class CardPassingWaitingState implements PlayerState {
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.hand = hand;
-		this.cupidoService = cupidoService;
-
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);

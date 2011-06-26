@@ -40,7 +40,6 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 	private ObservedGameStatus observedGameStatus;
 	private boolean frozen = false;
-	private CupidoInterfaceAsync cupidoService;
 	private LocalChatWidget chatWidget;
 
 	/**
@@ -58,8 +57,6 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		this.screenManager = screenManager;
 		this.observedGameStatus = observedGameStatus;
 		this.chatWidget = chatWidget;
-		this.cupidoService = cupidoService;
-
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 

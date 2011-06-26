@@ -43,8 +43,7 @@ public class EndOfTrickState implements PlayerState {
 	private List<Card> hand;
 
 	private boolean frozen = false;
-	private CupidoInterfaceAsync cupidoService;
-
+	
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand,
 			final CupidoInterfaceAsync cupidoService) {
@@ -52,8 +51,6 @@ public class EndOfTrickState implements PlayerState {
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.hand = hand;
-		this.cupidoService = cupidoService;
-
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);

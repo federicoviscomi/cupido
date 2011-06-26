@@ -57,7 +57,6 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 	// This is null when the user is not logged in.
 	private String username;
-	private final ScreenManager screenManager;
 	private Timer chatTimer;
 
 	private boolean stoppedRefreshing = false;
@@ -81,7 +80,6 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	public MainMenuScreen(final ScreenManager screenManager,
 			final String username, final CupidoInterfaceAsync cupidoService) {
 
-		this.screenManager = screenManager;
 		this.username = username;
 
 		setHeight(Cupido.height + "px");
