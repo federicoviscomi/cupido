@@ -274,13 +274,12 @@ public class SingleTableManager implements TableInterface {
 	private void replacePlayer(String playerName) throws NoSuchPlayerException {
 		try {
 			int position = playersManager.getPlayerPosition(playerName);
-			String botName = SingleTableManager.botNames[position];
 			playersManager.replacePlayer(
 					playerName,
 					position,
 					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
 							table.tableDescriptor.id));
-			playersManager.notifyPlayerReplaced(playerName, botName, position);
+			playersManager.notifyPlayerReplaced(playerName, position);
 			viewers.notifyPlayerReplaced(playerName, position);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block

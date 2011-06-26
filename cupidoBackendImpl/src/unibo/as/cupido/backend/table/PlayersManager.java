@@ -255,7 +255,8 @@ public class PlayersManager {
 			if (players[i] != null && players[i].name.equals(playerName))
 				return i;
 		}
-		throw new NoSuchPlayerException("\"" + playerName + "\"\n" + Arrays.toString(players));
+		throw new NoSuchPlayerException("\"" + playerName + "\"\n"
+				+ Arrays.toString(players));
 	}
 
 	public void notifyBotJoined(String botName, int position) {
@@ -440,8 +441,8 @@ public class PlayersManager {
 		}
 	}
 
-	public void notifyPlayerReplaced(String playerLeftName, String botName,
-			int position) throws FullPositionException, EmptyPositionException,
+	public void notifyPlayerReplaced(String playerLeftName, int position)
+			throws FullPositionException, EmptyPositionException,
 			NoSuchPlayerException {
 		for (int i = 0; i < 4; i++) {
 			if (i != position) {
@@ -450,11 +451,12 @@ public class PlayersManager {
 				}
 				try {
 					players[i].playerNotificationInterface
-							.notifyPlayerReplaced(botName,
+							.notifyPlayerReplaced(playerLeftName,
 									toRelativePosition(position, i));
 					if (!players[i].isBot) {
-						players[i].inactiveReplacementBot.notifyPlayerReplaced(
-								botName, toRelativePosition(position, i));
+						players[i].inactiveReplacementBot
+								.notifyPlayerReplaced(playerLeftName,
+										toRelativePosition(position, i));
 					}
 				} catch (RemoteException e) {
 					//

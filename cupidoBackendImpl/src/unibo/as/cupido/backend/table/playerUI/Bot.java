@@ -30,6 +30,6 @@ public interface Bot extends ServletNotificationsInterface, Remote {
 
 	void passCards() throws RemoteException;
 
-	void playNextCard() throws RemoteException;
+	void playNextCard() throws RemoteException, GameEndedException;
 
 }
