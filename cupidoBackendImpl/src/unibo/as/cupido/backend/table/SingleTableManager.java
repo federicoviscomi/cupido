@@ -65,7 +65,6 @@ public class SingleTableManager implements TableInterface {
 	private final EndNotifierThread endNotifierThread;
 	private boolean gameStarted = false;
 	private String owner;
-	private boolean[] passCardsNotificationSent = new boolean[4];
 	private TableInterface tableInterface;
 
 	public static final String[] botNames = { "", "cupido", "venere", "marte" };
@@ -248,6 +247,10 @@ public class SingleTableManager implements TableInterface {
 	public synchronized void passCards(String userName, Card[] cards)
 			throws IllegalArgumentException, RemoteException,
 			NoSuchPlayerException {
+
+		System.out.println("\n passCards(" + userName + ", "
+				+ Arrays.toString(cards) + ")");
+
 		/*
 		 * NOTE: userName is name of the player who passes cards. Not name of
 		 * the player who receives the cards!
@@ -255,17 +258,11 @@ public class SingleTableManager implements TableInterface {
 		if (userName == null || cards == null || cards.length != 3)
 			throw new IllegalArgumentException(userName + " "
 					+ Arrays.toString(cards));
-		System.out.println(">>> 1");
+
 		int position = playersManager.getPlayerPosition(userName);
-		System.out.println(">>> 2");
 		cardsManager.setCardPassing(position, cards);
-		System.out.println(">>> 3");
-		int receiver = (position + 1) % 4;
-		passCardsNotificationSent[receiver] = true;
 		playersManager.replacementBotPassCards(position, cards);
-		System.out.println(">>> 4");
-		playersManager.notifyPassedCards(receiver, cards);
-		System.out.println(">>> 5");
+		playersManager.notifyPassedCards((position + 5) % 4, cards);
 	}
 
 	@Override
