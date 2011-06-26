@@ -38,7 +38,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 
 	private boolean frozen = false;
 
-	public ObservedTableScreen(ScreenManager screenManager, String username,
+	public ObservedTableScreen(final ScreenManager screenManager, String username,
 			ObservedGameStatus observedGameStatus,
 			final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
@@ -94,8 +94,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 							.println("Client: notice: the onCardPassed() event was received while frozen, ignoring it.");
 					return;
 				}
-				System.out
-						.println("Client: ObservedTableScreen: warning: received a CardPassed notification while observing a table, it was ingored.");
+				screenManager.displayGeneralErrorScreen(new Exception("A CardPassed notification was received while observing a table."));
 			}
 
 			@Override
@@ -147,8 +146,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 							.println("Client: notice: the onGameStarted() event was received while frozen, ignoring it.");
 					return;
 				}
-				System.out
-						.println("Client: ObservedTableScreen: warning: received a GameStarted notification while observing a table, it was ingored.");
+				screenManager.displayGeneralErrorScreen(new Exception("A GameStarted notification was received while observing a table."));
 			}
 
 			@Override
