@@ -25,13 +25,13 @@ import java.util.Collection;
 
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FatalException;
+import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.MaxNumTableReachedException;
 import unibo.as.cupido.common.exception.NoSuchServerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;

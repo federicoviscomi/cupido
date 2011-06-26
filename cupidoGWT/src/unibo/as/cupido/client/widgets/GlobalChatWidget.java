@@ -19,7 +19,6 @@ package unibo.as.cupido.client.widgets;
 
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.screens.MainMenuScreen;
-import unibo.as.cupido.client.screens.TableScreen;
 import unibo.as.cupido.common.structures.ChatMessage;
 
 import com.google.gwt.event.dom.client.ClickEvent;

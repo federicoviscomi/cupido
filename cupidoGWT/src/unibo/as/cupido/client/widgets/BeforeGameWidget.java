@@ -22,10 +22,10 @@ import java.util.List;
 
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.common.exception.FatalException;
+import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
