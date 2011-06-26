@@ -19,7 +19,7 @@ package unibo.as.cupido.client.viewerstates;
 
 import java.util.List;
 
-import unibo.as.cupido.client.CardsGameWidget;
+import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.common.structures.Card;
 
 public interface ViewerStateManager {

@@ -15,11 +15,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchTableException;

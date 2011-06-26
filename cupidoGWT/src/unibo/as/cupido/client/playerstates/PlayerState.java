@@ -17,7 +17,7 @@
 
 package unibo.as.cupido.client.playerstates;
 
-import unibo.as.cupido.client.CardsGameWidget.CardRole;
+import unibo.as.cupido.client.widgets.CardsGameWidget.CardRole;
 import unibo.as.cupido.common.structures.Card;
 
 public interface PlayerState {

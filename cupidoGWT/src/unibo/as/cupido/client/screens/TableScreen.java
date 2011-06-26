@@ -19,8 +19,8 @@ package unibo.as.cupido.client.screens;
 
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
-import unibo.as.cupido.client.HeartsTableWidget;
-import unibo.as.cupido.client.LocalChatWidget;
+import unibo.as.cupido.client.widgets.HeartsTableWidget;
+import unibo.as.cupido.client.widgets.LocalChatWidget;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 

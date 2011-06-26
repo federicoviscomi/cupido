@@ -23,8 +23,8 @@ import java.util.List;
 
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
-import unibo.as.cupido.client.GlobalChatWidget;
-import unibo.as.cupido.client.GlobalChatWidget.ChatListener;
+import unibo.as.cupido.client.widgets.GlobalChatWidget;
+import unibo.as.cupido.client.widgets.GlobalChatWidget.ChatListener;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.MaxNumTableReachedException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;

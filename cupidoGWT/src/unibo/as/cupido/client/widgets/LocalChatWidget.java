@@ -15,8 +15,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.widgets;
 
+import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.screens.TableScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;

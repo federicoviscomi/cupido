@@ -15,8 +15,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.widgets;
 
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManagerImpl;

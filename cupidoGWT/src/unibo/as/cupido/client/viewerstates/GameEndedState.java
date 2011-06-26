@@ -17,7 +17,7 @@
 
 package unibo.as.cupido.client.viewerstates;
 
-import unibo.as.cupido.client.CardsGameWidget;
+import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.event.dom.client.ClickEvent;

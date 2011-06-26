@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.widgets;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import unibo.as.cupido.client.GWTAnimation;
+import unibo.as.cupido.client.SimpleAnimation;
+import unibo.as.cupido.client.GWTAnimation.AnimationCompletedListener;
 import unibo.as.cupido.client.playerstates.PlayerStateManager.PlayerInfo;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
