@@ -22,7 +22,7 @@ import java.util.List;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GWTAnimation;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
-import unibo.as.cupido.client.widgets.CardsGameWidget.CardRole.State;
+import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -114,7 +114,7 @@ public class WaitingPlayedCardState implements PlayerState {
 	}
 
 	@Override
-	public void handleCardClicked(int player, Card card, State state,
+	public void handleCardClicked(int player, Card card, CardRole.State state,
 			boolean isRaised) {
 		if (frozen) {
 			System.out

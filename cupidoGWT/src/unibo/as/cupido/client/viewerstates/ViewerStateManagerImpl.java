@@ -24,7 +24,8 @@ import java.util.List;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
-import unibo.as.cupido.client.widgets.CardsGameWidget.CardRole.State;
+import unibo.as.cupido.client.widgets.cardsgame.CardRole;
+import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
 import unibo.as.cupido.client.widgets.LocalChatWidget;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
@@ -76,7 +77,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		this.chatWidget = chatWidget;
 		this.cardsGameWidget = new CardsGameWidget(tableSize,
 				observedGameStatus, null, new VerticalPanel(),
-				new CardsGameWidget.GameEventListener() {
+				new GameEventListener() {
 					@Override
 					public void onAnimationStart() {
 						currentState.handleAnimationStart();
@@ -89,7 +90,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 					@Override
 					public void onCardClicked(int player, Card card,
-							State state, boolean isRaised) {
+							CardRole.State state, boolean isRaised) {
 						// Nothing to do, viewers are not expected to click on
 						// cards.
 					}

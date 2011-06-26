@@ -27,6 +27,10 @@ import java.util.Map.Entry;
 
 import unibo.as.cupido.client.GWTAnimation;
 import unibo.as.cupido.client.SimpleAnimation;
+import unibo.as.cupido.client.widgets.cardsgame.CardRole;
+import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
+import unibo.as.cupido.client.widgets.cardsgame.PlayerData;
+import unibo.as.cupido.client.widgets.cardsgame.Position;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
@@ -115,47 +119,6 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	private boolean frozen = false;
 
-	/**
-	 * This class models the position of a widget on the table.
-	 * 
-	 * @author marco
-	 */
-	private static class Position {
-
-		public Position() {
-		}
-
-		public Position(int x, int y, int z, int rotation) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-			this.rotation = rotation;
-		}
-
-		/**
-		 * The distance between the left margin and the center of the widget.
-		 */
-		public int x;
-
-		/**
-		 * The distance between the top margin and the center of the widget.
-		 */
-		public int y;
-
-		/**
-		 * The height of the widget. Widgets with higher values of z are drawn
-		 * above those with lower values.
-		 */
-		public int z;
-
-		/**
-		 * The rotation is measured in degrees. When this is 0, there is no
-		 * rotation. The rotation is clockwise, so a widget with rotation `90'
-		 * will have its top pointed towards the right edge of the table.
-		 */
-		public int rotation;
-	}
-
 	private static class TableLayout {
 		/**
 		 * The positions of the cards on the table.
@@ -181,101 +144,6 @@ public class CardsGameWidget extends AbsolutePanel {
 		 * refers to the bottom player, and other elements are sorted clockwise.
 		 */
 		public List<Label> playerNames;
-	}
-
-	public static class CardRole {
-		@Override
-		public int hashCode() {
-			// Note that the `isRaised' field does *not* change the hash code.
-			// This is needed to be consistent with equals().
-			assert player >= 0;
-			assert player < 4;
-			switch (state) {
-			case HAND:
-				return player;
-			case PLAYED:
-				return player + 4;
-			}
-			throw new IllegalStateException();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			// Note that the `isRaised' field is *not* compared.
-			if (obj != null && obj instanceof CardRole) {
-				CardRole x = (CardRole) obj;
-				return (player == x.player && state == x.state);
-			} else
-				return false;
-		}
-
-		public enum State {
-			HAND, PLAYED
-		}
-
-		/**
-		 * The state of the card (see the State enum).
-		 */
-		public State state;
-
-		/**
-		 * This is valid only when state==HAND. It specifies whether this card
-		 * is raised.
-		 */
-		public boolean isRaised;
-
-		/**
-		 * The player to whom the card belongs.
-		 */
-		public int player;
-
-		public CardRole() {
-
-		}
-
-		public CardRole(State state, boolean raised, int player) {
-			this.state = state;
-			this.player = player;
-		}
-	}
-
-	private static class PlayerData {
-		public String name;
-		public boolean isBot;
-		public int score;
-	}
-
-	public interface GameEventListener {
-		/**
-		 * This is called before starting an animation.
-		 */
-		public void onAnimationStart();
-
-		/**
-		 * This is called when an animation finishes.
-		 */
-		public void onAnimationEnd();
-
-		/**
-		 * This is called when the user clicks on a card, except during
-		 * animations and when controls are disabled.
-		 * 
-		 * @player: the player to whom the card belongs
-		 * @card: the card that was clicked, or `null' if a covered card was
-		 *        clicked.
-		 * @isRaised: this is true only if state==HAND and this card is
-		 *            currently raised.
-		 */
-		public void onCardClicked(int player, Card card, CardRole.State state,
-				boolean isRaised);
-		
-		/**
-		 * This is called when the user clicks on the exit button.
-		 * 
-		 * Note that clicking the button only triggers this method; if the
-		 * caller wants to freeze this widget, it must do so explicitly.
-		 */
-		public void onExit();
 	}
 
 	/**
@@ -1233,14 +1101,8 @@ public class CardsGameWidget extends AbsolutePanel {
 		grid.setHeight(gridHeight + "px");
 		add(grid, tableSize / 2 - gridWidth / 2, tableSize / 2 - gridHeight / 2);
 		DOM.setStyleAttribute(grid.getElement(), "background", "white");
-		DOM.setStyleAttribute(grid.getElement(), "borderLeftStyle", "solid");
-		DOM.setStyleAttribute(grid.getElement(), "borderRightStyle", "solid");
-		DOM.setStyleAttribute(grid.getElement(), "borderBottomStyle", "solid");
-		DOM.setStyleAttribute(grid.getElement(), "borderTopStyle", "solid");
-		DOM.setStyleAttribute(grid.getElement(), "borderLeftWidth", "1px");
-		DOM.setStyleAttribute(grid.getElement(), "borderRightWidth", "1px");
-		DOM.setStyleAttribute(grid.getElement(), "borderBottomWidth", "1px");
-		DOM.setStyleAttribute(grid.getElement(), "borderTopWidth", "1px");
+		DOM.setStyleAttribute(grid.getElement(), "borderStyle", "solid");
+		DOM.setStyleAttribute(grid.getElement(), "borderWidth", "1px");
 
 		{
 			HTML userLabel = new HTML("<b>Utente</b>");
