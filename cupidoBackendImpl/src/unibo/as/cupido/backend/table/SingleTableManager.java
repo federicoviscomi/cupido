@@ -96,14 +96,16 @@ public class SingleTableManager implements TableInterface {
 			IllegalStateException {
 		if (this.gameStarted)
 			throw new IllegalStateException();
+		if (userName == null)
+			throw new IllegalArgumentException();
 		try {
 			String botName = botNames[position];
 
-			InitialTableStatus initialTableStatus = playersManager
-					.getInitialTableStatus(position);
-
-			tableInterface = gtm.getLTMInterface(table.tableDescriptor.ltmId)
-					.getTable(table.tableDescriptor.id);
+			if (tableInterface == null) {
+				tableInterface = gtm.getLTMInterface(
+						table.tableDescriptor.ltmId).getTable(
+						table.tableDescriptor.id);
+			}
 
 			viewers.notifyBotJoined(botNames[position], position);
 
@@ -114,7 +116,6 @@ public class SingleTableManager implements TableInterface {
 				startNotifierThread.setGameStarted();
 			}
 			gtm.notifyTableJoin(table.tableDescriptor);
-
 			return botName;
 		} catch (NoSuchTableException e) {
 			// TODO Auto-generated catch block
@@ -122,13 +123,11 @@ public class SingleTableManager implements TableInterface {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.exit(-1);
 		} catch (NoSuchLTMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// FIXME: This must never be reached.
-		return "";
+		throw new Error();
 	}
 
 	@Override
@@ -274,11 +273,12 @@ public class SingleTableManager implements TableInterface {
 	private void replacePlayer(String playerName) throws NoSuchPlayerException {
 		try {
 			int position = playersManager.getPlayerPosition(playerName);
-			playersManager.replacePlayer(
-					playerName,
-					position,
-					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
-							table.tableDescriptor.id));
+			if (tableInterface == null) {
+				tableInterface = gtm.getLTMInterface(
+						table.tableDescriptor.ltmId).getTable(
+						table.tableDescriptor.id);
+			}
+			playersManager.replacePlayer(playerName, position, tableInterface);
 			playersManager.notifyPlayerReplaced(playerName, position);
 			viewers.notifyPlayerReplaced(playerName, position);
 		} catch (RemoteException e) {

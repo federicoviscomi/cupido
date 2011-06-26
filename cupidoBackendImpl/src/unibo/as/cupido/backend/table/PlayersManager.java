@@ -514,8 +514,8 @@ public class PlayersManager {
 		if (playerName == null || tableInterface == null || position < 1
 				|| position > 3)
 			throw new IllegalArgumentException();
-		if (players[position].isBot || players[position].replaced)
-			throw new IllegalStateException();
+		if (players[position].isBot)
+			throw new IllegalStateException("attemp to replace a bot!");
 
 		players[position].isBot = true;
 		players[position].replaced = true;
