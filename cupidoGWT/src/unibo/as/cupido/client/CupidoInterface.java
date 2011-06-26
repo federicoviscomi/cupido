@@ -271,11 +271,11 @@ public interface CupidoInterface extends RemoteService {
 
 	/**
 	 * 
-	 * @return one chunk the global rank list which contains from four position
-	 *         before user to five position after the user.
+	 * @return A chunk of the global ranking list which contains the entries starting
+	 *         three positions before the user's entry and ending three positions after
+	 *         that.
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
-	 *             ;
 	 */
 	public ArrayList<RankingEntry> getLocalRank()
 			throws UserNotAuthenticatedException, FatalException;
