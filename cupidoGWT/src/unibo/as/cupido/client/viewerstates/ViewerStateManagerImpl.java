@@ -306,6 +306,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		return cardsGameWidget;
 	}
 
+	@Override
 	public List<PlayerInfo> getPlayerInfo() {
 		return players;
 	}

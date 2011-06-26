@@ -295,6 +295,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 		switchingScreen = false;
 	}
 
+	@Override
 	public void displayLoadingScreen() {
 		assert !switchingScreen;
 		switchingScreen = true;

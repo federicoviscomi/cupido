@@ -397,6 +397,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		return cardsGameWidget;
 	}
 
+	@Override
 	public List<PlayerInfo> getPlayerInfo() {
 		return players;
 	}

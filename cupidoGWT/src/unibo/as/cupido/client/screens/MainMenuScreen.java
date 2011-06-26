@@ -340,6 +340,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		chatTimer.run();
 	}
 
+	@Override
 	public void freeze() {
 		for (PushButton w : buttons)
 			w.setEnabled(false);

@@ -49,6 +49,7 @@ public class Cupido implements EntryPoint {
 	/**
 	 * This is the entry point method.
 	 */
+	@Override
 	public void onModuleLoad() {
 		ScreenManagerImpl screenManager = new ScreenManagerImpl();
 		RootPanel.get("mainContainer").add(screenManager);
