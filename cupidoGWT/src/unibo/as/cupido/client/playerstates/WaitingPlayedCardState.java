@@ -193,6 +193,8 @@ public class WaitingPlayedCardState implements PlayerState {
 			return false;
 
 		eventReceived = true;
+		
+		text.setText("");
 
 		// playerPosition was in the [0-2] interval, now it is between 1 and 3.
 		++playerPosition;
@@ -258,6 +260,9 @@ public class WaitingPlayedCardState implements PlayerState {
 					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
 			return;
 		}
+		if (eventReceived)
+			// Nothing to do.
+			return;
 		if (currentPlayer == player)
 			recomputeLabelMessage();
 	}

@@ -80,17 +80,13 @@ public class WaitingPlayedCardState implements ViewerState {
 	}
 
 	private void recomputeLabelMessage() {
-		if (eventReceived)
-			label.setHTML("");
-		else {
-			ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
-					.get(currentPlayer);
-			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
-			safeHtmlBuilder.appendEscaped(playerInfo.name);
-			safeHtmlBuilder.appendHtmlConstant(" giochi.");
-			label.setHTML(safeHtmlBuilder.toSafeHtml());
-		}
+		ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
+				.get(currentPlayer);
+		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+		safeHtmlBuilder.appendEscaped(playerInfo.name);
+		safeHtmlBuilder.appendHtmlConstant(" giochi.");
+		label.setHTML(safeHtmlBuilder.toSafeHtml());
 	}
 
 	@Override
@@ -136,8 +132,8 @@ public class WaitingPlayedCardState implements ViewerState {
 			return false;
 
 		eventReceived = true;
-		
-		recomputeLabelMessage();
+
+		label.setText("");
 
 		stateManager.addPlayedCard(playerPosition, card);
 
@@ -181,6 +177,8 @@ public class WaitingPlayedCardState implements ViewerState {
 					.println("Client: notice: the PlayerLeft event was received while frozen, ignoring it.");
 			return;
 		}
+		if (eventReceived)
+			return;
 		if (currentPlayer == player)
 			recomputeLabelMessage();
 	}

@@ -54,6 +54,8 @@ public class CardPassingWaitingState implements PlayerState {
 
 	private boolean eventReceived = false;
 
+	private HTML text;
+
 	public CardPassingWaitingState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
 			final CupidoInterfaceAsync cupidoService) {
@@ -67,8 +69,7 @@ public class CardPassingWaitingState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		final HTML text = new HTML(
-				"Aspetta che gli altri giocatori decidano quali carte passare.");
+		text = new HTML("Aspetta che gli altri giocatori decidano quali carte passare.");
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
@@ -160,6 +161,8 @@ public class CardPassingWaitingState implements PlayerState {
 		}
 
 		eventReceived = true;
+		
+		text.setText("");
 
 		List<Card> cards = new ArrayList<Card>();
 
