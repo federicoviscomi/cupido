@@ -241,6 +241,9 @@ public class RemoteBot implements Bot, Serializable {
 	public void passCards() {
 		try {
 			synchronized (lock) {
+				if (turn != 0) {
+					throw new IllegalStateException();
+				}
 				while (!ableToPass) {
 					lock.wait();
 				}
@@ -269,9 +272,12 @@ public class RemoteBot implements Bot, Serializable {
 	}
 
 	@Override
-	public void playNextCard() {
+	public void playNextCard() throws GameEndedException{
 		try {
 			synchronized (lock) {
+				if (turn == 13) {
+					throw new GameEndedException();
+				}
 				while (!ableToPlay) {
 					lock.wait();
 				}
@@ -282,7 +288,7 @@ public class RemoteBot implements Bot, Serializable {
 
 				/** play chosen card */
 				singleTableManager.playCard(userName, cardToPlay);
-
+				
 				/** update status */
 				setCardPlayed(cardToPlay, 3);
 			}

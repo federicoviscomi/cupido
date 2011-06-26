@@ -72,13 +72,13 @@ public class LoggerBot implements NonRemoteBotInterface {
 	}
 
 	@Override
-	public void notifyPlayerReplaced(String botName, int position)
-			throws RemoteException {
+	public void notifyPlayerLeft(String playerName) throws RemoteException {
 		//
 	}
 
 	@Override
-	public void notifyPlayerLeft(String playerName) throws RemoteException {
+	public void notifyPlayerReplaced(String botName, int position)
+			throws RemoteException {
 		//
 	}
 

@@ -264,11 +264,13 @@ public class PlayerConsoleUI {
 							remoteBot.singleTableManager.leaveTable(playerName);
 							out.println("table " + remoteBot.singleTableManager
 									+ " left");
+							remoteBot = null;
 						} else if (remoteViewer != null) {
 							remoteViewer.singleTableManager
 									.leaveTable(playerName);
 							out.println("table "
 									+ remoteViewer.singleTableManager + " left");
+							remoteViewer = null;
 						} else {
 							out.println("there is no table to leave!");
 						}
@@ -339,7 +341,11 @@ public class PlayerConsoleUI {
 							.getOptionValue(arbitraryCardsOption) == null ? false
 							: true);
 					if (arbitraryCards) {
-						remoteBot.playNextCard();
+						try {
+							remoteBot.playNextCard();
+						} catch (GameEndedException e) {
+							out.println("cannot play a card: game ended");
+						}
 					} else {
 						throw new UnsupportedOperationException();
 					}

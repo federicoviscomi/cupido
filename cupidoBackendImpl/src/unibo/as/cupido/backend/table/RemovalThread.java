@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
 
-
 public class RemovalThread extends Thread {
 
 	private final SingleTableManager singleTableManager;

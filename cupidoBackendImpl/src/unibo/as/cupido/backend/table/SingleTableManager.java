@@ -18,12 +18,10 @@
 package unibo.as.cupido.backend.table;
 
 import java.io.IOException;
-import java.nio.channels.IllegalSelectorException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
@@ -37,7 +35,6 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.EmptyPositionException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
@@ -99,39 +96,41 @@ public class SingleTableManager implements TableInterface {
 			IllegalStateException {
 		if (this.gameStarted)
 			throw new IllegalStateException();
-		try {
-			String botName = botNames[position];
+		if (userName == null)
+			throw new IllegalArgumentException();
+		synchronized (startNotifierThread.lock) {
+			try {
+				String botName = botNames[position];
 
-			InitialTableStatus initialTableStatus = playersManager
-					.getInitialTableStatus(position);
+				if (tableInterface == null) {
+					tableInterface = gtm.getLTMInterface(
+							table.tableDescriptor.ltmId).getTable(
+							table.tableDescriptor.id);
+				}
 
-			tableInterface = gtm.getLTMInterface(table.tableDescriptor.ltmId)
-					.getTable(table.tableDescriptor.id);
+				viewers.notifyBotJoined(botNames[position], position);
 
-			viewers.notifyBotJoined(botNames[position], position);
-
-			playersManager.addBot(userName, position, botNames[position],
-					tableInterface);
-			playersManager.notifyBotJoined(botName, position);
-			if (playersManager.playersCount() == 4) {
-				startNotifierThread.setGameStarted();
+				playersManager.addBot(userName, position, botNames[position],
+						tableInterface);
+				playersManager.notifyBotJoined(botName, position);
+				gtm.notifyTableJoin(table.tableDescriptor);
+				if (playersManager.playersCount() == 4) {
+					startNotifierThread.gameStarted = true;
+					startNotifierThread.lock.notify();
+				}
+				return botName;
+			} catch (NoSuchTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchLTMException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			gtm.notifyTableJoin(table.tableDescriptor);
-
-			return botName;
-		} catch (NoSuchTableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(-1);
-		} catch (NoSuchLTMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		// FIXME: This must never be reached.
-		return "";
+		throw new Error();
 	}
 
 	@Override
@@ -145,22 +144,18 @@ public class SingleTableManager implements TableInterface {
 		if (userName == null || snf == null)
 			throw new IllegalArgumentException();
 
-		try {
+		synchronized (startNotifierThread.lock) {
 			int score = databaseManager.getPlayerScore(userName);
 			int position = playersManager.addPlayer(userName, snf, score);
 			playersManager.notifyPlayerJoined(userName, score, position);
 			viewers.notifyPlayerJoined(userName, score, position);
-			if (playersManager.playersCount() == 4) {
-				startNotifierThread.setGameStarted();
-			}
 			gtm.notifyTableJoin(table.tableDescriptor);
+			if (playersManager.playersCount() == 4) {
+				startNotifierThread.gameStarted = true;
+				startNotifierThread.lock.notify();
+			}
 			return playersManager.getInitialTableStatus(position);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		return null;
 	}
 
 	public synchronized void leaveTable(Integer i) throws RemoteException,
@@ -277,13 +272,13 @@ public class SingleTableManager implements TableInterface {
 	private void replacePlayer(String playerName) throws NoSuchPlayerException {
 		try {
 			int position = playersManager.getPlayerPosition(playerName);
-			String botName = SingleTableManager.botNames[position];
-			playersManager.replacePlayer(
-					playerName,
-					position,
-					gtm.getLTMInterface(table.tableDescriptor.ltmId).getTable(
-							table.tableDescriptor.id));
-			playersManager.notifyPlayerReplaced(playerName, botName, position);
+			if (tableInterface == null) {
+				tableInterface = gtm.getLTMInterface(
+						table.tableDescriptor.ltmId).getTable(
+						table.tableDescriptor.id);
+			}
+			playersManager.replacePlayer(playerName, position, tableInterface);
+			playersManager.notifyPlayerReplaced(playerName, position);
 			viewers.notifyPlayerReplaced(playerName, position);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block

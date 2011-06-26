@@ -20,8 +20,8 @@ package unibo.as.cupido.backend.table;
 public class StartNotifierThread extends Thread {
 
 	private final SingleTableManager stm;
-	private Object lock = new Object();
-	private boolean gameStarted = false;
+	Object lock = new Object();
+	boolean gameStarted = false;
 
 	public StartNotifierThread(SingleTableManager stm) {
 		this.stm = stm;
@@ -41,10 +41,4 @@ public class StartNotifierThread extends Thread {
 		}
 	}
 
-	public void setGameStarted() {
-		synchronized (lock) {
-			gameStarted = true;
-			lock.notify();
-		}
-	}
 }
