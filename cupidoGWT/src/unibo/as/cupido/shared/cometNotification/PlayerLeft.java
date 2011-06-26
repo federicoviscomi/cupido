@@ -19,9 +19,9 @@ package unibo.as.cupido.shared.cometNotification;
 
 import java.io.Serializable;
 
-/*
- * when a player leaves and the game is not started, there is a free seat!
- * otherwise a playing bot enters the game.
+/**
+ * This notification is sent when a player leaves and the game is not started,
+ * so that position is now free.
  */
 public class PlayerLeft implements Serializable {
 

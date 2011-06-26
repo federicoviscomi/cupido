@@ -20,6 +20,7 @@ package unibo.as.cupido.client.screens;
 import unibo.as.cupido.client.Cupido;
 
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class LoadingScreen extends VerticalPanel implements Screen {
@@ -31,10 +32,20 @@ public class LoadingScreen extends VerticalPanel implements Screen {
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
 
-		this.setHorizontalAlignment(ALIGN_CENTER);
-		this.setVerticalAlignment(ALIGN_MIDDLE);
+		setHorizontalAlignment(ALIGN_CENTER);
+		setVerticalAlignment(ALIGN_MIDDLE);
+		
+		VerticalPanel panel = new VerticalPanel();
+		panel.setWidth("300px");
+		panel.setHeight("100px");
+		panel.setSpacing(20);
+		panel.setHorizontalAlignment(ALIGN_CENTER);
+		panel.setVerticalAlignment(ALIGN_MIDDLE);
+		add(panel);
 
-		add(new HTML("Caricamento in corso, attendere..."));
+		panel.add(new HTML("Caricamento in corso, attendere..."));
+		
+		panel.add(new Image("loading.gif"));
 	}
 
 	@Override

@@ -19,7 +19,7 @@ package unibo.as.cupido.client.playerstates;
 
 import java.util.List;
 
-import unibo.as.cupido.client.CardsGameWidget;
+import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.common.structures.Card;
 
 public interface PlayerStateManager {
@@ -28,8 +28,8 @@ public interface PlayerStateManager {
 		/**
 		 * This is relevant only when `isBot' is false.
 		 */
-		String name;
-		boolean isBot;
+		public String name;
+		public boolean isBot;
 	}
 
 	/**
@@ -82,7 +82,7 @@ public interface PlayerStateManager {
 
 	public void transitionToGameEnded();
 
-	CardsGameWidget getWidget();
+	public CardsGameWidget getWidget();
 
 	public void freeze();
 
@@ -94,5 +94,5 @@ public interface PlayerStateManager {
 
 	public void handleGameStarted(Card[] myCards);
 
-	public void handlePlayerLeft(String player);
+	public void handlePlayerReplaced(String name, int position);
 }

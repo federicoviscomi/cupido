@@ -25,13 +25,13 @@ import java.util.Collection;
 
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FatalException;
+import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.MaxNumTableReachedException;
 import unibo.as.cupido.common.exception.NoSuchServerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
@@ -157,7 +157,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void sendLocalChatMessage(String message) throws IllegalArgumentException,
+	public void sendLocalChatMessage(String message) throws IllegalArgumentException,
 			NoSuchTableException, UserNotAuthenticatedException, FatalException;
 
 	/**
@@ -168,7 +168,7 @@ public interface CupidoInterface extends RemoteService {
 	 *             if player is not playing or viewing a game
 	 * @throws FatalException
 	 */
-	void leaveTable() throws UserNotAuthenticatedException,
+	public void leaveTable() throws UserNotAuthenticatedException,
 			NoSuchTableException, FatalException;
 
 	/**
@@ -184,7 +184,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void playCard(Card card) throws IllegalMoveException, FatalException,
+	public void playCard(Card card) throws IllegalMoveException, FatalException,
 			NoSuchTableException, IllegalArgumentException,
 			UserNotAuthenticatedException;
 
@@ -202,7 +202,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void passCards(Card[] cards) throws IllegalStateException,
+	public void passCards(Card[] cards) throws IllegalStateException,
 			IllegalArgumentException, NoSuchTableException,
 			UserNotAuthenticatedException, FatalException;
 
@@ -248,7 +248,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void sendGlobalChatMessage(String message) throws IllegalArgumentException,
+	public void sendGlobalChatMessage(String message) throws IllegalArgumentException,
 			UserNotAuthenticatedException, FatalException;
 
 	/**
@@ -271,11 +271,11 @@ public interface CupidoInterface extends RemoteService {
 
 	/**
 	 * 
-	 * @return one chunk the global rank list which contains from four position
-	 *         before user to five position after the user.
+	 * @return A chunk of the global ranking list which contains the entries starting
+	 *         three positions before the user's entry and ending three positions after
+	 *         that.
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
-	 *             ;
 	 */
 	public ArrayList<RankingEntry> getLocalRank()
 			throws UserNotAuthenticatedException, FatalException;

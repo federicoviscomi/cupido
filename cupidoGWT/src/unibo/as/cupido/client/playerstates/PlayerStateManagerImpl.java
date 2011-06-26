@@ -21,11 +21,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import unibo.as.cupido.client.CardsGameWidget;
-import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
-import unibo.as.cupido.client.LocalChatWidget;
 import unibo.as.cupido.client.screens.ScreenManager;
+import unibo.as.cupido.client.widgets.CardsGameWidget;
+import unibo.as.cupido.client.widgets.cardsgame.CardRole;
+import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
+import unibo.as.cupido.client.widgets.LocalChatWidget;
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
@@ -35,6 +37,7 @@ import unibo.as.cupido.shared.cometNotification.CardPlayed;
 import unibo.as.cupido.shared.cometNotification.GameEnded;
 import unibo.as.cupido.shared.cometNotification.GameStarted;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class PlayerStateManagerImpl implements PlayerStateManager {
@@ -44,9 +47,9 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	private CardsGameWidget cardsGameWidget;
 	private int firstPlayerInTrick = -1;
 
-	boolean heartsBroken = false;
+	private boolean heartsBroken = false;
 
-	List<Serializable> pendingNotifications = new ArrayList<Serializable>();
+	private List<Serializable> pendingNotifications = new ArrayList<Serializable>();
 
 	/**
 	 * Some information about the players. The first element refers to the
@@ -122,7 +125,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 		this.cardsGameWidget = new CardsGameWidget(tableSize,
 				observedGameStatus, cards, new VerticalPanel(),
-				new CardsGameWidget.GameEventListener() {
+				new GameEventListener() {
 					@Override
 					public void onAnimationStart() {
 						if (frozen) {
@@ -147,7 +150,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 					@Override
 					public void onCardClicked(int player, Card card,
-							State state, boolean isRaised) {
+							CardRole.State state, boolean isRaised) {
 						if (frozen) {
 							System.out
 									.println("Client: notice: the onCardClicked() event was received while frozen, ignoring it.");
@@ -156,6 +159,11 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 						currentState.handleCardClicked(player, card, state,
 								isRaised);
+					}
+
+					@Override
+					public void onExit() {
+						exit();
 					}
 				});
 
@@ -358,6 +366,30 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 
+		// The current animation (if any) is stopped.
+		freeze();
+		
+		// FIXME: Note that leaveTable() is called even if the game is already
+		// finished, even if this is not needed.
+		cupidoService.leaveTable(new AsyncCallback<Void>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				try {
+					throw caught;
+				} catch (NoSuchTableException e) {
+					// This can happen even if no problems occur.
+				} catch (Throwable e) {
+					// Can't call screenManager.displayGeneralErrorScreen() because
+					// the main screen has now the flow of control.
+					System.out.println("Client: got a fatal exception in leaveTable().");
+				}
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+			}
+		});
+		
 		screenManager.displayMainMenuScreen(username);
 	}
 
@@ -366,6 +398,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		return cardsGameWidget;
 	}
 
+	@Override
 	public List<PlayerInfo> getPlayerInfo() {
 		return players;
 	}
@@ -377,7 +410,9 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void freeze() {
+		cardsGameWidget.freeze();
 		currentState.freeze();
+		frozen = true;
 	}
 
 	@Override
@@ -432,79 +467,20 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	}
 
 	@Override
-	public void handlePlayerLeft(String player) {
+	public void handlePlayerReplaced(String name, int position) {
 		if (frozen) {
 			System.out
 					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
 			return;
 		}
-		int i = 1;
-		while (i < 4 && players.get(i).name.equals(player))
-			i++;
-		if (i == 4) {
-			onFatalException(new Exception(
-					"An invalid PlayerLeft notification was received."));
-			return;
-		}
-		PlayerInfo x = players.get(i);
+		PlayerInfo x = players.get(position);
 		x.isBot = true;
-		x.name = null;
-		cardsGameWidget.setBot(i, x.name);
-		currentState.handlePlayerLeft(i);
-	}
-
-	private static void printCards(Card[] cards) {
-		boolean first = true;
-		for (Card card : cards) {
-			if (!first)
-				System.out.print(", ");
-			first = false;
-			System.out.println(card.toString());
-		}
-	}
-
-	private void printPendingNotifications() {
-		System.out.print("{ ");
-		boolean first = true;
-		for (Serializable x : pendingNotifications) {
-			if (!first)
-				System.out.println(",");
-			System.out.print("  ");
-			first = false;
-			if (x instanceof CardPassed) {
-				CardPassed message = (CardPassed) x;
-				System.out.print("CardPassed(");
-				printCards(message.cards);
-				System.out.print(")");
-
-			} else if (x instanceof CardPlayed) {
-				CardPlayed message = (CardPlayed) x;
-				System.out.print("CardPlayed(");
-				System.out.print(message.card + ", " + message.playerPosition);
-				System.out.print(")");
-
-			} else if (x instanceof GameEnded) {
-				System.out.print("GameEnded(...)");
-
-			} else if (x instanceof GameStarted) {
-				GameStarted message = (GameStarted) x;
-				System.out.print("GameStarted(");
-				printCards(message.myCards);
-				System.out.print(")");
-
-			} else {
-				assert false;
-			}
-		}
-		System.out.println("}");
+		x.name = name;
+		cardsGameWidget.setBot(position, name);
+		currentState.handlePlayerReplaced(name, position);
 	}
 
 	private void sendPendingNotifications() {
-		// TODO: Remove these lines.
-		// System.out.println("Client: PlayerStateManagerImpl: in sendPendingNotifications(): "
-		// + pendingNotifications.size() + " notifications pending.");
-		// printPendingNotifications();
-
 		List<Serializable> list = pendingNotifications;
 		// Note that this may be modified in the calls to handle*() methods
 		// below.
@@ -531,10 +507,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				assert false;
 			}
 		}
-		// TODO: Remove these lines.
-		// System.out.println("Client: PlayerStateManagerImpl: exiting from sendPendingNotifications(): "
-		// + pendingNotifications.size() + " notifications are still pending.");
-		// printPendingNotifications();
 	}
 
 	@Override

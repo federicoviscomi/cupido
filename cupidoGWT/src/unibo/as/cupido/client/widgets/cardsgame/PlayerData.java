@@ -15,21 +15,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * 
- */
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.widgets.cardsgame;
 
-import unibo.as.cupido.common.structures.ChatMessage;
-
-import com.google.gwt.user.client.rpc.RemoteService;
-
-public interface GlobalChatInterface extends RemoteService {
-
-	ChatMessage[] viewLastMessages();
-
-	/*
-	 * message doesn't contain username
-	 */
-	void sendMessage(String message);
+public class PlayerData {
+	public String name;
+	public boolean isBot;
+	public int score;
 }

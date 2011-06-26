@@ -19,7 +19,7 @@ package unibo.as.cupido.client.viewerstates;
 
 import java.util.List;
 
-import unibo.as.cupido.client.CardsGameWidget;
+import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.common.structures.Card;
 
 public interface ViewerStateManager {
@@ -28,8 +28,8 @@ public interface ViewerStateManager {
 		/**
 		 * This is relevant only when `isBot' is false.
 		 */
-		String name;
-		boolean isBot;
+		public String name;
+		public boolean isBot;
 	}
 
 	/**
@@ -59,7 +59,7 @@ public interface ViewerStateManager {
 	public int getRemainingTricks();
 
 	/**
-	 * Exits from the game.
+	 * Exits from the game, stopping the current animation (if any).
 	 */
 	public void exit();
 
@@ -70,7 +70,7 @@ public interface ViewerStateManager {
 
 	public List<PlayerInfo> getPlayerInfo();
 
-	CardsGameWidget getWidget();
+	public CardsGameWidget getWidget();
 
 	public void transitionToEndOfTrick();
 
@@ -86,5 +86,5 @@ public interface ViewerStateManager {
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
 
-	public void handlePlayerLeft(String player);
+	public void handlePlayerReplaced(String name, int i);
 }

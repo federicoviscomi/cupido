@@ -17,23 +17,18 @@
 
 package unibo.as.cupido.client.viewerstates;
 
-import unibo.as.cupido.client.CardsGameWidget;
 import unibo.as.cupido.client.GWTAnimation;
+import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.common.structures.Card;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class WaitingPlayedCardState implements ViewerState {
-
-	private PushButton exitButton;
 
 	private ViewerStateManager stateManager;
 
@@ -66,31 +61,17 @@ public class WaitingPlayedCardState implements ViewerState {
 		panel.add(label);
 		recomputeLabelMessage();
 
-		exitButton = new PushButton("Esci");
-		exitButton.setWidth("80px");
-		exitButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				stateManager.exit();
-			}
-		});
-		panel.add(exitButton);
-
 		cardsGameWidget.setCornerWidget(panel);
 	}
 
 	private void recomputeLabelMessage() {
-		if (eventReceived)
-			label.setHTML("");
-		else {
-			ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
-					.get(currentPlayer);
-			SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-			safeHtmlBuilder.appendHtmlConstant("Attendi che ");
-			safeHtmlBuilder.appendEscaped(playerInfo.name);
-			safeHtmlBuilder.appendHtmlConstant(" giochi.");
-			label.setHTML(safeHtmlBuilder.toSafeHtml());
-		}
+		ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
+				.get(currentPlayer);
+		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+		safeHtmlBuilder.appendEscaped(playerInfo.name);
+		safeHtmlBuilder.appendHtmlConstant(" giochi.");
+		label.setHTML(safeHtmlBuilder.toSafeHtml());
 	}
 
 	@Override
@@ -99,7 +80,6 @@ public class WaitingPlayedCardState implements ViewerState {
 
 	@Override
 	public void freeze() {
-		exitButton.setEnabled(false);
 		frozen = true;
 	}
 
@@ -110,7 +90,6 @@ public class WaitingPlayedCardState implements ViewerState {
 					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(false);
 	}
 
 	@Override
@@ -120,7 +99,6 @@ public class WaitingPlayedCardState implements ViewerState {
 					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(true);
 	}
 
 	@Override
@@ -136,8 +114,8 @@ public class WaitingPlayedCardState implements ViewerState {
 			return false;
 
 		eventReceived = true;
-		
-		recomputeLabelMessage();
+
+		label.setText("");
 
 		stateManager.addPlayedCard(playerPosition, card);
 
@@ -175,13 +153,15 @@ public class WaitingPlayedCardState implements ViewerState {
 	}
 
 	@Override
-	public void handlePlayerLeft(int player) {
+	public void handlePlayerReplaced(String name, int position) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the PlayerLeft event was received while frozen, ignoring it.");
+					.println("Client: notice: the PlayerReplaced event was received while frozen, ignoring it.");
 			return;
 		}
-		if (currentPlayer == player)
+		if (eventReceived)
+			return;
+		if (currentPlayer == position)
 			recomputeLabelMessage();
 	}
 }

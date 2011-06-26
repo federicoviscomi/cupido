@@ -41,6 +41,7 @@ import unibo.as.cupido.shared.cometNotification.GameStarted;
 import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
 import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
 import unibo.as.cupido.shared.cometNotification.PlayerLeft;
+import unibo.as.cupido.shared.cometNotification.PlayerReplaced;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -49,16 +50,16 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
-	Widget currentScreenWidget = null;
-	Screen currentScreen = null;
+	private Widget currentScreenWidget = null;
+	private Screen currentScreen = null;
 
 	// This is used to check that no screen switches occur while switching
 	// screen.
-	boolean switchingScreen = false;
+	private boolean switchingScreen = false;
 
-	CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
+	private CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
 
-	CometMessageListener cometMessageListener;
+	private CometMessageListener cometMessageListener;
 
 	public ScreenManagerImpl() {
 		setHeight(Cupido.height + "px");
@@ -135,6 +136,10 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 										PlayerLeft x = (PlayerLeft) message;
 										cometMessageListener
 												.onPlayerLeft(x.player);
+									} else if (message instanceof PlayerReplaced) {
+										PlayerReplaced x = (PlayerReplaced) message;
+										cometMessageListener
+												.onPlayerReplaced(x.name, x.position);
 									} else {
 										displayGeneralErrorScreen(new Exception(
 												"Unhandled comet message: "
@@ -290,6 +295,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 		switchingScreen = false;
 	}
 
+	@Override
 	public void displayLoadingScreen() {
 		assert !switchingScreen;
 		switchingScreen = true;

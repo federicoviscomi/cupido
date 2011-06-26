@@ -15,8 +15,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.widgets;
 
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManagerImpl;
@@ -39,8 +40,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 	private ObservedGameStatus observedGameStatus;
 	private boolean frozen = false;
-	private CupidoInterfaceAsync cupidoService;
 	private LocalChatWidget chatWidget;
+	private CupidoInterfaceAsync cupidoService;
 
 	/**
 	 * 
@@ -55,10 +56,9 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 		this.tableSize = tableSize;
 		this.screenManager = screenManager;
+		this.cupidoService = cupidoService;
 		this.observedGameStatus = observedGameStatus;
 		this.chatWidget = chatWidget;
-		this.cupidoService = cupidoService;
-
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 
@@ -174,7 +174,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		assert !frozen;
 
 		stateManager = new ViewerStateManagerImpl(tableSize, screenManager,
-				chatWidget, observedGameStatus, username);
+				chatWidget, observedGameStatus, username, cupidoService);
 
 		cardsGameWidget = stateManager.getWidget();
 		add(cardsGameWidget, 0, 0);
@@ -227,7 +227,9 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		if (beforeGameWidget != null) {
 			beforeGameWidget.handlePlayerLeft(player);
 		} else {
-			stateManager.handlePlayerLeft(player);
+			screenManager
+			.displayGeneralErrorScreen(new Exception(
+					"A PlayerLeft notification was received while playing a game that was already started."));
 		}
 	}
 
@@ -247,6 +249,21 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 			screenManager
 					.displayGeneralErrorScreen(new Exception(
 							"A NewPlayerJoined notification was received while viewing an already-started game."));
+		}
+	}
+
+	public void handlePlayerReplaced(String name, int position) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: received a PlayerReplaced notification while frozen, ignoring it.");
+			return;
+		}
+		if (beforeGameWidget != null) {
+			screenManager
+			.displayGeneralErrorScreen(new Exception(
+					"A PlayerReplaced notification was received while viewing a game that wasn't started yet."));
+		} else {
+			stateManager.handlePlayerReplaced(name, position);
 		}
 	}
 }

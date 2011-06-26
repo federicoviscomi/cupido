@@ -19,8 +19,8 @@ package unibo.as.cupido.client.screens;
 
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
-import unibo.as.cupido.client.HeartsTableWidget;
-import unibo.as.cupido.client.LocalChatWidget;
+import unibo.as.cupido.client.widgets.HeartsTableWidget;
+import unibo.as.cupido.client.widgets.LocalChatWidget;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
@@ -32,7 +32,7 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	/**
 	 * The width of the chat sidebar.
 	 */
-	public static final int chatWidth = 200;
+	public static final int chatWidth = Cupido.width - Cupido.height;
 	private HeartsTableWidget tableWidget;
 	private LocalChatWidget chatWidget;
 
@@ -43,8 +43,6 @@ public class TableScreen extends AbsolutePanel implements Screen {
 			int userScore, final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
-
-		assert Cupido.height == Cupido.width - chatWidth;
 
 		chatWidget = new LocalChatWidget(username,
 				new LocalChatWidget.MessageSender() {
@@ -135,6 +133,16 @@ public class TableScreen extends AbsolutePanel implements Screen {
 			}
 
 			@Override
+			public void onPlayerReplaced(String name, int position) {
+				if (frozen) {
+					System.out
+							.println("Client: notice: the PlayerReplaced notification was received while frozen, ignoring it.");
+					return;
+				}
+				tableWidget.handlePlayerReplaced(name, position);
+			}
+
+			@Override
 			public void onPlayerLeft(String player) {
 				if (frozen) {
 					System.out
@@ -150,6 +158,7 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	public void prepareRemoval() {
 	}
 
+	@Override
 	public void freeze() {
 		tableWidget.freeze();
 		chatWidget.freeze();

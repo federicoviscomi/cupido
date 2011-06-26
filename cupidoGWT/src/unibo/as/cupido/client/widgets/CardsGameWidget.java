@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.widgets;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import unibo.as.cupido.client.playerstates.PlayerStateManager.PlayerInfo;
+import unibo.as.cupido.client.GWTAnimation;
+import unibo.as.cupido.client.SimpleAnimation;
+import unibo.as.cupido.client.widgets.cardsgame.CardRole;
+import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
+import unibo.as.cupido.client.widgets.cardsgame.PlayerData;
+import unibo.as.cupido.client.widgets.cardsgame.Position;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
@@ -39,7 +44,10 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class CardsGameWidget extends AbsolutePanel {
@@ -79,7 +87,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * executed with runPendingAnimations(). This is reset to `false' when such
 	 * animations complete.
 	 */
-	boolean someAnimationsPending = false;
+	private boolean someAnimationsPending = false;
 
 	/**
 	 * The movable widgets within the table.
@@ -98,57 +106,18 @@ public class CardsGameWidget extends AbsolutePanel {
 	private int tableSize;
 
 	/**
-	 * This is true when an animation involving the table is running, and so the
-	 * table must be insensitive to commands.
+	 * The currently running animation (if any).
+	 * If this is not null, the table must not react to commands.
 	 */
-	private boolean runningAnimation = false;
+	private GWTAnimation currentAnimation = null;
 
 	private GameEventListener listener;
 
 	private Widget cornerWidget = null;
+	
+	private PushButton exitButton;
 
 	private boolean frozen = false;
-
-	/**
-	 * This class models the position of a widget on the table.
-	 * 
-	 * @author marco
-	 */
-	private static class Position {
-
-		public Position() {
-		}
-
-		public Position(int x, int y, int z, int rotation) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-			this.rotation = rotation;
-		}
-
-		/**
-		 * The distance between the left margin and the center of the widget.
-		 */
-		public int x;
-
-		/**
-		 * The distance between the top margin and the center of the widget.
-		 */
-		public int y;
-
-		/**
-		 * The height of the widget. Widgets with higher values of z are drawn
-		 * above those with lower values.
-		 */
-		public int z;
-
-		/**
-		 * The rotation is measured in degrees. When this is 0, there is no
-		 * rotation. The rotation is clockwise, so a widget with rotation `90'
-		 * will have its top pointed towards the right edge of the table.
-		 */
-		public int rotation;
-	}
 
 	private static class TableLayout {
 		/**
@@ -177,93 +146,6 @@ public class CardsGameWidget extends AbsolutePanel {
 		public List<Label> playerNames;
 	}
 
-	public static class CardRole {
-		@Override
-		public int hashCode() {
-			// Note that the `isRaised' field does *not* change the hash code.
-			// This is needed to be consistent with equals().
-			assert player >= 0;
-			assert player < 4;
-			switch (state) {
-			case HAND:
-				return player;
-			case PLAYED:
-				return player + 4;
-			}
-			throw new IllegalStateException();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			// Note that the `isRaised' field is *not* compared.
-			if (obj != null && obj instanceof CardRole) {
-				CardRole x = (CardRole) obj;
-				return (player == x.player && state == x.state);
-			} else
-				return false;
-		}
-
-		public enum State {
-			HAND, PLAYED
-		}
-
-		/**
-		 * The state of the card (see the State enum).
-		 */
-		public State state;
-
-		/**
-		 * This is valid only when state==HAND. It specifies whether this card
-		 * is raised.
-		 */
-		public boolean isRaised;
-
-		/**
-		 * The player to whom the card belongs.
-		 */
-		public int player;
-
-		public CardRole() {
-
-		}
-
-		public CardRole(State state, boolean raised, int player) {
-			this.state = state;
-			this.player = player;
-		}
-	}
-
-	private static class PlayerData {
-		public String name;
-		public boolean isBot;
-		public int score;
-	}
-
-	public interface GameEventListener {
-		/**
-		 * This is called before starting an animation.
-		 */
-		public void onAnimationStart();
-
-		/**
-		 * This is called when an animation finishes.
-		 */
-		public void onAnimationEnd();
-
-		/**
-		 * This is called when the user clicks on a card, except during
-		 * animations and when controls are disabled.
-		 * 
-		 * @player: the player to whom the card belongs
-		 * @card: the card that was clicked, or `null' if a covered card was
-		 *        clicked.
-		 * @isRaised: this is true only if state==HAND and this card is
-		 *            currently raised.
-		 */
-		public void onCardClicked(int player, Card card, CardRole.State state,
-				boolean isRaised);
-	}
-
 	/**
 	 * 
 	 * @param tableSize
@@ -275,8 +157,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	 *            The cards of the bottom player. If this is null, the cards are
 	 *            covered, and their number is extracted from gameStatus.
 	 * @param cornerWidget
-	 *            An arbitrary 200x200 pixel widget placed in the bottom-right
-	 *            corner.
+	 *            An arbitrary 200x150 pixel widget placed in the bottom-right
+	 *            corner, above the exit button.
 	 */
 	public CardsGameWidget(int tableSize, ObservedGameStatus gameStatus,
 			Card[] bottomPlayerCards, Widget cornerWidget,
@@ -290,6 +172,26 @@ public class CardsGameWidget extends AbsolutePanel {
 		this.listener = listener;
 
 		setCornerWidget(cornerWidget);
+		
+		{
+			VerticalPanel panel = new VerticalPanel();
+			panel.setWidth("200px");
+			panel.setHeight("50px");
+			panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+			add(panel, tableSize - 200, tableSize - 50);
+			exitButton = new PushButton("Esci");
+			exitButton.setWidth("80px");
+			
+			final CardsGameWidget x = this;
+			exitButton.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					x.listener.onExit();
+				}
+			});
+			panel.add(exitButton);
+		}
 
 		movableWidgets = new MovableWidgets();
 		movableWidgets.cards = new ArrayList<CardWidget>();
@@ -370,7 +272,7 @@ public class CardsGameWidget extends AbsolutePanel {
 				cardWidget.addClickHandler(new ClickHandler() {
 					@Override
 					public void onClick(ClickEvent event) {
-						if (runningAnimation)
+						if (currentAnimation != null)
 							// Clicking a card during an animation does nothing.
 							return;
 
@@ -459,12 +361,11 @@ public class CardsGameWidget extends AbsolutePanel {
 			final TableLayout targetTableLayout,
 			GWTAnimation.AnimationCompletedListener animationCompletedListener) {
 
-		assert !runningAnimation;
+		assert currentAnimation == null;
 
-		runningAnimation = true;
 		listener.onAnimationStart();
 
-		GWTAnimation animation = new SimpleAnimation(duration) {
+		currentAnimation = new SimpleAnimation(duration) {
 			@Override
 			public void onUpdate(double progress) {
 				for (CardWidget widget : movableWidgets.cards) {
@@ -485,14 +386,14 @@ public class CardsGameWidget extends AbsolutePanel {
 			@Override
 			public void onComplete() {
 				super.onComplete();
-				assert runningAnimation;
-				runningAnimation = false;
+				assert currentAnimation != null;
+				currentAnimation = null;
 				previousTableLayout = targetTableLayout;
 				someAnimationsPending = false;
 				listener.onAnimationEnd();
 			}
 		};
-		animation.run(animationCompletedListener);
+		currentAnimation.run(animationCompletedListener);
 	}
 
 	/**
@@ -513,7 +414,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			return;
 		}
 
-		assert !runningAnimation;
+		assert currentAnimation == null;
 		assert !someAnimationsPending;
 
 		CardWidget widget = null;
@@ -565,7 +466,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			return;
 		}
 
-		assert !runningAnimation;
+		assert currentAnimation == null;
 		assert !someAnimationsPending;
 		assert card != null;
 
@@ -616,7 +517,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 
 		assert card != null;
-		assert !runningAnimation;
+		assert currentAnimation == null;
 
 		CardWidget widget = null;
 
@@ -659,7 +560,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 
 		assert card != null;
-		assert !runningAnimation;
+		assert currentAnimation == null;
 
 		CardWidget widget = null;
 
@@ -703,7 +604,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 
 		assert card != null;
-		assert !runningAnimation;
+		assert currentAnimation == null;
 
 		CardWidget widget = null;
 
@@ -747,7 +648,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 
 		assert card != null;
-		assert !runningAnimation;
+		assert currentAnimation == null;
 
 		CardWidget widget = null;
 
@@ -798,7 +699,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			return;
 		}
 
-		assert !runningAnimation;
+		assert currentAnimation == null;
 		assert !someAnimationsPending;
 
 		listener.onAnimationStart();
@@ -1172,7 +1073,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 		this.cornerWidget = cornerWidget;
 		cornerWidget.setWidth("200px");
-		cornerWidget.setHeight("200px");
+		cornerWidget.setHeight("150px");
 		add(cornerWidget, tableSize - 200, tableSize - 200);
 	}
 
@@ -1200,14 +1101,8 @@ public class CardsGameWidget extends AbsolutePanel {
 		grid.setHeight(gridHeight + "px");
 		add(grid, tableSize / 2 - gridWidth / 2, tableSize / 2 - gridHeight / 2);
 		DOM.setStyleAttribute(grid.getElement(), "background", "white");
-		DOM.setStyleAttribute(grid.getElement(), "borderLeftStyle", "solid");
-		DOM.setStyleAttribute(grid.getElement(), "borderRightStyle", "solid");
-		DOM.setStyleAttribute(grid.getElement(), "borderBottomStyle", "solid");
-		DOM.setStyleAttribute(grid.getElement(), "borderTopStyle", "solid");
-		DOM.setStyleAttribute(grid.getElement(), "borderLeftWidth", "1px");
-		DOM.setStyleAttribute(grid.getElement(), "borderRightWidth", "1px");
-		DOM.setStyleAttribute(grid.getElement(), "borderBottomWidth", "1px");
-		DOM.setStyleAttribute(grid.getElement(), "borderTopWidth", "1px");
+		DOM.setStyleAttribute(grid.getElement(), "borderStyle", "solid");
+		DOM.setStyleAttribute(grid.getElement(), "borderWidth", "1px");
 
 		{
 			HTML userLabel = new HTML("<b>Utente</b>");
@@ -1275,12 +1170,22 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	public void freeze() {
+		if (currentAnimation != null) {
+			currentAnimation.cancel();
+			currentAnimation = null;
+		}
+		exitButton.setEnabled(false);
 		frozen = true;
 	}
 
-	public void setBot(int i, String name) {
-		players.get(i).isBot = true;
-		players.get(i).name = name;
+	/**
+	 * @param position The position where the bot should be inserted.
+	 *                 0 means at the bottom, and other positions follow in clockwise order.
+	 * @param name The name of the bot.
+	 */
+	public void setBot(int position, String name) {
+		players.get(position).isBot = true;
+		players.get(position).name = name;
 		updateLabels();
 	}
 }

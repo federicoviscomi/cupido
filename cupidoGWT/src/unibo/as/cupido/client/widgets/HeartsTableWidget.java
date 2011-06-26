@@ -15,8 +15,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.widgets;
 
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.playerstates.PlayerStateManager;
 import unibo.as.cupido.client.playerstates.PlayerStateManagerImpl;
 import unibo.as.cupido.client.screens.ScreenManager;
@@ -239,7 +240,26 @@ public class HeartsTableWidget extends AbsolutePanel {
 		if (cardsGameWidget == null) {
 			beforeGameWidget.handlePlayerLeft(player);
 		} else {
-			stateManager.handlePlayerLeft(player);
+			screenManager
+			.displayGeneralErrorScreen(new Exception(
+					"A PlayerLeft notification was received while playing a game that was already started."));
+		}
+	}
+
+	public void handlePlayerReplaced(String name, int position) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: received a PlayerReplaced notification while frozen, ignoring it.");
+			return;
+		}
+		if (beforeGameWidget != null) {
+			screenManager
+			.displayGeneralErrorScreen(new Exception(
+					"A PlayerReplaced notification was received while playing a game that wasn't started yet."));
+		} else {
+			// The +1 is needed for the different meaning that `position' has
+			// for players.
+			stateManager.handlePlayerReplaced(name, position + 1);
 		}
 	}
 }

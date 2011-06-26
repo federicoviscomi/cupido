@@ -22,14 +22,21 @@ import com.google.gwt.animation.client.Animation;
 public abstract class SimpleAnimation implements GWTAnimation {
 
 	private int ms;
+	private Animation animation = null;
 
-	SimpleAnimation(int ms) {
+	public SimpleAnimation(int ms) {
 		this.ms = ms;
 	}
 
 	@Override
 	public int duration() {
 		return ms;
+	}
+	
+	@Override
+	public void cancel() {
+		if (animation != null)
+			animation.cancel();
 	}
 
 	public abstract void onUpdate(double progress);
@@ -52,7 +59,7 @@ public abstract class SimpleAnimation implements GWTAnimation {
 	public void run(final AnimationCompletedListener listener) {
 		onStart();
 		final SimpleAnimation simpleAnimation = this;
-		Animation animation = new Animation() {
+		animation = new Animation() {
 
 			@Override
 			protected void onUpdate(double progress) {

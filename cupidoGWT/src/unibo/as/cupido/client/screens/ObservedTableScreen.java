@@ -19,8 +19,8 @@ package unibo.as.cupido.client.screens;
 
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
-import unibo.as.cupido.client.HeartsObservedTableWidget;
-import unibo.as.cupido.client.LocalChatWidget;
+import unibo.as.cupido.client.widgets.HeartsObservedTableWidget;
+import unibo.as.cupido.client.widgets.LocalChatWidget;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 
@@ -32,13 +32,13 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 	/**
 	 * The width of the chat sidebar.
 	 */
-	public static final int chatWidth = 200;
+	public static final int chatWidth = Cupido.width - Cupido.height;
 	private HeartsObservedTableWidget tableWidget;
 	private LocalChatWidget chatWidget;
 
 	private boolean frozen = false;
 
-	public ObservedTableScreen(ScreenManager screenManager, String username,
+	public ObservedTableScreen(final ScreenManager screenManager, String username,
 			ObservedGameStatus observedGameStatus,
 			final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
@@ -46,8 +46,6 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
-
-		assert Cupido.height == Cupido.width - chatWidth;
 
 		chatWidget = new LocalChatWidget(username,
 				new LocalChatWidget.MessageSender() {
@@ -96,8 +94,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 							.println("Client: notice: the onCardPassed() event was received while frozen, ignoring it.");
 					return;
 				}
-				System.out
-						.println("Client: ObservedTableScreen: warning: received a CardPassed notification while observing a table, it was ingored.");
+				screenManager.displayGeneralErrorScreen(new Exception("A CardPassed notification was received while observing a table."));
 			}
 
 			@Override
@@ -133,14 +130,23 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 			}
 
 			@Override
+			public void onPlayerReplaced(String name, int position) {
+				if (frozen) {
+					System.out
+							.println("Client: notice: the PlayerReplaced notification was received while frozen, ignoring it.");
+					return;
+				}
+				tableWidget.handlePlayerReplaced(name, position);
+			}
+			
+			@Override
 			public void onGameStarted(Card[] myCards) {
 				if (frozen) {
 					System.out
 							.println("Client: notice: the onGameStarted() event was received while frozen, ignoring it.");
 					return;
 				}
-				System.out
-						.println("Client: ObservedTableScreen: warning: received a GameStarted notification while observing a table, it was ingored.");
+				screenManager.displayGeneralErrorScreen(new Exception("A GameStarted notification was received while observing a table."));
 			}
 
 			@Override

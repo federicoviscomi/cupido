@@ -20,9 +20,9 @@ package unibo.as.cupido.shared.cometNotification;
 import java.io.Serializable;
 
 /**
- * This notification in sent when a player or a bot joins the table.
- * If the game is already started, NewPlayerJoined is sent with {@link isBot}==true and it means: player in position {@link position}
- * has left the game, and a bot has entered the game.
+ * This notification in sent when a player or a bot joins the table
+ * before the game start.
+ * 
  * If {@link isBot}==true, the variable {@link points} is meaningless.
  */
 public class NewPlayerJoined implements Serializable {
@@ -41,9 +41,12 @@ public class NewPlayerJoined implements Serializable {
 	 */
 	public int points;
 
-	/*
-	 * If you are viewing, position=1 is the player at the owner's left, and so
-	 * on position range is [1-3]
+	/**
+	 * For viewers, position=1 means the player at the owner's left, and so
+	 * the position range is [1-3].
+	 * 
+	 * For players, position=0 means the player at the user's left, and so
+	 * the position range is [0-2].
 	 */
 	public int position;
 	

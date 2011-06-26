@@ -21,26 +21,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import unibo.as.cupido.client.CardsGameWidget;
-import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GWTAnimation;
-import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.client.widgets.CardsGameWidget;
+import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.common.structures.Card;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class CardPassingWaitingState implements PlayerState {
-
-	private PushButton exitButton;
 
 	private CardsGameWidget cardsGameWidget;
 
@@ -50,9 +43,9 @@ public class CardPassingWaitingState implements PlayerState {
 
 	private boolean frozen = false;
 
-	private CupidoInterfaceAsync cupidoService;
-
 	private boolean eventReceived = false;
+
+	private HTML text;
 
 	public CardPassingWaitingState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
@@ -61,45 +54,14 @@ public class CardPassingWaitingState implements PlayerState {
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.hand = hand;
-		this.cupidoService = cupidoService;
-
 		VerticalPanel panel = new VerticalPanel();
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		final HTML text = new HTML(
-				"Aspetta che gli altri giocatori decidano quali carte passare.");
+		text = new HTML("Aspetta che gli altri giocatori decidano quali carte passare.");
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
-
-		exitButton = new PushButton("Esci");
-		exitButton.setWidth("80px");
-		exitButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				freeze();
-				cupidoService.leaveTable(new AsyncCallback<Void>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						try {
-							throw caught;
-						} catch (NoSuchTableException e) {
-							// The table has been destroyed in the meantime,
-							// nothing to do.
-						} catch (Throwable e) {
-							stateManager.onFatalException(e);
-						}
-					}
-
-					@Override
-					public void onSuccess(Void result) {
-						stateManager.exit();
-					}
-				});
-			}
-		});
-		panel.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -110,7 +72,6 @@ public class CardPassingWaitingState implements PlayerState {
 
 	@Override
 	public void freeze() {
-		exitButton.setEnabled(false);
 		frozen = false;
 	}
 
@@ -121,7 +82,6 @@ public class CardPassingWaitingState implements PlayerState {
 					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(false);
 	}
 
 	@Override
@@ -131,11 +91,10 @@ public class CardPassingWaitingState implements PlayerState {
 					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(true);
 	}
 
 	@Override
-	public void handleCardClicked(int player, Card card, State state,
+	public void handleCardClicked(int player, Card card, CardRole.State state,
 			boolean isRaised) {
 		if (frozen) {
 			System.out
@@ -160,6 +119,8 @@ public class CardPassingWaitingState implements PlayerState {
 		}
 
 		eventReceived = true;
+		
+		text.setText("");
 
 		List<Card> cards = new ArrayList<Card>();
 
@@ -235,10 +196,10 @@ public class CardPassingWaitingState implements PlayerState {
 	}
 
 	@Override
-	public void handlePlayerLeft(int player) {
+	public void handlePlayerReplaced(String name, int position) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
+					.println("Client: notice: the handlePlayerReplaced() event was received while frozen, ignoring it.");
 			return;
 		}
 		// Nothing to do.

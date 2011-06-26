@@ -37,6 +37,11 @@ public class CometMessageListener {
 				.println("Client: the NewPlayerJoined comet message can't be handled in the current state, ignoring it.");
 	}
 
+	public void onPlayerReplaced(String name, int position) {
+		System.out
+				.println("Client: the PlayerReplaced comet message can't be handled in the current state, ignoring it.");
+	}
+
 	public void onGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		System.out
 				.println("Client: the GameEnded comet message can't be handled in the current state, ignoring it.");

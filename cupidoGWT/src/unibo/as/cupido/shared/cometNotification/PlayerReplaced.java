@@ -15,22 +15,34 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * 
- */
-package unibo.as.cupido.client;
+package unibo.as.cupido.shared.cometNotification;
 
-import unibo.as.cupido.common.structures.ChatMessage;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.io.Serializable;
 
 /**
- * @author Lorenzo Belli
+ * This notification in sent when a player leaves a table during the game,
+ * and he is not the owner, so it is replaced with a bot.
  */
-public interface GlobalChatInterfaceAsync {
+public class PlayerReplaced implements Serializable {
 
-	void viewLastMessages(AsyncCallback<ChatMessage[]> callback);
+	private static final long serialVersionUID = 1L;
 
-	void sendMessage(String message, AsyncCallback<Void> callback);
+	public String name;
 
+	/**
+	 * For viewers, position=1 means the player at the owner's left, and so
+	 * the position range is [1-3].
+	 * 
+	 * For players, position=0 means the player at the user's left, and so
+	 * the position range is [0-2].
+	 */
+	public int position;
+	
+	public PlayerReplaced() {
+	}
+	
+	public PlayerReplaced(String name, int position) {
+		this.name = name;
+		this.position = position;
+	}
 }

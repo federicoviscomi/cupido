@@ -21,16 +21,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import unibo.as.cupido.client.CardsGameWidget;
-import unibo.as.cupido.client.CardsGameWidget.CardRole.State;
-import unibo.as.cupido.client.LocalChatWidget;
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
+import unibo.as.cupido.client.widgets.CardsGameWidget;
+import unibo.as.cupido.client.widgets.cardsgame.CardRole;
+import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
+import unibo.as.cupido.client.widgets.LocalChatWidget;
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 import unibo.as.cupido.shared.cometNotification.CardPlayed;
 import unibo.as.cupido.shared.cometNotification.GameEnded;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ViewerStateManagerImpl implements ViewerStateManager {
@@ -43,7 +47,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	private boolean frozen = false;
 
-	String username;
+	private String username;
 
 	private List<Serializable> pendingNotifications = new ArrayList<Serializable>();
 
@@ -58,20 +62,22 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 */
 	private List<Card> playedCards = new ArrayList<Card>();
 	private LocalChatWidget chatWidget;
+	private CupidoInterfaceAsync cupidoService;
 
 	/**
 	 * Initialize the state manager. The current user is a viewer.
 	 */
 	public ViewerStateManagerImpl(int tableSize, ScreenManager screenManager,
 			LocalChatWidget chatWidget, ObservedGameStatus observedGameStatus,
-			String username) {
+			String username, CupidoInterfaceAsync cupidoService) {
 
 		this.username = username;
 		this.screenManager = screenManager;
+		this.cupidoService = cupidoService;
 		this.chatWidget = chatWidget;
 		this.cardsGameWidget = new CardsGameWidget(tableSize,
 				observedGameStatus, null, new VerticalPanel(),
-				new CardsGameWidget.GameEventListener() {
+				new GameEventListener() {
 					@Override
 					public void onAnimationStart() {
 						currentState.handleAnimationStart();
@@ -84,9 +90,14 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 					@Override
 					public void onCardClicked(int player, Card card,
-							State state, boolean isRaised) {
+							CardRole.State state, boolean isRaised) {
 						// Nothing to do, viewers are not expected to click on
 						// cards.
+					}
+
+					@Override
+					public void onExit() {
+						exit();
 					}
 				});
 
@@ -253,6 +264,36 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	@Override
 	public void exit() {
+		if (frozen) {
+			System.out
+					.println("Client: notice: the exit() method was called while frozen, ignoring it.");
+			return;
+		}
+		
+		// The current animation (if any) is stopped.
+		freeze();
+		
+		// FIXME: Note that leaveTable() is called even if the game is already
+		// finished, even if this is not needed.
+		cupidoService.leaveTable(new AsyncCallback<Void>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				try {
+					throw caught;
+				} catch (NoSuchTableException e) {
+					// This can happen even if no problems occur.
+				} catch (Throwable e) {
+					// Can't call screenManager.displayGeneralErrorScreen() because
+					// the main screen has now the flow of control.
+					System.out.println("Client: got a fatal exception in leaveTable().");
+				}
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+			}
+		});
+		
 		screenManager.displayMainMenuScreen(username);
 	}
 
@@ -266,6 +307,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		return cardsGameWidget;
 	}
 
+	@Override
 	public List<PlayerInfo> getPlayerInfo() {
 		return players;
 	}
@@ -277,6 +319,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	@Override
 	public void freeze() {
+		cardsGameWidget.freeze();
 		currentState.freeze();
 		frozen = true;
 	}
@@ -308,25 +351,17 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	}
 
 	@Override
-	public void handlePlayerLeft(String player) {
+	public void handlePlayerReplaced(String name, int position) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the handlePlayerLeft() method was called while frozen, ignoring it.");
+					.println("Client: notice: the handlePlayerReplaced() method was called while frozen, ignoring it.");
 			return;
 		}
-		int i = 1;
-		while (i < 4 && players.get(i).name.equals(player))
-			i++;
-		if (i == 4) {
-			onFatalException(new Exception(
-					"An invalid PlayerLeft notification was received."));
-			return;
-		}
-		PlayerInfo x = players.get(i);
+		PlayerInfo x = players.get(position);
 		x.isBot = true;
-		x.name = null;
-		cardsGameWidget.setBot(i, x.name);
-		currentState.handlePlayerLeft(i);
+		x.name = name;
+		cardsGameWidget.setBot(position, name);
+		currentState.handlePlayerReplaced(name, position);
 	}
 
 	private void sendPendingNotifications() {

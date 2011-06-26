@@ -23,8 +23,8 @@ import java.util.List;
 
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
-import unibo.as.cupido.client.GlobalChatWidget;
-import unibo.as.cupido.client.GlobalChatWidget.ChatListener;
+import unibo.as.cupido.client.widgets.GlobalChatWidget;
+import unibo.as.cupido.client.widgets.GlobalChatWidget.ChatListener;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.MaxNumTableReachedException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
@@ -51,13 +51,12 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 	// The interval between subsequent polls to the (global) chat, in
 	// milliseconds.
-	final static int chatRefreshInterval = 2000;
+	private final static int chatRefreshInterval = 2000;
 
-	List<PushButton> buttons = new ArrayList<PushButton>();
+	private List<PushButton> buttons = new ArrayList<PushButton>();
 
 	// This is null when the user is not logged in.
 	private String username;
-	private final ScreenManager screenManager;
 	private Timer chatTimer;
 
 	private boolean stoppedRefreshing = false;
@@ -81,7 +80,6 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	public MainMenuScreen(final ScreenManager screenManager,
 			final String username, final CupidoInterfaceAsync cupidoService) {
 
-		this.screenManager = screenManager;
 		this.username = username;
 
 		setHeight(Cupido.height + "px");
@@ -342,6 +340,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		chatTimer.run();
 	}
 
+	@Override
 	public void freeze() {
 		for (PushButton w : buttons)
 			w.setEnabled(false);

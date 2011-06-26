@@ -17,7 +17,7 @@
 
 package unibo.as.cupido.client.playerstates;
 
-import unibo.as.cupido.client.CardsGameWidget.CardRole;
+import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.common.structures.Card;
 
 public interface PlayerState {
@@ -82,5 +82,5 @@ public interface PlayerState {
 	 */
 	public boolean handleGameStarted(Card[] myCards);
 
-	public void handlePlayerLeft(int player);
+	public void handlePlayerReplaced(String name, int position);
 }

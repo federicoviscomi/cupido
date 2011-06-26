@@ -15,16 +15,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.common.exception.FatalException;
+import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
@@ -46,12 +47,12 @@ public class BeforeGameWidget extends AbsolutePanel {
 	// The height of the players' labels that contain usernames and scores.
 	private static final int playerLabelHeight = 20;
 
-	HTML bottomLabel;
+	private HTML bottomLabel;
 	/*
 	 * labels.get(0) is the left label, and other labels follow in clockwise
 	 * order. This list has always 3 elements.
 	 */
-	List<HTML> labels = new ArrayList<HTML>();
+	private List<HTML> labels = new ArrayList<HTML>();
 
 	/*
 	 * A list containing the displayed "Add bot" buttons (if any).
@@ -59,32 +60,32 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * order. This list has always 3 elements. Each element may be null if there
 	 * is no button displayed in that position.
 	 */
-	List<PushButton> buttons = new ArrayList<PushButton>();
+	private List<PushButton> buttons = new ArrayList<PushButton>();
 
 	public interface Listener {
 		/**
 		 * This is called when the table is full of players and/or bots.
 		 */
-		void onTableFull();
+		public void onTableFull();
 
 		/**
 		 * This is called if the game is interrupted by another player (i.e. the
 		 * owner).
 		 */
-		void onGameEnded();
+		public void onGameEnded();
 
 		/**
 		 * This is called if the user chooses to exit.
 		 */
-		void onExit();
+		public void onExit();
 
 		/**
 		 * This is called if a call to the servlet fails with a fatal exception.
 		 */
-		void onFatalException(Throwable e);
+		public void onFatalException(Throwable e);
 	}
 
-	InitialTableStatus initialTableStatus;
+	private InitialTableStatus initialTableStatus;
 
 	private boolean isOwner;
 

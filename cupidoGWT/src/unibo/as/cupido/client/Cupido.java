@@ -27,6 +27,7 @@ import unibo.as.cupido.shared.cometNotification.GameStarted;
 import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
 import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
 import unibo.as.cupido.shared.cometNotification.PlayerLeft;
+import unibo.as.cupido.shared.cometNotification.PlayerReplaced;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -41,13 +42,14 @@ public class Cupido implements EntryPoint {
 
 	@SerialTypes({ CardPassed.class, CardPlayed.class, GameEnded.class,
 			GameStarted.class, NewLocalChatMessage.class,
-			NewPlayerJoined.class, PlayerLeft.class })
+			NewPlayerJoined.class, PlayerLeft.class, PlayerReplaced.class })
 	public static abstract class CupidoCometSerializer extends CometSerializer {
 	}
 
 	/**
 	 * This is the entry point method.
 	 */
+	@Override
 	public void onModuleLoad() {
 		ScreenManagerImpl screenManager = new ScreenManagerImpl();
 		RootPanel.get("mainContainer").add(screenManager);

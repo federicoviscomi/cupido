@@ -17,20 +17,15 @@
 
 package unibo.as.cupido.client.viewerstates;
 
-import unibo.as.cupido.client.CardsGameWidget;
+import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.common.structures.Card;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class GameEndedState implements ViewerState {
-
-	private PushButton exitButton;
 
 	private boolean frozen = false;
 
@@ -55,17 +50,6 @@ public class GameEndedState implements ViewerState {
 		text.setWordWrap(true);
 		panel.add(text);
 
-		exitButton = new PushButton("Esci");
-		exitButton.setEnabled(false);
-		exitButton.setWidth("80px");
-		exitButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				stateManager.exit();
-			}
-		});
-		panel.add(exitButton);
-
 		cardsGameWidget.setCornerWidget(panel);
 	}
 
@@ -75,7 +59,6 @@ public class GameEndedState implements ViewerState {
 
 	@Override
 	public void freeze() {
-		exitButton.setEnabled(false);
 		frozen = true;
 	}
 
@@ -86,7 +69,6 @@ public class GameEndedState implements ViewerState {
 					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(false);
 	}
 
 	@Override
@@ -96,7 +78,6 @@ public class GameEndedState implements ViewerState {
 					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(true);
 	}
 
 	@Override
@@ -130,16 +111,15 @@ public class GameEndedState implements ViewerState {
 
 		eventReceived = true;
 
-		exitButton.setEnabled(true);
 		cardsGameWidget.displayScores(matchPoints, playersTotalPoints);
 		return true;
 	}
 
 	@Override
-	public void handlePlayerLeft(int player) {
+	public void handlePlayerReplaced(String name, int position) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the PlayerLeft event was received while frozen, ignoring it.");
+					.println("Client: notice: the PlayerReplaced event was received while frozen, ignoring it.");
 			return;
 		}
 		// Nothing to do.
