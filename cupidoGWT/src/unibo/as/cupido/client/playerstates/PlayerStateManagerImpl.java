@@ -44,9 +44,9 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	private CardsGameWidget cardsGameWidget;
 	private int firstPlayerInTrick = -1;
 
-	boolean heartsBroken = false;
+	private boolean heartsBroken = false;
 
-	List<Serializable> pendingNotifications = new ArrayList<Serializable>();
+	private List<Serializable> pendingNotifications = new ArrayList<Serializable>();
 
 	/**
 	 * Some information about the players. The first element refers to the

@@ -49,16 +49,16 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
-	Widget currentScreenWidget = null;
-	Screen currentScreen = null;
+	private Widget currentScreenWidget = null;
+	private Screen currentScreen = null;
 
 	// This is used to check that no screen switches occur while switching
 	// screen.
-	boolean switchingScreen = false;
+	private boolean switchingScreen = false;
 
-	CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
+	private CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
 
-	CometMessageListener cometMessageListener;
+	private CometMessageListener cometMessageListener;
 
 	public ScreenManagerImpl() {
 		setHeight(Cupido.height + "px");

@@ -82,7 +82,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * executed with runPendingAnimations(). This is reset to `false' when such
 	 * animations complete.
 	 */
-	boolean someAnimationsPending = false;
+	private boolean someAnimationsPending = false;
 
 	/**
 	 * The movable widgets within the table.

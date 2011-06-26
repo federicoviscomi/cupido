@@ -41,11 +41,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class CardPassingState implements PlayerState {
 
-	List<Card> raisedCards = new ArrayList<Card>();
+	private List<Card> raisedCards = new ArrayList<Card>();
 	/**
 	 * Whether the user has already confirmed to pass the selected cards.
 	 */
-	boolean confirmed = false;
+	private boolean confirmed = false;
 	private PushButton okButton;
 	private PushButton exitButton;
 	private CardsGameWidget cardsGameWidget;

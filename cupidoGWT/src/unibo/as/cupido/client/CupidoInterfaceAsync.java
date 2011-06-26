@@ -31,46 +31,46 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface CupidoInterfaceAsync {
 
-	void logout(AsyncCallback<Void> callback);
+	public void logout(AsyncCallback<Void> callback);
 
-	void isUserRegistered(String username, AsyncCallback<Boolean> callback);
+	public void isUserRegistered(String username, AsyncCallback<Boolean> callback);
 
-	void registerUser(String username, String password,
+	public void registerUser(String username, String password,
 			AsyncCallback<Void> callback);
 
-	void login(String username, String password, AsyncCallback<Boolean> callback);
+	public void login(String username, String password, AsyncCallback<Boolean> callback);
 
-	void getTableList(AsyncCallback<Collection<TableInfoForClient>> callback);
+	public void getTableList(AsyncCallback<Collection<TableInfoForClient>> callback);
 
-	void createTable(AsyncCallback<InitialTableStatus> callback);
+	public void createTable(AsyncCallback<InitialTableStatus> callback);
 
-	void joinTable(String server, int tableId,
+	public void joinTable(String server, int tableId,
 			AsyncCallback<InitialTableStatus> callback);
 
-	void viewTable(String server, int tableId,
+	public void viewTable(String server, int tableId,
 			AsyncCallback<ObservedGameStatus> callback);
 
-	void openCometConnection(AsyncCallback<Void> callback);
+	public void openCometConnection(AsyncCallback<Void> callback);
 
-	void leaveTable(AsyncCallback<Void> callback);
+	public void leaveTable(AsyncCallback<Void> callback);
 
-	void playCard(Card card, AsyncCallback<Void> callback);
+	public void playCard(Card card, AsyncCallback<Void> callback);
 
-	void passCards(Card[] cards, AsyncCallback<Void> callback);
+	public void passCards(Card[] cards, AsyncCallback<Void> callback);
 
-	void addBot(int position, AsyncCallback<String> callback);
+	public void addBot(int position, AsyncCallback<String> callback);
 
-	void viewLastMessages(AsyncCallback<ChatMessage[]> callback);
+	public void viewLastMessages(AsyncCallback<ChatMessage[]> callback);
 
-	void sendGlobalChatMessage(String message, AsyncCallback<Void> callback);
+	public void sendGlobalChatMessage(String message, AsyncCallback<Void> callback);
 
-	void sendLocalChatMessage(String message, AsyncCallback<Void> callback);
+	public void sendLocalChatMessage(String message, AsyncCallback<Void> callback);
 
-	void destroySession(AsyncCallback<Void> callback);
+	public void destroySession(AsyncCallback<Void> callback);
 
-	void getMyRank(AsyncCallback<RankingEntry> callback);
+	public void getMyRank(AsyncCallback<RankingEntry> callback);
 
-	void getLocalRank(AsyncCallback<ArrayList<RankingEntry>> callback);
+	public void getLocalRank(AsyncCallback<ArrayList<RankingEntry>> callback);
 
-	void getTopRank(AsyncCallback<ArrayList<RankingEntry>> callback);
+	public void getTopRank(AsyncCallback<ArrayList<RankingEntry>> callback);
 }

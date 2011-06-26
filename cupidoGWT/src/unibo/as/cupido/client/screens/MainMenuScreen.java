@@ -51,9 +51,9 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 	// The interval between subsequent polls to the (global) chat, in
 	// milliseconds.
-	final static int chatRefreshInterval = 2000;
+	private final static int chatRefreshInterval = 2000;
 
-	List<PushButton> buttons = new ArrayList<PushButton>();
+	private List<PushButton> buttons = new ArrayList<PushButton>();
 
 	// This is null when the user is not logged in.
 	private String username;

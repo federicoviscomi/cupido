@@ -43,7 +43,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	private boolean frozen = false;
 
-	String username;
+	private String username;
 
 	private List<Serializable> pendingNotifications = new ArrayList<Serializable>();
 

@@ -157,7 +157,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void sendLocalChatMessage(String message) throws IllegalArgumentException,
+	public void sendLocalChatMessage(String message) throws IllegalArgumentException,
 			NoSuchTableException, UserNotAuthenticatedException, FatalException;
 
 	/**
@@ -168,7 +168,7 @@ public interface CupidoInterface extends RemoteService {
 	 *             if player is not playing or viewing a game
 	 * @throws FatalException
 	 */
-	void leaveTable() throws UserNotAuthenticatedException,
+	public void leaveTable() throws UserNotAuthenticatedException,
 			NoSuchTableException, FatalException;
 
 	/**
@@ -184,7 +184,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void playCard(Card card) throws IllegalMoveException, FatalException,
+	public void playCard(Card card) throws IllegalMoveException, FatalException,
 			NoSuchTableException, IllegalArgumentException,
 			UserNotAuthenticatedException;
 
@@ -202,7 +202,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void passCards(Card[] cards) throws IllegalStateException,
+	public void passCards(Card[] cards) throws IllegalStateException,
 			IllegalArgumentException, NoSuchTableException,
 			UserNotAuthenticatedException, FatalException;
 
@@ -248,7 +248,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws UserNotAuthenticatedException
 	 * @throws FatalException
 	 */
-	void sendGlobalChatMessage(String message) throws IllegalArgumentException,
+	public void sendGlobalChatMessage(String message) throws IllegalArgumentException,
 			UserNotAuthenticatedException, FatalException;
 
 	/**

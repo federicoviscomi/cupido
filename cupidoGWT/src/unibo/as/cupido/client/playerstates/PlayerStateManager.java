@@ -28,8 +28,8 @@ public interface PlayerStateManager {
 		/**
 		 * This is relevant only when `isBot' is false.
 		 */
-		String name;
-		boolean isBot;
+		public String name;
+		public boolean isBot;
 	}
 
 	/**
@@ -82,7 +82,7 @@ public interface PlayerStateManager {
 
 	public void transitionToGameEnded();
 
-	CardsGameWidget getWidget();
+	public CardsGameWidget getWidget();
 
 	public void freeze();
 

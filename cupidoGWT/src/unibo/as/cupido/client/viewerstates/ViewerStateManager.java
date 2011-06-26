@@ -28,8 +28,8 @@ public interface ViewerStateManager {
 		/**
 		 * This is relevant only when `isBot' is false.
 		 */
-		String name;
-		boolean isBot;
+		public String name;
+		public boolean isBot;
 	}
 
 	/**
@@ -70,7 +70,7 @@ public interface ViewerStateManager {
 
 	public List<PlayerInfo> getPlayerInfo();
 
-	CardsGameWidget getWidget();
+	public CardsGameWidget getWidget();
 
 	public void transitionToEndOfTrick();
 
