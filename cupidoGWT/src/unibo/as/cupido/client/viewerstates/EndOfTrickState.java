@@ -17,12 +17,15 @@
 
 package unibo.as.cupido.client.viewerstates;
 
+import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.GWTAnimation;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -53,7 +56,6 @@ public class EndOfTrickState implements ViewerState {
 		panel.add(text);
 
 		exitButton = new PushButton("Esci");
-		exitButton.setEnabled(false);
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -98,7 +100,6 @@ public class EndOfTrickState implements ViewerState {
 					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(false);
 	}
 
 	@Override
@@ -108,7 +109,6 @@ public class EndOfTrickState implements ViewerState {
 					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(true);
 	}
 
 	@Override

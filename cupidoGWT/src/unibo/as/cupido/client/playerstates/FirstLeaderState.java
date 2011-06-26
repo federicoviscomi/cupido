@@ -114,7 +114,6 @@ public class FirstLeaderState implements PlayerState {
 					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(false);
 	}
 
 	@Override
@@ -124,7 +123,6 @@ public class FirstLeaderState implements PlayerState {
 					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(true);
 	}
 
 	@Override

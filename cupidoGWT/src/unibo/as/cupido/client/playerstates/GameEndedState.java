@@ -59,12 +59,9 @@ public class GameEndedState implements PlayerState {
 
 		exitButton = new PushButton("Esci");
 		exitButton.setWidth("80px");
-		exitButton.setEnabled(false);
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				// FIXME: Should cupidoService.leaveTable() be called here or
-				// not?
 				stateManager.exit();
 			}
 		});
@@ -90,7 +87,6 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(false);
 	}
 
 	@Override
@@ -100,7 +96,6 @@ public class GameEndedState implements PlayerState {
 					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(true);
 	}
 
 	@Override
@@ -158,7 +153,6 @@ public class GameEndedState implements PlayerState {
 
 		eventReceived = true;
 
-		exitButton.setEnabled(true);
 		cardsGameWidget.displayScores(matchPoints, playersTotalPoints);
 		return true;
 	}

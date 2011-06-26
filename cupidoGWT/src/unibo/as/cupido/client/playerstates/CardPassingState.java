@@ -205,7 +205,6 @@ public class CardPassingState implements PlayerState {
 			return;
 		}
 		okButton.setEnabled(false);
-		exitButton.setEnabled(false);
 	}
 
 	@Override
@@ -216,7 +215,6 @@ public class CardPassingState implements PlayerState {
 			return;
 		}
 		okButton.setEnabled(!confirmed && raisedCards.size() == 3);
-		exitButton.setEnabled(!confirmed);
 	}
 
 	@Override

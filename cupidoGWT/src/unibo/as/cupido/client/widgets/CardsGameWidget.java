@@ -99,10 +99,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	private int tableSize;
 
 	/**
-	 * This is true when an animation involving the table is running, and so the
-	 * table must be insensitive to commands.
+	 * The currently running animation (if any).
+	 * If this is not null, the table must not react to commands.
 	 */
-	private boolean runningAnimation = false;
+	private GWTAnimation currentAnimation = null;
 
 	private GameEventListener listener;
 
@@ -371,7 +371,7 @@ public class CardsGameWidget extends AbsolutePanel {
 				cardWidget.addClickHandler(new ClickHandler() {
 					@Override
 					public void onClick(ClickEvent event) {
-						if (runningAnimation)
+						if (currentAnimation != null)
 							// Clicking a card during an animation does nothing.
 							return;
 
@@ -460,12 +460,11 @@ public class CardsGameWidget extends AbsolutePanel {
 			final TableLayout targetTableLayout,
 			GWTAnimation.AnimationCompletedListener animationCompletedListener) {
 
-		assert !runningAnimation;
+		assert currentAnimation == null;
 
-		runningAnimation = true;
 		listener.onAnimationStart();
 
-		GWTAnimation animation = new SimpleAnimation(duration) {
+		currentAnimation = new SimpleAnimation(duration) {
 			@Override
 			public void onUpdate(double progress) {
 				for (CardWidget widget : movableWidgets.cards) {
@@ -486,14 +485,14 @@ public class CardsGameWidget extends AbsolutePanel {
 			@Override
 			public void onComplete() {
 				super.onComplete();
-				assert runningAnimation;
-				runningAnimation = false;
+				assert currentAnimation != null;
+				currentAnimation = null;
 				previousTableLayout = targetTableLayout;
 				someAnimationsPending = false;
 				listener.onAnimationEnd();
 			}
 		};
-		animation.run(animationCompletedListener);
+		currentAnimation.run(animationCompletedListener);
 	}
 
 	/**
@@ -514,7 +513,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			return;
 		}
 
-		assert !runningAnimation;
+		assert currentAnimation == null;
 		assert !someAnimationsPending;
 
 		CardWidget widget = null;
@@ -566,7 +565,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			return;
 		}
 
-		assert !runningAnimation;
+		assert currentAnimation == null;
 		assert !someAnimationsPending;
 		assert card != null;
 
@@ -617,7 +616,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 
 		assert card != null;
-		assert !runningAnimation;
+		assert currentAnimation == null;
 
 		CardWidget widget = null;
 
@@ -660,7 +659,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 
 		assert card != null;
-		assert !runningAnimation;
+		assert currentAnimation == null;
 
 		CardWidget widget = null;
 
@@ -704,7 +703,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 
 		assert card != null;
-		assert !runningAnimation;
+		assert currentAnimation == null;
 
 		CardWidget widget = null;
 
@@ -748,7 +747,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 
 		assert card != null;
-		assert !runningAnimation;
+		assert currentAnimation == null;
 
 		CardWidget widget = null;
 
@@ -799,7 +798,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			return;
 		}
 
-		assert !runningAnimation;
+		assert currentAnimation == null;
 		assert !someAnimationsPending;
 
 		listener.onAnimationStart();
@@ -1276,6 +1275,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	public void freeze() {
+		if (currentAnimation != null) {
+			currentAnimation.cancel();
+			currentAnimation = null;
+		}
 		frozen = true;
 	}
 

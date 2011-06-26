@@ -56,7 +56,6 @@ public class WaitingFirstLeadState implements ViewerState {
 		panel.add(text);
 
 		exitButton = new PushButton("Esci");
-		exitButton.setEnabled(false);
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -86,7 +85,6 @@ public class WaitingFirstLeadState implements ViewerState {
 					.println("Client: notice: the handleAnimationStart() method was called while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(false);
 	}
 
 	@Override
@@ -96,7 +94,6 @@ public class WaitingFirstLeadState implements ViewerState {
 					.println("Client: notice: the handleAnimationEnd() method was called while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(true);
 	}
 
 	@Override

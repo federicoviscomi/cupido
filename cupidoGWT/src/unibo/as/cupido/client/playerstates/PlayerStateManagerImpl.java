@@ -26,6 +26,7 @@ import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.client.widgets.CardsGameWidget.CardRole.State;
 import unibo.as.cupido.client.widgets.LocalChatWidget;
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
@@ -35,6 +36,7 @@ import unibo.as.cupido.shared.cometNotification.CardPlayed;
 import unibo.as.cupido.shared.cometNotification.GameEnded;
 import unibo.as.cupido.shared.cometNotification.GameStarted;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class PlayerStateManagerImpl implements PlayerStateManager {
@@ -358,6 +360,30 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 
+		// The current animation (if any) is stopped.
+		freeze();
+		
+		// FIXME: Note that leaveTable() is called even if the game is already
+		// finished, even if this is not needed.
+		cupidoService.leaveTable(new AsyncCallback<Void>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				try {
+					throw caught;
+				} catch (NoSuchTableException e) {
+					// This can happen even if no problems occur.
+				} catch (Throwable e) {
+					// Can't call screenManager.displayGeneralErrorScreen() because
+					// the main screen has now the flow of control.
+					System.out.println("Client: got a fatal exception in leaveTable().");
+				}
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+			}
+		});
+		
 		screenManager.displayMainMenuScreen(username);
 	}
 
@@ -377,7 +403,9 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	@Override
 	public void freeze() {
+		cardsGameWidget.freeze();
 		currentState.freeze();
+		frozen = true;
 	}
 
 	@Override

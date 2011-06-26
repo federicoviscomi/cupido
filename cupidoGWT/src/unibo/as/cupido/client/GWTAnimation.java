@@ -23,6 +23,11 @@ public interface GWTAnimation {
 	 * @return The duration of the animation, in milliseconds.
 	 */
 	public int duration();
+	
+	/**
+	 * Interrupts the animation, if it is running.
+	 */
+	public void cancel();
 
 	/**
 	 * Start the animation. When it finishes, the callback is invoked.

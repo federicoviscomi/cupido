@@ -59,7 +59,7 @@ public interface ViewerStateManager {
 	public int getRemainingTricks();
 
 	/**
-	 * Exits from the game.
+	 * Exits from the game, stopping the current animation (if any).
 	 */
 	public void exit();
 

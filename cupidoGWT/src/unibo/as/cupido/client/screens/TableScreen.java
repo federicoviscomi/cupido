@@ -158,6 +158,7 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	public void prepareRemoval() {
 	}
 
+	@Override
 	public void freeze() {
 		tableWidget.freeze();
 		chatWidget.freeze();

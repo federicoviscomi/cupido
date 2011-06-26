@@ -56,7 +56,6 @@ public class GameEndedState implements ViewerState {
 		panel.add(text);
 
 		exitButton = new PushButton("Esci");
-		exitButton.setEnabled(false);
 		exitButton.setWidth("80px");
 		exitButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -86,7 +85,6 @@ public class GameEndedState implements ViewerState {
 					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(false);
 	}
 
 	@Override
@@ -96,7 +94,6 @@ public class GameEndedState implements ViewerState {
 					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
 			return;
 		}
-		exitButton.setEnabled(true);
 	}
 
 	@Override
@@ -130,7 +127,6 @@ public class GameEndedState implements ViewerState {
 
 		eventReceived = true;
 
-		exitButton.setEnabled(true);
 		cardsGameWidget.displayScores(matchPoints, playersTotalPoints);
 		return true;
 	}
