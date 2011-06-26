@@ -32,7 +32,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 	/**
 	 * The width of the chat sidebar.
 	 */
-	public static final int chatWidth = 200;
+	public static final int chatWidth = Cupido.width - Cupido.height;
 	private HeartsObservedTableWidget tableWidget;
 	private LocalChatWidget chatWidget;
 
@@ -46,8 +46,6 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
-
-		assert Cupido.height == Cupido.width - chatWidth;
 
 		chatWidget = new LocalChatWidget(username,
 				new LocalChatWidget.MessageSender() {

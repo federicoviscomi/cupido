@@ -32,7 +32,7 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	/**
 	 * The width of the chat sidebar.
 	 */
-	public static final int chatWidth = 200;
+	public static final int chatWidth = Cupido.width - Cupido.height;
 	private HeartsTableWidget tableWidget;
 	private LocalChatWidget chatWidget;
 
@@ -43,8 +43,6 @@ public class TableScreen extends AbsolutePanel implements Screen {
 			int userScore, final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
-
-		assert Cupido.height == Cupido.width - chatWidth;
 
 		chatWidget = new LocalChatWidget(username,
 				new LocalChatWidget.MessageSender() {
