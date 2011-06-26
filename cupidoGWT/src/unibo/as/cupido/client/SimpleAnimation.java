@@ -23,7 +23,7 @@ public abstract class SimpleAnimation implements GWTAnimation {
 
 	private int ms;
 
-	SimpleAnimation(int ms) {
+	public SimpleAnimation(int ms) {
 		this.ms = ms;
 	}
 
