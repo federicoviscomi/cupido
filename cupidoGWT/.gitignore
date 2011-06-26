@@ -1,2 +1,3 @@
-war/WEB-INF/classes/unibo
-.gwt
+/war/WEB-INF/classes/unibo
+/war/WEB-INF/deploy
+/.gwt
