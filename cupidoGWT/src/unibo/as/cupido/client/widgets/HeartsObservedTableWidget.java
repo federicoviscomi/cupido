@@ -225,7 +225,9 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		if (beforeGameWidget != null) {
 			beforeGameWidget.handlePlayerLeft(player);
 		} else {
-			stateManager.handlePlayerLeft(player);
+			screenManager
+			.displayGeneralErrorScreen(new Exception(
+					"A PlayerLeft notification was received while playing a game that was already started."));
 		}
 	}
 
@@ -245,6 +247,21 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 			screenManager
 					.displayGeneralErrorScreen(new Exception(
 							"A NewPlayerJoined notification was received while viewing an already-started game."));
+		}
+	}
+
+	public void handlePlayerReplaced(String name, int position) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: received a PlayerReplaced notification while frozen, ignoring it.");
+			return;
+		}
+		if (beforeGameWidget != null) {
+			screenManager
+			.displayGeneralErrorScreen(new Exception(
+					"A PlayerReplaced notification was received while viewing a game that wasn't started yet."));
+		} else {
+			stateManager.handlePlayerReplaced(name, position);
 		}
 	}
 }

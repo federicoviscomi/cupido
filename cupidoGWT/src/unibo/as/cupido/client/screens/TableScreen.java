@@ -133,6 +133,16 @@ public class TableScreen extends AbsolutePanel implements Screen {
 			}
 
 			@Override
+			public void onPlayerReplaced(String name, int position) {
+				if (frozen) {
+					System.out
+							.println("Client: notice: the PlayerReplaced notification was received while frozen, ignoring it.");
+					return;
+				}
+				tableWidget.handlePlayerReplaced(name, position);
+			}
+
+			@Override
 			public void onPlayerLeft(String player) {
 				if (frozen) {
 					System.out

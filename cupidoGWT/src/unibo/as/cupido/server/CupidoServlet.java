@@ -72,6 +72,7 @@ import unibo.as.cupido.shared.cometNotification.GameStarted;
 import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
 import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
 import unibo.as.cupido.shared.cometNotification.PlayerLeft;
+import unibo.as.cupido.shared.cometNotification.PlayerReplaced;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -233,10 +234,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					System.out.println("SerletNotInterf: session null");
 					return;
 				}
-				NewPlayerJoined j = new NewPlayerJoined();
-				j.name = botName;
-				j.isBot = true;
-				cometSession.enqueue(j);
+				PlayerReplaced x = new PlayerReplaced();
+				x.name = botName;
+				x.position = position;
+				cometSession.enqueue(x);
 			}
 
 			/**

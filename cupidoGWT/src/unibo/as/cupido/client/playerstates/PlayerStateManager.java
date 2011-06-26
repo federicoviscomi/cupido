@@ -94,5 +94,5 @@ public interface PlayerStateManager {
 
 	public void handleGameStarted(Card[] myCards);
 
-	public void handlePlayerLeft(String player);
+	public void handlePlayerReplaced(String name, int position);
 }

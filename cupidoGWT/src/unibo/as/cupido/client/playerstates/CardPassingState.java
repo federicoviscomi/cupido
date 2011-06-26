@@ -270,16 +270,8 @@ public class CardPassingState implements PlayerState {
 					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
 			return false;
 		}
-		if (confirmed) {
-			// Let the next state handle this.
-			return false;
-		}
-		// This notification should never arrive in this state.
-		freeze();
-		stateManager
-				.onFatalException(new Exception(
-						"The CardPlayed notification was received when the client was in the CardPassing state"));
-		return true;
+		// Let the next state handle this.
+		return false;
 	}
 
 	@Override
@@ -310,10 +302,10 @@ public class CardPassingState implements PlayerState {
 	}
 
 	@Override
-	public void handlePlayerLeft(int player) {
+	public void handlePlayerReplaced(String name, int position) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
+					.println("Client: notice: the handlePlayerReplaced() event was received while frozen, ignoring it.");
 			return;
 		}
 		// Nothing to do.

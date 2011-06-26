@@ -135,10 +135,10 @@ public class EndOfTrickState implements ViewerState {
 	}
 
 	@Override
-	public void handlePlayerLeft(int player) {
+	public void handlePlayerReplaced(String name, int position) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the PlayerLeft event was received while frozen, ignoring it.");
+					.println("Client: notice: the PlayerReplaced event was received while frozen, ignoring it.");
 			return;
 		}
 		// Nothing to do.

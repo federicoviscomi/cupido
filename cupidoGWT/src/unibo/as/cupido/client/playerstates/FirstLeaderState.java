@@ -249,10 +249,10 @@ public class FirstLeaderState implements PlayerState {
 	}
 
 	@Override
-	public void handlePlayerLeft(int player) {
+	public void handlePlayerReplaced(String name, int position) {
 		if (frozen) {
 			System.out
-					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
+					.println("Client: notice: the handlePlayerReplaced() event was received while frozen, ignoring it.");
 			return;
 		}
 		// Nothing to do.

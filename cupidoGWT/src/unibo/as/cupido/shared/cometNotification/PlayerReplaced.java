@@ -20,26 +20,14 @@ package unibo.as.cupido.shared.cometNotification;
 import java.io.Serializable;
 
 /**
- * This notification in sent when a player or a bot joins the table
- * before the game start.
- * 
- * If {@link isBot}==true, the variable {@link points} is meaningless.
+ * This notification in sent when a player leaves a table during the game,
+ * and he is not the owner, so it is replaced with a bot.
  */
-public class NewPlayerJoined implements Serializable {
+public class PlayerReplaced implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	public String name;
-
-	/**
-	 * isBot is true is the player is a bot; otherwise is false
-	 */
-	public boolean isBot;
-
-	/*
-	 * player total points
-	 */
-	public int points;
 
 	/**
 	 * For viewers, position=1 means the player at the owner's left, and so
@@ -50,13 +38,11 @@ public class NewPlayerJoined implements Serializable {
 	 */
 	public int position;
 	
-	public NewPlayerJoined() {
+	public PlayerReplaced() {
 	}
 	
-	public NewPlayerJoined(String name, boolean isBot, int points, int position) {
+	public PlayerReplaced(String name, int position) {
 		this.name = name;
-		this.isBot = isBot;
-		this.points = points;
 		this.position = position;
 	}
 }

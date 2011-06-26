@@ -41,6 +41,7 @@ import unibo.as.cupido.shared.cometNotification.GameStarted;
 import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
 import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
 import unibo.as.cupido.shared.cometNotification.PlayerLeft;
+import unibo.as.cupido.shared.cometNotification.PlayerReplaced;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -135,6 +136,10 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 										PlayerLeft x = (PlayerLeft) message;
 										cometMessageListener
 												.onPlayerLeft(x.player);
+									} else if (message instanceof PlayerReplaced) {
+										PlayerReplaced x = (PlayerReplaced) message;
+										cometMessageListener
+												.onPlayerReplaced(x.name, x.position);
 									} else {
 										displayGeneralErrorScreen(new Exception(
 												"Unhandled comet message: "

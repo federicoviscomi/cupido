@@ -432,25 +432,17 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	}
 
 	@Override
-	public void handlePlayerLeft(String player) {
+	public void handlePlayerReplaced(String name, int position) {
 		if (frozen) {
 			System.out
 					.println("Client: notice: the handlePlayerLeft() event was received while frozen, ignoring it.");
 			return;
 		}
-		int i = 1;
-		while (i < 4 && players.get(i).name.equals(player))
-			i++;
-		if (i == 4) {
-			onFatalException(new Exception(
-					"An invalid PlayerLeft notification was received."));
-			return;
-		}
-		PlayerInfo x = players.get(i);
+		PlayerInfo x = players.get(position);
 		x.isBot = true;
-		x.name = null;
-		cardsGameWidget.setBot(i, x.name);
-		currentState.handlePlayerLeft(i);
+		x.name = name;
+		cardsGameWidget.setBot(position, name);
+		currentState.handlePlayerReplaced(name, position);
 	}
 
 	private void sendPendingNotifications() {

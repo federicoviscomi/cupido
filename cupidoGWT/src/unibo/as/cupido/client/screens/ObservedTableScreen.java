@@ -131,6 +131,16 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 			}
 
 			@Override
+			public void onPlayerReplaced(String name, int position) {
+				if (frozen) {
+					System.out
+							.println("Client: notice: the PlayerReplaced notification was received while frozen, ignoring it.");
+					return;
+				}
+				tableWidget.handlePlayerReplaced(name, position);
+			}
+			
+			@Override
 			public void onGameStarted(Card[] myCards) {
 				if (frozen) {
 					System.out

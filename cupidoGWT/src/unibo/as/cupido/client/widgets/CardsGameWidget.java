@@ -1279,9 +1279,14 @@ public class CardsGameWidget extends AbsolutePanel {
 		frozen = true;
 	}
 
-	public void setBot(int i, String name) {
-		players.get(i).isBot = true;
-		players.get(i).name = name;
+	/**
+	 * @param position The position where the bot should be inserted.
+	 *                 0 means at the bottom, and other positions follow in clockwise order.
+	 * @param name The name of the bot.
+	 */
+	public void setBot(int position, String name) {
+		players.get(position).isBot = true;
+		players.get(position).name = name;
 		updateLabels();
 	}
 }

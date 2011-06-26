@@ -86,5 +86,5 @@ public interface ViewerStateManager {
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
 
-	public void handlePlayerLeft(String player);
+	public void handlePlayerReplaced(String name, int i);
 }

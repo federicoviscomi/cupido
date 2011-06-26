@@ -82,5 +82,5 @@ public interface PlayerState {
 	 */
 	public boolean handleGameStarted(Card[] myCards);
 
-	public void handlePlayerLeft(int player);
+	public void handlePlayerReplaced(String name, int position);
 }
