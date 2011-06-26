@@ -38,8 +38,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class WaitingFirstLeadState implements PlayerState {
 
-	private PushButton exitButton;
-
 	private HTML text;
 
 	private CardsGameWidget cardsGameWidget;
@@ -69,34 +67,6 @@ public class WaitingFirstLeadState implements PlayerState {
 		text.setWordWrap(true);
 		panel.add(text);
 
-		exitButton = new PushButton("Esci");
-		exitButton.setWidth("80px");
-		exitButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				freeze();
-				cupidoService.leaveTable(new AsyncCallback<Void>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						try {
-							throw caught;
-						} catch (NoSuchTableException e) {
-							// The table has been destroyed in the meantime,
-							// nothing to do.
-						} catch (Throwable e) {
-							stateManager.onFatalException(e);
-						}
-					}
-
-					@Override
-					public void onSuccess(Void result) {
-						stateManager.exit();
-					}
-				});
-			}
-		});
-		panel.add(exitButton);
-
 		cardsGameWidget.setCornerWidget(panel);
 	}
 
@@ -106,7 +76,6 @@ public class WaitingFirstLeadState implements PlayerState {
 
 	@Override
 	public void freeze() {
-		exitButton.setEnabled(false);
 		frozen = true;
 	}
 

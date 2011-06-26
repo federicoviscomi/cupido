@@ -40,8 +40,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class CardPassingWaitingState implements PlayerState {
 
-	private PushButton exitButton;
-
 	private CardsGameWidget cardsGameWidget;
 
 	private PlayerStateManager stateManager;
@@ -70,34 +68,6 @@ public class CardPassingWaitingState implements PlayerState {
 		text.setWordWrap(true);
 		panel.add(text);
 
-		exitButton = new PushButton("Esci");
-		exitButton.setWidth("80px");
-		exitButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				freeze();
-				cupidoService.leaveTable(new AsyncCallback<Void>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						try {
-							throw caught;
-						} catch (NoSuchTableException e) {
-							// The table has been destroyed in the meantime,
-							// nothing to do.
-						} catch (Throwable e) {
-							stateManager.onFatalException(e);
-						}
-					}
-
-					@Override
-					public void onSuccess(Void result) {
-						stateManager.exit();
-					}
-				});
-			}
-		});
-		panel.add(exitButton);
-
 		cardsGameWidget.setCornerWidget(panel);
 	}
 
@@ -107,7 +77,6 @@ public class CardPassingWaitingState implements PlayerState {
 
 	@Override
 	public void freeze() {
-		exitButton.setEnabled(false);
 		frozen = false;
 	}
 

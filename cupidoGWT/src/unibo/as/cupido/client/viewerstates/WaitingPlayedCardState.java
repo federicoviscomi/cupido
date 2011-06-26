@@ -33,8 +33,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class WaitingPlayedCardState implements ViewerState {
 
-	private PushButton exitButton;
-
 	private ViewerStateManager stateManager;
 
 	private CardsGameWidget cardsGameWidget;
@@ -66,16 +64,6 @@ public class WaitingPlayedCardState implements ViewerState {
 		panel.add(label);
 		recomputeLabelMessage();
 
-		exitButton = new PushButton("Esci");
-		exitButton.setWidth("80px");
-		exitButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				stateManager.exit();
-			}
-		});
-		panel.add(exitButton);
-
 		cardsGameWidget.setCornerWidget(panel);
 	}
 
@@ -95,7 +83,6 @@ public class WaitingPlayedCardState implements ViewerState {
 
 	@Override
 	public void freeze() {
-		exitButton.setEnabled(false);
 		frozen = true;
 	}
 

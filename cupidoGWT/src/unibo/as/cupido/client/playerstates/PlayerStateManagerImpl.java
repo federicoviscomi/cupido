@@ -159,6 +159,11 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 						currentState.handleCardClicked(player, card, state,
 								isRaised);
 					}
+
+					@Override
+					public void onExit() {
+						exit();
+					}
 				});
 
 		players = new ArrayList<PlayerInfo>();

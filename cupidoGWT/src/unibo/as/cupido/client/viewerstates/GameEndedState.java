@@ -30,8 +30,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class GameEndedState implements ViewerState {
 
-	private PushButton exitButton;
-
 	private boolean frozen = false;
 
 	private CardsGameWidget cardsGameWidget;
@@ -55,16 +53,6 @@ public class GameEndedState implements ViewerState {
 		text.setWordWrap(true);
 		panel.add(text);
 
-		exitButton = new PushButton("Esci");
-		exitButton.setWidth("80px");
-		exitButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				stateManager.exit();
-			}
-		});
-		panel.add(exitButton);
-
 		cardsGameWidget.setCornerWidget(panel);
 	}
 
@@ -74,7 +62,6 @@ public class GameEndedState implements ViewerState {
 
 	@Override
 	public void freeze() {
-		exitButton.setEnabled(false);
 		frozen = true;
 	}
 

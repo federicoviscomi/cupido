@@ -40,7 +40,10 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class CardsGameWidget extends AbsolutePanel {
@@ -107,6 +110,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	private GameEventListener listener;
 
 	private Widget cornerWidget = null;
+	
+	private PushButton exitButton;
 
 	private boolean frozen = false;
 
@@ -263,6 +268,14 @@ public class CardsGameWidget extends AbsolutePanel {
 		 */
 		public void onCardClicked(int player, Card card, CardRole.State state,
 				boolean isRaised);
+		
+		/**
+		 * This is called when the user clicks on the exit button.
+		 * 
+		 * Note that clicking the button only triggers this method; if the
+		 * caller wants to freeze this widget, it must do so explicitly.
+		 */
+		public void onExit();
 	}
 
 	/**
@@ -276,8 +289,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	 *            The cards of the bottom player. If this is null, the cards are
 	 *            covered, and their number is extracted from gameStatus.
 	 * @param cornerWidget
-	 *            An arbitrary 200x200 pixel widget placed in the bottom-right
-	 *            corner.
+	 *            An arbitrary 200x150 pixel widget placed in the bottom-right
+	 *            corner, above the exit button.
 	 */
 	public CardsGameWidget(int tableSize, ObservedGameStatus gameStatus,
 			Card[] bottomPlayerCards, Widget cornerWidget,
@@ -291,6 +304,26 @@ public class CardsGameWidget extends AbsolutePanel {
 		this.listener = listener;
 
 		setCornerWidget(cornerWidget);
+		
+		{
+			VerticalPanel panel = new VerticalPanel();
+			panel.setWidth("200px");
+			panel.setHeight("50px");
+			panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+			add(panel, tableSize - 200, tableSize - 50);
+			exitButton = new PushButton("Esci");
+			exitButton.setWidth("80px");
+			
+			final CardsGameWidget x = this;
+			exitButton.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					x.listener.onExit();
+				}
+			});
+			panel.add(exitButton);
+		}
 
 		movableWidgets = new MovableWidgets();
 		movableWidgets.cards = new ArrayList<CardWidget>();
@@ -1172,7 +1205,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 		this.cornerWidget = cornerWidget;
 		cornerWidget.setWidth("200px");
-		cornerWidget.setHeight("200px");
+		cornerWidget.setHeight("150px");
 		add(cornerWidget, tableSize - 200, tableSize - 200);
 	}
 
@@ -1279,6 +1312,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			currentAnimation.cancel();
 			currentAnimation = null;
 		}
+		exitButton.setEnabled(false);
 		frozen = true;
 	}
 

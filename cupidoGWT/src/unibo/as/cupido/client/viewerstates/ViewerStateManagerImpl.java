@@ -93,6 +93,11 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 						// Nothing to do, viewers are not expected to click on
 						// cards.
 					}
+
+					@Override
+					public void onExit() {
+						exit();
+					}
 				});
 
 		players = new ArrayList<PlayerInfo>();

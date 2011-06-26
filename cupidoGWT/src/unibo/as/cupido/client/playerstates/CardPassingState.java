@@ -47,7 +47,6 @@ public class CardPassingState implements PlayerState {
 	 */
 	private boolean confirmed = false;
 	private PushButton okButton;
-	private PushButton exitButton;
 	private CardsGameWidget cardsGameWidget;
 
 	private boolean frozen = false;
@@ -85,34 +84,6 @@ public class CardPassingState implements PlayerState {
 			}
 		});
 		cornerWidget.add(okButton);
-
-		exitButton = new PushButton("Esci");
-		exitButton.setWidth("80px");
-		exitButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				freeze();
-				cupidoService.leaveTable(new AsyncCallback<Void>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						try {
-							throw caught;
-						} catch (NoSuchTableException e) {
-							// The table has been destroyed in the meantime,
-							// nothing to do.
-						} catch (Throwable e) {
-							stateManager.onFatalException(e);
-						}
-					}
-
-					@Override
-					public void onSuccess(Void result) {
-						stateManager.exit();
-					}
-				});
-			}
-		});
-		cornerWidget.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(cornerWidget);
 	}
@@ -193,7 +164,6 @@ public class CardPassingState implements PlayerState {
 	@Override
 	public void freeze() {
 		okButton.setEnabled(false);
-		exitButton.setEnabled(false);
 		frozen = true;
 	}
 

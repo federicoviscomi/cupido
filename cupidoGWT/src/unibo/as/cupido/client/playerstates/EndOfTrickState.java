@@ -37,7 +37,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class EndOfTrickState implements PlayerState {
 
-	private PushButton exitButton;
 	private PlayerStateManager stateManager;
 	private CardsGameWidget cardsGameWidget;
 	private List<Card> hand;
@@ -59,34 +58,6 @@ public class EndOfTrickState implements PlayerState {
 		text.setWidth("120px");
 		text.setWordWrap(true);
 		panel.add(text);
-
-		exitButton = new PushButton("Esci");
-		exitButton.setWidth("80px");
-		exitButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				freeze();
-				cupidoService.leaveTable(new AsyncCallback<Void>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						try {
-							throw caught;
-						} catch (NoSuchTableException e) {
-							// The table has been destroyed in the meantime,
-							// nothing to do.
-						} catch (Throwable e) {
-							stateManager.onFatalException(e);
-						}
-					}
-
-					@Override
-					public void onSuccess(Void result) {
-						stateManager.exit();
-					}
-				});
-			}
-		});
-		panel.add(exitButton);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -151,7 +122,6 @@ public class EndOfTrickState implements PlayerState {
 
 	@Override
 	public void freeze() {
-		exitButton.setEnabled(false);
 		frozen = true;
 	}
 
