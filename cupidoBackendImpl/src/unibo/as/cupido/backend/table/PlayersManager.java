@@ -20,6 +20,7 @@ package unibo.as.cupido.backend.table;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.database.DatabaseManager;
@@ -201,8 +202,7 @@ public class PlayersManager {
 			}
 		}
 
-		String fakeBotReplacement = SingleTableManager.botNames[position];
-		NonRemoteBot replacementBot = new NonRemoteBot(fakeBotReplacement,
+		NonRemoteBot replacementBot = new NonRemoteBot(playerName,
 				this.getInitialTableStatus(position),
 				FakeSingleTableManager.defaultInstance);
 
@@ -255,7 +255,7 @@ public class PlayersManager {
 			if (players[i] != null && players[i].name.equals(playerName))
 				return i;
 		}
-		throw new NoSuchPlayerException();
+		throw new NoSuchPlayerException("\"" + playerName + "\"\n" + Arrays.toString(players));
 	}
 
 	public void notifyBotJoined(String botName, int position) {
@@ -483,7 +483,7 @@ public class PlayersManager {
 		if (players[position] == null)
 			throw new IllegalStateException();
 		try {
-			if (players[position].isBot && players[position].replaced) {
+			if (!players[position].isBot) {
 				players[position].inactiveReplacementBot.passCards(cards);
 			}
 		} catch (RemoteException e) {
@@ -498,7 +498,7 @@ public class PlayersManager {
 		if (players[position] == null)
 			throw new IllegalStateException();
 		try {
-			if (players[position].isBot && players[position].replaced) {
+			if (!players[position].isBot) {
 				players[position].inactiveReplacementBot.playCard(card);
 			}
 		} catch (RemoteException e) {
