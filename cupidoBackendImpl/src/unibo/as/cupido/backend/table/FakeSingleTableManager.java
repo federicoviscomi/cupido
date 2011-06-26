@@ -2,6 +2,7 @@ package unibo.as.cupido.backend.table;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
@@ -57,14 +58,16 @@ public final class FakeSingleTableManager implements TableInterface {
 	public void passCards(String userName, Card[] cards)
 			throws IllegalArgumentException, IllegalStateException,
 			RemoteException {
-		//
+		System.err.println("fake stm: passCards(" + userName + ", " + Arrays.toString(cards)
+				+ ")");
 	}
 
 	@Override
 	public void playCard(String userName, Card card)
 			throws IllegalMoveException, RemoteException,
 			IllegalArgumentException {
-		//
+		System.err
+				.println("fake stm: playCard(" + userName + ", " + card + ")");
 	}
 
 	@Override

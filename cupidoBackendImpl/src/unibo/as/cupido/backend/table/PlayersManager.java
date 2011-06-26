@@ -180,7 +180,7 @@ public class PlayersManager {
 
 	public int addPlayer(String playerName, ServletNotificationsInterface sni,
 			int score) throws FullTableException, SQLException,
-			NoSuchUserException, DuplicateUserNameException, IOException {
+			NoSuchUserException, DuplicateUserNameException {
 
 		if (playerName == null)
 			throw new IllegalArgumentException();
@@ -196,9 +196,8 @@ public class PlayersManager {
 
 		/* check for duplicate user name */
 		for (int i = 0; i < 4; i++) {
-			if (players[i] != null) {
-				if (players[i].name.equals(playerName))
-					throw new DuplicateUserNameException(playerName);
+			if (players[i] != null && players[i].name.equals(playerName)) {
+				throw new DuplicateUserNameException(playerName);
 			}
 		}
 
@@ -234,10 +233,9 @@ public class PlayersManager {
 		for (int i = 0; i < 3; i++) {
 			int next = (position + i + 1) % 4;
 			if (players[next] != null) {
-				PlayerInfo nextOpponent = players[next];
-				opponents[i] = nextOpponent.name;
-				playerPoints[i] = nextOpponent.score;
-				whoIsBot[i] = nextOpponent.isBot;
+				opponents[i] = players[next].name;
+				playerPoints[i] = players[next].score;
+				whoIsBot[i] = players[next].isBot;
 			}
 		}
 		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
@@ -261,8 +259,8 @@ public class PlayersManager {
 
 	public void notifyBotJoined(String botName, int position) {
 		/*
-		 * notify every players but the one who is adding the
-		 * inactiveReplacementBot and the inactiveReplacementBot itself
+		 * notify every players but the one who is adding the bot and the bot
+		 * itself
 		 */
 		for (int i = 1; i < 4; i++) {
 			if (i != position && players[i] != null) {

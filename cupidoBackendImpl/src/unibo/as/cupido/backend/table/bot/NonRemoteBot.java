@@ -40,7 +40,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	private final String botName;
 	private TableInterface tableInterface;
 	private final InitialTableStatus initialTableStatus;
-	private final PrintWriter out;
+	private PrintWriter out;
 
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
@@ -54,8 +54,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	private int points = 0;
 
 	public NonRemoteBot(final String botName,
-			InitialTableStatus initialTableStatus, TableInterface tableInterface)
-			throws IOException {
+			InitialTableStatus initialTableStatus, TableInterface tableInterface) {
 
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
@@ -63,20 +62,26 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.cardPlayingThread = new NonRemoteBotCardPlayingThread(this,
 				botName);
 
-		File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
-				+ botName);
-		outputFile.delete();
-		outputFile.createNewFile();
-		out = new PrintWriter(new FileWriter(outputFile));
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				System.err.println("shuting down non remote replacementBot "
-						+ botName);
-				out.close();
-			}
-		});
-
+		try {
+			File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
+					+ botName);
+			outputFile.delete();
+			outputFile.createNewFile();
+			out = new PrintWriter(new FileWriter(outputFile));
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
+				public void run() {
+					System.err
+							.println("shuting down non remote replacementBot "
+									+ botName);
+					out.close();
+				}
+			});
+		} catch (IOException e) {
+			// not a real error
+			e.printStackTrace();
+			out = new PrintWriter(System.out);
+		}
 		cardPlayingThread.start();
 	}
 
