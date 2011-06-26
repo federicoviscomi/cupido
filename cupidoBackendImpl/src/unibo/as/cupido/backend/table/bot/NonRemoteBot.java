@@ -45,7 +45,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
-	private final NonRemoteBotController cardPlayingThread;
+	private final NonRemoteBotController controller;
 	private int turn = 0;
 	private int playedCardCount = 0;
 	private int firstDealer = -1;
@@ -66,7 +66,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
 		this.tableInterface = LoggerSingleTableManager.defaultInstance;
-		this.cardPlayingThread = new NonRemoteBotController(botName);
+		this.controller = new NonRemoteBotController(botName);
 
 		try {
 			File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
@@ -79,7 +79,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			e.printStackTrace();
 			out = new PrintWriter(System.out);
 		}
-		cardPlayingThread.start();
+		controller.start();
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
 		this.tableInterface = tableInterface;
-		this.cardPlayingThread = new NonRemoteBotController(this, botName);
+		this.controller = new NonRemoteBotController(this, botName);
 
 		try {
 			File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
@@ -108,13 +108,13 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			e.printStackTrace();
 			out = new PrintWriter(System.out);
 		}
-		cardPlayingThread.start();
+		controller.start();
 	}
 
 	public void activate(TableInterface tableInterface) {
-		this.tableInterface = tableInterface;
-		synchronized (cardPlayingThread.lock) {
-			this.cardPlayingThread.bot = this;
+		synchronized (controller.lock) {
+			this.tableInterface = tableInterface;
+			this.controller.bot = this;
 		}
 	}
 
@@ -160,7 +160,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 				+ Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
 		out.close();
-		cardPlayingThread.setGameEnded();
+		controller.setGameEnded();
 	}
 
 	@Override
@@ -171,7 +171,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		for (int i = 0; i < cards.length; i++)
 			this.cards.add(cards[i]);
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			cardPlayingThread.setAbleToPass();
+			controller.setAbleToPass();
 		}
 	}
 
@@ -192,12 +192,12 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		alreadyGotCards = true;
 		for (Card card : cards)
 			this.cards.add(card);
-		cardPlayingThread.setAbleToPass();
+		controller.setAbleToPass();
 		out.println("\nplay starts. " + botName + " cards are:"
 				+ this.cards.toString());
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			firstDealer = 3;
-			cardPlayingThread.setAbleToPlay();
+			controller.setAbleToPlay();
 		}
 	}
 
@@ -337,7 +337,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			playedCardCount = 0;
 			turn++;
 			if (firstDealer == 3) {
-				cardPlayingThread.setAbleToPlay();
+				controller.setAbleToPlay();
 				for (Card c : playedCard) {
 					if (c.suit == Suit.HEARTS)
 						points++;
@@ -348,7 +348,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			Arrays.fill(playedCard, null);
 		} else {
 			if (playerPosition == 2) {
-				cardPlayingThread.setAbleToPlay();
+				controller.setAbleToPlay();
 			}
 		}
 	}

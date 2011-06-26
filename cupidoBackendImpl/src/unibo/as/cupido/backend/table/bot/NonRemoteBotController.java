@@ -24,9 +24,11 @@ public class NonRemoteBotController extends Thread {
 	private boolean ableToPlay = false;
 	Object lock = new Object();
 	private boolean gameEnded = false;
+	private final String botName;
 
 	public NonRemoteBotController(NonRemoteBot bot, String botName) {
 		super("NonRemoteBotController " + botName);
+		this.botName = botName;
 		if (bot == null || botName == null) {
 			throw new IllegalArgumentException();
 		}
@@ -35,6 +37,7 @@ public class NonRemoteBotController extends Thread {
 
 	public NonRemoteBotController(String botName) {
 		super("NonRemoteBotController " + botName);
+		this.botName = botName;
 		if (botName == null) {
 			throw new IllegalArgumentException();
 		}
@@ -56,16 +59,34 @@ public class NonRemoteBotController extends Thread {
 				}
 			}
 			for (int i = 0; i < 13; i++) {
+				System.out.println("non remote bot controller " + botName
+						+ " turn " + i + " waiting ... ");
 				synchronized (lock) {
 					while (!ableToPlay) {
 						lock.wait();
 					}
+					System.out.println("non remote bot controller " + botName
+							+ " turn " + i + " notified ");
 					if (gameEnded) {
+						System.out.println("non remote bot controller "
+								+ botName + " turn " + i + " game ended ");
 						return;
 					}
 					ableToPlay = false;
 					if (bot != null) {
+						System.out.println("non remote bot controller "
+								+ botName + " turn " + i
+								+ " playing a card ... ");
 						bot.playNextCard();
+						System.out.println("non remote bot controller "
+								+ botName + " turn " + i + " played ");
+					} else {
+						System.out
+								.println("non remote bot controller "
+										+ botName
+										+ " turn "
+										+ i
+										+ " not playing a card because it is inactive ");
 					}
 				}
 			}
