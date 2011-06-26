@@ -522,8 +522,12 @@ public class PlayersManager {
 		players[position].isBot = true;
 		players[position].replaced = true;
 		players[position].playerNotificationInterface = players[position].inactiveReplacementBot;
-		((NonRemoteBot) players[position].inactiveReplacementBot)
-				.activate(tableInterface);
+		try {
+			players[position].inactiveReplacementBot.activate(tableInterface);
+		} catch (RemoteException e) {
+			// never thrown
+			e.printStackTrace();
+		}
 		players[position].inactiveReplacementBot = null;
 	}
 

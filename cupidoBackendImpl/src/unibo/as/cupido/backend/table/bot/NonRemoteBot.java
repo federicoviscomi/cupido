@@ -111,11 +111,9 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		controller.start();
 	}
 
-	public void activate(TableInterface tableInterface) {
-		synchronized (controller.lock) {
-			this.tableInterface = tableInterface;
-			this.controller.bot = this;
-		}
+	public synchronized void activate(TableInterface tableInterface) {
+		this.tableInterface = tableInterface;
+		this.controller.activate(this);
 	}
 
 	private ArrayList<Card> chooseValidCards() {
@@ -288,6 +286,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	public synchronized void playCard(Card card) {
 		out.println("\n" + botName + ": playCard(" + card + ")");
 		try {
+			controller.setRealPlayerPlayed();
 			setCardPlayed(card, 3);
 			tableInterface.playCard(botName, card);
 		} catch (RemoteException e) {

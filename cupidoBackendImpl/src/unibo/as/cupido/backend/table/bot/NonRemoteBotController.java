@@ -19,12 +19,14 @@ package unibo.as.cupido.backend.table.bot;
 
 public class NonRemoteBotController extends Thread {
 
-	NonRemoteBot bot;
+	private NonRemoteBot bot;
 	private boolean ableToPass = false;
 	private boolean ableToPlay = false;
-	Object lock = new Object();
+	private Object lock = new Object();
 	private boolean gameEnded = false;
 	private final String botName;
+	private boolean realPlayerPlayed = false;
+	private boolean realPlayerLeft = false;
 
 	public NonRemoteBotController(NonRemoteBot bot, String botName) {
 		super("NonRemoteBotController " + botName);
@@ -81,12 +83,26 @@ public class NonRemoteBotController extends Thread {
 						System.out.println("non remote bot controller "
 								+ botName + " turn " + i + " played ");
 					} else {
+						// inactive replacement bot. waiting for real player to
+						// play
 						System.out
 								.println("non remote bot controller "
 										+ botName
 										+ " turn "
 										+ i
 										+ " not playing a card because it is inactive ");
+						while (!realPlayerPlayed && !realPlayerLeft) {
+							lock.wait();
+						}
+						realPlayerPlayed = false;
+						if (realPlayerLeft) {
+							System.out.println("!activated non remote bot "
+									+ botName + " turn " + i
+									+ " playing a card ... ");
+							bot.playNextCard();
+							System.out.println("non remote bot controller "
+									+ botName + " turn " + i + " played ");
+						}
 					}
 				}
 			}
@@ -114,6 +130,21 @@ public class NonRemoteBotController extends Thread {
 	public void setGameEnded() {
 		synchronized (lock) {
 			gameEnded = true;
+			lock.notify();
+		}
+	}
+
+	public void setRealPlayerPlayed() {
+		synchronized (lock) {
+			realPlayerPlayed = true;
+			lock.notify();
+		}
+	}
+
+	public void activate(NonRemoteBot nonRemoteBot) {
+		synchronized (lock) {
+			realPlayerLeft = true;
+			this.bot = nonRemoteBot;
 			lock.notify();
 		}
 	}
