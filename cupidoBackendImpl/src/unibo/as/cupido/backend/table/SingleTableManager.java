@@ -25,6 +25,7 @@ import java.util.Arrays;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
+import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
@@ -182,13 +183,14 @@ public class SingleTableManager implements TableInterface {
 				e.printStackTrace();
 			}
 		} else if (table.owner.equals(userName)) {
-			System.out.println("owner " + userName + " left");
+			System.out.println("owner " + userName
+					+ " left. Destroing table...");
 			playersManager.notifyGameEndedPrematurely();
 			viewers.notifyGameEndedPrematurely();
 			this.notifyTableDestruction();
 		} else if (gameStarted) {
 			System.out.println("player " + userName
-					+ " left after game start. replaycing...");
+					+ " left after game start. Replaycing...");
 			this.replacePlayer(userName);
 		} else {
 			System.out
@@ -196,6 +198,15 @@ public class SingleTableManager implements TableInterface {
 			playersManager.removePlayer(userName);
 			playersManager.notifyPlayerLeft(userName);
 			viewers.notifyPlayerLeft(userName);
+			try {
+				gtm.notifyTableLeft(table.tableDescriptor);
+			} catch (NoSuchTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (EmptyTableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -244,12 +255,17 @@ public class SingleTableManager implements TableInterface {
 		if (userName == null || cards == null || cards.length != 3)
 			throw new IllegalArgumentException(userName + " "
 					+ Arrays.toString(cards));
+		System.out.println(">>> 1");
 		int position = playersManager.getPlayerPosition(userName);
+		System.out.println(">>> 2");
 		cardsManager.setCardPassing(position, cards);
+		System.out.println(">>> 3");
 		int receiver = (position + 1) % 4;
 		passCardsNotificationSent[receiver] = true;
 		playersManager.replacementBotPassCards(position, cards);
+		System.out.println(">>> 4");
 		playersManager.notifyPassedCards(receiver, cards);
+		System.out.println(">>> 5");
 	}
 
 	@Override

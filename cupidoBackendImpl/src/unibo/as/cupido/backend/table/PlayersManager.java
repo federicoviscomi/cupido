@@ -305,19 +305,18 @@ public class PlayersManager {
 
 	public void notifyGameEndedPrematurely() {
 		for (int i = 1; i < 4; i++) {
-			if (players[i] == null) {
-				throw new IllegalStateException();
-			}
-			try {
-				players[i].playerNotificationInterface.notifyGameEnded(null,
-						null);
-				if (!players[i].isBot) {
-					players[i].inactiveReplacementBot.notifyGameEnded(null,
-							null);
+			if (players[i] != null) {
+				try {
+					players[i].playerNotificationInterface.notifyGameEnded(
+							null, null);
+					if (!players[i].isBot) {
+						players[i].inactiveReplacementBot.notifyGameEnded(null,
+								null);
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
