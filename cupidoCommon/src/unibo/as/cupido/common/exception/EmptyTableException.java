@@ -19,6 +19,8 @@ package unibo.as.cupido.common.exception;
 
 public class EmptyTableException extends Exception {
 
+	private static final long serialVersionUID = 1L;
+
 	public EmptyTableException(String string) {
 		super(string);
 	}
