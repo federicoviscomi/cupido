@@ -35,14 +35,16 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class FirstLeaderState implements PlayerState {
 
-	private HTML message;
-	private List<Card> hand;
 	private CardsGameWidget cardsGameWidget;
 	private PlayerStateManager stateManager;
+	private CupidoInterfaceAsync cupidoService;
 
 	private boolean frozen = false;
-	private CupidoInterfaceAsync cupidoService;
 	private boolean playedCard = false;
+
+	private List<Card> hand;
+
+	private HTML message;
 
 	public FirstLeaderState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,

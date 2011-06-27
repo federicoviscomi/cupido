@@ -41,19 +41,21 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class CardPassingState implements PlayerState {
 
-	private List<Card> raisedCards = new ArrayList<Card>();
+	private CardsGameWidget cardsGameWidget;
+	private PlayerStateManager stateManager;
+	private CupidoInterfaceAsync cupidoService;
+
+	private boolean frozen = false;
 	/**
 	 * Whether the user has already confirmed to pass the selected cards.
 	 */
 	private boolean confirmed = false;
-	private PushButton okButton;
-	private CardsGameWidget cardsGameWidget;
 
-	private boolean frozen = false;
-	private CupidoInterfaceAsync cupidoService;
-	private PlayerStateManager stateManager;
-	private HTML message;
 	private List<Card> hand;
+	private List<Card> raisedCards = new ArrayList<Card>();
+
+	private HTML message;
+	private PushButton okButton;
 
 	public CardPassingState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand,

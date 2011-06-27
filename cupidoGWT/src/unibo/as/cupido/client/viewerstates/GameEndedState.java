@@ -27,13 +27,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class GameEndedState implements ViewerState {
 
-	private boolean frozen = false;
-
 	private CardsGameWidget cardsGameWidget;
-
-	private boolean eventReceived = false;
-
 	private ViewerStateManager stateManager;
+
+	private boolean frozen = false;
+	private boolean eventReceived = false;
 
 	public GameEndedState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {

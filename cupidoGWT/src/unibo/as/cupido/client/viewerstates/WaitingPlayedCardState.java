@@ -30,12 +30,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class WaitingPlayedCardState implements ViewerState {
 
+	private CardsGameWidget cardsGameWidget;
 	private ViewerStateManager stateManager;
 
-	private CardsGameWidget cardsGameWidget;
-
 	private boolean frozen = false;
-
 	private boolean eventReceived = false;
 
 	private int currentPlayer;

@@ -29,11 +29,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class WaitingFirstLeadState implements ViewerState {
 
-	private ViewerStateManager stateManager;
 	private CardsGameWidget cardsGameWidget;
+	private ViewerStateManager stateManager;
 
 	private boolean frozen = false;
 	private boolean eventReceived = false;
+
 	private HTML message;
 
 	public WaitingFirstLeadState(CardsGameWidget cardsGameWidget,

@@ -33,17 +33,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class WaitingFirstLeadState implements PlayerState {
 
-	private HTML message;
-
 	private CardsGameWidget cardsGameWidget;
-
 	private PlayerStateManager stateManager;
+
+	private boolean frozen = false;
+	private boolean eventReceived = false;
 
 	private List<Card> hand;
 
-	private boolean frozen = false;
-
-	private boolean eventReceived = false;
+	private HTML message;
 
 	public WaitingFirstLeadState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,

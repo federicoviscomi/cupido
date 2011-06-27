@@ -33,11 +33,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class EndOfTrickState implements PlayerState {
 
-	private PlayerStateManager stateManager;
 	private CardsGameWidget cardsGameWidget;
-	private List<Card> hand;
+	private PlayerStateManager stateManager;
 
 	private boolean frozen = false;
+	
+	private List<Card> hand;
 	
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand,

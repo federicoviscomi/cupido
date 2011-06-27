@@ -35,14 +35,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class YourTurnState implements PlayerState {
 
-	private PlayerStateManager stateManager;
 	private CardsGameWidget cardsGameWidget;
-
-	private boolean playedCard = false;
-	private List<Card> hand;
+	private PlayerStateManager stateManager;
+	private CupidoInterfaceAsync cupidoService;
 
 	private boolean frozen = false;
-	private CupidoInterfaceAsync cupidoService;
+	private boolean playedCard = false;
+
+	private List<Card> hand;
+
 	private HTML message;
 
 	public YourTurnState(CardsGameWidget cardsGameWidget,

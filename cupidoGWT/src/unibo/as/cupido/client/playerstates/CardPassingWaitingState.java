@@ -36,14 +36,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class CardPassingWaitingState implements PlayerState {
 
 	private CardsGameWidget cardsGameWidget;
-
 	private PlayerStateManager stateManager;
 
-	private List<Card> hand;
-
 	private boolean frozen = false;
-
 	private boolean eventReceived = false;
+
+	private List<Card> hand;
 
 	private HTML message;
 
