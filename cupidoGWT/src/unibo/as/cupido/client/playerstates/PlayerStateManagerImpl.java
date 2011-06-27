@@ -24,9 +24,9 @@ import java.util.List;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
+import unibo.as.cupido.client.widgets.ChatWidget;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
-import unibo.as.cupido.client.widgets.LocalChatWidget;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -66,7 +66,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	private boolean frozen = false;
 	private CupidoInterfaceAsync cupidoService;
-	private LocalChatWidget chatWidget;
+	private ChatWidget chatWidget;
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
@@ -77,7 +77,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 *            clockwise order. The scores in initialTableStatus are ignored.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			LocalChatWidget chatWidget, InitialTableStatus initialTableStatus,
+			ChatWidget chatWidget, InitialTableStatus initialTableStatus,
 			int[] scores, Card[] cards, String username,
 			CupidoInterfaceAsync cupidoService) {
 		this.username = username;

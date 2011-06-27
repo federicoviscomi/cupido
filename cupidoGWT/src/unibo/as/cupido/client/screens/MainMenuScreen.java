@@ -23,8 +23,8 @@ import java.util.List;
 
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
-import unibo.as.cupido.client.widgets.GlobalChatWidget;
-import unibo.as.cupido.client.widgets.GlobalChatWidget.ChatListener;
+import unibo.as.cupido.client.widgets.ChatWidget;
+import unibo.as.cupido.client.widgets.ChatWidget.ChatListener;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.MaxNumTableReachedException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
@@ -70,7 +70,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	 */
 	private boolean needRefresh = false;
 
-	private GlobalChatWidget chatWidget;
+	private ChatWidget chatWidget;
 
 	/**
 	 * The width of the chat sidebar.
@@ -256,7 +256,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		});
 		panel.add(logoutButton);
 
-		chatWidget = new GlobalChatWidget(this.username, new ChatListener() {
+		chatWidget = new ChatWidget(chatWidth, Cupido.height, new ChatListener() {
 			@Override
 			public void sendMessage(String message) {
 				cupidoService.sendGlobalChatMessage(message,
@@ -286,8 +286,6 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 						});
 			}
 		});
-		chatWidget.setHeight(Cupido.height + "px");
-		chatWidget.setWidth(chatWidth + "px");
 		add(chatWidget, Cupido.width - chatWidth, 0);
 
 		DOM.setStyleAttribute(chatWidget.getElement(), "borderLeftStyle",
