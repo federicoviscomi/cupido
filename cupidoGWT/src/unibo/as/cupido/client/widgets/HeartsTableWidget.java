@@ -128,7 +128,6 @@ public class HeartsTableWidget extends AbsolutePanel {
 								screenManager.displayMainMenuScreen(username);
 							}
 						});
-
 					}
 
 					@Override

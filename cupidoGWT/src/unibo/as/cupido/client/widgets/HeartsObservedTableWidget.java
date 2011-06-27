@@ -21,12 +21,15 @@ import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManagerImpl;
+import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class HeartsObservedTableWidget extends AbsolutePanel {
@@ -52,7 +55,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	public HeartsObservedTableWidget(int tableSize, final String username,
 			final ScreenManager screenManager, ChatWidget chatWidget,
 			ObservedGameStatus observedGameStatus,
-			CupidoInterfaceAsync cupidoService) {
+			final CupidoInterfaceAsync cupidoService) {
 
 		this.tableSize = tableSize;
 		this.screenManager = screenManager;
@@ -129,7 +132,31 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 									.println("Client: notice: received a onExit() event while frozen, ignoring it.");
 							return;
 						}
-						screenManager.displayMainMenuScreen(username);
+						beforeGameWidget.freeze();
+						cupidoService.leaveTable(new AsyncCallback<Void>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								try {
+									throw caught;
+								} catch (UserNotAuthenticatedException e) {
+									screenManager.displayGeneralErrorScreen(e);
+								} catch (NoSuchTableException e) {
+									// The table has been deleted by the owner,
+									// before the leaveTable() request was
+									// processed.
+									// Just ignore this exception.
+									screenManager
+											.displayMainMenuScreen(username);
+								} catch (Throwable e) {
+									screenManager.displayGeneralErrorScreen(e);
+								}
+							}
+
+							@Override
+							public void onSuccess(Void result) {
+								screenManager.displayMainMenuScreen(username);
+							}
+						});
 					}
 
 					@Override
