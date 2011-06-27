@@ -169,7 +169,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				}
 			}
 		});
-		System.out.println("Serlvet: SessionClosedListener inited.");
 	}
 
 	/**
@@ -797,7 +796,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public void leaveTable() throws UserNotAuthenticatedException,
 			NoSuchTableException, FatalException {
-		System.out.println("Servlet: leaveTable() called");
 		HttpSession httpSession = getThreadLocalRequest().getSession();
 		if (httpSession == null) {
 			return;
@@ -946,7 +944,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	@Override
 	public void openCometConnection() {
-		System.out.println("Servlet: Opening a Comet connession...");
 		final HttpSession httpSession = getThreadLocalRequest()
 				.getSession(true);
 		if (httpSession == null) {
@@ -957,7 +954,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		httpSession.setAttribute(ISAUTHENTICATED, Boolean.FALSE);
 		// Create the Comet session for the browser
 		CometServlet.getCometSession(httpSession);
-		System.out.println("Servlet: Comet connession opened.");
 	}
 
 	@Override

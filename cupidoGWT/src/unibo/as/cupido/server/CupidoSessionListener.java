@@ -33,7 +33,6 @@ public class CupidoSessionListener implements HttpSessionListener {
 	private static final String SCL = "sessionClosedListener";
 	@Override
 	public void sessionCreated(HttpSessionEvent e) {
-		System.out.println("DumbSessionListener: in sessionCreated().");
 		// Expire after 20 seconds.
 		e.getSession().setMaxInactiveInterval(20);
 	}
