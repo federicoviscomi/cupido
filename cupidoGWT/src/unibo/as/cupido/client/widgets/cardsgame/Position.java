@@ -19,8 +19,6 @@ package unibo.as.cupido.client.widgets.cardsgame;
 
 /**
  * This class models the position of a widget on the table.
- * 
- * @author marco
  */
 public class Position {
 

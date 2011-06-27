@@ -39,6 +39,10 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 
+/**
+ * A widget that represents a table with no cards, and that may
+ * have free seats (and probably does).
+ */
 public class BeforeGameWidget extends AbsolutePanel {
 
 	// The width of the players' labels that contain usernames and scores.
@@ -64,7 +68,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 	public interface Listener {
 		/**
-		 * This is called when the table is full of players and/or bots.
+		 * This is called when the table becomes full of players and/or bots.
 		 */
 		public void onTableFull();
 
@@ -80,12 +84,12 @@ public class BeforeGameWidget extends AbsolutePanel {
 		public void onExit();
 
 		/**
-		 * This is called if a call to the servlet fails with a fatal exception.
+		 * This is called if a fatal exception occurs.
 		 */
 		public void onFatalException(Throwable e);
 	}
 
-	private InitialTableStatus initialTableStatus;
+	private InitialTableStatus tableStatus;
 
 	private boolean isOwner;
 
@@ -97,25 +101,26 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 	private CupidoInterfaceAsync cupidoService;
 
-	/*
+	/**
 	 * The widget that represents the table before the actual game.
 	 * 
-	 * @param username is the bottom player's username (it may be the current
+	 * @param username Is the bottom player's username (it may be the current
 	 * user or not, depending whether the user is a player or just a viewer).
 	 * 
-	 * @points are is the total points of the bottom player.
+	 * @param scores The global scores of existing players. The scores contained
+	 *               in tableStatus are ignored.
 	 * 
-	 * @param isOwner specifies whether the current user is the owner of the
-	 * table (and thus also a player).
+	 * @param isOwner Specifies whether or not the current user is the owner of the
+	 *                table.
 	 */
 	public BeforeGameWidget(int tableSize, String username,
 			String bottomUserName, boolean isOwner,
-			InitialTableStatus initialTableStatus, int[] scores,
+			InitialTableStatus tableStatus, int[] scores,
 			CupidoInterfaceAsync cupidoService, final Listener listener) {
 
 		this.tableSize = tableSize;
 		this.isOwner = isOwner;
-		this.initialTableStatus = initialTableStatus;
+		this.tableStatus = tableStatus;
 		this.listener = listener;
 		this.cupidoService = cupidoService;
 
@@ -156,20 +161,21 @@ public class BeforeGameWidget extends AbsolutePanel {
 		bottomLabel.setHTML(constructPlayerLabelHtml(bottomUserName, scores[0]));
 
 		for (int i = 0; i < 3; i++)
-			if (initialTableStatus.opponents[i] != null) {
-				if (initialTableStatus.whoIsBot[i]) {
+			if (tableStatus.opponents[i] != null) {
+				if (tableStatus.whoIsBot[i]) {
 					labels.get(i).setHTML(
-							constructBotLabelHtml(initialTableStatus.opponents[i]));
+							constructBotLabelHtml(tableStatus.opponents[i]));
 				} else {
 					labels.get(i).setHTML(
-							constructPlayerLabelHtml(initialTableStatus.opponents[i],
+							constructPlayerLabelHtml(tableStatus.opponents[i],
 									scores[i + 1]));
 				}
 			} else {
 				if (isOwner)
 					addBotButton(i);
 				else {
-					// TODO: Decide what the label should show in this case.
+					// Do nothing.
+					
 					// When changing here, also update the removePlayer()
 					// method.
 				}
@@ -186,7 +192,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	public InitialTableStatus getInitialTableStatus() {
-		return initialTableStatus;
+		return tableStatus;
 	}
 
 	private void addBotButton(final int position) {
@@ -275,9 +281,9 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 	private void addPlayer(String username, int points, int position) {
 
-		initialTableStatus.opponents[position] = username;
-		initialTableStatus.playerScores[position + 1] = points;
-		initialTableStatus.whoIsBot[position] = false;
+		tableStatus.opponents[position] = username;
+		tableStatus.playerScores[position + 1] = points;
+		tableStatus.whoIsBot[position] = false;
 
 		if (buttons.get(position) != null)
 			remove(buttons.get(position));
@@ -289,14 +295,14 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	private boolean isTableFull() {
-		return initialTableStatus.opponents[0] != null
-				&& initialTableStatus.opponents[1] != null
-				&& initialTableStatus.opponents[2] != null;
+		return tableStatus.opponents[0] != null
+				&& tableStatus.opponents[1] != null
+				&& tableStatus.opponents[2] != null;
 	}
 
 	private void addBot(int position, String name) {
-		initialTableStatus.opponents[position] = name;
-		initialTableStatus.whoIsBot[position] = true;
+		tableStatus.opponents[position] = name;
+		tableStatus.whoIsBot[position] = true;
 
 		if (isOwner) {
 			assert (buttons.get(position) != null);
@@ -313,7 +319,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	private void removePlayer(int player) {
-		initialTableStatus.opponents[player] = null;
+		tableStatus.opponents[player] = null;
 
 		labels.get(player).setText("");
 		if (isOwner)
@@ -356,11 +362,11 @@ public class BeforeGameWidget extends AbsolutePanel {
 			return;
 		}
 		for (int i = 0; i < 3; i++) {
-			if (initialTableStatus.opponents[i] == null)
+			if (tableStatus.opponents[i] == null)
 				continue;
-			if (initialTableStatus.whoIsBot[i])
+			if (tableStatus.whoIsBot[i])
 				continue;
-			if (initialTableStatus.opponents[i].equals(player)) {
+			if (tableStatus.opponents[i].equals(player)) {
 				removePlayer(i);
 				return;
 			}
