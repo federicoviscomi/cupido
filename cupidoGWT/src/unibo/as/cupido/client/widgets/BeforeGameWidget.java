@@ -342,6 +342,11 @@ public class BeforeGameWidget extends AbsolutePanel {
 		listener.onGameEnded();
 	}
 
+	/**
+	 * Adds a new player or a bot.
+	 * @param position The position in which the player or the bot has to be added.
+	 *                 0 means at the left, and other positions follow in clockwise order.
+	 */
 	public void handleNewPlayerJoined(String name, boolean isBot, int points,
 			int position) {
 		if (frozen) {
