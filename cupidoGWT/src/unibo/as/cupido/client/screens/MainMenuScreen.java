@@ -55,8 +55,6 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 	private List<PushButton> buttons = new ArrayList<PushButton>();
 
-	// This is null when the user is not logged in.
-	private String username;
 	private Timer chatTimer;
 
 	private boolean stoppedRefreshing = false;
@@ -72,6 +70,12 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 	private ChatWidget chatWidget;
 
+	private ScreenManager screenManager;
+
+	private CupidoInterfaceAsync cupidoService;
+
+	private String username;
+
 	/**
 	 * The width of the chat sidebar.
 	 */
@@ -80,7 +84,9 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	public MainMenuScreen(final ScreenManager screenManager,
 			final String username, final CupidoInterfaceAsync cupidoService) {
 
+		this.screenManager = screenManager;
 		this.username = username;
+		this.cupidoService = cupidoService;
 
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
@@ -105,51 +111,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		tableButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				freeze();
-				cupidoService
-						.createTable(new AsyncCallback<InitialTableStatus>() {
-							@Override
-							public void onFailure(Throwable caught) {
-								try {
-									throw caught;
-								} catch (MaxNumTableReachedException e) {
-									screenManager
-											.displayMainMenuScreen(username);
-									Window.alert("\310 stato raggiunto il numero massimo di tavoli supportati. Riprova pi\371 tardi.");
-								} catch (Throwable e) {
-									screenManager
-											.displayGeneralErrorScreen(caught);
-								}
-							}
-
-							@Override
-							public void onSuccess(
-									final InitialTableStatus initialTableStatus) {
-								// Get the user's score, too.
-								// The screen is already frozen, so there's no
-								// need to freeze it again.
-								cupidoService
-										.getMyRank(new AsyncCallback<RankingEntry>() {
-											@Override
-											public void onFailure(
-													Throwable caught) {
-												screenManager
-														.displayGeneralErrorScreen(caught);
-											}
-
-											@Override
-											public void onSuccess(
-													RankingEntry rankingEntry) {
-												screenManager
-														.displayTableScreen(
-																username,
-																true,
-																initialTableStatus,
-																rankingEntry.points);
-											}
-										});
-							}
-						});
+				handleCreateTable();
 			}
 		});
 		panel.add(tableButton);
@@ -160,21 +122,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		tableListButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				freeze();
-				cupidoService
-						.getTableList(new AsyncCallback<Collection<TableInfoForClient>>() {
-							@Override
-							public void onFailure(Throwable caught) {
-								screenManager.displayGeneralErrorScreen(caught);
-							}
-
-							@Override
-							public void onSuccess(
-									Collection<TableInfoForClient> result) {
-								screenManager.displayTableListScreen(username,
-										result);
-							}
-						});
+				handleDisplayTableList();
 			}
 		});
 		panel.add(tableListButton);
@@ -185,40 +133,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		scoresButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				freeze();
-				cupidoService
-						.getTopRank(new AsyncCallback<ArrayList<RankingEntry>>() {
-							@Override
-							public void onFailure(Throwable caught) {
-								screenManager.displayGeneralErrorScreen(caught);
-							}
-
-							@Override
-							public void onSuccess(
-									final ArrayList<RankingEntry> topRanks) {
-								// The screen is already frozen, there's no need
-								// to freeze it again.
-								cupidoService
-										.getLocalRank(new AsyncCallback<ArrayList<RankingEntry>>() {
-											@Override
-											public void onFailure(
-													Throwable caught) {
-												screenManager
-														.displayGeneralErrorScreen(caught);
-											}
-
-											@Override
-											public void onSuccess(
-													ArrayList<RankingEntry> localRanks) {
-												screenManager
-														.displayScoresScreen(
-																username,
-																topRanks,
-																localRanks);
-											}
-										});
-							}
-						});
+				handleDisplayScores();
 			}
 		});
 		panel.add(scoresButton);
@@ -240,52 +155,45 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		logoutButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				freeze();
-				cupidoService.logout(new AsyncCallback<Void>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						screenManager.displayGeneralErrorScreen(caught);
-					}
-
-					@Override
-					public void onSuccess(Void result) {
-						screenManager.displayLoginScreen();
-					}
-				});
+				handleLogout();
 			}
 		});
 		panel.add(logoutButton);
 
-		chatWidget = new ChatWidget(chatWidth, Cupido.height, new ChatListener() {
-			@Override
-			public void sendMessage(String message) {
-				cupidoService.sendGlobalChatMessage(message,
-						new AsyncCallback<Void>() {
-							@Override
-							public void onFailure(Throwable caught) {
-								try {
-									throw caught;
-								} catch (IllegalArgumentException e) {
-									// FIXME: Can this happen?
-									screenManager.displayGeneralErrorScreen(e);
-								} catch (UserNotAuthenticatedException e) {
-									screenManager.displayGeneralErrorScreen(e);
-								} catch (FatalException e) {
-									screenManager.displayGeneralErrorScreen(e);
-								} catch (Throwable e) {
-									assert false;
-								}
-							}
+		chatWidget = new ChatWidget(chatWidth, Cupido.height,
+				new ChatListener() {
+					@Override
+					public void sendMessage(String message) {
+						cupidoService.sendGlobalChatMessage(message,
+								new AsyncCallback<Void>() {
+									@Override
+									public void onFailure(Throwable caught) {
+										try {
+											throw caught;
+										} catch (IllegalArgumentException e) {
+											// FIXME: Can this happen?
+											screenManager
+													.displayGeneralErrorScreen(e);
+										} catch (UserNotAuthenticatedException e) {
+											screenManager
+													.displayGeneralErrorScreen(e);
+										} catch (FatalException e) {
+											screenManager
+													.displayGeneralErrorScreen(e);
+										} catch (Throwable e) {
+											assert false;
+										}
+									}
 
-							@Override
-							public void onSuccess(Void result) {
-								needRefresh = true;
-								chatTimer.cancel();
-								chatTimer.run();
-							}
-						});
-			}
-		});
+									@Override
+									public void onSuccess(Void result) {
+										needRefresh = true;
+										chatTimer.cancel();
+										chatTimer.run();
+									}
+								});
+					}
+				});
 		add(chatWidget, Cupido.width - chatWidth, 0);
 
 		DOM.setStyleAttribute(chatWidget.getElement(), "borderLeftStyle",
@@ -336,6 +244,103 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 			}
 		};
 		chatTimer.run();
+	}
+
+	private void handleCreateTable() {
+		freeze();
+		cupidoService.createTable(new AsyncCallback<InitialTableStatus>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				try {
+					throw caught;
+				} catch (MaxNumTableReachedException e) {
+					screenManager.displayMainMenuScreen(username);
+					Window.alert("\310 stato raggiunto il numero massimo di tavoli supportati. Riprova pi\371 tardi.");
+				} catch (Throwable e) {
+					screenManager.displayGeneralErrorScreen(caught);
+				}
+			}
+
+			@Override
+			public void onSuccess(final InitialTableStatus initialTableStatus) {
+				// Get the user's score, too.
+				// The screen is already frozen, so there's no
+				// need to freeze it again.
+				cupidoService.getMyRank(new AsyncCallback<RankingEntry>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						screenManager.displayGeneralErrorScreen(caught);
+					}
+
+					@Override
+					public void onSuccess(RankingEntry rankingEntry) {
+						screenManager.displayTableScreen(username, true,
+								initialTableStatus, rankingEntry.points);
+					}
+				});
+			}
+		});
+	}
+
+	private void handleDisplayTableList() {
+		freeze();
+		cupidoService
+				.getTableList(new AsyncCallback<Collection<TableInfoForClient>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						screenManager.displayGeneralErrorScreen(caught);
+					}
+
+					@Override
+					public void onSuccess(Collection<TableInfoForClient> result) {
+						screenManager.displayTableListScreen(username, result);
+					}
+				});
+	}
+
+	private void handleDisplayScores() {
+		freeze();
+		cupidoService.getTopRank(new AsyncCallback<ArrayList<RankingEntry>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				screenManager.displayGeneralErrorScreen(caught);
+			}
+
+			@Override
+			public void onSuccess(final ArrayList<RankingEntry> topRanks) {
+				// The screen is already frozen, there's no need
+				// to freeze it again.
+				cupidoService
+						.getLocalRank(new AsyncCallback<ArrayList<RankingEntry>>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								screenManager.displayGeneralErrorScreen(caught);
+							}
+
+							@Override
+							public void onSuccess(
+									ArrayList<RankingEntry> localRanks) {
+								screenManager.displayScoresScreen(username,
+										topRanks, localRanks);
+							}
+						});
+			}
+		});
+	}
+
+	private void handleLogout() {
+		freeze();
+		cupidoService.logout(new AsyncCallback<Void>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				screenManager.displayGeneralErrorScreen(caught);
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+				screenManager.displayLoginScreen();
+			}
+		});
 	}
 
 	@Override
