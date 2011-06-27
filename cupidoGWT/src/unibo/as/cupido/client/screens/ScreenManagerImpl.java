@@ -27,6 +27,7 @@ import net.zschech.gwt.comet.client.CometListener;
 import net.zschech.gwt.comet.client.CometSerializer;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.Cupido.CupidoCometSerializer;
+import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.common.structures.InitialTableStatus;

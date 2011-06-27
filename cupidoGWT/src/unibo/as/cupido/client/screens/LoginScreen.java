@@ -17,6 +17,7 @@
 
 package unibo.as.cupido.client.screens;
 
+import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 
@@ -136,11 +137,15 @@ public class LoginScreen extends VerticalPanel implements Screen {
 				new AsyncCallback<Boolean>() {
 					@Override
 					public void onFailure(Throwable caught) {
+						if (frozen)
+							return;
 						screenManager.displayGeneralErrorScreen(caught);
 					}
 
 					@Override
 					public void onSuccess(Boolean successful) {
+						if (frozen)
+							return;
 						if (successful)
 							screenManager.displayMainMenuScreen(username);
 						else {

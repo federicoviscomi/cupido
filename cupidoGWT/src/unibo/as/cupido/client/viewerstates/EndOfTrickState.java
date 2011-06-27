@@ -21,10 +21,7 @@ import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.client.widgets.cardsgame.AnimationCompletedListener;
 import unibo.as.cupido.common.structures.Card;
 
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 public class EndOfTrickState implements ViewerState {
 
@@ -39,16 +36,7 @@ public class EndOfTrickState implements ViewerState {
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 
-		VerticalPanel panel = new VerticalPanel();
-		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-
-		final HTML text = new HTML("");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
-
-		cardsGameWidget.setCornerWidget(panel);
+		cardsGameWidget.setCornerWidget(new SimplePanel());
 	}
 
 	@Override
@@ -59,7 +47,6 @@ public class EndOfTrickState implements ViewerState {
 
 		cardsGameWidget.animateTrickTaking(player, 1500, 2000,
 				new AnimationCompletedListener() {
-
 					@Override
 					public void onComplete() {
 						if (stateManager.getRemainingTricks() == 0)
@@ -77,40 +64,29 @@ public class EndOfTrickState implements ViewerState {
 
 	@Override
 	public void handleAnimationStart() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public void handleAnimationEnd() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+
 		// Let the next state handle this.
 		return false;
 	}
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
 
 		// Let the next state handle this.
 		return false;
@@ -118,11 +94,8 @@ public class EndOfTrickState implements ViewerState {
 
 	@Override
 	public void handlePlayerReplaced(String name, int position) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the PlayerReplaced event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 		// Nothing to do.
 	}
 }

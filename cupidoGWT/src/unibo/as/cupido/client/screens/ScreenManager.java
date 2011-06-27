@@ -20,6 +20,7 @@ package unibo.as.cupido.client.screens;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.RankingEntry;

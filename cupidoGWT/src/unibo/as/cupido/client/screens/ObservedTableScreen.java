@@ -17,6 +17,7 @@
 
 package unibo.as.cupido.client.screens;
 
+import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.widgets.ChatWidget;
@@ -79,11 +80,8 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		screenManager.setListener(new CometMessageListener() {
 			@Override
 			public void onNewLocalChatMessage(String user, String message) {
-				if (frozen) {
-					System.out
-							.println("Client: notice: the onNewLocalChatMessage() event was received while frozen, ignoring it.");
+				if (frozen)
 					return;
-				}
 				chatWidget.displayMessage(user, message);
 			}
 

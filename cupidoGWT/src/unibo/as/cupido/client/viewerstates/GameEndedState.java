@@ -27,13 +27,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class GameEndedState implements ViewerState {
 
-	private boolean frozen = false;
-
 	private CardsGameWidget cardsGameWidget;
-
-	private boolean eventReceived = false;
-
 	private ViewerStateManager stateManager;
+
+	private boolean frozen = false;
+	private boolean eventReceived = false;
 
 	public GameEndedState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
@@ -45,10 +43,10 @@ public class GameEndedState implements ViewerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		final HTML text = new HTML("La partita &egrave; finita");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
+		final HTML message = new HTML("La partita &egrave; finita");
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -64,29 +62,21 @@ public class GameEndedState implements ViewerState {
 
 	@Override
 	public void handleAnimationStart() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public void handleAnimationEnd() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -97,11 +87,8 @@ public class GameEndedState implements ViewerState {
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
 
 		if (eventReceived) {
 			stateManager.onFatalException(new Exception(
@@ -117,11 +104,8 @@ public class GameEndedState implements ViewerState {
 
 	@Override
 	public void handlePlayerReplaced(String name, int position) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the PlayerReplaced event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 		// Nothing to do.
 	}
 }

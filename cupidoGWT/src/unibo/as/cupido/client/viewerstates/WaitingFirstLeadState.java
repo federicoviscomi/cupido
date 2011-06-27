@@ -29,12 +29,13 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class WaitingFirstLeadState implements ViewerState {
 
-	private ViewerStateManager stateManager;
 	private CardsGameWidget cardsGameWidget;
+	private ViewerStateManager stateManager;
 
 	private boolean frozen = false;
 	private boolean eventReceived = false;
-	private HTML text;
+
+	private HTML message;
 
 	public WaitingFirstLeadState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
@@ -46,10 +47,10 @@ public class WaitingFirstLeadState implements ViewerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		text = new HTML("Attendi l'inizio del gioco.");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
+		message = new HTML("Attendi l'inizio del gioco.");
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -65,29 +66,20 @@ public class WaitingFirstLeadState implements ViewerState {
 
 	@Override
 	public void handleAnimationStart() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationStart() method was called while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public void handleAnimationEnd() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationEnd() method was called while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
 
 		if (eventReceived)
 			// Let the next state handle this.
@@ -95,7 +87,7 @@ public class WaitingFirstLeadState implements ViewerState {
 
 		eventReceived = true;
 		
-		text.setHTML("");
+		message.setHTML("");
 
 		stateManager.addPlayedCard(playerPosition, card);
 
@@ -113,11 +105,9 @@ public class WaitingFirstLeadState implements ViewerState {
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		if (eventReceived)
 			// Let the next state handle this.
 			return false;
@@ -129,11 +119,8 @@ public class WaitingFirstLeadState implements ViewerState {
 
 	@Override
 	public void handlePlayerReplaced(String name, int position) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the PlayerReplaced event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 		// Nothing to do.
 	}
 }

@@ -17,6 +17,7 @@
 
 package unibo.as.cupido.client.screens;
 
+import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.client.Cupido;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -46,6 +47,7 @@ public class GeneralErrorScreen extends AbsolutePanel implements Screen {
 				.appendHtmlConstant("<br>Questi sono i dati relativi all'errore: l'eccezione<br>");
 		htmlBuilder.appendEscaped(e.toString());
 		htmlBuilder.appendHtmlConstant("<br>Si è verificata:");
+		
 		StackTraceElement[] stackTrace = e.getStackTrace();
 		for (StackTraceElement stackTraceElement : stackTrace) {
 			htmlBuilder.appendHtmlConstant("<br />in ");
