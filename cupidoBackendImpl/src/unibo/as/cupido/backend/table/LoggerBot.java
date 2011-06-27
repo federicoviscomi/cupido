@@ -99,7 +99,6 @@ public class LoggerBot implements NonRemoteBotInterface {
 
 	@Override
 	public void activate(TableInterface tableInterface) throws RemoteException {
-		// TODO Auto-generated method stub
-		
+		out.println("" + botName + " activate(" + tableInterface + ")");
 	}
 }

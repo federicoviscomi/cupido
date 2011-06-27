@@ -20,8 +20,9 @@ package unibo.as.cupido.backend.table;
 public class EndNotifierThread extends Thread {
 
 	private final SingleTableManager stm;
-	private final Object lock = new Object();
-	private boolean gameEnded = false;
+	final Object lock = new Object();
+	boolean gameEnded = false;
+	boolean gameEndedPrematurely = false;
 
 	public EndNotifierThread(SingleTableManager stm) {
 		this.stm = stm;
@@ -31,21 +32,18 @@ public class EndNotifierThread extends Thread {
 	public void run() {
 		try {
 			synchronized (lock) {
-				while (!gameEnded) {
+				while (!gameEnded && !gameEndedPrematurely) {
 					lock.wait();
 				}
+				if (gameEnded) {
+					stm.notifyGameEnded();
+				} else {
+					stm.notifyGameEndedPrematurely();
+				}
 			}
-			stm.notifyGameEnded();
 		} catch (InterruptedException e) {
-			System.err
-					.println("EndNotifierThread catched interrupted exception. It's ok only if player creator leaves before the game ends");
-		}
-	}
-
-	public void setGameEnded() {
-		synchronized (lock) {
-			gameEnded = true;
-			lock.notify();
+			// TODO 
+			e.printStackTrace();
 		}
 	}
 }

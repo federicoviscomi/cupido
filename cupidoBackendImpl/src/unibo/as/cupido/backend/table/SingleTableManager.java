@@ -159,7 +159,7 @@ public class SingleTableManager implements TableInterface {
 		}
 	}
 
-	public synchronized void leaveTable(Integer i) throws RemoteException,
+	public void leaveTable(Integer i) throws RemoteException,
 			NoSuchPlayerException, NoSuchPlayerException {
 		this.leaveTable(playersManager.getPlayerName(i));
 	}
@@ -174,6 +174,7 @@ public class SingleTableManager implements TableInterface {
 			throw new IllegalStateException(
 					"game ended, cannot call leaveTable");
 		}
+
 		if (viewers.isAViewer(userName)) {
 			System.out.println("viewer " + userName + " left");
 			try {
@@ -183,17 +184,13 @@ public class SingleTableManager implements TableInterface {
 				e.printStackTrace();
 			}
 		} else if (table.owner.equals(userName)) {
-			System.out.println("creator " + userName
-					+ " left. Destroing table... 0");
-			playersManager.notifyGameEndedPrematurely();
-			System.out.println("creator " + userName
-					+ " left. Destroing table... 1");
-			viewers.notifyGameEndedPrematurely();
-			System.out.println("creator " + userName
-					+ " left. Destroing table... 2");
-			this.notifyTableDestruction();
-			System.out.println("creator " + userName
-					+ " left. Destroing table... 3");
+			System.out.println("owner " + userName + " left 0");
+			synchronized (endNotifierThread.lock) {
+				this.gameEnded = true;
+				endNotifierThread.gameEndedPrematurely = true;
+				endNotifierThread.lock.notify();
+			}
+			System.out.println("owner " + userName + " left 1");
 		} else if (gameStarted) {
 			System.out.println("player " + userName
 					+ " left after game start. Replaycing...");
@@ -280,7 +277,8 @@ public class SingleTableManager implements TableInterface {
 	public synchronized void playCard(String userName, Card card)
 			throws IllegalMoveException, RemoteException,
 			IllegalArgumentException, NoSuchPlayerException {
-
+		System.out.println("single table manager play card " + userName + " "
+				+ card);
 		if (!gameStarted || gameEnded)
 			throw new IllegalStateException();
 		if (userName == null || card == null)
@@ -291,8 +289,12 @@ public class SingleTableManager implements TableInterface {
 		playersManager.replacementBotPlayCard(playerPosition, card);
 		playersManager.notifyPlayedCard(userName, card);
 		viewers.notifyPlayedCard(playerPosition, card);
-		if (cardsManager.gameEnded()) {
-			endNotifierThread.setGameEnded();
+		synchronized (endNotifierThread.lock) {
+			if (cardsManager.gameEnded()) {
+				this.gameEnded = true;
+				endNotifierThread.gameEnded = true;
+				endNotifierThread.lock.notify();
+			}
 		}
 	}
 
@@ -349,6 +351,18 @@ public class SingleTableManager implements TableInterface {
 		playersManager.addPlayersInformationForViewers(observedGameStatus);
 		cardsManager.addCardsInformationForViewers(observedGameStatus);
 		return observedGameStatus;
+	}
+
+	public synchronized void notifyGameEndedPrematurely() {
+		System.err.println(">>>>>>>>>>>>>>> 0");
+		this.gameEnded = true;
+		System.err.println(">>>>>>>>>>>>>>> 1");
+		playersManager.notifyGameEndedPrematurely();
+		System.err.println(">>>>>>>>>>>>>>> 2");
+		viewers.notifyGameEndedPrematurely();
+		System.err.println(">>>>>>>>>>>>>>> 3");
+		this.notifyTableDestruction();
+		System.err.println(">>>>>>>>>>>>>>> 4");
 	}
 
 }
