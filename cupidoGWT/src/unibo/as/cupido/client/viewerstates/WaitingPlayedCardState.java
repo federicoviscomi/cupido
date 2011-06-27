@@ -85,29 +85,20 @@ public class WaitingPlayedCardState implements ViewerState {
 
 	@Override
 	public void handleAnimationStart() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public void handleAnimationEnd() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the CardPlayed event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
 
 		if (eventReceived)
 			// Let the next state handle this.
@@ -137,11 +128,8 @@ public class WaitingPlayedCardState implements ViewerState {
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the GameEnded event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
 
 		if (eventReceived)
 			// Let the next state handle this.
@@ -154,13 +142,12 @@ public class WaitingPlayedCardState implements ViewerState {
 
 	@Override
 	public void handlePlayerReplaced(String name, int position) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the PlayerReplaced event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
+		
 		if (eventReceived)
 			return;
+		
 		if (currentPlayer == position)
 			recomputeLabelMessage();
 	}

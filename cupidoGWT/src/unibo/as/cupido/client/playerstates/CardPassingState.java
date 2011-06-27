@@ -124,11 +124,8 @@ public class CardPassingState implements PlayerState {
 					@Override
 					public void onComplete() {
 
-						if (frozen) {
-							System.out
-									.println("Client: notice: the onComplete() event was received while frozen, ignoring it.");
+						if (frozen)
 							return;
-						}
 
 						List<Card> sortedList = new ArrayList<Card>();
 						for (Card card : raisedCards)
@@ -169,32 +166,24 @@ public class CardPassingState implements PlayerState {
 
 	@Override
 	public void handleAnimationStart() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 		okButton.setEnabled(false);
 	}
 
 	@Override
 	public void handleAnimationEnd() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 		okButton.setEnabled(!confirmed && raisedCards.size() == 3);
 	}
 
 	@Override
 	public void handleCardClicked(int player, Card card, CardRole.State state,
 			boolean isRaised) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
+		
 		if (state == CardRole.State.PLAYED)
 			return;
 		if (player != 0 || card == null)
@@ -222,37 +211,31 @@ public class CardPassingState implements PlayerState {
 
 	@Override
 	public boolean handleCardPassed(Card[] cards) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// Let the next state handle this.
 		return false;
 	}
 
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// Let the next state handle this.
 		return false;
 	}
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
-		if (confirmed) {
+		
+		if (confirmed)
 			// Let the next state handle this.
 			return false;
-		}
+		
 		stateManager.exit();
 		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 		return true;
@@ -260,22 +243,17 @@ public class CardPassingState implements PlayerState {
 
 	@Override
 	public boolean handleGameStarted(Card[] myCards) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// Let the next state handle this.
 		return false;
 	}
 
 	@Override
 	public void handlePlayerReplaced(String name, int position) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handlePlayerReplaced() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 		// Nothing to do.
 	}
 }
