@@ -37,7 +37,14 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class Cupido implements EntryPoint {
 
+	/**
+	 * The width of the application's screens.
+	 */
 	public static final int width = 900;
+
+	/**
+	 * The height of the application's screens.
+	 */
 	public static final int height = 700;
 
 	@SerialTypes({ CardPassed.class, CardPlayed.class, GameEnded.class,

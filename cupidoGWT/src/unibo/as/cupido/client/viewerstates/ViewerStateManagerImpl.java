@@ -24,9 +24,9 @@ import java.util.List;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
+import unibo.as.cupido.client.widgets.ChatWidget;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
-import unibo.as.cupido.client.widgets.LocalChatWidget;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
@@ -61,14 +61,14 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 * The (ordered) list of cards played in the current trick.
 	 */
 	private List<Card> playedCards = new ArrayList<Card>();
-	private LocalChatWidget chatWidget;
+	private ChatWidget chatWidget;
 	private CupidoInterfaceAsync cupidoService;
 
 	/**
 	 * Initialize the state manager. The current user is a viewer.
 	 */
 	public ViewerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			LocalChatWidget chatWidget, ObservedGameStatus observedGameStatus,
+			ChatWidget chatWidget, ObservedGameStatus observedGameStatus,
 			String username, CupidoInterfaceAsync cupidoService) {
 
 		this.username = username;

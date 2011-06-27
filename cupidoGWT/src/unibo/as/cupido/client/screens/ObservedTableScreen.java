@@ -19,8 +19,9 @@ package unibo.as.cupido.client.screens;
 
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
+import unibo.as.cupido.client.widgets.ChatWidget;
+import unibo.as.cupido.client.widgets.ChatWidget.ChatListener;
 import unibo.as.cupido.client.widgets.HeartsObservedTableWidget;
-import unibo.as.cupido.client.widgets.LocalChatWidget;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 
@@ -34,11 +35,11 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 	 */
 	public static final int chatWidth = Cupido.width - Cupido.height;
 	private HeartsObservedTableWidget tableWidget;
-	private LocalChatWidget chatWidget;
+	private ChatWidget chatWidget;
 
 	private boolean frozen = false;
 
-	public ObservedTableScreen(final ScreenManager screenManager, String username,
+	public ObservedTableScreen(final ScreenManager screenManager, final String username,
 			ObservedGameStatus observedGameStatus,
 			final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
@@ -47,8 +48,8 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		// Set an empty listener (one that handles no messages).
 		screenManager.setListener(new CometMessageListener());
 
-		chatWidget = new LocalChatWidget(username,
-				new LocalChatWidget.MessageSender() {
+		chatWidget = new ChatWidget(chatWidth, Cupido.height,
+				new ChatListener() {
 					@Override
 					public void sendMessage(String message) {
 						if (frozen) {
@@ -56,6 +57,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 									.println("Client: notice: the sendMessage() event was received while frozen, ignoring it.");
 							return;
 						}
+						chatWidget.displayMessage(username, message);
 						cupidoService.sendLocalChatMessage(message,
 								new AsyncCallback<Void>() {
 									@Override
@@ -68,8 +70,6 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 								});
 					}
 				});
-		chatWidget.setHeight(Cupido.height + "px");
-		chatWidget.setWidth(chatWidth + "px");
 		add(chatWidget, Cupido.width - chatWidth, 0);
 
 		tableWidget = new HeartsObservedTableWidget(Cupido.height, username,

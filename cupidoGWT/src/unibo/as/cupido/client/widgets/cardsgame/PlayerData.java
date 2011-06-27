@@ -17,8 +17,24 @@
 
 package unibo.as.cupido.client.widgets.cardsgame;
 
+/**
+ * This contains the the data about a player needed
+ * by CardsGameWidget.
+ */
 public class PlayerData {
+	/**
+	 * The username of the player.
+	 */
 	public String name;
+	
+	/**
+	 * Specifies whether the player is a human or a bot.
+	 */
 	public boolean isBot;
+	
+	/**
+	 * The global score of the player.
+	 * This is valid only if the player is a human.
+	 */
 	public int score;
 }
