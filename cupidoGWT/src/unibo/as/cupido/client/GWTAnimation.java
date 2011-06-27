@@ -17,6 +17,9 @@
 
 package unibo.as.cupido.client;
 
+/**
+ * An interface implemented by GUI animations.
+ */
 public interface GWTAnimation {
 
 	/**
