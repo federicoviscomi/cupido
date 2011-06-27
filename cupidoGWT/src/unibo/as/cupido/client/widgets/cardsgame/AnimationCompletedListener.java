@@ -15,40 +15,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.client;
+package unibo.as.cupido.client.widgets.cardsgame;
 
-/**
- * An interface implemented by GUI animations.
- */
-public interface GWTAnimation {
-
-	/**
-	 * @return The duration of the animation, in milliseconds.
-	 */
-	public int duration();
-	
-	/**
-	 * Interrupts the animation, if it is running.
-	 */
-	public void cancel();
-
-	/**
-	 * Start the animation. When it finishes, the callback is invoked.
-	 */
-	public void run(AnimationCompletedListener listener);
-
-	/**
-	 * This is called just before starting the animation.
-	 */
-	public void onStart();
-
-	/**
-	 * This is called when the animation is finished, but before calling the
-	 * listener.
-	 */
+public interface AnimationCompletedListener {
 	public void onComplete();
-
-	static public interface AnimationCompletedListener {
-		public void onComplete();
-	}
 }

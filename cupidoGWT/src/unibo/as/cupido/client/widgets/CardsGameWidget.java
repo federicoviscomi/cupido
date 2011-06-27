@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import unibo.as.cupido.client.GWTAnimation;
-import unibo.as.cupido.client.SimpleAnimation;
+import unibo.as.cupido.client.widgets.cardsgame.AnimationCompletedListener;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
 import unibo.as.cupido.client.widgets.cardsgame.PlayerData;
@@ -35,6 +34,7 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 
+import com.google.gwt.animation.client.Animation;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -109,7 +109,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * The currently running animation (if any).
 	 * If this is not null, the table must not react to commands.
 	 */
-	private GWTAnimation currentAnimation = null;
+	private Animation currentAnimation = null;
 
 	private GameEventListener listener;
 
@@ -343,7 +343,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 *            The duration of the animation, in milliseconds.
 	 */
 	public void runPendingAnimations(int duration,
-			GWTAnimation.AnimationCompletedListener animationCompletedListener) {
+			AnimationCompletedListener animationCompletedListener) {
 
 		if (frozen) {
 			System.out
@@ -359,13 +359,13 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	private void animateLayoutChange(int duration,
 			final TableLayout targetTableLayout,
-			GWTAnimation.AnimationCompletedListener animationCompletedListener) {
+			final AnimationCompletedListener animationCompletedListener) {
 
 		assert currentAnimation == null;
 
 		listener.onAnimationStart();
 
-		currentAnimation = new SimpleAnimation(duration) {
+		currentAnimation = new Animation() {
 			@Override
 			public void onUpdate(double progress) {
 				for (CardWidget widget : movableWidgets.cards) {
@@ -391,9 +391,10 @@ public class CardsGameWidget extends AbsolutePanel {
 				previousTableLayout = targetTableLayout;
 				someAnimationsPending = false;
 				listener.onAnimationEnd();
+				animationCompletedListener.onComplete();
 			}
 		};
-		currentAnimation.run(animationCompletedListener);
+		currentAnimation.run(duration);
 	}
 
 	/**
@@ -691,7 +692,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			final int player,
 			int waitTime,
 			final int animationTime,
-			final GWTAnimation.AnimationCompletedListener animationCompletedListener) {
+			final AnimationCompletedListener animationCompletedListener) {
 
 		if (frozen) {
 			System.out
@@ -749,7 +750,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 				// Actually run the animation.
 				animateLayoutChange(animationTime, tableLayout,
-						new GWTAnimation.AnimationCompletedListener() {
+						new AnimationCompletedListener() {
 							@Override
 							public void onComplete() {
 								// Remove the widgets for the off-screen cards.

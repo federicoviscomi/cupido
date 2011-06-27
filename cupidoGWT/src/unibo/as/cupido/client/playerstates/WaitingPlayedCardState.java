@@ -20,8 +20,8 @@ package unibo.as.cupido.client.playerstates;
 import java.util.List;
 
 import unibo.as.cupido.client.CupidoInterfaceAsync;
-import unibo.as.cupido.client.GWTAnimation;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
+import unibo.as.cupido.client.widgets.cardsgame.AnimationCompletedListener;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.common.structures.Card;
 
@@ -163,7 +163,7 @@ public class WaitingPlayedCardState implements PlayerState {
 
 		cardsGameWidget.playCard(playerPosition, card);
 		cardsGameWidget.runPendingAnimations(2000,
-				new GWTAnimation.AnimationCompletedListener() {
+				new AnimationCompletedListener() {
 					@Override
 					public void onComplete() {
 						if (stateManager.getPlayedCards().size() == 4)

@@ -17,8 +17,8 @@
 
 package unibo.as.cupido.client.viewerstates;
 
-import unibo.as.cupido.client.GWTAnimation;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
+import unibo.as.cupido.client.widgets.cardsgame.AnimationCompletedListener;
 import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.user.client.ui.HTML;
@@ -58,7 +58,7 @@ public class EndOfTrickState implements ViewerState {
 		final int player = stateManager.getFirstPlayerInTrick();
 
 		cardsGameWidget.animateTrickTaking(player, 1500, 2000,
-				new GWTAnimation.AnimationCompletedListener() {
+				new AnimationCompletedListener() {
 
 					@Override
 					public void onComplete() {
