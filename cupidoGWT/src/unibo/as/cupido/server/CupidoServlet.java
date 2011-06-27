@@ -315,8 +315,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			@Override
 			public void notifyGameEnded(int[] matchPoints,
 					int[] playersTotalPoint) {
-				// FIXME remove this println
-				System.out.println("SNI notifyGameEnded called");
 				if (httpSession == null || cometSession == null) {
 					System.out.println("SerletNotInterf: session null");
 					return;
@@ -327,7 +325,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				cometSession.enqueue(g);
 				httpSession.removeAttribute(TI);
 				try {
-					// FIXME can value true cause problems?
 					UnicastRemoteObject.unexportObject(
 							(ServletNotificationsInterface) httpSession
 									.getAttribute(SNI), true);
