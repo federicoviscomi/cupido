@@ -47,6 +47,7 @@ public class GeneralErrorScreen extends AbsolutePanel implements Screen {
 				.appendHtmlConstant("<br>Questi sono i dati relativi all'errore: l'eccezione<br>");
 		htmlBuilder.appendEscaped(e.toString());
 		htmlBuilder.appendHtmlConstant("<br>Si è verificata:");
+		
 		StackTraceElement[] stackTrace = e.getStackTrace();
 		for (StackTraceElement stackTraceElement : stackTrace) {
 			htmlBuilder.appendHtmlConstant("<br />in ");

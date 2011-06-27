@@ -44,14 +44,14 @@ public class AboutScreen extends VerticalPanel implements Screen {
 		DOM.setStyleAttribute(getElement(), "marginLeft", "60px");
 		DOM.setStyleAttribute(getElement(), "marginTop", "60px");
 
-		String message = "" + "<h1>Informazioni su Cupido</h1> "
+		String message = "<h1>Informazioni su Cupido</h1> "
 				+ "<big><p>Questo gioco online di Hearts &egrave; stato "
 				+ "progettato e realizzato da Lorenzo Belli, "
 				+ "Marco Poletti e Federico Viscomi, per il progetto "
 				+ "del corso Architetture Software all'Universit&agrave; "
 				+ "di Bologna, nell'anno accademico 2010/2011.</p>"
 				+ "<p>Questo progetto &egrave; open-source; i sorgenti "
-				+ "sono stati rilasciati sotto la licenza GPLv2, e "
+				+ "sono stati rilasciati sotto la licenza GPLv3+, e "
 				+ "sono disponibili all'indirizzo "
 				+ "<a href=\"http://gitorious.org/cupido\">"
 				+ "http://gitorious.org/cupido</a>.</p></big>";

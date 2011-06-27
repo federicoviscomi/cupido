@@ -80,11 +80,8 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		screenManager.setListener(new CometMessageListener() {
 			@Override
 			public void onNewLocalChatMessage(String user, String message) {
-				if (frozen) {
-					System.out
-							.println("Client: notice: the onNewLocalChatMessage() event was received while frozen, ignoring it.");
+				if (frozen)
 					return;
-				}
 				chatWidget.displayMessage(user, message);
 			}
 

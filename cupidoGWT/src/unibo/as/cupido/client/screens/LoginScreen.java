@@ -137,11 +137,15 @@ public class LoginScreen extends VerticalPanel implements Screen {
 				new AsyncCallback<Boolean>() {
 					@Override
 					public void onFailure(Throwable caught) {
+						if (frozen)
+							return;
 						screenManager.displayGeneralErrorScreen(caught);
 					}
 
 					@Override
 					public void onSuccess(Boolean successful) {
+						if (frozen)
+							return;
 						if (successful)
 							screenManager.displayMainMenuScreen(username);
 						else {
