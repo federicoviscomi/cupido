@@ -27,7 +27,6 @@ import net.zschech.gwt.comet.client.CometListener;
 import net.zschech.gwt.comet.client.CometSerializer;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.Cupido.CupidoCometSerializer;
-import unibo.as.cupido.client.CupidoCometListener;
 import unibo.as.cupido.client.CupidoInterface;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -77,8 +76,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 				System.out
 						.println("cupidoService.openCometConnection() succeeded.");
 
-				CupidoCometListener cometListener = new CupidoCometListener(
-						new CometListener() {
+				CometListener cometListener = new CometListener() {
 
 							@Override
 							public void onConnected(int heartbeat) {
@@ -148,8 +146,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 									}
 								}
 							}
-
-						});
+				};
 
 				CometSerializer serializer = GWT
 						.create(CupidoCometSerializer.class);
@@ -162,7 +159,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 				System.out.println("Client: Comet client started ("
 						+ GWT.getModuleBaseURL() + "comet).");
 
-				displayLoginScreen();
+				// displayLoginScreen();
 			}
 		});
 	}

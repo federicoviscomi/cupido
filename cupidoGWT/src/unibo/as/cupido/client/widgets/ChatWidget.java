@@ -17,8 +17,7 @@
 
 package unibo.as.cupido.client.widgets;
 
-import unibo.as.cupido.client.Cupido;
-import unibo.as.cupido.client.screens.TableScreen;
+import unibo.as.cupido.common.structures.ChatMessage;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -34,49 +33,53 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class LocalChatWidget extends AbsolutePanel {
+public class ChatWidget extends AbsolutePanel {
 
-	private ScrollPanel messagesPanel;
 	private HTML messageList;
 	private TextBox messageField;
 	private PushButton sendButton;
-	private String username;
-
+	private ChatListener listener;
 	private boolean frozen = false;
+	private ScrollPanel scrollPanel;
 
-	private MessageSender messageSender;
-
-	public interface MessageSender {
+	public interface ChatListener {
 		public void sendMessage(String message);
 	}
 
-	public LocalChatWidget(final String username, MessageSender messageSender) {
+	public ChatWidget(int width, int height, ChatListener listener) {
 
-		this.username = username;
-		this.messageSender = messageSender;
+		this.listener = listener;
+		
+		setWidth(width + "px");
+		setHeight(height + "px");
 
-		int bottomRowHeight = 30;
+		final int bottomRowHeight = 30;
+		
+		scrollPanel = new ScrollPanel();
+		scrollPanel.setWidth((width - 20) + "px");
+		scrollPanel.setHeight((height - bottomRowHeight - 15) + "px");
+		add(scrollPanel, 10, 0);
+		
+		VerticalPanel panel = new VerticalPanel();
+		scrollPanel.add(panel);
 
-		messagesPanel = new ScrollPanel();
-		messagesPanel.setWidth(TableScreen.chatWidth + "px");
-		messagesPanel.setHeight((Cupido.height - bottomRowHeight) + "px");
-		add(messagesPanel, 0, 0);
-
-		messageList = new HTML("<p><i>Benvenuto nella chat del tavolo</i></p>");
-		messagesPanel.add(messageList);
+		panel.add(new HTML("<p><i>Benvenuto nella chat</i></p>"));
+		
+		messageList = new HTML();
+		panel.add(messageList);
 
 		HorizontalPanel bottomRow = new HorizontalPanel();
 		bottomRow.setSpacing(5);
-		bottomRow.setWidth(TableScreen.chatWidth + "px");
-		bottomRow.setHeight(bottomRowHeight + "px");
 		bottomRow.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		bottomRow.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
 		int sendButtonWidth = 30;
 
 		messageField = new TextBox();
-		messageField.setWidth((TableScreen.chatWidth - sendButtonWidth - 40) + "px");
+		messageField.setWidth((width - sendButtonWidth - 40)
+				+ "px");
 		messageField.addKeyUpHandler(new KeyUpHandler() {
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
@@ -96,25 +99,38 @@ public class LocalChatWidget extends AbsolutePanel {
 		});
 		bottomRow.add(sendButton);
 
-		add(bottomRow, 0, (Cupido.height - bottomRowHeight - 5));
+		bottomRow.setWidth((width - 10) + "px");
+		bottomRow.setHeight(bottomRowHeight + "px");
+		add(bottomRow, 0, (height - bottomRowHeight - 10));
 	}
 
 	private void sendMessage() {
 		if (messageField.getText().equals(""))
 			return;
-
-		String message = messageField.getText();
-
-		messageSender.sendMessage(message);
-
-		displayMessage(username, message);
-
+		
+		listener.sendMessage(messageField.getText());
+		
 		messageField.setText("");
 		messageField.setFocus(true);
 	}
 
-	public void displayMessage(String username, String message) {
+	public void setLastMessages(ChatMessage[] list) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: setLastMessages() was called while frozen, ignoring it.");
+			return;
+		}
 
+		String message = "";
+
+		for (ChatMessage entry : list)
+			message += constructMessageHtml(entry.userName, entry.message);
+
+		messageList.setHTML(message);
+		scrollPanel.scrollToBottom();
+	}
+	
+	public void displayMessage(String username, String message) {
 		if (frozen) {
 			System.out
 					.println("Client: notice: displayMessage() was called while frozen, ignoring it.");
@@ -123,15 +139,20 @@ public class LocalChatWidget extends AbsolutePanel {
 
 		String messages = messageList.getHTML();
 
+		messages += constructMessageHtml(username, message);
+		
+		messageList.setHTML(messages);
+		scrollPanel.scrollToBottom();
+	}
+	
+	private static String constructMessageHtml(String username, String message) {
 		SafeHtmlBuilder x = new SafeHtmlBuilder();
 		x.appendHtmlConstant("<p><b>");
 		x.appendEscaped(username);
 		x.appendHtmlConstant("</b>: ");
 		x.appendEscaped(message);
 		x.appendHtmlConstant("</p>");
-		messages = messages + x.toSafeHtml().asString();
-		messageList.setHTML(messages);
-		messagesPanel.scrollToBottom();
+		return x.toSafeHtml().asString();
 	}
 
 	public void freeze() {

@@ -17,6 +17,9 @@
 
 package unibo.as.cupido.client.widgets.cardsgame;
 
+/**
+ * This contains some data about a card on the table.
+ */
 public class CardRole {
 	@Override
 	public int hashCode() {
@@ -64,7 +67,6 @@ public class CardRole {
 	public int player;
 
 	public CardRole() {
-
 	}
 
 	public CardRole(CardRole.State state, boolean raised, int player) {
