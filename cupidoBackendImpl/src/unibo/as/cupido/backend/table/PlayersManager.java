@@ -306,18 +306,18 @@ public class PlayersManager {
 			if (players[i] != null) {
 				try {
 					System.out.println("game ended prematurely notifying "
-							+ players[i]);
+							+ players[i] + " " + i);
 					players[i].playerNotificationInterface.notifyGameEnded(
 							null, null);
 					System.out.println("game ended prematurely notifyied "
-							+ players[i]);
+							+ players[i] + " " + i);
 					if (!players[i].isBot) {
 						System.out.println("game ended prematurely notifying "
-								+ players[i]);
+								+ players[i] + " " + i);
 						players[i].inactiveReplacementBot.notifyGameEnded(null,
 								null);
 						System.out.println("game ended prematurely notifyied "
-								+ players[i]);
+								+ players[i] + " " + i);
 					}
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block

@@ -41,7 +41,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	private final String botName;
 	private TableInterface tableInterface;
 	private final InitialTableStatus initialTableStatus;
-	private PrintWriter out;
+	PrintWriter out;
 
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
@@ -67,7 +67,6 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
 		this.tableInterface = LoggerSingleTableManager.defaultInstance;
-		//this.tableInterface = new Lo
 		this.controller = new NonRemoteBotController(botName);
 		this.active = false;
 
@@ -76,13 +75,21 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 					+ botName);
 			outputFile.delete();
 			outputFile.createNewFile();
-			out = new PrintWriter(new FileWriter(outputFile));
+			//out = new PrintWriter(new FileWriter(outputFile));
+			out = new PrintWriter(System.out);
 		} catch (IOException e) {
 			// not a real error
 			e.printStackTrace();
 			out = new PrintWriter(System.out);
 		}
 		controller.start();
+
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				System.out.close();
+			}
+		});
 	}
 
 	/**
@@ -106,11 +113,12 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 					+ botName);
 			outputFile.delete();
 			outputFile.createNewFile();
-			out = new PrintWriter(new FileWriter(outputFile));
+			//out = new PrintWriter(new FileWriter(outputFile));
+			//out = new PrintWriter(System.out);
 		} catch (IOException e) {
 			// not a real error
 			e.printStackTrace();
-			out = new PrintWriter(System.out);
+			//out = new PrintWriter(System.out);
 		}
 		controller.start();
 	}
@@ -157,19 +165,21 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	@Override
-	public synchronized void notifyGameEnded(int[] matchPoints,
+	public void notifyGameEnded(int[] matchPoints,
 			int[] playersTotalPoint) {
 		System.out.println("\n" + botName + ": notifyGameEnded("
 				+ Arrays.toString(matchPoints) + ", "
-				+ Arrays.toString(playersTotalPoint) + ")");
-		out.close();
-		// controller.setGameEnded();
-		controller.interrupt();
+				+ Arrays.toString(playersTotalPoint) + ")  0");
+		System.out.close();
+		controller.setGameEnded();
+		System.out.println("\n" + botName + ": notifyGameEnded("
+				+ Arrays.toString(matchPoints) + ", "
+				+ Arrays.toString(playersTotalPoint) + ")  1");
 	}
 
 	@Override
 	public synchronized void notifyGameStarted(Card[] cards) {
-		out.println("\n" + botName + ": notifyGameStarted("
+		System.out.println("\n" + botName + ": notifyGameStarted("
 				+ Arrays.toString(cards) + ")");
 		this.cards = new ArrayList<Card>(13);
 		for (int i = 0; i < cards.length; i++)
@@ -188,7 +198,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
-		out.println("\n" + botName + ": notifyPassedCards("
+		System.out.println("\n" + botName + ": notifyPassedCards("
 				+ Arrays.toString(cards) + ")");
 		if (alreadyGotCards)
 			throw new IllegalArgumentException("passing cards twice to player "
@@ -197,7 +207,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		for (Card card : cards)
 			this.cards.add(card);
 		controller.setAbleToPass();
-		out.println("\nplay starts. " + botName + " cards are:"
+		System.out.println("\nplay starts. " + botName + " cards are:"
 				+ this.cards.toString());
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
 			firstDealer = 3;
@@ -207,7 +217,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	@Override
 	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		out.println("\n" + botName + ": notifyPlayedCard(" + card + ", "
+		System.out.println("\n" + botName + ": notifyPlayedCard(" + card + ", "
 				+ playerPosition + ")");
 		setCardPlayed(card, playerPosition);
 	}
@@ -215,7 +225,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	@Override
 	public synchronized void notifyPlayerJoined(String name, boolean isBot,
 			int point, int position) {
-		out.println("\n" + botName + ": notifyPlayerJoined(" + name + ", "
+		System.out.println("\n" + botName + ": notifyPlayerJoined(" + name + ", "
 				+ isBot + ")");
 		if (name == null || position < 0 || position > 2)
 			throw new IllegalArgumentException("illegal position " + position
@@ -231,7 +241,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	@Override
 	public synchronized void notifyPlayerLeft(String name) {
-		out.print("\n" + botName + ": "
+		System.out.print("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + name + ")");
 		int position = 0;
@@ -240,13 +250,13 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		if (position == 3)
 			throw new IllegalArgumentException("Player not found " + name);
 		initialTableStatus.opponents[position] = null;
-		out.println(initialTableStatus);
+		System.out.println(initialTableStatus);
 	}
 
 	@Override
 	public synchronized void notifyPlayerReplaced(String botName, int position)
 			throws NoSuchPlayerException {
-		out.print("\n" + botName + ": notifyPlayerReplaced(" + botName + ", "
+		System.out.print("\n" + botName + ": notifyPlayerReplaced(" + botName + ", "
 				+ position + ")");
 
 		if (botName == null || position < 0 || position > 2)
@@ -259,7 +269,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	public synchronized void passCards() {
-		out.println("\n" + botName + ": passCards()");
+		System.out.println("\n" + botName + ": passCards()");
 		Card[] cardsToPass = new Card[3];
 		for (int i = 0; i < 3; i++)
 			cardsToPass[i] = cards.get(i);
@@ -268,7 +278,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	@Override
 	public synchronized void passCards(Card[] cardsToPass) {
-		out.println("\n" + botName + ": passCards("
+		System.out.println("\n" + botName + ": passCards("
 				+ Arrays.toString(cardsToPass) + ")");
 		try {
 			setCardsPassed(cardsToPass);
@@ -290,13 +300,13 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	@Override
 	public synchronized void playCard(Card card) {
-		out.println("\n" + botName + ": playCard(" + card + ")");
 		try {
 			if (!active) {
 				controller.setRealPlayerPlayed();
 			}
 			setCardPlayed(card, 3);
 			if (active) {
+				System.out.println("\n" + botName + ": playCard(" + card + ")");
 				tableInterface.playCard(botName, card);
 			}
 		} catch (RemoteException e) {
@@ -315,7 +325,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	public synchronized void playNextCard() {
-		out.println("\n" + botName + ": playNextCard()");
+		System.out.println("\n" + botName + ": playNextCard()");
 
 		/** choose a valid card */
 		Card cardToPlay = choseCard();

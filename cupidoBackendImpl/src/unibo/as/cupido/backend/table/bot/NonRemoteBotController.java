@@ -88,7 +88,8 @@ public class NonRemoteBotController extends Thread {
 				}
 			}
 		} catch (InterruptedException e) {
-			//
+			//System.err.println(" :: bot controller. "+ botName + " game ended prematurely ");
+			e.printStackTrace();
 		}
 	}
 
