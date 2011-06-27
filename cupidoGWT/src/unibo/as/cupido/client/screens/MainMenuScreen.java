@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.widgets.ChatWidget;
@@ -212,6 +213,9 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 						.viewLastMessages(new AsyncCallback<ChatMessage[]>() {
 							@Override
 							public void onFailure(Throwable caught) {
+								if (frozen)
+									return;
+								
 								waitingServletResponse = false;
 								try {
 									throw caught;
@@ -227,6 +231,9 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 							@Override
 							public void onSuccess(ChatMessage[] messages) {
+								if (frozen)
+									return;
+								
 								waitingServletResponse = false;
 
 								chatWidget.setLastMessages(messages);

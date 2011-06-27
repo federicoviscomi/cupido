@@ -20,6 +20,7 @@ package unibo.as.cupido.client.screens;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.common.exception.FullTableException;
@@ -129,17 +130,8 @@ public class TableListScreen extends VerticalPanel implements Screen {
 		cellList.setHeight("400px");
 		add(cellList);
 
-		DOM.setStyleAttribute(cellList.getElement(), "borderLeftStyle", "solid");
-		DOM.setStyleAttribute(cellList.getElement(), "borderRightStyle",
-				"solid");
-		DOM.setStyleAttribute(cellList.getElement(), "borderTopStyle", "solid");
-		DOM.setStyleAttribute(cellList.getElement(), "borderBottomStyle",
-				"solid");
-
-		DOM.setStyleAttribute(cellList.getElement(), "borderLeftWidth", "1px");
-		DOM.setStyleAttribute(cellList.getElement(), "borderRightWidth", "1px");
-		DOM.setStyleAttribute(cellList.getElement(), "borderTopWidth", "1px");
-		DOM.setStyleAttribute(cellList.getElement(), "borderBottomWidth", "1px");
+		DOM.setStyleAttribute(cellList.getElement(), "borderStyle", "solid");
+		DOM.setStyleAttribute(cellList.getElement(), "borderWidth", "1px");
 
 		HorizontalPanel bottomPanel = new HorizontalPanel();
 		bottomPanel.setHorizontalAlignment(ALIGN_CENTER);
