@@ -17,8 +17,8 @@
 
 package unibo.as.cupido.client.viewerstates;
 
-import unibo.as.cupido.client.GWTAnimation;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
+import unibo.as.cupido.client.widgets.cardsgame.AnimationCompletedListener;
 import unibo.as.cupido.common.structures.Card;
 
 import com.google.gwt.user.client.Window;
@@ -102,7 +102,7 @@ public class WaitingFirstLeadState implements ViewerState {
 		cardsGameWidget.revealCoveredCard(playerPosition, card);
 		cardsGameWidget.playCard(playerPosition, card);
 		cardsGameWidget.runPendingAnimations(2000,
-				new GWTAnimation.AnimationCompletedListener() {
+				new AnimationCompletedListener() {
 					@Override
 					public void onComplete() {
 						stateManager.transitionToWaitingPlayedCard();

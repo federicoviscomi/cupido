@@ -19,8 +19,9 @@ package unibo.as.cupido.client.screens;
 
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
+import unibo.as.cupido.client.widgets.ChatWidget;
+import unibo.as.cupido.client.widgets.ChatWidget.ChatListener;
 import unibo.as.cupido.client.widgets.HeartsTableWidget;
-import unibo.as.cupido.client.widgets.LocalChatWidget;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
@@ -34,20 +35,21 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	 */
 	public static final int chatWidth = Cupido.width - Cupido.height;
 	private HeartsTableWidget tableWidget;
-	private LocalChatWidget chatWidget;
+	private ChatWidget chatWidget;
 
 	private boolean frozen = false;
 
-	public TableScreen(ScreenManager screenManager, String username,
+	public TableScreen(ScreenManager screenManager, final String username,
 			boolean isOwner, InitialTableStatus initialTableStatus,
 			int userScore, final CupidoInterfaceAsync cupidoService) {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
 
-		chatWidget = new LocalChatWidget(username,
-				new LocalChatWidget.MessageSender() {
+		chatWidget = new ChatWidget(chatWidth, Cupido.height,
+				new ChatListener() {
 					@Override
 					public void sendMessage(String message) {
+						chatWidget.displayMessage(username, message);
 						cupidoService.sendLocalChatMessage(message,
 								new AsyncCallback<Void>() {
 									@Override
@@ -60,8 +62,6 @@ public class TableScreen extends AbsolutePanel implements Screen {
 								});
 					}
 				});
-		chatWidget.setHeight(Cupido.height + "px");
-		chatWidget.setWidth(chatWidth + "px");
 		add(chatWidget, Cupido.width - chatWidth, 0);
 
 		tableWidget = new HeartsTableWidget(Cupido.height, username,
