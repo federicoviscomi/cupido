@@ -75,7 +75,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 					+ botName);
 			outputFile.delete();
 			outputFile.createNewFile();
-			//out = new PrintWriter(new FileWriter(outputFile));
+			// out = new PrintWriter(new FileWriter(outputFile));
 			out = new PrintWriter(System.out);
 		} catch (IOException e) {
 			// not a real error
@@ -113,12 +113,12 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 					+ botName);
 			outputFile.delete();
 			outputFile.createNewFile();
-			//out = new PrintWriter(new FileWriter(outputFile));
-			//out = new PrintWriter(System.out);
+			// out = new PrintWriter(new FileWriter(outputFile));
+			// out = new PrintWriter(System.out);
 		} catch (IOException e) {
 			// not a real error
 			e.printStackTrace();
-			//out = new PrintWriter(System.out);
+			// out = new PrintWriter(System.out);
 		}
 		controller.start();
 	}
@@ -165,8 +165,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	@Override
-	public void notifyGameEnded(int[] matchPoints,
-			int[] playersTotalPoint) {
+	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		System.out.println("\n" + botName + ": notifyGameEnded("
 				+ Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")  0");
@@ -184,9 +183,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.cards = new ArrayList<Card>(13);
 		for (int i = 0; i < cards.length; i++)
 			this.cards.add(cards[i]);
-		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			controller.setAbleToPass();
-		}
+		controller.setAbleToPass();
 	}
 
 	@Override
@@ -206,7 +203,6 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		alreadyGotCards = true;
 		for (Card card : cards)
 			this.cards.add(card);
-		controller.setAbleToPass();
 		System.out.println("\nplay starts. " + botName + " cards are:"
 				+ this.cards.toString());
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
@@ -225,8 +221,8 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	@Override
 	public synchronized void notifyPlayerJoined(String name, boolean isBot,
 			int point, int position) {
-		System.out.println("\n" + botName + ": notifyPlayerJoined(" + name + ", "
-				+ isBot + ")");
+		System.out.println("\n" + botName + ": notifyPlayerJoined(" + name
+				+ ", " + isBot + ")");
 		if (name == null || position < 0 || position > 2)
 			throw new IllegalArgumentException("illegal position " + position
 					+ ". " + name + " " + isBot);
@@ -256,8 +252,8 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	@Override
 	public synchronized void notifyPlayerReplaced(String botName, int position)
 			throws NoSuchPlayerException {
-		System.out.print("\n" + botName + ": notifyPlayerReplaced(" + botName + ", "
-				+ position + ")");
+		System.out.print("\n" + botName + ": notifyPlayerReplaced(" + botName
+				+ ", " + position + ")");
 
 		if (botName == null || position < 0 || position > 2)
 			throw new IllegalArgumentException(position + " " + botName);

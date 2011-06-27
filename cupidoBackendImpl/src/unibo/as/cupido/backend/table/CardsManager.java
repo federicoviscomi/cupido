@@ -113,7 +113,7 @@ public class CardsManager {
 		}
 	}
 
-	private boolean allPlayerPassedCards() {
+	boolean allPlayerPassedCards() {
 		for (int i = 0; i < 4; i++)
 			if (allPassedCards[i] == null)
 				return false;
@@ -269,6 +269,10 @@ public class CardsManager {
 
 	public int whoShouldPlay() {
 		return (firstDealerInTurn + playedCardsCount + 4) % 4;
+	}
+
+	public Card[] getPassedCards(int i) {
+		return allPassedCards[i];
 	}
 
 }
