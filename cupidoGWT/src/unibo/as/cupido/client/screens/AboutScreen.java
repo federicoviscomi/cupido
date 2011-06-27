@@ -17,6 +17,7 @@
 
 package unibo.as.cupido.client.screens;
 
+import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.client.Cupido;
 
 import com.google.gwt.event.dom.client.ClickEvent;

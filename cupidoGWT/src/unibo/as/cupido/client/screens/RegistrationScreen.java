@@ -17,6 +17,7 @@
 
 package unibo.as.cupido.client.screens;
 
+import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
