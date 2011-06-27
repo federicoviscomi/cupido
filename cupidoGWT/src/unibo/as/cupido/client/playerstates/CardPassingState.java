@@ -95,6 +95,9 @@ public class CardPassingState implements PlayerState {
 		assert !confirmed;
 
 		message.setText("");
+		// Note that the button will no longer be *visible*,
+		// it will not only be disabled.
+		okButton.setVisible(false);
 
 		confirmed = true;
 
