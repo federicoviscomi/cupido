@@ -1,0 +1,33 @@
+#!/bin/bash
+
+CLASSPATH="cupidoGWT/war/WEB-INF/classes:cupidoBackendImpl/bin:cupidoCommon/bin:cupidoBackendImpl/jargs.jar"
+
+java -classpath "$CLASSPATH" unibo.as.cupido.backend.table.playerUI.PlayerConsoleUI cupidoBackendImpl/test/createTableAndAddThreeBotLeave 2>&1 \
+| {
+while read line
+do
+  echo -n 'A: '
+  echo "$line"
+done
+} &
+
+
+PID1="$!"
+
+{
+  sleep 2
+  java -classpath "$CLASSPATH" unibo.as.cupido.backend.table.playerUI.PlayerConsoleUI cupidoBackendImpl/test/view 2>&1
+} | {
+while read line
+do
+  echo -n 'B: '
+  echo "$line"
+done
+} &
+
+PID2="$!"
+
+wait
+
+kill -9 "$PID1" &>/dev/null
+kill -9 "$PID2" &>/dev/null
