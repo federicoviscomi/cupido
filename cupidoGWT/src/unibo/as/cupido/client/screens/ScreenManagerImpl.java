@@ -159,7 +159,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 				System.out.println("Client: Comet client started ("
 						+ GWT.getModuleBaseURL() + "comet).");
 
-				// displayLoginScreen();
+				displayLoginScreen();
 			}
 		});
 	}
