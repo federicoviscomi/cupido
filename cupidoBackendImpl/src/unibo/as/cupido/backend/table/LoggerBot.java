@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
+import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 
@@ -94,5 +95,11 @@ public class LoggerBot implements NonRemoteBotInterface {
 	@Override
 	public void playCard(Card card) throws RemoteException {
 		out.println("" + botName + " playCard(" + card + ")");
+	}
+
+	@Override
+	public void activate(TableInterface tableInterface) throws RemoteException {
+		// TODO Auto-generated method stub
+		
 	}
 }
