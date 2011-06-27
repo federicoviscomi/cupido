@@ -47,17 +47,12 @@ public class CardsManager {
 		for (int i = 0; i < 4; i++) {
 			if (playedCard[i].suit == playedCard[firstDealer].suit) {
 				if (playedCard[i].value == 1) {
-					System.err.println(" played: "
-							+ Arrays.toString(playedCard) + " first: "
-							+ firstDealer + " winner: " + i);
 					return i;
 				}
 				if (playedCard[i].value > playedCard[winner].value)
 					winner = i;
 			}
 		}
-		System.err.println(" played: " + Arrays.toString(playedCard)
-				+ " first: " + firstDealer + " winner: " + winner);
 		return winner;
 	}
 
@@ -193,8 +188,11 @@ public class CardsManager {
 		}
 	}
 
-	public void playCard(int playerPosition, Card card)
+	public void playCard(String playerName, int playerPosition, Card card)
 			throws IllegalMoveException {
+		
+		System.out.println(playerName+ " " + playerPosition + " play card " + card + " turn " + turn);
+		
 		if (card == null || playerPosition < 0 || playerPosition > 4)
 			throw new IllegalArgumentException();
 
