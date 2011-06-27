@@ -33,7 +33,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class WaitingFirstLeadState implements PlayerState {
 
-	private HTML text;
+	private HTML message;
 
 	private CardsGameWidget cardsGameWidget;
 
@@ -56,11 +56,11 @@ public class WaitingFirstLeadState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		text = new HTML(
+		message = new HTML(
 				"Attendi che il giocatore che ha il due di fiori lo giochi.");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -117,7 +117,7 @@ public class WaitingFirstLeadState implements PlayerState {
 
 		eventReceived = true;
 
-		text.setText("");
+		message.setText("");
 
 		// playerPosition was in the [0-2] interval, now it is between 1 and 3.
 		++playerPosition;

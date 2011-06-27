@@ -45,7 +45,7 @@ public class CardPassingWaitingState implements PlayerState {
 
 	private boolean eventReceived = false;
 
-	private HTML text;
+	private HTML message;
 
 	public CardPassingWaitingState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
@@ -58,10 +58,10 @@ public class CardPassingWaitingState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		text = new HTML("Aspetta che gli altri giocatori decidano quali carte passare.");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
+		message = new HTML("Aspetta che gli altri giocatori decidano quali carte passare.");
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -108,7 +108,7 @@ public class CardPassingWaitingState implements PlayerState {
 
 		eventReceived = true;
 		
-		text.setText("");
+		message.setText("");
 
 		List<Card> cards = new ArrayList<Card>();
 

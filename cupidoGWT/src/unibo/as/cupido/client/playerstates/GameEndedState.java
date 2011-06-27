@@ -47,10 +47,10 @@ public class GameEndedState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		final HTML text = new HTML("La partita &egrave; finita");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
+		final HTML message = new HTML("La partita &egrave; finita");
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}

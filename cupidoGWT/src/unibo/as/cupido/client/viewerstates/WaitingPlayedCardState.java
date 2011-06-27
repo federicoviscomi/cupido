@@ -40,7 +40,7 @@ public class WaitingPlayedCardState implements ViewerState {
 
 	private int currentPlayer;
 
-	private HTML label;
+	private HTML message;
 
 	public WaitingPlayedCardState(final CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
@@ -55,10 +55,10 @@ public class WaitingPlayedCardState implements ViewerState {
 		currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager
 				.getPlayedCards().size()) % 4;
 
-		label = new HTML();
-		label.setWidth("120px");
-		label.setWordWrap(true);
-		panel.add(label);
+		message = new HTML();
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 		recomputeLabelMessage();
 
 		cardsGameWidget.setCornerWidget(panel);
@@ -71,7 +71,7 @@ public class WaitingPlayedCardState implements ViewerState {
 		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
 		safeHtmlBuilder.appendEscaped(playerInfo.name);
 		safeHtmlBuilder.appendHtmlConstant(" giochi.");
-		label.setHTML(safeHtmlBuilder.toSafeHtml());
+		message.setHTML(safeHtmlBuilder.toSafeHtml());
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class WaitingPlayedCardState implements ViewerState {
 
 		eventReceived = true;
 
-		label.setText("");
+		message.setText("");
 
 		stateManager.addPlayedCard(playerPosition, card);
 

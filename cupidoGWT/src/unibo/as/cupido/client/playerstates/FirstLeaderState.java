@@ -35,7 +35,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class FirstLeaderState implements PlayerState {
 
-	private HTML text;
+	private HTML message;
 	private List<Card> hand;
 	private CardsGameWidget cardsGameWidget;
 	private PlayerStateManager stateManager;
@@ -57,10 +57,10 @@ public class FirstLeaderState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		text = new HTML("Sei il primo a giocare; devi giocare il due di fiori");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
+		message = new HTML("Sei il primo a giocare; devi giocare il due di fiori");
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -103,7 +103,7 @@ public class FirstLeaderState implements PlayerState {
 
 		playedCard = true;
 
-		text.setText("");
+		message.setText("");
 
 		hand.remove(card);
 

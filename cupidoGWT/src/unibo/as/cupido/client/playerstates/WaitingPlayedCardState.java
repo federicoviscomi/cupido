@@ -46,7 +46,7 @@ public class WaitingPlayedCardState implements PlayerState {
 
 	private boolean eventReceived = false;
 
-	private HTML text;
+	private HTML message;
 
 	public WaitingPlayedCardState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
@@ -62,13 +62,13 @@ public class WaitingPlayedCardState implements PlayerState {
 		currentPlayer = (stateManager.getFirstPlayerInTrick() + stateManager
 				.getPlayedCards().size()) % 4;
 
-		text = new HTML();
+		message = new HTML();
 
 		recomputeLabelMessage();
 
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -83,7 +83,7 @@ public class WaitingPlayedCardState implements PlayerState {
 		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
 		safeHtmlBuilder.appendEscaped(playerInfo.name);
 		safeHtmlBuilder.appendHtmlConstant(" giochi.");
-		text = new HTML(safeHtmlBuilder.toSafeHtml().asString());
+		message = new HTML(safeHtmlBuilder.toSafeHtml().asString());
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class WaitingPlayedCardState implements PlayerState {
 
 		eventReceived = true;
 		
-		text.setText("");
+		message.setText("");
 
 		// playerPosition was in the [0-2] interval, now it is between 1 and 3.
 		++playerPosition;

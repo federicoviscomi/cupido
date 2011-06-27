@@ -52,7 +52,7 @@ public class CardPassingState implements PlayerState {
 	private boolean frozen = false;
 	private CupidoInterfaceAsync cupidoService;
 	private PlayerStateManager stateManager;
-	private HTML text;
+	private HTML message;
 	private List<Card> hand;
 
 	public CardPassingState(final CardsGameWidget cardsGameWidget,
@@ -69,10 +69,10 @@ public class CardPassingState implements PlayerState {
 		cornerWidget
 				.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		text = new HTML("Seleziona le tre carte da passare.");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		cornerWidget.add(text);
+		message = new HTML("Seleziona le tre carte da passare.");
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		cornerWidget.add(message);
 
 		okButton = new PushButton("OK");
 		okButton.setEnabled(false);
@@ -92,7 +92,7 @@ public class CardPassingState implements PlayerState {
 		assert raisedCards.size() == 3;
 		assert !confirmed;
 
-		text.setText("");
+		message.setText("");
 
 		confirmed = true;
 

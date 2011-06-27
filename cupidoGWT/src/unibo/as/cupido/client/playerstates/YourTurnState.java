@@ -43,7 +43,7 @@ public class YourTurnState implements PlayerState {
 
 	private boolean frozen = false;
 	private CupidoInterfaceAsync cupidoService;
-	private HTML text;
+	private HTML message;
 
 	public YourTurnState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
@@ -58,10 +58,10 @@ public class YourTurnState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		text = new HTML("Tocca a te giocare.");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
+		message = new HTML("Tocca a te giocare.");
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -157,7 +157,7 @@ public class YourTurnState implements PlayerState {
 
 		playedCard = true;
 		
-		text.setText("");
+		message.setText("");
 
 		hand.remove(card);
 
