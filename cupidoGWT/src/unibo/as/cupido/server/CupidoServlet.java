@@ -423,7 +423,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 		TableInterface ti = (TableInterface) httpSession.getAttribute(TI);
 		if (ti == null) {
-			System.out.println("Servlet: on playCard() ti == null");
+			System.out.println("Servlet: on sendLocalChatMessage() ti == null");
 			// player is not at table
 			throw new NoSuchTableException();
 		}
