@@ -76,7 +76,7 @@ public class PlayerConsoleUI {
 			+ String.format(FORMAT, "play suit value", "", "",
 					"play specified card")
 			+ String.format(FORMAT, "addbot POSITION", "", "",
-					"add a inactiveReplacementBot in specified absolute position")
+					"add a bot in specified absolute position")
 			+ String.format(FORMAT, "join", "", "", "join an arbitrary table")
 			+ String.format(FORMAT, "help", "", "", "print this help")
 			+ String.format(FORMAT, "leave", "", "", "leave the table(if any)")
@@ -403,7 +403,7 @@ public class PlayerConsoleUI {
 				} else if (command[0].equals("addbot")) {
 					try {
 						if (command.length < 2) {
-							out.println("missin inactiveReplacementBot position");
+							out.println("missin bot position");
 							out.flush();
 						} else {
 							int position = Integer.parseInt(command[1]);

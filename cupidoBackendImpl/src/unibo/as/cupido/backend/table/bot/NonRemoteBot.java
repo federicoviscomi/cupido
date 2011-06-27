@@ -53,6 +53,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	private boolean brokenHearted = false;
 
 	private int points = 0;
+	private boolean active;
 
 	/**
 	 * Create a non active bot.
@@ -66,7 +67,9 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
 		this.tableInterface = LoggerSingleTableManager.defaultInstance;
+		//this.tableInterface = new Lo
 		this.controller = new NonRemoteBotController(botName);
+		this.active = false;
 
 		try {
 			File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
@@ -96,6 +99,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.initialTableStatus = initialTableStatus;
 		this.tableInterface = tableInterface;
 		this.controller = new NonRemoteBotController(this, botName);
+		this.active = true;
 
 		try {
 			File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
@@ -112,6 +116,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	public synchronized void activate(TableInterface tableInterface) {
+		this.active = true;
 		this.tableInterface = tableInterface;
 		this.controller.activate(this);
 	}
@@ -154,11 +159,12 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	@Override
 	public synchronized void notifyGameEnded(int[] matchPoints,
 			int[] playersTotalPoint) {
-		out.println("\n" + botName + ": notifyGameEnded("
+		System.out.println("\n" + botName + ": notifyGameEnded("
 				+ Arrays.toString(matchPoints) + ", "
 				+ Arrays.toString(playersTotalPoint) + ")");
 		out.close();
-		controller.setGameEnded();
+		// controller.setGameEnded();
+		controller.interrupt();
 	}
 
 	@Override
@@ -286,9 +292,13 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	public synchronized void playCard(Card card) {
 		out.println("\n" + botName + ": playCard(" + card + ")");
 		try {
-			controller.setRealPlayerPlayed();
+			if (!active) {
+				controller.setRealPlayerPlayed();
+			}
 			setCardPlayed(card, 3);
-			tableInterface.playCard(botName, card);
+			if (active) {
+				tableInterface.playCard(botName, card);
+			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

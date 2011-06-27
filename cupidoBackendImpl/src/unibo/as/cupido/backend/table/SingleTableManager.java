@@ -183,11 +183,17 @@ public class SingleTableManager implements TableInterface {
 				e.printStackTrace();
 			}
 		} else if (table.owner.equals(userName)) {
-			System.out.println("creator  " + userName
-					+ " left. Destroing table...");
+			System.out.println("creator " + userName
+					+ " left. Destroing table... 0");
 			playersManager.notifyGameEndedPrematurely();
+			System.out.println("creator " + userName
+					+ " left. Destroing table... 1");
 			viewers.notifyGameEndedPrematurely();
+			System.out.println("creator " + userName
+					+ " left. Destroing table... 2");
 			this.notifyTableDestruction();
+			System.out.println("creator " + userName
+					+ " left. Destroing table... 3");
 		} else if (gameStarted) {
 			System.out.println("player " + userName
 					+ " left after game start. Replaycing...");
@@ -210,7 +216,7 @@ public class SingleTableManager implements TableInterface {
 		}
 	}
 
-	public void notifyGameEnded() {
+	public synchronized void notifyGameEnded() {
 		gameEnded = true;
 		int[] matchPoints = cardsManager.getMatchPoints();
 		int[] playersTotalPoint = playersManager.updateScore(matchPoints);

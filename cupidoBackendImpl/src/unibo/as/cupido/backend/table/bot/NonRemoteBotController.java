@@ -61,47 +61,28 @@ public class NonRemoteBotController extends Thread {
 				}
 			}
 			for (int i = 0; i < 13; i++) {
-				System.out.println("non remote bot controller " + botName
-						+ " turn " + i + " waiting ... ");
 				synchronized (lock) {
 					while (!ableToPlay) {
 						lock.wait();
 					}
-					System.out.println("non remote bot controller " + botName
-							+ " turn " + i + " notified ");
 					if (gameEnded) {
-						System.out.println("non remote bot controller "
-								+ botName + " turn " + i + " game ended ");
 						return;
 					}
 					ableToPlay = false;
 					if (bot != null) {
-						System.out.println("non remote bot controller "
-								+ botName + " turn " + i
-								+ " playing a card ... ");
 						bot.playNextCard();
-						System.out.println("non remote bot controller "
-								+ botName + " turn " + i + " played ");
 					} else {
 						// inactive replacement bot. waiting for real player to
 						// play
-						System.out
-								.println("non remote bot controller "
-										+ botName
-										+ " turn "
-										+ i
-										+ " not playing a card because it is inactive ");
 						while (!realPlayerPlayed && !realPlayerLeft) {
 							lock.wait();
 						}
+						if (gameEnded) {
+							return;
+						}
 						realPlayerPlayed = false;
 						if (realPlayerLeft) {
-							System.out.println("!activated non remote bot "
-									+ botName + " turn " + i
-									+ " playing a card ... ");
 							bot.playNextCard();
-							System.out.println("non remote bot controller "
-									+ botName + " turn " + i + " played ");
 						}
 					}
 				}
