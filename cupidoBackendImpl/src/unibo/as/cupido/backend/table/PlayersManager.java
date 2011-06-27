@@ -136,21 +136,18 @@ public class PlayersManager {
 
 	private PlayerInfo[] players = new PlayerInfo[4];
 	private int playersCount = 1;
-	private final RemovalThread removalThread;
 	private final DatabaseManager databaseManager;
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
-			int score, RemovalThread removalThread,
 			DatabaseManager databaseManager) throws SQLException,
 			NoSuchUserException {
-		if (owner == null || snf == null || removalThread == null)
+		if (owner == null || snf == null)
 			throw new IllegalArgumentException();
 
 		this.databaseManager = databaseManager;
-		this.removalThread = removalThread;
 
+		int score = databaseManager.getPlayerScore(owner);
 		players[0] = new PlayerInfo(owner, score, snf, new LoggerBot(owner));
-		removalThread.start();
 	}
 
 	public void addBot(String userName, int position, String botName,
@@ -270,9 +267,8 @@ public class PlayersManager {
 								toRelativePosition(position, i));
 					}
 				} catch (RemoteException e) {
-					System.err.println(" " + players[i].name
-							+ " is unreachable. Removing from table");
-					removalThread.addRemoval(i);
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}
@@ -286,7 +282,7 @@ public class PlayersManager {
 				throw new IllegalStateException();
 			}
 			try {
-				
+
 				players[i].playerNotificationInterface.notifyGameEnded(
 						matchPoints, playersTotalPoint);
 				if (!players[i].isBot) {
@@ -362,25 +358,6 @@ public class PlayersManager {
 		}
 	}
 
-	/** send a notification to player in absolute position <code>position</code> */
-	public void notifyPassedCards(int position, Card[] cards) {
-		try {
-			if (players[position] == null) {
-				throw new IllegalStateException(
-						"cannot pass cards: missing player " + position);
-			}
-			players[position].playerNotificationInterface
-					.notifyPassedCards(cards);
-			if (!players[position].isBot) {
-				players[position].inactiveReplacementBot
-						.notifyPassedCards(cards);
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	public void notifyPlayedCard(String userName, Card card)
 			throws NoSuchPlayerException {
 		int position = getPlayerPosition(userName);
@@ -420,7 +397,6 @@ public class PlayersManager {
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					removalThread.addRemoval(i);
 				}
 			}
 		}
@@ -441,6 +417,26 @@ public class PlayersManager {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+
+	/** <code>position</code> is the position of player who passed cards */
+	public void notifyPlayerPassedCards(int position, Card[] cards) {
+		int receiver = (position + 5) % 4;
+		try {
+			if (players[receiver] == null) {
+				throw new IllegalStateException(
+						"cannot pass cards: missing player " + receiver);
+			}
+			players[receiver].playerNotificationInterface
+					.notifyPassedCards(cards);
+			if (!players[receiver].isBot) {
+				players[receiver].inactiveReplacementBot
+						.notifyPassedCards(cards);
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

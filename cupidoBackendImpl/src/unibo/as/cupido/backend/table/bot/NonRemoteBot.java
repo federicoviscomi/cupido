@@ -18,7 +18,6 @@
 package unibo.as.cupido.backend.table.bot;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
@@ -58,7 +57,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	/**
 	 * Create a non active bot.
 	 * 
-	 * @param botName
+	 * @param playerName
 	 * @param initialTableStatus
 	 */
 	public NonRemoteBot(final String botName,
@@ -95,7 +94,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	/**
 	 * Create an active bot
 	 * 
-	 * @param botName
+	 * @param playerName
 	 * @param initialTableStatus
 	 * @param tableInterface
 	 */
@@ -123,6 +122,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		controller.start();
 	}
 
+	@Override
 	public synchronized void activate(TableInterface tableInterface) {
 		this.active = true;
 		this.tableInterface = tableInterface;

@@ -22,6 +22,11 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+import unibo.as.cupido.backend.table.AsynchronousMessage.AddPlayerMessage;
+import unibo.as.cupido.backend.table.AsynchronousMessage.PlayerPassCardsMessage;
+import unibo.as.cupido.backend.table.AsynchronousMessage.PlayerPlayCardsMessage;
+import unibo.as.cupido.backend.table.AsynchronousMessage.ReplacePlayerMessage;
+import unibo.as.cupido.backend.table.AsynchronousMessage.SendLocalChatMessage;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
@@ -56,20 +61,16 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
 public class SingleTableManager implements TableInterface {
 
 	private final CardsManager cardsManager;
-	private final DatabaseManager databaseManager = new DatabaseManager();
+	private final DatabaseManager databaseManager;
 	private final PlayersManager playersManager;
 	private final TableInfoForClient table;
-	private final ViewersSwarm viewers = new ViewersSwarm();
+	private final ViewersSwarm viewers;
 	private final GlobalTableManagerInterface gtm;
-	private final StartNotifierThread startNotifierThread;
-	private final EndNotifierThread endNotifierThread;
-	private boolean gameStarted = false;
-	private boolean gameEnded = false;
-	private String owner;
-	private TableInterface tableInterface;
+	private final String owner;
+	private final Controller controller;
 
-	private GameStatus gameStatus = GameStatus.INIT;
-	private STMControllerThread stmController;
+	private GameStatus gameStatus;
+	private TableInterface tableInterface;
 
 	public static final String[] botNames = { "", "cupido", "venere", "marte" };
 
@@ -78,25 +79,20 @@ public class SingleTableManager implements TableInterface {
 			throws RemoteException, SQLException, NoSuchUserException,
 			NoSuchLTMException {
 
-		if (snf == null || table == null || gtm == null)
+		if (snf == null || table == null || gtm == null) {
 			throw new IllegalArgumentException(snf + " " + table + " " + gtm);
+		}
+
 		this.table = table;
 		this.gtm = gtm;
 		this.owner = table.owner;
-		playersManager = new PlayersManager(owner, snf,
-				databaseManager.getPlayerScore(table.owner), new RemovalThread(
-						this), databaseManager);
-
-		// TODO use stmController only
-		startNotifierThread = new StartNotifierThread(this);
-		startNotifierThread.start();
-		endNotifierThread = new EndNotifierThread(this);
-		endNotifierThread.start();
-		stmController = new STMControllerThread(this);
-		stmController.start();
-		//
-
-		cardsManager = new CardsManager();
+		this.gameStatus = GameStatus.INIT;
+		this.viewers = new ViewersSwarm();
+		this.databaseManager = new DatabaseManager();
+		this.playersManager = new PlayersManager(owner, snf, databaseManager);
+		this.cardsManager = new CardsManager();
+		this.controller = new Controller(this, table);
+		this.controller.start();
 	}
 
 	@Override
@@ -104,41 +100,39 @@ public class SingleTableManager implements TableInterface {
 			throws FullPositionException, RemoteException,
 			IllegalArgumentException, FullTableException, NotCreatorException,
 			IllegalStateException {
-		if (this.gameStarted)
+		if (!gameStatus.equals(GameStatus.INIT)) {
 			throw new IllegalStateException();
-		if (userName == null)
+		}
+		if (userName == null || position < 0 || position > 3) {
 			throw new IllegalArgumentException();
-		synchronized (startNotifierThread.lock) {
-			try {
-				String botName = botNames[position];
+		}
+		try {
+			String botName = botNames[position];
 
-				if (tableInterface == null) {
-					tableInterface = gtm.getLTMInterface(
-							table.tableDescriptor.ltmId).getTable(
-							table.tableDescriptor.id);
-				}
-
-				viewers.notifyBotJoined(botNames[position], position);
-
-				playersManager.addBot(userName, position, botNames[position],
-						tableInterface);
-				playersManager.notifyBotJoined(botName, position);
-				gtm.notifyTableJoin(table.tableDescriptor);
-				if (playersManager.playersCount() == 4) {
-					startNotifierThread.gameStarted = true;
-					startNotifierThread.lock.notify();
-				}
-				return botName;
-			} catch (NoSuchTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchLTMException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (tableInterface == null) {
+				tableInterface = gtm.getLTMInterface(
+						table.tableDescriptor.ltmId).getTable(
+						table.tableDescriptor.id);
 			}
+
+			playersManager.addBot(userName, position, botNames[position],
+					tableInterface);
+
+			controller.addPlayer(botName, true, 0, position);
+			if (playersManager.playersCount() == 4) {
+				gameStatus = GameStatus.PASSING_CARDS;
+				controller.startGame();
+			}
+			return botName;
+		} catch (NoSuchTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchLTMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		throw new Error();
 	}
@@ -149,35 +143,30 @@ public class SingleTableManager implements TableInterface {
 			NoSuchTableException, RemoteException, IllegalArgumentException,
 			IllegalStateException, DuplicateUserNameException, SQLException,
 			NoSuchUserException {
-		if (this.gameStarted)
+		if (!gameStatus.equals(GameStatus.INIT)) {
 			throw new IllegalStateException();
-		if (userName == null || snf == null)
-			throw new IllegalArgumentException();
-
-		synchronized (startNotifierThread.lock) {
-			int score = databaseManager.getPlayerScore(userName);
-			int position = playersManager.addPlayer(userName, snf, score);
-			playersManager.notifyPlayerJoined(userName, score, position);
-			viewers.notifyPlayerJoined(userName, score, position);
-			gtm.notifyTableJoin(table.tableDescriptor);
-			if (playersManager.playersCount() == 4) {
-				startNotifierThread.gameStarted = true;
-				startNotifierThread.lock.notify();
-			}
-			return playersManager.getInitialTableStatus(position);
 		}
-	}
+		if (userName == null || snf == null) {
+			throw new IllegalArgumentException();
+		}
 
-	public void leaveTable(Integer i) throws RemoteException,
-			NoSuchPlayerException, NoSuchPlayerException {
-		this.leaveTable(playersManager.getPlayerName(i));
+		int score = databaseManager.getPlayerScore(userName);
+		int position = playersManager.addPlayer(userName, snf, score);
+
+		controller.addPlayer(userName, false, score, position);
+		if (playersManager.playersCount() == 4) {
+			gameStatus = GameStatus.PASSING_CARDS;
+			controller.startGame();
+		}
+		return playersManager.getInitialTableStatus(position);
 	}
 
 	@Override
 	public synchronized void leaveTable(String userName)
 			throws RemoteException, NoSuchPlayerException {
-		if (userName == null)
+		if (userName == null) {
 			throw new IllegalArgumentException();
+		}
 
 		if (cardsManager.gameEnded()) {
 			throw new IllegalStateException(
@@ -193,33 +182,36 @@ public class SingleTableManager implements TableInterface {
 				e.printStackTrace();
 			}
 		} else if (table.owner.equals(userName)) {
-			System.out.println("owner " + userName + " left 0");
-			endNotifierThread.setGameEndedPrematurely();
-			System.out.println("owner " + userName + " left 1");
-		} else if (gameStarted) {
+			controller.endGamePrematurely();
+		} else if (!gameStatus.equals(GameStatus.INIT)) {
 			System.out.println("player " + userName
 					+ " left after game start. Replaycing...");
-			this.replacePlayer(userName);
+			int position = playersManager.getPlayerPosition(userName);
+			if (tableInterface == null) {
+				try {
+					tableInterface = gtm.getLTMInterface(
+							table.tableDescriptor.ltmId).getTable(
+							table.tableDescriptor.id);
+				} catch (NoSuchTableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchLTMException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+			playersManager.replacePlayer(userName, position, tableInterface);
+			controller.replacePlayer(userName, position);
 		} else {
 			System.out
 					.println("player " + userName + " left before game start");
 			playersManager.removePlayer(userName);
-			playersManager.notifyPlayerLeft(userName);
-			viewers.notifyPlayerLeft(userName);
-			try {
-				gtm.notifyTableLeft(table.tableDescriptor);
-			} catch (NoSuchTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (EmptyTableException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			controller.playerLeave(userName);
 		}
 	}
 
 	public synchronized void notifyGameEnded() {
-		gameEnded = true;
 		int[] matchPoints = cardsManager.getMatchPoints();
 		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
 		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
@@ -227,9 +219,102 @@ public class SingleTableManager implements TableInterface {
 		this.notifyTableDestruction();
 	}
 
-	synchronized void notifyGameStarted() {
-		gameStarted = true;
+	public synchronized void notifyGameEndedPrematurely() {
+		playersManager.notifyGameEndedPrematurely();
+		viewers.notifyGameEndedPrematurely();
+		this.notifyTableDestruction();
+	}
+
+	public synchronized void notifyGameStarted() {
 		playersManager.notifyGameStarted(cardsManager.getCards());
+	}
+
+	public synchronized void notifyLocalChatMessage(SendLocalChatMessage message) {
+		playersManager.notifyNewLocalChatMessage(message.message);
+		viewers.notifyNewLocalChatMessage(message.message);
+	}
+
+	public synchronized void notifyPassedCards() {
+		for (int i = 0; i < 4; i++) {
+			playersManager.notifyPlayerPassedCards((i + 5) % 4,
+					cardsManager.getPassedCards(i));
+		}
+	}
+
+	public void notifyPlayerJoined(AddPlayerMessage message) {
+
+		if (message.isBot) {
+			playersManager
+					.notifyBotJoined(message.playerName, message.position);
+		} else {
+			playersManager.notifyPlayerJoined(message.playerName,
+					message.score, message.position);
+		}
+		viewers.notifyPlayerJoined(message.playerName, message.isBot,
+				message.score, message.position);
+		try {
+			gtm.notifyTableJoin(table.tableDescriptor);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FullTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void notifyPlayerLeft(String userName) {
+		playersManager.notifyPlayerLeft(userName);
+		viewers.notifyPlayerLeft(userName);
+		try {
+			gtm.notifyTableLeft(table.tableDescriptor);
+		} catch (NoSuchTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (EmptyTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public synchronized void notifyPlayerPassedCards(
+			PlayerPassCardsMessage message) {
+		playersManager.notifyPlayerPassedCards(message.position, message.cards);
+	}
+
+	public synchronized void notifyPlayerPlayedCard(
+			PlayerPlayCardsMessage message) {
+		try {
+			playersManager.notifyPlayedCard(message.playerName, message.card);
+		} catch (NoSuchPlayerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		viewers.notifyPlayedCard(message.position, message.card);
+	}
+
+	public synchronized void notifyPlayerReplaced(ReplacePlayerMessage message) {
+		try {
+			playersManager.notifyPlayerReplaced(message.playerName,
+					message.position);
+			viewers.notifyPlayerReplaced(message.playerName, message.position);
+		} catch (FullPositionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (EmptyPositionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchPlayerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private void notifyTableDestruction() {
@@ -258,14 +343,14 @@ public class SingleTableManager implements TableInterface {
 			throws IllegalArgumentException, RemoteException,
 			NoSuchPlayerException {
 
-		if (!gameStarted || gameEnded)
+		if (!gameStatus.equals(GameStatus.PASSING_CARDS))
 			throw new IllegalStateException();
 
 		System.out.println("\n single table manager passCards(" + userName
 				+ ", " + Arrays.toString(cards) + ")");
 
 		/*
-		 * NOTE: userName is name of the player who passes cards. Not name of
+		 * NOTE: playerName is name of the player who passes cards. Not name of
 		 * the player who receives the cards!
 		 */
 		if (userName == null || cards == null || cards.length != 3)
@@ -276,9 +361,10 @@ public class SingleTableManager implements TableInterface {
 		cardsManager.setCardPassing(position, cards);
 		playersManager.replacementBotPassCards(position, cards);
 
-		if (cardsManager.allPlayerPassedCards()) {
-			System.out.println("stm >>> all player passed cards ");
-			stmController.setAllPlayerPassedCards();
+		controller.passCards(userName, position, cards);
+		if(cardsManager.allPlayerPassedCards()){
+			gameStatus = GameStatus.STARTED;
+			controller.allPassedCards();
 		}
 	}
 
@@ -288,50 +374,19 @@ public class SingleTableManager implements TableInterface {
 			IllegalArgumentException, NoSuchPlayerException {
 		System.out.println("single table manager play card " + userName + " "
 				+ card);
-		if (!gameStarted || gameEnded)
+		if (!gameStatus.equals(GameStatus.STARTED))
 			throw new IllegalStateException();
 		if (userName == null || card == null)
-			throw new IllegalArgumentException("userName " + userName
+			throw new IllegalArgumentException("playerName " + userName
 					+ " card " + card);
 		int playerPosition = playersManager.getPlayerPosition(userName);
 		cardsManager.playCard(userName, playerPosition, card);
 		playersManager.replacementBotPlayCard(playerPosition, card);
-		playersManager.notifyPlayedCard(userName, card);
-		viewers.notifyPlayedCard(playerPosition, card);
-		if (cardsManager.gameEnded()) {
-			this.gameEnded = true;
-			endNotifierThread.setGameEnded();
+		controller.playCard(userName, playerPosition, card);
+		if(cardsManager.gameEnded()){
+			gameStatus = GameStatus.ENDED;
+			controller.endGame();
 		}
-	}
-
-	private void replacePlayer(String playerName) throws NoSuchPlayerException {
-		try {
-			int position = playersManager.getPlayerPosition(playerName);
-			if (tableInterface == null) {
-				tableInterface = gtm.getLTMInterface(
-						table.tableDescriptor.ltmId).getTable(
-						table.tableDescriptor.id);
-			}
-			playersManager.replacePlayer(playerName, position, tableInterface);
-			playersManager.notifyPlayerReplaced(playerName, position);
-			viewers.notifyPlayerReplaced(playerName, position);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchTableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchLTMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FullPositionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (EmptyPositionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	@Override
@@ -340,15 +395,15 @@ public class SingleTableManager implements TableInterface {
 		if (message == null || message.message == null
 				|| message.userName == null)
 			throw new IllegalArgumentException();
-		playersManager.notifyNewLocalChatMessage(message);
-		viewers.notifyNewLocalChatMessage(message);
+
+		controller.sendLocalChatMessage(message);
 	}
 
 	@Override
 	public synchronized ObservedGameStatus viewTable(String viewerName,
 			ServletNotificationsInterface snf) throws DuplicateViewerException,
 			RemoteException {
-		if (gameEnded)
+		if (gameStatus.equals(GameStatus.ENDED))
 			throw new IllegalStateException();
 		if (viewerName == null || snf == null)
 			throw new IllegalArgumentException();
@@ -359,22 +414,4 @@ public class SingleTableManager implements TableInterface {
 		return observedGameStatus;
 	}
 
-	public synchronized void notifyGameEndedPrematurely() {
-		System.err.println(">>>>>>>>>>>>>>> 0");
-		this.gameEnded = true;
-		System.err.println(">>>>>>>>>>>>>>> 1");
-		playersManager.notifyGameEndedPrematurely();
-		System.err.println(">>>>>>>>>>>>>>> 2");
-		viewers.notifyGameEndedPrematurely();
-		System.err.println(">>>>>>>>>>>>>>> 3");
-		this.notifyTableDestruction();
-		System.err.println(">>>>>>>>>>>>>>> 4");
-	}
-
-	public synchronized void notifyPassedCards() {
-		for (int i = 0; i < 4; i++) {
-			playersManager.notifyPassedCards((i + 5) % 4,
-					cardsManager.getPassedCards(i));
-		}
-	}
 }

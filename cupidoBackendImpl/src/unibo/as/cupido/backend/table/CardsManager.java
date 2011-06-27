@@ -176,6 +176,10 @@ public class CardsManager {
 		return points;
 	}
 
+	public Card[] getPassedCards(int i) {
+		return allPassedCards[i];
+	}
+
 	public boolean hasPassedCards(int position) {
 		return allPassedCards[position] != null;
 	}
@@ -190,9 +194,10 @@ public class CardsManager {
 
 	public void playCard(String playerName, int playerPosition, Card card)
 			throws IllegalMoveException {
-		
-		System.out.println(playerName+ " " + playerPosition + " play card " + card + " turn " + turn);
-		
+
+		System.out.println(playerName + " " + playerPosition + " play card "
+				+ card + " turn " + turn);
+
 		if (card == null || playerPosition < 0 || playerPosition > 4)
 			throw new IllegalArgumentException();
 
@@ -269,10 +274,6 @@ public class CardsManager {
 
 	public int whoShouldPlay() {
 		return (firstDealerInTurn + playedCardsCount + 4) % 4;
-	}
-
-	public Card[] getPassedCards(int i) {
-		return allPassedCards[i];
 	}
 
 }

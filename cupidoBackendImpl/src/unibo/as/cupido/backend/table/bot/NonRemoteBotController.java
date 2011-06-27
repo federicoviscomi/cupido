@@ -46,6 +46,14 @@ public class NonRemoteBotController extends Thread {
 		this.bot = null;
 	}
 
+	public void activate(NonRemoteBot nonRemoteBot) {
+		synchronized (lock) {
+			realPlayerLeft = true;
+			this.bot = nonRemoteBot;
+			lock.notify();
+		}
+	}
+
 	@Override
 	public void run() {
 		try {
@@ -88,7 +96,8 @@ public class NonRemoteBotController extends Thread {
 				}
 			}
 		} catch (InterruptedException e) {
-			//System.err.println(" :: bot controller. "+ botName + " game ended prematurely ");
+			// System.err.println(" :: bot Controller. "+ playerName +
+			// " game ended prematurely ");
 			e.printStackTrace();
 		}
 	}
@@ -119,14 +128,6 @@ public class NonRemoteBotController extends Thread {
 	public void setRealPlayerPlayed() {
 		synchronized (lock) {
 			realPlayerPlayed = true;
-			lock.notify();
-		}
-	}
-
-	public void activate(NonRemoteBot nonRemoteBot) {
-		synchronized (lock) {
-			realPlayerLeft = true;
-			this.bot = nonRemoteBot;
 			lock.notify();
 		}
 	}

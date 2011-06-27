@@ -36,6 +36,11 @@ public class LoggerBot implements NonRemoteBotInterface {
 	}
 
 	@Override
+	public void activate(TableInterface tableInterface) throws RemoteException {
+		out.println("" + botName + " activate(" + tableInterface + ")");
+	}
+
+	@Override
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint)
 			throws RemoteException {
 		out.println("" + botName + " notifyGameEnded("
@@ -95,10 +100,5 @@ public class LoggerBot implements NonRemoteBotInterface {
 	@Override
 	public void playCard(Card card) throws RemoteException {
 		out.println("" + botName + " playCard(" + card + ")");
-	}
-
-	@Override
-	public void activate(TableInterface tableInterface) throws RemoteException {
-		out.println("" + botName + " activate(" + tableInterface + ")");
 	}
 }

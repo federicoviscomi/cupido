@@ -51,18 +51,6 @@ public class ViewersSwarm {
 		return snfs.containsKey(userName);
 	}
 
-	public void notifyBotJoined(String botName, int position) {
-		for (ServletNotificationsInterface snf : snfs.values()) {
-			try {
-				snf.notifyPlayerJoined(botName, true, 0, position);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
-			}
-		}
-	}
-
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		for (ServletNotificationsInterface snf : snfs.values()) {
 			try {
@@ -104,10 +92,11 @@ public class ViewersSwarm {
 		}
 	}
 
-	public void notifyPlayerJoined(String playerName, int score, int position) {
+	public void notifyPlayerJoined(String playerName, boolean isBot, int score,
+			int position) {
 		for (ServletNotificationsInterface snf : snfs.values()) {
 			try {
-				snf.notifyPlayerJoined(playerName, false, score, position);
+				snf.notifyPlayerJoined(playerName, isBot, score, position);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

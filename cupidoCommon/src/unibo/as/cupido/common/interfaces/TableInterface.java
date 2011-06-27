@@ -29,6 +29,7 @@ import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
+import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
@@ -150,6 +151,8 @@ public interface TableInterface extends Remote {
 	 * @throws NoSuchPlayerException
 	 *             if player <code>userName</code> is not in the table
 	 * @throws NoSuchPlayerException
+	 * @throws NoSuchLTMException
+	 * @throws NoSuchTableException
 	 */
 	void leaveTable(String userName) throws RemoteException,
 			NoSuchPlayerException;
