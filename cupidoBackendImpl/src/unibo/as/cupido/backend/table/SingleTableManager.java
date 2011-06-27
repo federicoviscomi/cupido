@@ -194,11 +194,7 @@ public class SingleTableManager implements TableInterface {
 			}
 		} else if (table.owner.equals(userName)) {
 			System.out.println("owner " + userName + " left 0");
-			synchronized (endNotifierThread.lock) {
-				this.gameEnded = true;
-				endNotifierThread.gameEndedPrematurely = true;
-				endNotifierThread.lock.notify();
-			}
+			endNotifierThread.setGameEndedPrematurely();
 			System.out.println("owner " + userName + " left 1");
 		} else if (gameStarted) {
 			System.out.println("player " + userName
@@ -265,8 +261,8 @@ public class SingleTableManager implements TableInterface {
 		if (!gameStarted || gameEnded)
 			throw new IllegalStateException();
 
-		System.out.println("\n single table manager passCards(" + userName + ", "
-				+ Arrays.toString(cards) + ")");
+		System.out.println("\n single table manager passCards(" + userName
+				+ ", " + Arrays.toString(cards) + ")");
 
 		/*
 		 * NOTE: userName is name of the player who passes cards. Not name of
@@ -302,12 +298,9 @@ public class SingleTableManager implements TableInterface {
 		playersManager.replacementBotPlayCard(playerPosition, card);
 		playersManager.notifyPlayedCard(userName, card);
 		viewers.notifyPlayedCard(playerPosition, card);
-		synchronized (endNotifierThread.lock) {
-			if (cardsManager.gameEnded()) {
-				this.gameEnded = true;
-				endNotifierThread.gameEnded = true;
-				endNotifierThread.lock.notify();
-			}
+		if (cardsManager.gameEnded()) {
+			this.gameEnded = true;
+			endNotifierThread.setGameEnded();
 		}
 	}
 

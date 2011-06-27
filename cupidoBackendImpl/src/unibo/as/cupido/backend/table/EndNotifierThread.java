@@ -20,9 +20,9 @@ package unibo.as.cupido.backend.table;
 public class EndNotifierThread extends Thread {
 
 	private final SingleTableManager stm;
-	final Object lock = new Object();
-	boolean gameEnded = false;
-	boolean gameEndedPrematurely = false;
+	private final Object lock = new Object();
+	private boolean gameEnded = false;
+	private boolean gameEndedPrematurely = false;
 
 	public EndNotifierThread(SingleTableManager stm) {
 		this.stm = stm;
@@ -42,8 +42,23 @@ public class EndNotifierThread extends Thread {
 				}
 			}
 		} catch (InterruptedException e) {
-			// TODO 
+			// TODO
 			e.printStackTrace();
+		}
+	}
+
+	public void setGameEndedPrematurely() {
+		synchronized (lock) {
+			this.gameEnded = true;
+			gameEndedPrematurely = true;
+			lock.notify();
+		}
+	}
+
+	public void setGameEnded() {
+		synchronized (lock) {
+			this.gameEnded = true;
+			lock.notify();
 		}
 	}
 }
