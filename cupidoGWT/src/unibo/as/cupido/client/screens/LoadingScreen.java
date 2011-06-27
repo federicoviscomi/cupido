@@ -43,9 +43,11 @@ public class LoadingScreen extends VerticalPanel implements Screen {
 		panel.setVerticalAlignment(ALIGN_MIDDLE);
 		add(panel);
 
-		panel.add(new HTML("Caricamento in corso, attendere..."));
+		panel.add(new HTML("<h1>Buon compleanno !!!</h1>"));
 		
 		panel.add(new Image("loading.gif"));
+		
+		panel.add(new HTML("Da Federico e Marco"));
 	}
 
 	@Override
