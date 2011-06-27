@@ -64,6 +64,7 @@ public class SingleTableManager implements TableInterface {
 	private final StartNotifierThread startNotifierThread;
 	private final EndNotifierThread endNotifierThread;
 	private boolean gameStarted = false;
+	private boolean gameEnded = false;
 	private String owner;
 	private TableInterface tableInterface;
 
@@ -182,11 +183,17 @@ public class SingleTableManager implements TableInterface {
 				e.printStackTrace();
 			}
 		} else if (table.owner.equals(userName)) {
-			System.out.println("creator  " + userName
-					+ " left. Destroing table...");
+			System.out.println("creator " + userName
+					+ " left. Destroing table... 0");
 			playersManager.notifyGameEndedPrematurely();
+			System.out.println("creator " + userName
+					+ " left. Destroing table... 1");
 			viewers.notifyGameEndedPrematurely();
+			System.out.println("creator " + userName
+					+ " left. Destroing table... 2");
 			this.notifyTableDestruction();
+			System.out.println("creator " + userName
+					+ " left. Destroing table... 3");
 		} else if (gameStarted) {
 			System.out.println("player " + userName
 					+ " left after game start. Replaycing...");
@@ -209,7 +216,8 @@ public class SingleTableManager implements TableInterface {
 		}
 	}
 
-	public void notifyGameEnded() {
+	public synchronized void notifyGameEnded() {
+		gameEnded = true;
 		int[] matchPoints = cardsManager.getMatchPoints();
 		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
 		playersManager.notifyGameEnded(matchPoints, playersTotalPoint);
@@ -248,6 +256,9 @@ public class SingleTableManager implements TableInterface {
 			throws IllegalArgumentException, RemoteException,
 			NoSuchPlayerException {
 
+		if (!gameStarted || gameEnded)
+			throw new IllegalStateException();
+
 		System.out.println("\n passCards(" + userName + ", "
 				+ Arrays.toString(cards) + ")");
 
@@ -269,11 +280,14 @@ public class SingleTableManager implements TableInterface {
 	public synchronized void playCard(String userName, Card card)
 			throws IllegalMoveException, RemoteException,
 			IllegalArgumentException, NoSuchPlayerException {
+
+		if (!gameStarted || gameEnded)
+			throw new IllegalStateException();
 		if (userName == null || card == null)
 			throw new IllegalArgumentException("userName " + userName
 					+ " card " + card);
 		int playerPosition = playersManager.getPlayerPosition(userName);
-		cardsManager.playCard(playerPosition, card);
+		cardsManager.playCard(userName, playerPosition, card);
 		playersManager.replacementBotPlayCard(playerPosition, card);
 		playersManager.notifyPlayedCard(userName, card);
 		viewers.notifyPlayedCard(playerPosition, card);
@@ -326,6 +340,8 @@ public class SingleTableManager implements TableInterface {
 	public synchronized ObservedGameStatus viewTable(String viewerName,
 			ServletNotificationsInterface snf) throws DuplicateViewerException,
 			RemoteException {
+		if (gameEnded)
+			throw new IllegalStateException();
 		if (viewerName == null || snf == null)
 			throw new IllegalArgumentException();
 		viewers.addViewer(viewerName, snf);

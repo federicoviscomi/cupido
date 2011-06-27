@@ -286,6 +286,7 @@ public class PlayersManager {
 				throw new IllegalStateException();
 			}
 			try {
+				
 				players[i].playerNotificationInterface.notifyGameEnded(
 						matchPoints, playersTotalPoint);
 				if (!players[i].isBot) {
@@ -308,11 +309,15 @@ public class PlayersManager {
 							+ players[i]);
 					players[i].playerNotificationInterface.notifyGameEnded(
 							null, null);
+					System.out.println("game ended prematurely notifyied "
+							+ players[i]);
 					if (!players[i].isBot) {
 						System.out.println("game ended prematurely notifying "
 								+ players[i]);
 						players[i].inactiveReplacementBot.notifyGameEnded(null,
 								null);
+						System.out.println("game ended prematurely notifyied "
+								+ players[i]);
 					}
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
@@ -522,8 +527,12 @@ public class PlayersManager {
 		players[position].isBot = true;
 		players[position].replaced = true;
 		players[position].playerNotificationInterface = players[position].inactiveReplacementBot;
-		((NonRemoteBot) players[position].inactiveReplacementBot)
-				.activate(tableInterface);
+		try {
+			players[position].inactiveReplacementBot.activate(tableInterface);
+		} catch (RemoteException e) {
+			// never thrown
+			e.printStackTrace();
+		}
 		players[position].inactiveReplacementBot = null;
 	}
 
