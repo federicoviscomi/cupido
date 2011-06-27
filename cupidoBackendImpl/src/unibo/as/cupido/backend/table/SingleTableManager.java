@@ -68,6 +68,9 @@ public class SingleTableManager implements TableInterface {
 	private String owner;
 	private TableInterface tableInterface;
 
+	private GameStatus gameStatus = GameStatus.INIT;
+	private STMControllerThread stmController;
+
 	public static final String[] botNames = { "", "cupido", "venere", "marte" };
 
 	public SingleTableManager(ServletNotificationsInterface snf,
@@ -83,10 +86,16 @@ public class SingleTableManager implements TableInterface {
 		playersManager = new PlayersManager(owner, snf,
 				databaseManager.getPlayerScore(table.owner), new RemovalThread(
 						this), databaseManager);
+
+		// TODO use stmController only
 		startNotifierThread = new StartNotifierThread(this);
 		startNotifierThread.start();
 		endNotifierThread = new EndNotifierThread(this);
 		endNotifierThread.start();
+		stmController = new STMControllerThread(this);
+		stmController.start();
+		//
+
 		cardsManager = new CardsManager();
 	}
 
@@ -256,7 +265,7 @@ public class SingleTableManager implements TableInterface {
 		if (!gameStarted || gameEnded)
 			throw new IllegalStateException();
 
-		System.out.println("\n passCards(" + userName + ", "
+		System.out.println("\n single table manager passCards(" + userName + ", "
 				+ Arrays.toString(cards) + ")");
 
 		/*
@@ -270,7 +279,11 @@ public class SingleTableManager implements TableInterface {
 		int position = playersManager.getPlayerPosition(userName);
 		cardsManager.setCardPassing(position, cards);
 		playersManager.replacementBotPassCards(position, cards);
-		playersManager.notifyPassedCards((position + 5) % 4, cards);
+
+		if (cardsManager.allPlayerPassedCards()) {
+			System.out.println("stm >>> all player passed cards ");
+			stmController.setAllPlayerPassedCards();
+		}
 	}
 
 	@Override
@@ -365,4 +378,10 @@ public class SingleTableManager implements TableInterface {
 		System.err.println(">>>>>>>>>>>>>>> 4");
 	}
 
+	public synchronized void notifyPassedCards() {
+		for (int i = 0; i < 4; i++) {
+			playersManager.notifyPassedCards((i + 5) % 4,
+					cardsManager.getPassedCards(i));
+		}
+	}
 }

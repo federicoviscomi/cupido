@@ -154,11 +154,9 @@ public class RemoteBot implements Bot, Serializable {
 		for (int i = 0; i < cards.length; i++)
 			this.cards.add(cards[i]);
 		out.println("\n game started: " + cards.toString());
-		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			synchronized (lock) {
-				ableToPass = true;
-				lock.notify();
-			}
+		synchronized (lock) {
+			ableToPass = true;
+			lock.notify();
 		}
 	}
 
@@ -169,16 +167,10 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public synchronized void notifyPassedCards(Card[] cards) {
-		synchronized (lock) {
-			for (int i = 0; i < cards.length; i++)
-				this.cards.add(cards[i]);
-			if (!ableToPass) {
-				ableToPass = true;
-				lock.notify();
-			}
-			out.println("\npassed cards received. all cards:"
-					+ this.cards.toString());
-		}
+		for (int i = 0; i < cards.length; i++)
+			this.cards.add(cards[i]);
+		out.println("\npassed cards received. all cards:"
+				+ this.cards.toString());
 		synchronized (lock) {
 			if (this.cards.contains(CardsManager.twoOfClubs)) {
 				firstDealer = 3;
