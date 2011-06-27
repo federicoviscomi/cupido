@@ -29,12 +29,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class GameEndedState implements PlayerState {
 
-	private boolean frozen = false;
-
+	private CardsGameWidget cardsGameWidget;
 	private PlayerStateManager stateManager;
 
-	private CardsGameWidget cardsGameWidget;
-
+	private boolean frozen = false;
 	private boolean eventReceived = false;
 
 	public GameEndedState(CardsGameWidget cardsGameWidget,
@@ -47,10 +45,10 @@ public class GameEndedState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		final HTML text = new HTML("La partita &egrave; finita");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
+		final HTML message = new HTML("La partita &egrave; finita");
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -66,39 +64,28 @@ public class GameEndedState implements PlayerState {
 
 	@Override
 	public void handleAnimationStart() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public void handleAnimationEnd() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public void handleCardClicked(int player, Card card, CardRole.State state,
 			boolean isRaised) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public boolean handleCardPassed(Card[] cards) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -109,11 +96,9 @@ public class GameEndedState implements PlayerState {
 
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -124,11 +109,9 @@ public class GameEndedState implements PlayerState {
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		if (eventReceived) {
 			stateManager.onFatalException(new Exception(
 					"Two GameEnded notifications were received while the client was in the GameEnded state."));
@@ -143,11 +126,9 @@ public class GameEndedState implements PlayerState {
 
 	@Override
 	public boolean handleGameStarted(Card[] myCards) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -158,11 +139,8 @@ public class GameEndedState implements PlayerState {
 
 	@Override
 	public void handlePlayerReplaced(String name, int position) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handlePlayerReplaced() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 		// Nothing to do.
 	}
 }

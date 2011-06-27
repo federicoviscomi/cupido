@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.client.screens;
+package unibo.as.cupido.client;
 
 import unibo.as.cupido.common.structures.Card;
 

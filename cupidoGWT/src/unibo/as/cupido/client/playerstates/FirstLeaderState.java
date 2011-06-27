@@ -35,14 +35,16 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class FirstLeaderState implements PlayerState {
 
-	private HTML text;
-	private List<Card> hand;
 	private CardsGameWidget cardsGameWidget;
 	private PlayerStateManager stateManager;
+	private CupidoInterfaceAsync cupidoService;
 
 	private boolean frozen = false;
-	private CupidoInterfaceAsync cupidoService;
 	private boolean playedCard = false;
+
+	private List<Card> hand;
+
+	private HTML message;
 
 	public FirstLeaderState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
@@ -57,10 +59,10 @@ public class FirstLeaderState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		text = new HTML("Sei il primo a giocare; devi giocare il due di fiori");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
+		message = new HTML("Sei il primo a giocare; devi giocare il due di fiori");
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
 
 		cardsGameWidget.setCornerWidget(panel);
 	}
@@ -76,30 +78,22 @@ public class FirstLeaderState implements PlayerState {
 
 	@Override
 	public void handleAnimationStart() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public void handleAnimationEnd() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public void handleCardClicked(int player, Card card, CardRole.State state,
 			boolean isRaised) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
+		
 		if (player != 0 || card == null)
 			return;
 		if (card.suit != Card.Suit.CLUBS || card.value != 2)
@@ -111,7 +105,7 @@ public class FirstLeaderState implements PlayerState {
 
 		playedCard = true;
 
-		text.setText("");
+		message.setText("");
 
 		hand.remove(card);
 
@@ -150,11 +144,9 @@ public class FirstLeaderState implements PlayerState {
 
 	@Override
 	public boolean handleCardPassed(Card[] cards) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -165,15 +157,13 @@ public class FirstLeaderState implements PlayerState {
 
 	@Override
 	public boolean handleCardPlayed(Card card, int playerPosition) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardPlayed() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
-		if (playedCard) {
+		
+		if (playedCard)
 			// Let the next state handle this.
 			return false;
-		}
+		
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -184,15 +174,13 @@ public class FirstLeaderState implements PlayerState {
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
-		if (playedCard) {
+		
+		if (playedCard)
 			// Let the next state handle this.
 			return false;
-		}
+		
 		stateManager.exit();
 		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 		return true;
@@ -200,11 +188,9 @@ public class FirstLeaderState implements PlayerState {
 
 	@Override
 	public boolean handleGameStarted(Card[] myCards) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -215,11 +201,8 @@ public class FirstLeaderState implements PlayerState {
 
 	@Override
 	public void handlePlayerReplaced(String name, int position) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handlePlayerReplaced() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 		// Nothing to do.
 	}
 }

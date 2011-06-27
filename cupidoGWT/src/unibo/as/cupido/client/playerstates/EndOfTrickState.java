@@ -25,18 +25,16 @@ import unibo.as.cupido.client.widgets.cardsgame.AnimationCompletedListener;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.common.structures.Card;
 
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 public class EndOfTrickState implements PlayerState {
 
-	private PlayerStateManager stateManager;
 	private CardsGameWidget cardsGameWidget;
-	private List<Card> hand;
+	private PlayerStateManager stateManager;
 
 	private boolean frozen = false;
+	
+	private List<Card> hand;
 	
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand,
@@ -45,16 +43,8 @@ public class EndOfTrickState implements PlayerState {
 		this.cardsGameWidget = cardsGameWidget;
 		this.stateManager = stateManager;
 		this.hand = hand;
-		VerticalPanel panel = new VerticalPanel();
-		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		final HTML text = new HTML("");
-		text.setWidth("120px");
-		text.setWordWrap(true);
-		panel.add(text);
-
-		cardsGameWidget.setCornerWidget(panel);
+		cardsGameWidget.setCornerWidget(new SimplePanel());
 	}
 
 	@Override
@@ -69,11 +59,8 @@ public class EndOfTrickState implements PlayerState {
 
 					@Override
 					public void onComplete() {
-						if (frozen) {
-							System.out
-									.println("Client: notice: the onComplete() event was received while frozen, ignoring it.");
+						if (frozen)
 							return;
-						}
 
 						if (hand.size() != 0) {
 							if (player == 0)
@@ -89,30 +76,21 @@ public class EndOfTrickState implements PlayerState {
 
 	@Override
 	public void handleAnimationStart() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationStart() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public void handleAnimationEnd() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleAnimationEnd() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
 	public void handleCardClicked(int player, Card card, CardRole.State state,
 			boolean isRaised) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardClicked() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 	}
 
 	@Override
@@ -122,11 +100,9 @@ public class EndOfTrickState implements PlayerState {
 
 	@Override
 	public boolean handleCardPassed(Card[] cards) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleCardPassed() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -148,22 +124,18 @@ public class EndOfTrickState implements PlayerState {
 
 	@Override
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleGameEnded() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// Let the next state handle this.
 		return false;
 	}
 
 	@Override
 	public boolean handleGameStarted(Card[] myCards) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handleGameStarted() event was received while frozen, deferring it.");
+		if (frozen)
 			return false;
-		}
+		
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -174,11 +146,8 @@ public class EndOfTrickState implements PlayerState {
 
 	@Override
 	public void handlePlayerReplaced(String name, int position) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the handlePlayerReplaced() event was received while frozen, ignoring it.");
+		if (frozen)
 			return;
-		}
 		// Nothing to do.
 	}
 }
