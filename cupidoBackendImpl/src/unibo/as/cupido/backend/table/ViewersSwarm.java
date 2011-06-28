@@ -55,8 +55,16 @@ public class ViewersSwarm {
 
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		for (final ServletNotificationsInterface snf : snfs.values()) {
-			final int[] matchPointsClone = matchPoints.clone();
-			final int[] playersTotalPointsClone = playersTotalPoint.clone();
+			final int[] matchPointsClone;
+			if (matchPoints != null)
+				matchPointsClone = matchPoints.clone();
+			else
+				matchPointsClone = null;
+			final int[] playersTotalPointsClone;
+			if (playersTotalPoint != null)
+				playersTotalPointsClone = playersTotalPoint.clone();
+			else
+				playersTotalPointsClone = null;
 			actionQueue.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {

@@ -433,8 +433,12 @@ public class RemoteBot implements Bot, Serializable {
 	
 	@Override
 	public void playNextCard() throws RemoteException, GameEndedException {
-		// TODO Auto-generated method stub
-		
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				tryProcessingPlayNextCard();
+			}
+		});
 	}
 
 	private void tryProcessingPassCards() {
