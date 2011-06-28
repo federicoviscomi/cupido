@@ -137,10 +137,11 @@ public class PlayersManager {
 	private PlayerInfo[] players = new PlayerInfo[4];
 	private int playersCount = 1;
 	private final DatabaseManager databaseManager;
-	private final Controller controller;
+	private final ActionQueue controller;
+	private ChatMessage clonedMessage;
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
-			DatabaseManager databaseManager, Controller controller)
+			DatabaseManager databaseManager, ActionQueue controller)
 			throws SQLException, NoSuchUserException {
 
 		if (owner == null || snf == null)
@@ -253,25 +254,39 @@ public class PlayersManager {
 		throw new NoSuchPlayerException("\"" + playerName + "\"\n"
 				+ Arrays.toString(players));
 	}
+	
+	private static Card[] cloneCardArray(Card[] cards) {
+		int n = cards.length;
+		Card[] result = new Card[n];
+		for (int i = 0; i < n; i++)
+			result[i] = cards[i].clone();
+		return result;
+	}
 
-	public void notifyBotJoined(String botName, int position) {
+	public void notifyBotJoined(final String botName, final int position) {
 		/*
 		 * notify every players but the one who is adding the bot and the bot
 		 * itself
 		 */
 		for (int i = 1; i < 4; i++) {
-			if (i != position && players[i] != null) {
-				try {
-					players[i].playerNotificationInterface.notifyPlayerJoined(
-							botName, true, 0, toRelativePosition(position, i));
-					if (!players[i].isBot) {
-						players[i].inactiveReplacementBot.notifyPlayerJoined(
-								botName, true, 0,
-								toRelativePosition(position, i));
+			final PlayerInfo player = players[i];
+			final int relativePosition = toRelativePosition(position, i);
+			if (i != position && player != null) {
+				controller.enqueue(new RemoteAction() {
+					@Override
+					public void onExecute() throws RemoteException {
+						player.playerNotificationInterface.notifyPlayerJoined(
+								botName, true, 0, relativePosition);
 					}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				});
+				if (!players[i].isBot) {
+					controller.enqueue(new RemoteAction() {
+						@Override
+						public void onExecute() throws RemoteException {
+							player.inactiveReplacementBot.notifyPlayerJoined(
+									botName, true, 0, relativePosition);
+						}
+					});
 				}
 			}
 		}
@@ -280,188 +295,224 @@ public class PlayersManager {
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		if (matchPoints == null || playersTotalPoint == null)
 			throw new IllegalArgumentException();
-		for (int i = 0; i < 4; i++) {
-			if (players[i] == null) {
+		for (final PlayerInfo player : players) {
+			final int[] matchPointsClone = matchPoints.clone();
+			final int[] playersTotalPointClone = playersTotalPoint.clone();
+			if (player == null)
 				throw new IllegalStateException();
-			}
-			try {
-
-				players[i].playerNotificationInterface.notifyGameEnded(
-						matchPoints, playersTotalPoint);
-				if (!players[i].isBot) {
-					players[i].inactiveReplacementBot.notifyGameEnded(
-							matchPoints, playersTotalPoint);
+			controller.enqueue(new RemoteAction() {
+				@Override
+				public void onExecute() throws RemoteException {
+					player.playerNotificationInterface.notifyGameEnded(
+							matchPointsClone, playersTotalPointClone);
 				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			});
+			if (!player.isBot) {
+				final int[] matchPointsClone2 = matchPoints.clone();
+				final int[] playersTotalPointClone2 = playersTotalPoint.clone();
+				controller.enqueue(new RemoteAction() {
+					@Override
+					public void onExecute() throws RemoteException {
+						player.inactiveReplacementBot.notifyGameEnded(
+								matchPointsClone2, playersTotalPointClone2);
+					}
+				});
 			}
-
 		}
 	}
 
 	public void notifyGameEndedPrematurely() {
-		for (int i = 1; i < 4; i++) {
-			if (players[i] != null) {
-				try {
-					System.out.println("game ended prematurely notifying "
-							+ players[i] + " " + i);
-					players[i].playerNotificationInterface.notifyGameEnded(
-							null, null);
-					System.out.println("game ended prematurely notifyied "
-							+ players[i] + " " + i);
-					if (!players[i].isBot) {
-						System.out.println("game ended prematurely notifying "
-								+ players[i] + " " + i);
-						players[i].inactiveReplacementBot.notifyGameEnded(null,
-								null);
-						System.out.println("game ended prematurely notifyied "
-								+ players[i] + " " + i);
+		for (final PlayerInfo player : players) {
+			if (player != null) {
+				controller.enqueue(new RemoteAction() {
+					@Override
+					public void onExecute() throws RemoteException {
+						player.playerNotificationInterface.notifyGameEnded(
+								null, null);
 					}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				});
+				if (!player.isBot) {
+					controller.enqueue(new RemoteAction() {
+						@Override
+						public void onExecute() throws RemoteException {
+							player.inactiveReplacementBot.notifyGameEnded(null,
+									null);
+						}
+					});
 				}
 			}
 		}
 	}
-
+	
 	public void notifyGameStarted(Card[][] cards) {
 		for (int i = 0; i < 4; i++) {
-			if (players[i] == null) {
+			final PlayerInfo player = players[i];
+			final Card[] playerCards = cloneCardArray(cards[i]);
+			if (player == null) {
 				throw new IllegalStateException(
 						"cannot start game: missing player " + i);
 			}
-			try {
-				players[i].playerNotificationInterface
-						.notifyGameStarted(cards[i]);
-				if (!players[i].isBot) {
-					players[i].inactiveReplacementBot
-							.notifyGameStarted(cards[i]);
+			controller.enqueue(new RemoteAction() {
+				@Override
+				public void onExecute() throws RemoteException {
+					player.playerNotificationInterface.notifyGameStarted(playerCards);
 				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			});
+			final Card[] playerCards2 = cloneCardArray(cards[i]);
+			if (!player.isBot) {
+				controller.enqueue(new RemoteAction() {
+					@Override
+					public void onExecute() throws RemoteException {
+						player.inactiveReplacementBot.notifyGameStarted(playerCards2);
+					}
+				});
 			}
 		}
 	}
 
 	public void notifyNewLocalChatMessage(ChatMessage message) {
-		for (int i = 0; i < 4; i++) {
-			if (players[i] != null && !players[i].isBot
-					&& !players[i].name.equals(message.userName)) {
-				try {
-					players[i].playerNotificationInterface
-							.notifyLocalChatMessage(message);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		for (final PlayerInfo player : players) {
+			clonedMessage = message.clone();
+			if (player != null && !player.isBot && !player.name.equals(message.userName)) {
+				controller.enqueue(new RemoteAction() {
+					@Override
+					public void onExecute() throws RemoteException {
+						player.playerNotificationInterface.notifyLocalChatMessage(clonedMessage);
+					}
+				});
 			}
 		}
 	}
 
 	public void notifyPlayedCard(String userName, Card card)
 			throws NoSuchPlayerException {
-		int position = getPlayerPosition(userName);
+		final int position = getPlayerPosition(userName);
 		for (int i = 0; i < 4; i++) {
-			if (players[i] == null) {
+			final PlayerInfo player = players[i];
+			final int relativePosition = toRelativePosition(position, i);
+			if (player == null) {
 				throw new IllegalStateException("missing player " + i);
 			}
-			if (!players[i].name.equals(userName)) {
-				try {
-					players[i].playerNotificationInterface.notifyPlayedCard(
-							card, toRelativePosition(position, i));
-					if (!players[i].isBot) {
-						players[i].inactiveReplacementBot.notifyPlayedCard(
-								card, toRelativePosition(position, i));
+			if (!player.name.equals(userName)) {
+				final Card cardClone = card.clone();
+				controller.enqueue(new RemoteAction() {
+					@Override
+					public void onExecute() throws RemoteException {
+						player.playerNotificationInterface.notifyPlayedCard(
+								cardClone, relativePosition);
 					}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				});
+				if (!player.isBot) {
+					final Card cardClone2 = card.clone();
+					controller.enqueue(new RemoteAction() {
+						@Override
+						public void onExecute() throws RemoteException {
+							player.inactiveReplacementBot.notifyPlayedCard(
+									cardClone2, relativePosition);
+						}
+					});
 				}
 			}
 		}
 	}
 
-	public void notifyPlayerJoined(String playerName, int score, int position) {
+	public void notifyPlayerJoined(final String playerName, final int score, int position) {
 		/* notify every players but the one who is joining */
 		for (int i = 0; i < 4; i++) {
-			if (i != position && players[i] != null) {
-				try {
-					players[i].playerNotificationInterface.notifyPlayerJoined(
-							playerName, false, score,
-							toRelativePosition(position, i));
-					if (!players[i].isBot) {
-						players[i].inactiveReplacementBot.notifyPlayerJoined(
-								playerName, false, score,
-								toRelativePosition(position, i));
+			final PlayerInfo player = players[i];
+			final int relativePosition = toRelativePosition(position, i);
+			if (i != position && player != null) {
+				controller.enqueue(new RemoteAction() {
+					@Override
+					public void onExecute() throws RemoteException {
+						player.playerNotificationInterface.notifyPlayerJoined(
+								playerName, false, score, relativePosition);
 					}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				});
+				if (!player.isBot) {
+					controller.enqueue(new RemoteAction() {
+						@Override
+						public void onExecute() throws RemoteException {
+							player.inactiveReplacementBot.notifyPlayerJoined(
+									playerName, false, score, relativePosition);
+						}
+					});
 				}
 			}
 		}
 	}
 
-	public void notifyPlayerLeft(String playerName) {
-		for (int i = 0; i < 4; i++) {
-			if (players[i] != null && !players[i].name.equals(playerName)) {
-				try {
-					players[i].playerNotificationInterface
-							.notifyPlayerLeft(playerName);
-					if (!players[i].isBot) {
-						players[i].inactiveReplacementBot
-								.notifyPlayerLeft(playerName);
+	public void notifyPlayerLeft(final String playerName) {
+		for (final PlayerInfo player : players) {
+			if (player != null && !player.name.equals(playerName)) {
+				controller.enqueue(new RemoteAction() {
+					@Override
+					public void onExecute() throws RemoteException {
+						player.playerNotificationInterface.notifyPlayerLeft(playerName);
 					}
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				});
+				if (!player.isBot) {
+					controller.enqueue(new RemoteAction() {
+						@Override
+						public void onExecute() throws RemoteException {
+							player.inactiveReplacementBot.notifyPlayerLeft(playerName);
+						}
+					});
 				}
 			}
 		}
 	}
 
-	/** <code>position</code> is the position of player who passed cards */
+	/** <code>position</code> is the position of player who passed cards 
+	 * @param playerName */
 	public void notifyPlayerPassedCards(int position, Card[] cards) {
-		int receiver = (position + 5) % 4;
-		try {
-			if (players[receiver] == null) {
-				throw new IllegalStateException(
-						"cannot pass cards: missing player " + receiver);
+		int receiverIndex = (position + 5) % 4;
+		final PlayerInfo receiver = players[receiverIndex];
+		if (receiver == null) {
+			throw new IllegalStateException(
+					"cannot pass cards: missing player " + receiverIndex);
+		}
+		final Card[] cardsClone = cloneCardArray(cards);
+		controller.enqueue(new RemoteAction() {
+			@Override
+			public void onExecute() throws RemoteException {
+				receiver.playerNotificationInterface.notifyPassedCards(cardsClone);
 			}
-			players[receiver].playerNotificationInterface
-					.notifyPassedCards(cards);
-			if (!players[receiver].isBot) {
-				players[receiver].inactiveReplacementBot
-						.notifyPassedCards(cards);
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		});
+		if (!receiver.isBot) {
+			final Card[] cardsClone2 = cloneCardArray(cards);
+			controller.enqueue(new RemoteAction() {
+				@Override
+				public void onExecute() throws RemoteException {
+					receiver.inactiveReplacementBot.notifyPassedCards(cardsClone2);
+				}
+			});
 		}
 	}
 
-	public void notifyPlayerReplaced(String playerLeftName, int position)
+	public void notifyPlayerReplaced(final String playerLeftName, int position)
 			throws FullPositionException, EmptyPositionException,
 			NoSuchPlayerException {
 		for (int i = 0; i < 4; i++) {
 			if (i != position) {
-				if (players[i] == null) {
+				final PlayerInfo player = players[i];
+				final int relativePosition = toRelativePosition(position, i);
+				if (player == null) {
 					throw new IllegalStateException("missing player " + i);
 				}
-				try {
-					players[i].playerNotificationInterface
-							.notifyPlayerReplaced(playerLeftName,
-									toRelativePosition(position, i));
-					if (!players[i].isBot) {
-						players[i].inactiveReplacementBot
-								.notifyPlayerReplaced(playerLeftName,
-										toRelativePosition(position, i));
+				controller.enqueue(new RemoteAction() {
+					@Override
+					public void onExecute() throws RemoteException {
+						player.playerNotificationInterface.notifyPlayerReplaced(playerLeftName, relativePosition);
 					}
-				} catch (RemoteException e) {
-					//
+				});
+				if (!player.isBot) {
+					controller.enqueue(new RemoteAction() {
+						@Override
+						public void onExecute() throws RemoteException {
+							player.inactiveReplacementBot.notifyPlayerReplaced(playerLeftName, relativePosition);
+						}
+					});
 				}
 			}
 		}

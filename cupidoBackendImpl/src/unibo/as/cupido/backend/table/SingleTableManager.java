@@ -22,11 +22,6 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import unibo.as.cupido.backend.table.AsynchronousMessage.AddPlayerMessage;
-import unibo.as.cupido.backend.table.AsynchronousMessage.PlayerPassCardsMessage;
-import unibo.as.cupido.backend.table.AsynchronousMessage.PlayerPlayCardsMessage;
-import unibo.as.cupido.backend.table.AsynchronousMessage.ReplacePlayerMessage;
-import unibo.as.cupido.backend.table.AsynchronousMessage.SendLocalChatMessage;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
@@ -67,7 +62,7 @@ public class SingleTableManager implements TableInterface {
 	private final ViewersSwarm viewers;
 	private final GlobalTableManagerInterface gtm;
 	private final String owner;
-	private final Controller controller;
+	private final ActionQueue controller;
 
 	private GameStatus gameStatus;
 	private TableInterface tableInterface;
@@ -89,7 +84,7 @@ public class SingleTableManager implements TableInterface {
 		this.gameStatus = GameStatus.INIT;
 		this.viewers = new ViewersSwarm();
 		this.databaseManager = new DatabaseManager();
-		this.controller = new Controller(this);
+		this.controller = new ActionQueue();
 		this.playersManager = new PlayersManager(owner, snf, databaseManager,
 				controller);
 		this.cardsManager = new CardsManager();
@@ -119,8 +114,10 @@ public class SingleTableManager implements TableInterface {
 			playersManager.addBot(userName, position, botNames[position],
 					tableInterface);
 
-			controller.produceAddPlayer(botName, true, 0, position);
+			notifyPlayerJoined(botName, true, 0, position);
+			
 			if (playersManager.playersCount() == 4) {
+				notifyGameStarted();
 				gameStatus = GameStatus.PASSING_CARDS;
 				// controller.produceStartGame();
 			}
@@ -154,8 +151,10 @@ public class SingleTableManager implements TableInterface {
 		int score = databaseManager.getPlayerScore(userName);
 		int position = playersManager.addPlayer(userName, snf, score);
 
-		controller.produceAddPlayer(userName, false, score, position);
+		notifyPlayerJoined(userName, false, score, position);
+		
 		if (playersManager.playersCount() == 4) {
+			notifyGameStarted();
 			gameStatus = GameStatus.PASSING_CARDS;
 			// controller.produceStartGame();
 		}
@@ -182,7 +181,9 @@ public class SingleTableManager implements TableInterface {
 				e.printStackTrace();
 			}
 		} else if (table.owner.equals(userName)) {
-			controller.produceEndGamePrematurely();
+			
+			notifyGameEndedPrematurely();
+			
 		} else if (!gameStatus.equals(GameStatus.INIT)) {
 			int position = playersManager.getPlayerPosition(userName);
 			if (tableInterface == null) {
@@ -200,10 +201,13 @@ public class SingleTableManager implements TableInterface {
 
 			}
 			playersManager.replacePlayer(userName, position, tableInterface);
-			controller.produceReplacePlayer(userName, position);
+			
+			notifyPlayerReplaced(userName, position);
+			
 		} else {
 			playersManager.removePlayer(userName);
-			controller.producePlayerLeave(userName);
+			
+			notifyPlayerLeft(userName);
 		}
 	}
 
@@ -225,9 +229,9 @@ public class SingleTableManager implements TableInterface {
 		playersManager.notifyGameStarted(cardsManager.getCards());
 	}
 
-	public synchronized void notifyLocalChatMessage(SendLocalChatMessage message) {
-		playersManager.notifyNewLocalChatMessage(message.message);
-		viewers.notifyNewLocalChatMessage(message.message);
+	public synchronized void notifyLocalChatMessage(ChatMessage message) {
+		playersManager.notifyNewLocalChatMessage(message);
+		viewers.notifyNewLocalChatMessage(message);
 	}
 
 	public synchronized void notifyPassedCards() {
@@ -237,17 +241,16 @@ public class SingleTableManager implements TableInterface {
 		}
 	}
 
-	public void notifyPlayerJoined(AddPlayerMessage message) {
+	public void notifyPlayerJoined(String userName, boolean isBot, int score,
+			int position) {
 
-		if (message.isBot) {
+		if (isBot) {
 			playersManager
-					.notifyBotJoined(message.playerName, message.position);
+					.notifyBotJoined(userName, position);
 		} else {
-			playersManager.notifyPlayerJoined(message.playerName,
-					message.score, message.position);
+			playersManager.notifyPlayerJoined(userName, score, position);
 		}
-		viewers.notifyPlayerJoined(message.playerName, message.isBot,
-				message.score, message.position);
+		viewers.notifyPlayerJoined(userName, isBot, score, position);
 		try {
 			gtm.notifyTableJoin(table.tableDescriptor);
 		} catch (RemoteException e) {
@@ -280,26 +283,25 @@ public class SingleTableManager implements TableInterface {
 	}
 
 	public synchronized void notifyPlayerPassedCards(
-			PlayerPassCardsMessage message) {
-		playersManager.notifyPlayerPassedCards(message.position, message.cards);
+			int position, Card[] cards) {
+		playersManager.notifyPlayerPassedCards(position, cards);
 	}
 
 	public synchronized void notifyPlayerPlayedCard(
-			PlayerPlayCardsMessage message) {
+			String playerName, int position, Card card) {
 		try {
-			playersManager.notifyPlayedCard(message.playerName, message.card);
+			playersManager.notifyPlayedCard(playerName, card);
 		} catch (NoSuchPlayerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		viewers.notifyPlayedCard(message.position, message.card);
+		viewers.notifyPlayedCard(position, card);
 	}
 
-	public synchronized void notifyPlayerReplaced(ReplacePlayerMessage message) {
+	public synchronized void notifyPlayerReplaced(String playerName, int position) {
 		try {
-			playersManager.notifyPlayerReplaced(message.playerName,
-					message.position);
-			viewers.notifyPlayerReplaced(message.playerName, message.position);
+			playersManager.notifyPlayerReplaced(playerName, position);
+			viewers.notifyPlayerReplaced(playerName, position);
 		} catch (FullPositionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -353,10 +355,11 @@ public class SingleTableManager implements TableInterface {
 		cardsManager.setCardPassing(position, cards);
 		playersManager.replacementBotPassCards(position, cards);
 
-		controller.producePassCards(userName, position, cards);
+		notifyPlayerPassedCards(position, cards);
 		if (cardsManager.allPlayerPassedCards()) {
 			gameStatus = GameStatus.STARTED;
-			controller.produceAllPassedCards();
+			
+			// TODO: All the player passed their cards. Should we send some notifications here?
 		}
 	}
 
@@ -372,21 +375,23 @@ public class SingleTableManager implements TableInterface {
 		int playerPosition = playersManager.getPlayerPosition(userName);
 		cardsManager.playCard(userName, playerPosition, card);
 		playersManager.replacementBotPlayCard(playerPosition, card);
-		controller.producePlayCard(userName, playerPosition, card);
+		
+		notifyPlayerPlayedCard(userName, playerPosition, card);
 		if (cardsManager.gameEnded()) {
 			gameStatus = GameStatus.ENDED;
-			controller.produceEndGame();
+			notifyGameEnded();
 		}
 	}
 
 	@Override
-	public synchronized void sendMessage(ChatMessage message)
+	public synchronized void sendMessage(final ChatMessage message)
 			throws RemoteException {
 		if (message == null || message.message == null
 				|| message.userName == null)
 			throw new IllegalArgumentException();
 
-		controller.produceSendLocalChatMessage(message);
+		playersManager.notifyNewLocalChatMessage(message);
+		viewers.notifyNewLocalChatMessage(message);
 	}
 
 	@Override

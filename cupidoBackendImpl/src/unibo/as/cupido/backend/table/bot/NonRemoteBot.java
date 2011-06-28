@@ -253,16 +253,17 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	@Override
-	public synchronized void notifyPlayerReplaced(String botName, int position)
-			throws NoSuchPlayerException {
+	public synchronized void notifyPlayerReplaced(String botName, int position) {
 		System.out.print("\n" + botName + ": notifyPlayerReplaced(" + botName
 				+ ", " + position + ")");
 
 		if (botName == null || position < 0 || position > 2)
 			throw new IllegalArgumentException(position + " " + botName);
 
-		if (initialTableStatus.opponents[position] == null)
-			throw new NoSuchPlayerException();
+		if (initialTableStatus.opponents[position] == null) {
+			(new NoSuchPlayerException()).printStackTrace();
+			return;
+		}
 		initialTableStatus.opponents[position] = botName;
 		initialTableStatus.whoIsBot[position] = true;
 	}

@@ -8,39 +8,7 @@ import unibo.as.cupido.common.structures.ChatMessage;
 
 public abstract class AsynchronousMessage {
 
-	public static class AddPlayerMessage extends AsynchronousMessage {
-		public final String playerName;
-		public final boolean isBot;
-		public final int score;
-		public final int position;
 
-		public AddPlayerMessage(String userName, boolean isBot, int score,
-				int position) {
-			super(MessageType.ADD_PLAYER);
-			this.playerName = userName;
-			this.isBot = isBot;
-			this.score = score;
-			this.position = position;
-		}
-
-		@Override
-		public String toString() {
-			return "[" + this.getClass().getSimpleName() + ": player name "
-					+ playerName + ", is bot " + isBot + ", score " + score
-					+ ", position " + position + "]";
-		}
-	}
-
-	public static class AllPassedCardsMessage extends AsynchronousMessage {
-		public AllPassedCardsMessage() {
-			super(MessageType.ALL_PASSED_CARDS);
-		}
-
-		@Override
-		public String toString() {
-			return "[" + this.getClass().getSimpleName() + "]";
-		}
-	}
 
 	public static class BotActivateMessage extends AsynchronousMessage {
 		public final int position;

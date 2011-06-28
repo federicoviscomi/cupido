@@ -216,15 +216,17 @@ public class RemoteBot implements Bot, Serializable {
 
 	@Override
 	public void notifyPlayerReplaced(String botName, int position)
-			throws RemoteException, NoSuchPlayerException {
+			throws RemoteException{
 		out.print("\n" + botName + ": notifyPlayerReplaced(" + botName + ", "
 				+ position + ")");
 
 		if (botName == null || position < 0 || position > 2)
 			throw new IllegalArgumentException(position + " " + botName);
 
-		if (initialTableStatus.opponents[position] == null)
-			throw new NoSuchPlayerException();
+		if (initialTableStatus.opponents[position] == null) {
+			(new NoSuchPlayerException()).printStackTrace();
+			return;
+		}
 		initialTableStatus.opponents[position] = botName;
 		initialTableStatus.whoIsBot[position] = true;
 	}
