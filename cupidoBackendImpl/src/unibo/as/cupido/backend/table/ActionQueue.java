@@ -1,6 +1,7 @@
 package unibo.as.cupido.backend.table;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -14,15 +15,19 @@ public class ActionQueue extends Thread {
 	public ActionQueue() {
 	}
 
-	private synchronized void consume() throws InterruptedException {
-		// Make sure the caller has returned.
-		Thread.sleep(10);
-		
-		System.err.println("ActionQueue: entering consume().");
-		for (Action action : actions)
-			action.execute();
-		actions.clear();
-		System.err.println("ActionQueue: exiting consume().");
+	private void consume() throws InterruptedException {
+		synchronized (lock) {
+			// Make sure the caller has returned.
+			// Note that no actions can be added in the meantime.
+			Thread.sleep(10);
+			
+			List<Action> actions = this.actions;
+			actions = new ArrayList<Action>();
+			System.err.println("ActionQueue: entering consume().");
+			for (Action action : actions)
+				action.execute();
+			System.err.println("ActionQueue: exiting consume().");
+		}
 	}
 	
 	public void enqueue(Action action) {
