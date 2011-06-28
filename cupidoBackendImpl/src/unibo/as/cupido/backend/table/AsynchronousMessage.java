@@ -3,6 +3,7 @@ package unibo.as.cupido.backend.table;
 import java.util.Arrays;
 
 import unibo.as.cupido.backend.table.bot.NonRemoteBot;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 
@@ -13,14 +14,16 @@ public abstract class AsynchronousMessage {
 		public final boolean isBot;
 		public final int score;
 		public final int position;
+		public final ServletNotificationsInterface playerNotificationInterface;
 
 		public AddPlayerMessage(String userName, boolean isBot, int score,
-				int position) {
+				int position, ServletNotificationsInterface playerNotificationInterface) {
 			super(MessageType.ADD_PLAYER);
 			this.playerName = userName;
 			this.isBot = isBot;
 			this.score = score;
 			this.position = position;
+			this.playerNotificationInterface = playerNotificationInterface;
 		}
 
 		@Override

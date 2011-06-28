@@ -13,6 +13,7 @@ import unibo.as.cupido.backend.table.AsynchronousMessage.PlayerPlayCardsMessage;
 import unibo.as.cupido.backend.table.AsynchronousMessage.ReplacePlayerMessage;
 import unibo.as.cupido.backend.table.AsynchronousMessage.SendLocalChatMessage;
 import unibo.as.cupido.backend.table.bot.NonRemoteBot;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 
@@ -120,11 +121,11 @@ public class Controller extends Thread {
 		System.err.println("Controller <<<< ");
 	}
 
-	public void produceAddPlayer(String botName, boolean isBot, int score,
-			int position) {
+	public void produceMessageSendPlayerJoinedNotification(String botName, boolean isBot, int score,
+			int position, ServletNotificationsInterface playerNotificationInterface) {
 		synchronized (lock) {
 			messageQueue.add(new AsynchronousMessage.AddPlayerMessage(botName,
-					isBot, score, position));
+					isBot, score, position, playerNotificationInterface));
 			System.err.println("Controller produced: " + messageQueue.peek());
 			lock.notify();
 		}
