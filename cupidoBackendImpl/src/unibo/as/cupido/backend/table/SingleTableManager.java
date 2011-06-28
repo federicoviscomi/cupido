@@ -62,7 +62,7 @@ public class SingleTableManager implements TableInterface {
 	private final ViewersSwarm viewers;
 	private final GlobalTableManagerInterface gtm;
 	private final String owner;
-	private final ActionQueue controller;
+	private final ActionQueue actionQueue;
 
 	private GameStatus gameStatus;
 	private TableInterface tableInterface;
@@ -82,13 +82,13 @@ public class SingleTableManager implements TableInterface {
 		this.gtm = gtm;
 		this.owner = table.owner;
 		this.gameStatus = GameStatus.INIT;
-		this.viewers = new ViewersSwarm();
 		this.databaseManager = new DatabaseManager();
-		this.controller = new ActionQueue();
+		this.actionQueue = new ActionQueue();
+		this.viewers = new ViewersSwarm(actionQueue);
 		this.playersManager = new PlayersManager(owner, snf, databaseManager,
-				controller);
+				actionQueue);
 		this.cardsManager = new CardsManager();
-		this.controller.start();
+		this.actionQueue.start();
 	}
 
 	@Override

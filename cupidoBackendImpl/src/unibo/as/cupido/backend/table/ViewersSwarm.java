@@ -34,9 +34,11 @@ import unibo.as.cupido.common.structures.ChatMessage;
  */
 public class ViewersSwarm {
 	private Map<String, ServletNotificationsInterface> snfs;
+	private ActionQueue actionQueue;
 
-	public ViewersSwarm() {
+	public ViewersSwarm(ActionQueue actionQueue) {
 		snfs = new HashMap<String, ServletNotificationsInterface>(4);
+		this.actionQueue = actionQueue;
 	}
 
 	public void addViewer(String viewerName, ServletNotificationsInterface snf)
@@ -52,14 +54,15 @@ public class ViewersSwarm {
 	}
 
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-		for (ServletNotificationsInterface snf : snfs.values()) {
-			try {
-				snf.notifyGameEnded(matchPoints, playersTotalPoint);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
-			}
+		for (final ServletNotificationsInterface snf : snfs.values()) {
+			final int[] matchPointsClone = matchPoints.clone();
+			final int[] playersTotalPointsClone = playersTotalPoint.clone();
+			actionQueue.enqueue(new RemoteAction() {
+				@Override
+				public void onExecute() throws RemoteException {
+					snf.notifyGameEnded(matchPointsClone, playersTotalPointsClone);
+				}
+			});
 		}
 		snfs = null;
 	}
@@ -69,76 +72,75 @@ public class ViewersSwarm {
 	}
 
 	public void notifyNewLocalChatMessage(ChatMessage message) {
-		for (Entry<String, ServletNotificationsInterface> snf : snfs.entrySet()) {
-			try {
-				if (!snf.getKey().equals(message.userName))
-					snf.getValue().notifyLocalChatMessage(message);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
+		for (Entry<String, ServletNotificationsInterface> e : snfs.entrySet())
+			if (!e.getKey().equals(message.userName)) {
+				final ServletNotificationsInterface snf = e.getValue();
+				final ChatMessage messageClone = message.clone();
+				actionQueue.enqueue(new RemoteAction() {
+					@Override
+					public void onExecute() throws RemoteException {
+						snf.notifyLocalChatMessage(messageClone);
+					}
+				});
 			}
+	}
+
+	public void notifyPlayedCard(final int playerPosition, Card card) {
+		for (final ServletNotificationsInterface snf : snfs.values()) {
+			final Card cardClone = card.clone();
+			actionQueue.enqueue(new RemoteAction() {
+				@Override
+				public void onExecute() throws RemoteException {
+					snf.notifyPlayedCard(cardClone, playerPosition);
+				}
+			});
 		}
 	}
 
-	public void notifyPlayedCard(int playerPosition, Card card) {
-		for (ServletNotificationsInterface snf : snfs.values()) {
-			try {
-				snf.notifyPlayedCard(card, playerPosition);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	public void notifyPlayerJoined(final String playerName, final boolean isBot, final int score,
+			final int position) {
+		for (final ServletNotificationsInterface snf : snfs.values()) {
+			actionQueue.enqueue(new RemoteAction() {
+				@Override
+				public void onExecute() throws RemoteException {
+					snf.notifyPlayerJoined(playerName, isBot, score, position);
+				}
+			});
 		}
 	}
 
-	public void notifyPlayerJoined(String playerName, boolean isBot, int score,
-			int position) {
-		for (ServletNotificationsInterface snf : snfs.values()) {
-			try {
-				snf.notifyPlayerJoined(playerName, isBot, score, position);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
-			}
+	public void notifyPlayerLeft(final String userName) {
+		for (final ServletNotificationsInterface snf : snfs.values()) {
+			actionQueue.enqueue(new RemoteAction() {
+				@Override
+				public void onExecute() throws RemoteException {
+					snf.notifyPlayerLeft(userName);
+				}
+			});
 		}
 	}
 
-	public void notifyPlayerLeft(String userName) {
-		for (ServletNotificationsInterface snf : snfs.values()) {
-			try {
-				snf.notifyPlayerLeft(userName);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
-			}
-		}
-	}
-
-	public void notifyPlayerReplaced(String botName, int position)
+	public void notifyPlayerReplaced(final String botName, final int position)
 			throws NoSuchPlayerException {
-		for (ServletNotificationsInterface snf : snfs.values()) {
-			try {
-				snf.notifyPlayerReplaced(botName, position);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
-			}
+		for (final ServletNotificationsInterface snf : snfs.values()) {
+			actionQueue.enqueue(new RemoteAction() {
+				@Override
+				public void onExecute() throws RemoteException {
+					snf.notifyPlayerReplaced(botName, position);
+				}
+			});
 		}
 	}
 
-	public void notifyViewerJoined(String userName) {
-		for (ServletNotificationsInterface snf : snfs.values()) {
-			try {
-				snf.notifyLocalChatMessage(new ChatMessage(userName, "joined"));
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(-1);
-			}
+	public void notifyViewerJoined(final String userName) {
+		for (final ServletNotificationsInterface snf : snfs.values()) {
+			actionQueue.enqueue(new RemoteAction() {
+				@Override
+				public void onExecute() throws RemoteException {
+					// FIXME: Is this correct?
+					snf.notifyLocalChatMessage(new ChatMessage(userName, "joined"));
+				}
+			});
 		}
 	}
 
