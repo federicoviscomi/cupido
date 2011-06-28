@@ -75,11 +75,18 @@ public class PlayersManager {
 		ServletNotificationsInterface playerNotificationInterface;
 
 		/**
+		 * if <code>isBot==false</code> then this field is the bot
+		 * who could replace this
+		 * player; otherwise this field is <code>null<code>.
+		 */
+		NonRemoteBotInterface inactiveReplacementBot;
+
+		/**
 		 * if <code>isBot==false</code> then this field is the notification
 		 * interface of the inactiveReplacementBot who could replace this
 		 * player; otherwise this field is <code>null<code>.
 		 */
-		NonRemoteBotInterface inactiveReplacementBot;
+		ServletNotificationsInterface inactiveReplacementBotSNI;
 
 		/**
 		 * <code>true</code> if this is a bot or an active
@@ -106,6 +113,7 @@ public class PlayersManager {
 			this.score = score;
 			this.playerNotificationInterface = notificationInterface;
 			this.inactiveReplacementBot = replacementBot;
+			this.inactiveReplacementBotSNI = replacementBot.getServletNotificationsInterface();
 			this.isBot = false;
 			this.replaced = false;
 		}
@@ -116,6 +124,7 @@ public class PlayersManager {
 			this.name = name;
 			this.playerNotificationInterface = bot;
 			this.inactiveReplacementBot = null;
+			this.inactiveReplacementBotSNI = null;
 			this.isBot = true;
 			this.replaced = false;
 		}
@@ -172,8 +181,9 @@ public class PlayersManager {
 
 		InitialTableStatus initialTableStatus = this
 				.getInitialTableStatus(position);
-		players[position] = new PlayerInfo(botName, new NonRemoteBot(botName,
-				initialTableStatus, tableInterface, position));
+		NonRemoteBot bot = new NonRemoteBot(botName,
+				initialTableStatus, tableInterface, position);
+		players[position] = new PlayerInfo(botName, bot.getServletNotificationsInterface());
 		playersCount++;
 	}
 
@@ -283,7 +293,7 @@ public class PlayersManager {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBot.notifyPlayerJoined(
+							player.inactiveReplacementBotSNI.notifyPlayerJoined(
 									botName, true, 0, relativePosition);
 						}
 					});
@@ -313,7 +323,7 @@ public class PlayersManager {
 				controller.enqueue(new RemoteAction() {
 					@Override
 					public void onExecute() throws RemoteException {
-						player.inactiveReplacementBot.notifyGameEnded(
+						player.inactiveReplacementBotSNI.notifyGameEnded(
 								matchPointsClone2, playersTotalPointClone2);
 					}
 				});
@@ -335,7 +345,7 @@ public class PlayersManager {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBot.notifyGameEnded(null,
+							player.inactiveReplacementBotSNI.notifyGameEnded(null,
 									null);
 						}
 					});
@@ -363,7 +373,7 @@ public class PlayersManager {
 				controller.enqueue(new RemoteAction() {
 					@Override
 					public void onExecute() throws RemoteException {
-						player.inactiveReplacementBot.notifyGameStarted(playerCards2);
+						player.inactiveReplacementBotSNI.notifyGameStarted(playerCards2);
 					}
 				});
 			}
@@ -407,7 +417,7 @@ public class PlayersManager {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBot.notifyPlayedCard(
+							player.inactiveReplacementBotSNI.notifyPlayedCard(
 									cardClone2, relativePosition);
 						}
 					});
@@ -433,7 +443,7 @@ public class PlayersManager {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBot.notifyPlayerJoined(
+							player.inactiveReplacementBotSNI.notifyPlayerJoined(
 									playerName, false, score, relativePosition);
 						}
 					});
@@ -455,7 +465,7 @@ public class PlayersManager {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBot.notifyPlayerLeft(playerName);
+							player.inactiveReplacementBotSNI.notifyPlayerLeft(playerName);
 						}
 					});
 				}
@@ -484,7 +494,7 @@ public class PlayersManager {
 			controller.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {
-					receiver.inactiveReplacementBot.notifyPassedCards(cardsClone2);
+					receiver.inactiveReplacementBotSNI.notifyPassedCards(cardsClone2);
 				}
 			});
 		}
@@ -510,7 +520,7 @@ public class PlayersManager {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBot.notifyPlayerReplaced(playerLeftName, relativePosition);
+							player.inactiveReplacementBotSNI.notifyPlayerReplaced(playerLeftName, relativePosition);
 						}
 					});
 				}
@@ -576,7 +586,7 @@ public class PlayersManager {
 
 		players[position].isBot = true;
 		players[position].replaced = true;
-		players[position].playerNotificationInterface = players[position].inactiveReplacementBot;
+		players[position].playerNotificationInterface = players[position].inactiveReplacementBotSNI;
 		try {
 			players[position].inactiveReplacementBot.activate(tableInterface);
 		} catch (RemoteException e) {
@@ -584,6 +594,7 @@ public class PlayersManager {
 			e.printStackTrace();
 		}
 		players[position].inactiveReplacementBot = null;
+		players[position].inactiveReplacementBotSNI = null;
 	}
 
 	/* the notification is to be sent to 2 */

@@ -18,11 +18,11 @@ public class ActionQueue extends Thread {
 		// Make sure the caller has returned.
 		Thread.sleep(10);
 		
-		System.err.println("Controller >>>> ");
+		System.err.println("ActionQueue: entering consume().");
 		for (Action action : actions)
 			action.execute();
 		actions.clear();
-		System.err.println("Controller <<<< ");
+		System.err.println("ActionQueue: exiting consume().");
 	}
 	
 	public void enqueue(Action action) {

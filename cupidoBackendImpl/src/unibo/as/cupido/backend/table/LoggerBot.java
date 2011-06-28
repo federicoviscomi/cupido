@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
@@ -28,55 +29,60 @@ public class LoggerBot implements NonRemoteBotInterface {
 	}
 
 	@Override
-	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint)
-			throws RemoteException {
-		System.out.println("" + botName + " notifyGameEnded("
-				+ Arrays.toString(matchPoints) + ", "
-				+ Arrays.toString(playersTotalPoint) + ")");
-	}
+	public ServletNotificationsInterface getServletNotificationsInterface() {
+		return new ServletNotificationsInterface() {
+			@Override
+			public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint)
+					throws RemoteException {
+				System.out.println("" + botName + " notifyGameEnded("
+						+ Arrays.toString(matchPoints) + ", "
+						+ Arrays.toString(playersTotalPoint) + ")");
+			}
 
-	@Override
-	public void notifyGameStarted(Card[] cards) throws RemoteException {
-		System.out.println("" + botName + " notifyGameStarted("
-				+ Arrays.toString(cards) + ")");
-	}
+			@Override
+			public void notifyGameStarted(Card[] cards) throws RemoteException {
+				System.out.println("" + botName + " notifyGameStarted("
+						+ Arrays.toString(cards) + ")");
+			}
 
-	@Override
-	public void notifyLocalChatMessage(ChatMessage message)
-			throws RemoteException {
-		System.out.println("" + botName + " notifyChatMessage(" + message + ")");
-	}
+			@Override
+			public void notifyLocalChatMessage(ChatMessage message)
+					throws RemoteException {
+				System.out.println("" + botName + " notifyChatMessage(" + message + ")");
+			}
 
-	@Override
-	public void notifyPassedCards(Card[] cards) throws RemoteException {
-		System.out.println("" + botName + " notifyPassedCards("
-				+ Arrays.toString(cards) + ")");
-	}
+			@Override
+			public void notifyPassedCards(Card[] cards) throws RemoteException {
+				System.out.println("" + botName + " notifyPassedCards("
+						+ Arrays.toString(cards) + ")");
+			}
 
-	@Override
-	public void notifyPlayedCard(Card card, int playerPosition)
-			throws RemoteException {
-		System.out.println("" + botName + " notifyPlayedCard(" + card + ", "
-				+ playerPosition + ")");
-	}
+			@Override
+			public void notifyPlayedCard(Card card, int playerPosition)
+					throws RemoteException {
+				System.out.println("" + botName + " notifyPlayedCard(" + card + ", "
+						+ playerPosition + ")");
+			}
 
-	@Override
-	public void notifyPlayerJoined(String playerName, boolean isBot, int score,
-			int position) throws RemoteException {
-		System.out.println("" + botName + " notifyPlayerJoined(" + playerName + ", "
-				+ isBot + ", " + score + ")");
-	}
+			@Override
+			public void notifyPlayerJoined(String playerName, boolean isBot, int score,
+					int position) throws RemoteException {
+				System.out.println("" + botName + " notifyPlayerJoined(" + playerName + ", "
+						+ isBot + ", " + score + ")");
+			}
 
-	@Override
-	public void notifyPlayerLeft(String playerName) throws RemoteException {
-		System.out.println("" + botName + " notifyPlayerLefy(" + playerName + ")");
-	}
+			@Override
+			public void notifyPlayerLeft(String playerName) throws RemoteException {
+				System.out.println("" + botName + " notifyPlayerLefy(" + playerName + ")");
+			}
 
-	@Override
-	public void notifyPlayerReplaced(String botName, int position)
-			throws RemoteException {
-		System.out.println("" + botName + " notifyPlayerReplaced(" + botName + ", "
-				+ position + ")");
+			@Override
+			public void notifyPlayerReplaced(String botName, int position)
+					throws RemoteException {
+				System.out.println("" + botName + " notifyPlayerReplaced(" + botName + ", "
+						+ position + ")");
+			}
+		};
 	}
 
 	@Override
