@@ -24,6 +24,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import unibo.as.cupido.backend.table.Action;
+import unibo.as.cupido.backend.table.ActionQueue;
+import unibo.as.cupido.backend.table.AsynchronousMessage;
 import unibo.as.cupido.backend.table.CardsManager;
 import unibo.as.cupido.backend.table.LoggerSingleTableManager;
 import unibo.as.cupido.backend.table.NonRemoteBotInterface;
@@ -44,9 +47,8 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
-	// private final NonRemoteBotController controller;
 
-	private final NonRemoteBotController controller;
+	private ActionQueue actionQueue;
 
 	private int turn = 0;
 	private int playedCardCount = 0;
@@ -73,11 +75,9 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.initialTableStatus = initialTableStatus;
 		this.position = position;
 		this.tableInterface = LoggerSingleTableManager.defaultInstance;
-		this.controller = new NonRemoteBotController(this, botName, false,
-				position);
-		this.controller.start();
 		this.active = false;
-
+		this.actionQueue = new ActionQueue();
+		
 		try {
 			File outputFile = new File("cupidoBackendImpl/botlog/nonremote/"
 					+ botName);
@@ -97,6 +97,8 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 				System.out.close();
 			}
 		});
+		
+		actionQueue.start();
 	}
 
 	/**
@@ -114,9 +116,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
 		this.tableInterface = tableInterface;
-		this.controller = new NonRemoteBotController(this, botName, true,
-				position);
-		this.controller.start();
+		this.actionQueue = new ActionQueue();
 		this.position = position;
 		this.active = true;
 
@@ -133,12 +133,19 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			// out = new PrintWriter(System.out);
 		}
 
+		this.actionQueue.start();
 	}
 
 	@Override
-	public synchronized void activate(TableInterface tableInterface) {
-		this.tableInterface = tableInterface;
-		controller.produceBotActivate(position);
+	public void activate(final TableInterface tableInterface) {
+		final NonRemoteBot bot = this;
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				bot.tableInterface = tableInterface;
+				bot.active = true;
+			}
+		});
 	}
 
 	private ArrayList<Card> chooseValidCards() {
@@ -172,111 +179,164 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		return validCards;
 	}
 
-	private Card choseCard() {
+	private Card chooseCard() {
 		return chooseValidCards().get(0);
 	}
 
 	@Override
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-		controller.produceEndGame();
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				// TODO: There is really nothing to do?
+			}
+		});
 	}
 
 	@Override
-	public synchronized void notifyGameStarted(Card[] cards) {
-		System.out.println("\n" + botName + ": notifyGameStarted("
-				+ Arrays.toString(cards) + ")");
-		this.cards = new ArrayList<Card>(13);
-		for (int i = 0; i < cards.length; i++)
-			this.cards.add(cards[i]);
-		if (active) {
-			controller.produceBotPassCards();
-		}
+	public void notifyGameStarted(final Card[] cards) {
+		final NonRemoteBot bot = this;
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				System.out.println("\n" + botName + ": notifyGameStarted("
+						+ Arrays.toString(cards) + ")");
+				bot.cards = new ArrayList<Card>(13);
+				for (int i = 0; i < cards.length; i++)
+					bot.cards.add(cards[i]);
+			}
+		});
 	}
 
 	@Override
 	public void notifyLocalChatMessage(ChatMessage message)
 			throws RemoteException {
 		throw new UnsupportedOperationException(
-				"a replacementBot shold not be notified of chat messages");
+				"a bot should not be notified of chat messages");
 	}
 
 	@Override
-	public synchronized void notifyPassedCards(Card[] cards) {
-		System.out.println("\n" + botName + ": notifyPassedCards("
-				+ Arrays.toString(cards) + ")");
-		if (alreadyGotCards)
-			throw new IllegalArgumentException("passing cards twice to player "
-					+ botName);
-		alreadyGotCards = true;
-		for (Card card : cards)
-			this.cards.add(card);
-		System.out.println("\nplay starts. " + botName + " cards are:"
-				+ this.cards.toString());
+	public void notifyPassedCards(final Card[] cards) {
+		final NonRemoteBot bot = this;
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				System.out.println("\n" + botName + ": notifyPassedCards("
+						+ Arrays.toString(cards) + ")");
+				if (alreadyGotCards)
+					throw new IllegalArgumentException("passing cards twice to player "
+							+ botName);
+				alreadyGotCards = true;
+				for (Card card : cards)
+					bot.cards.add(card);
+				System.out.println("\nplay starts. " + botName + " cards are:"
+						+ bot.cards.toString());
+				if (bot.cards.contains(CardsManager.twoOfClubs)) {
+					firstDealer = 3;
+					if (active)
+						playCard();
+					}		
+			}
+		});
 	}
 
 	@Override
-	public synchronized void notifyPlayedCard(Card card, int playerPosition) {
-		System.out.println("\n" + botName + ": notifyPlayedCard(" + card + ", "
-				+ playerPosition + ")");
-		setCardPlayed(card, playerPosition);
+	public void notifyPlayedCard(final Card card, final int playerPosition) {
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				System.out.println("\n" + botName + ": notifyPlayedCard(" + card + ", "
+						+ playerPosition + ")");
+				setCardPlayed(card, playerPosition);
+			}
+		});
 	}
 
 	@Override
-	public synchronized void notifyPlayerJoined(String name, boolean isBot,
-			int point, int position) {
-		System.out.println("\n" + botName + ": notifyPlayerJoined(" + name
-				+ ", " + isBot + ")");
-		if (name == null || position < 0 || position > 2)
-			throw new IllegalArgumentException("illegal position " + position
-					+ ". " + name + " " + isBot);
-		if (initialTableStatus.opponents[position] != null)
-			throw new IllegalArgumentException("Unable to add player" + name
-					+ " beacuse ITS: " + initialTableStatus
-					+ " already contains a player in position " + position);
-		initialTableStatus.opponents[position] = name;
-		initialTableStatus.playerScores[position] = position;
-		initialTableStatus.whoIsBot[position] = isBot;
+	public void notifyPlayerJoined(final String name, final boolean isBot,
+			int point, final int position) {
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				System.out.println("\n" + botName + ": notifyPlayerJoined(" + name
+						+ ", " + isBot + ")");
+				if (name == null || position < 0 || position > 2)
+					throw new IllegalArgumentException("illegal position " + position
+							+ ". " + name + " " + isBot);
+				if (initialTableStatus.opponents[position] != null)
+					throw new IllegalArgumentException("Unable to add player" + name
+							+ " beacuse ITS: " + initialTableStatus
+							+ " already contains a player in position " + position);
+				initialTableStatus.opponents[position] = name;
+				initialTableStatus.playerScores[position] = position;
+				initialTableStatus.whoIsBot[position] = isBot;
+			}
+		});
 	}
 
 	@Override
-	public synchronized void notifyPlayerLeft(String name) {
-		System.out.print("\n" + botName + ": "
-				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + name + ")");
-		int position = 0;
-		while (!name.equals(initialTableStatus.opponents[position]))
-			position++;
-		if (position == 3)
-			throw new IllegalArgumentException("Player not found " + name);
-		initialTableStatus.opponents[position] = null;
-		System.out.println(initialTableStatus);
+	public void notifyPlayerLeft(final String name) {
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				System.out.print("\n" + botName + ": "
+						+ Thread.currentThread().getStackTrace()[1].getMethodName()
+						+ "(" + name + ")");
+				int position = 0;
+				while (!name.equals(initialTableStatus.opponents[position]))
+					position++;
+				if (position == 3)
+					throw new IllegalArgumentException("Player not found " + name);
+				initialTableStatus.opponents[position] = null;
+				System.out.println(initialTableStatus);
+			}
+		});
 	}
 
 	@Override
-	public synchronized void notifyPlayerReplaced(String botName, int position) {
-		System.out.print("\n" + botName + ": notifyPlayerReplaced(" + botName
-				+ ", " + position + ")");
+	public void notifyPlayerReplaced(final String botName, final int position) {
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				System.out.print("\n" + botName + ": notifyPlayerReplaced(" + botName
+						+ ", " + position + ")");
 
-		if (botName == null || position < 0 || position > 2)
-			throw new IllegalArgumentException(position + " " + botName);
+				if (botName == null || position < 0 || position > 2)
+					throw new IllegalArgumentException(position + " " + botName);
 
-		if (initialTableStatus.opponents[position] == null) {
-			(new NoSuchPlayerException()).printStackTrace();
-			return;
-		}
-		initialTableStatus.opponents[position] = botName;
-		initialTableStatus.whoIsBot[position] = true;
+				if (initialTableStatus.opponents[position] == null) {
+					(new NoSuchPlayerException()).printStackTrace();
+					return;
+				}
+				initialTableStatus.opponents[position] = botName;
+				initialTableStatus.whoIsBot[position] = true;
+			}
+		});
 	}
 
-	public synchronized void passCards() {
-		Card[] cardsToPass = new Card[3];
-		for (int i = 0; i < 3; i++)
-			cardsToPass[i] = cards.get(i);
-		this.passCards(cardsToPass);
+	public void passCards() {
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				Card[] cardsToPass = new Card[3];
+				for (int i = 0; i < 3; i++)
+					cardsToPass[i] = cards.get(i);
+				processPassCards(cardsToPass);
+			}
+		});
 	}
 
 	@Override
-	public synchronized void passCards(Card[] cardsToPass) {
+	public void passCards(final Card[] cardsToPass) {
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				processPassCards(cardsToPass);
+			}
+		});
+	}
+
+	private void processPassCards(Card[] cardsToPass) {
 		try {
 			System.out.println("\n" + botName + ": passCards("
 					+ Arrays.toString(cardsToPass) + ")");
@@ -297,13 +357,27 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		}
 	}
 
-	public synchronized void playCard() {
-		Card cardToPlay = choseCard();
-		this.playCard(cardToPlay);
+	public void playCard() {
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				Card cardToPlay = chooseCard();
+				processPlayCard(cardToPlay);
+			}
+		});
 	}
 
 	@Override
-	public synchronized void playCard(Card card) {
+	public void playCard(final Card card) {
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				processPlayCard(card);
+			}
+		});
+	}
+
+	private void processPlayCard(Card card) {
 		try {
 			System.out.println("\n" + botName + ": playCard(" + card + ")");
 			setCardPlayed(card, 3);
@@ -322,7 +396,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private void setCardPlayed(Card card, int playerPosition) {
 		if (firstDealer == -1) {
 			firstDealer = playerPosition;
@@ -353,14 +427,16 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 						points += 5;
 				}
 				if (active) {
-					controller.produceBotPlay();
+					// TODO: Check this.
+					playCard();
 				}
 			}
 			Arrays.fill(playedCard, null);
 		} else {
 			if (playerPosition == 2) {
 				if (active) {
-					controller.produceBotPlay();
+					// TODO: Check this.
+					playCard();
 				}
 			}
 		}
@@ -372,14 +448,4 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		for (int i = 0; i < 3; i++)
 			cards.remove(cardsToPass[i]);
 	}
-
-	public void notifyAllPlayerPassedCards() {
-		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			firstDealer = 3;
-			if (active) {
-				controller.produceBotPlay();
-			}
-		}		
-	}
-
 }
