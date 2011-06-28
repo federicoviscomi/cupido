@@ -44,7 +44,7 @@ import unibo.as.cupido.common.structures.PlayerStatus;
 public class PlayersManager {
 
 	/** store information for inactiveReplacementBot or human players */
-	static class PlayerInfo {
+	private static class PlayerInfo {
 
 		/** this player name */
 		final String name;
@@ -134,7 +134,7 @@ public class PlayersManager {
 		}
 	}
 
-	PlayerInfo[] players = new PlayerInfo[4];
+	private PlayerInfo[] players = new PlayerInfo[4];
 	private int playersCount = 1;
 	private final DatabaseManager databaseManager;
 	private final Controller controller;

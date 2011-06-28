@@ -119,21 +119,10 @@ public class SingleTableManager implements TableInterface {
 			playersManager.addBot(userName, position, botNames[position],
 					tableInterface);
 
-			for (int i = 1; i < 4; i++) {
-				if (i != position) {
-					controller
-							.produceMessageSendPlayerJoinedNotification(
-									botName,
-									true,
-									0,
-									position,
-									playersManager.players[i].playerNotificationInterface);
-				}
-			}
-			//viewers.notifyPlayerJoined(playerName, isBot, score, position)
+			controller.produceAddPlayer(botName, true, 0, position);
 			if (playersManager.playersCount() == 4) {
 				gameStatus = GameStatus.PASSING_CARDS;
-				this.setStartGame();
+				// controller.produceStartGame();
 			}
 			return botName;
 		} catch (NoSuchTableException e) {
@@ -147,14 +136,6 @@ public class SingleTableManager implements TableInterface {
 			e.printStackTrace();
 		}
 		throw new Error();
-	}
-
-	private void setStartGame() {
-		for (int i = 0; i < 4; i++) {
-			controller.produceMessageSendStartGameNotification(
-					playersManager.players[i].playerNotificationInterface,
-					cardsManager.cards[i]);
-		}
 	}
 
 	@Override

@@ -61,7 +61,8 @@ public class CardsManager {
 	/** stores the cards played in the current turn */
 	private Card[] cardPlayed = new Card[4];
 	/** stores the cards owned by each player */
-	@SuppressWarnings("unchecked") ArrayList<Card>[] cards = new ArrayList[4];
+	@SuppressWarnings("unchecked")
+	private ArrayList<Card>[] cards = new ArrayList[4];
 	/** counts the number of card played in the current turn */
 	private int playedCardsCount = 0;
 	/** position of player who plays first in the current turn */
