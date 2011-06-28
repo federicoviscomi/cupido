@@ -137,14 +137,17 @@ public class PlayersManager {
 	private PlayerInfo[] players = new PlayerInfo[4];
 	private int playersCount = 1;
 	private final DatabaseManager databaseManager;
+	private final Controller controller;
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
-			DatabaseManager databaseManager) throws SQLException,
-			NoSuchUserException {
+			DatabaseManager databaseManager, Controller controller)
+			throws SQLException, NoSuchUserException {
+
 		if (owner == null || snf == null)
 			throw new IllegalArgumentException();
 
 		this.databaseManager = databaseManager;
+		this.controller = controller;
 
 		int score = databaseManager.getPlayerScore(owner);
 		players[0] = new PlayerInfo(owner, score, snf, new LoggerBot(owner));
@@ -169,7 +172,7 @@ public class PlayersManager {
 		InitialTableStatus initialTableStatus = this
 				.getInitialTableStatus(position);
 		players[position] = new PlayerInfo(botName, new NonRemoteBot(botName,
-				initialTableStatus, tableInterface));
+				initialTableStatus, tableInterface, position));
 		playersCount++;
 	}
 
@@ -197,7 +200,7 @@ public class PlayersManager {
 		}
 
 		NonRemoteBot replacementBot = new NonRemoteBot(playerName,
-				this.getInitialTableStatus(position));
+				this.getInitialTableStatus(position), position);
 
 		players[position] = new PlayerInfo(playerName, score, sni,
 				replacementBot);

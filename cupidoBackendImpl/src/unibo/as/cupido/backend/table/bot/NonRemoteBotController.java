@@ -1,55 +1,105 @@
-/*  Cupido - An online Hearts game.
- *  Copyright (C) 2011 Lorenzo Belli, Marco Poletti, Federico Viscomi
- *  
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *  
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *  
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package unibo.as.cupido.backend.table.bot;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import unibo.as.cupido.backend.table.AsynchronousMessage;
 
 public class NonRemoteBotController extends Thread {
 
-	private NonRemoteBot bot;
-	private boolean ableToPass = false;
-	private boolean ableToPlay = false;
-	private Object lock = new Object();
-	private boolean gameEnded = false;
+	private final NonRemoteBot nonRemoteBot;
 	private final String botName;
-	private boolean realPlayerPlayed = false;
-	private boolean realPlayerLeft = false;
+	private boolean active;
+	private final Object lock = new Object();
+	private final int position;
+	private LinkedList<AsynchronousMessage> messageQueue = new LinkedList<AsynchronousMessage>();
+	private boolean gameEnded;
+	private int passed = 0;
 
-	public NonRemoteBotController(NonRemoteBot bot, String botName) {
-		super("NonRemoteBotController " + botName);
+	public NonRemoteBotController(NonRemoteBot nonRemoteBot, String botName,
+			boolean active, int position) {
+		this.nonRemoteBot = nonRemoteBot;
 		this.botName = botName;
-		if (bot == null || botName == null) {
-			throw new IllegalArgumentException();
-		}
-		this.bot = bot;
+		this.active = active;
+		this.position = position;
 	}
 
-	public NonRemoteBotController(String botName) {
-		super("NonRemoteBotController " + botName);
-		this.botName = botName;
-		if (botName == null) {
-			throw new IllegalArgumentException();
+	private void consume() {
+		System.err.println("Non remote bot controller " + botName + "  >>>> ");
+		Iterator<AsynchronousMessage> queue = messageQueue.iterator();
+		while (queue.hasNext()) {
+			AsynchronousMessage message = queue.next();
+			queue.remove();
+			System.err.println("Non remote bot controller " + botName
+					+ "  consuming: " + message);
+			switch (message.type) {
+			case END_GAME: {
+				return;
+			}
+			case BOT_ACTIVATE: {
+				this.active = true;
+				break;
+			}
+			case BOT_PASS: {
+				passed++;
+				if (active) {
+					nonRemoteBot.passCards();
+				}
+				if (passed == 4) {
+					nonRemoteBot.notifyAllPlayerPassedCards();
+				}
+				break;
+			}
+			case BOT_PLAY: {
+				if (active) {
+					// nonRemoteBot.playCard();
+				}
+				break;
+			}
+			default: {
+				throw new Error();
+			}
+			}
 		}
-		this.bot = null;
+		System.err.println("Non remote bot controller " + botName + "  <<<< ");
 	}
 
-	public void activate(NonRemoteBot nonRemoteBot) {
+	public void produceBotActivate(int position) {
 		synchronized (lock) {
-			realPlayerLeft = true;
-			this.bot = nonRemoteBot;
+			messageQueue.add(new AsynchronousMessage.BotActivateMessage(
+					position));
+			System.err.println("Non remote bot controller " + botName
+					+ "  produced: " + messageQueue.peek());
+			lock.notify();
+		}
+	}
+
+	public void produceBotPassCards() {
+		synchronized (lock) {
+			messageQueue.add(new AsynchronousMessage.BotPassCardsMessage(
+					nonRemoteBot, position));
+			System.err.println("Non remote bot controller " + botName
+					+ "  produced: " + messageQueue.peek());
+			lock.notify();
+		}
+	}
+
+	public void produceBotPlay() {
+		synchronized (lock) {
+			messageQueue.add(new AsynchronousMessage.BotPlayMessage(
+					nonRemoteBot, position));
+			System.err.println("Non remote bot controller " + botName
+					+ "  produced: " + messageQueue.peek());
+			lock.notify();
+		}
+	}
+
+	public void produceEndGame() {
+		synchronized (lock) {
+			messageQueue.add(new AsynchronousMessage.EndGameMessage());
+			gameEnded = true;
+			System.err.println("Non remote bot controller " + botName
+					+ "  produced: " + messageQueue.peek());
 			lock.notify();
 		}
 	}
@@ -58,77 +108,13 @@ public class NonRemoteBotController extends Thread {
 	public void run() {
 		try {
 			synchronized (lock) {
-				while (!ableToPass) {
+				while (!gameEnded) {
 					lock.wait();
-				}
-				if (gameEnded) {
-					return;
-				}
-				if (bot != null) {
-					bot.passCards();
-				}
-			}
-			for (int i = 0; i < 13; i++) {
-				synchronized (lock) {
-					while (!ableToPlay) {
-						lock.wait();
-					}
-					if (gameEnded) {
-						return;
-					}
-					ableToPlay = false;
-					if (bot != null) {
-						bot.playNextCard();
-					} else {
-						// inactive replacement bot. waiting for real player to
-						// play
-						while (!realPlayerPlayed && !realPlayerLeft) {
-							lock.wait();
-						}
-						if (gameEnded) {
-							return;
-						}
-						realPlayerPlayed = false;
-						if (realPlayerLeft) {
-							bot.playNextCard();
-						}
-					}
+					this.consume();
 				}
 			}
 		} catch (InterruptedException e) {
-			// System.err.println(" :: bot Controller. "+ playerName +
-			// " game ended prematurely ");
-			e.printStackTrace();
-		}
-	}
-
-	public void setAbleToPass() {
-		synchronized (lock) {
-			if (!ableToPass) {
-				ableToPass = true;
-				lock.notify();
-			}
-		}
-	}
-
-	public void setAbleToPlay() {
-		synchronized (lock) {
-			ableToPlay = true;
-			lock.notify();
-		}
-	}
-
-	public void setGameEnded() {
-		synchronized (lock) {
-			gameEnded = true;
-			lock.notify();
-		}
-	}
-
-	public void setRealPlayerPlayed() {
-		synchronized (lock) {
-			realPlayerPlayed = true;
-			lock.notify();
+			//
 		}
 	}
 

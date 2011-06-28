@@ -44,7 +44,10 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
+	// private final NonRemoteBotController controller;
+
 	private final NonRemoteBotController controller;
+
 	private int turn = 0;
 	private int playedCardCount = 0;
 	private int firstDealer = -1;
@@ -52,6 +55,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	private boolean brokenHearted = false;
 
 	private int points = 0;
+	private final int position;
 	private boolean active;
 
 	/**
@@ -59,14 +63,19 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	 * 
 	 * @param playerName
 	 * @param initialTableStatus
+	 * @param stmController
+	 * @param bot
 	 */
 	public NonRemoteBot(final String botName,
-			InitialTableStatus initialTableStatus) {
+			InitialTableStatus initialTableStatus, int position) {
 
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
+		this.position = position;
 		this.tableInterface = LoggerSingleTableManager.defaultInstance;
-		this.controller = new NonRemoteBotController(botName);
+		this.controller = new NonRemoteBotController(this, botName, false,
+				position);
+		this.controller.start();
 		this.active = false;
 
 		try {
@@ -81,7 +90,6 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			e.printStackTrace();
 			out = new PrintWriter(System.out);
 		}
-		controller.start();
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
@@ -97,14 +105,19 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	 * @param playerName
 	 * @param initialTableStatus
 	 * @param tableInterface
+	 * @param controller
 	 */
 	public NonRemoteBot(final String botName,
-			InitialTableStatus initialTableStatus, TableInterface tableInterface) {
+			InitialTableStatus initialTableStatus,
+			TableInterface tableInterface, int position) {
 
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
 		this.tableInterface = tableInterface;
-		this.controller = new NonRemoteBotController(this, botName);
+		this.controller = new NonRemoteBotController(this, botName, true,
+				position);
+		this.controller.start();
+		this.position = position;
 		this.active = true;
 
 		try {
@@ -119,14 +132,13 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			e.printStackTrace();
 			// out = new PrintWriter(System.out);
 		}
-		controller.start();
+
 	}
 
 	@Override
 	public synchronized void activate(TableInterface tableInterface) {
-		this.active = true;
 		this.tableInterface = tableInterface;
-		this.controller.activate(this);
+		controller.produceBotActivate(position);
 	}
 
 	private ArrayList<Card> chooseValidCards() {
@@ -166,14 +178,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	@Override
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-		System.out.println("\n" + botName + ": notifyGameEnded("
-				+ Arrays.toString(matchPoints) + ", "
-				+ Arrays.toString(playersTotalPoint) + ")  0");
-		System.out.close();
-		controller.setGameEnded();
-		System.out.println("\n" + botName + ": notifyGameEnded("
-				+ Arrays.toString(matchPoints) + ", "
-				+ Arrays.toString(playersTotalPoint) + ")  1");
+		controller.produceEndGame();
 	}
 
 	@Override
@@ -183,7 +188,9 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.cards = new ArrayList<Card>(13);
 		for (int i = 0; i < cards.length; i++)
 			this.cards.add(cards[i]);
-		controller.setAbleToPass();
+		if (active) {
+			controller.produceBotPassCards();
+		}
 	}
 
 	@Override
@@ -205,10 +212,6 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			this.cards.add(card);
 		System.out.println("\nplay starts. " + botName + " cards are:"
 				+ this.cards.toString());
-		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			firstDealer = 3;
-			controller.setAbleToPlay();
-		}
 	}
 
 	@Override
@@ -265,7 +268,6 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	public synchronized void passCards() {
-		System.out.println("\n" + botName + ": passCards()");
 		Card[] cardsToPass = new Card[3];
 		for (int i = 0; i < 3; i++)
 			cardsToPass[i] = cards.get(i);
@@ -274,9 +276,9 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	@Override
 	public synchronized void passCards(Card[] cardsToPass) {
-		System.out.println("\n" + botName + ": passCards("
-				+ Arrays.toString(cardsToPass) + ")");
 		try {
+			System.out.println("\n" + botName + ": passCards("
+					+ Arrays.toString(cardsToPass) + ")");
 			setCardsPassed(cardsToPass);
 			tableInterface.passCards(botName, cardsToPass);
 		} catch (IllegalArgumentException e) {
@@ -294,17 +296,17 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		}
 	}
 
+	public synchronized void playCard() {
+		Card cardToPlay = choseCard();
+		this.playCard(cardToPlay);
+	}
+
 	@Override
 	public synchronized void playCard(Card card) {
 		try {
-			if (!active) {
-				controller.setRealPlayerPlayed();
-			}
+			System.out.println("\n" + botName + ": playCard(" + card + ")");
 			setCardPlayed(card, 3);
-			if (active) {
-				System.out.println("\n" + botName + ": playCard(" + card + ")");
-				tableInterface.playCard(botName, card);
-			}
+			tableInterface.playCard(botName, card);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -318,15 +320,6 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public synchronized void playNextCard() {
-		System.out.println("\n" + botName + ": playNextCard()");
-
-		/** choose a valid card */
-		Card cardToPlay = choseCard();
-
-		this.playCard(cardToPlay);
 	}
 
 	private void setCardPlayed(Card card, int playerPosition) {
@@ -352,18 +345,22 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			playedCardCount = 0;
 			turn++;
 			if (firstDealer == 3) {
-				controller.setAbleToPlay();
 				for (Card c : playedCard) {
 					if (c.suit == Suit.HEARTS)
 						points++;
 					else if (c.equals(CardsManager.twoOfClubs))
 						points += 5;
 				}
+				if (active) {
+					controller.produceBotPlay();
+				}
 			}
 			Arrays.fill(playedCard, null);
 		} else {
 			if (playerPosition == 2) {
-				controller.setAbleToPlay();
+				if (active) {
+					controller.produceBotPlay();
+				}
 			}
 		}
 	}
@@ -373,6 +370,15 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			throw new IllegalArgumentException();
 		for (int i = 0; i < 3; i++)
 			cards.remove(cardsToPass[i]);
+	}
+
+	public void notifyAllPlayerPassedCards() {
+		if (this.cards.contains(CardsManager.twoOfClubs)) {
+			firstDealer = 3;
+			if (active) {
+				controller.produceBotPlay();
+			}
+		}		
 	}
 
 }

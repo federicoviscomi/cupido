@@ -1,42 +1,12 @@
 package unibo.as.cupido.backend.table;
 
+import java.util.Arrays;
+
+import unibo.as.cupido.backend.table.bot.NonRemoteBot;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 
 public abstract class AsynchronousMessage {
-	public static class EndGameMessage extends AsynchronousMessage {
-		public EndGameMessage() {
-			super(MessageType.END_GAME);
-		}
-
-		@Override
-		public String toString() {
-			return "[" + this.getClass().getSimpleName() + "]";
-		}
-	}
-
-	public static class AllPassedCardsMessage extends AsynchronousMessage {
-		public AllPassedCardsMessage() {
-			super(MessageType.ALL_PASSED_CARDS);
-		}
-
-		@Override
-		public String toString() {
-			return "[" + this.getClass().getSimpleName() + "]";
-		}
-	}
-
-	public static class StartGameMessage extends AsynchronousMessage {
-
-		public StartGameMessage() {
-			super(MessageType.START_GAME);
-		}
-
-		@Override
-		public String toString() {
-			return "[" + this.getClass().getSimpleName() + "]";
-		}
-	}
 
 	public static class AddPlayerMessage extends AsynchronousMessage {
 		public final String playerName;
@@ -56,8 +26,76 @@ public abstract class AsynchronousMessage {
 		@Override
 		public String toString() {
 			return "[" + this.getClass().getSimpleName() + ": player name "
-					+ playerName + ", is bot" + isBot + ", score " + score
+					+ playerName + ", is bot " + isBot + ", score " + score
 					+ ", position " + position + "]";
+		}
+	}
+
+	public static class AllPassedCardsMessage extends AsynchronousMessage {
+		public AllPassedCardsMessage() {
+			super(MessageType.ALL_PASSED_CARDS);
+		}
+
+		@Override
+		public String toString() {
+			return "[" + this.getClass().getSimpleName() + "]";
+		}
+	}
+
+	public static class BotActivateMessage extends AsynchronousMessage {
+		public final int position;
+
+		public BotActivateMessage(int position) {
+			super(MessageType.BOT_ACTIVATE);
+			this.position = position;
+		}
+
+		@Override
+		public String toString() {
+			return "[" + this.getClass().getSimpleName() + "]";
+		}
+	}
+
+	public static class BotPassCardsMessage extends AsynchronousMessage {
+		public final NonRemoteBot nonRemoteBot;
+		public final int position;
+
+		public BotPassCardsMessage(NonRemoteBot nonRemoteBot, int position) {
+			super(MessageType.BOT_PASS);
+			this.nonRemoteBot = nonRemoteBot;
+			this.position = position;
+		}
+
+		@Override
+		public String toString() {
+			return "[" + this.getClass().getSimpleName() + "]";
+		}
+	}
+
+	public static class BotPlayMessage extends AsynchronousMessage {
+		public final NonRemoteBot nonRemoteBot;
+		public final int position;
+
+		public BotPlayMessage(NonRemoteBot nonRemoteBot, int position) {
+			super(MessageType.BOT_PLAY);
+			this.nonRemoteBot = nonRemoteBot;
+			this.position = position;
+		}
+
+		@Override
+		public String toString() {
+			return "[" + this.getClass().getSimpleName() + "]";
+		}
+	}
+
+	public static class EndGameMessage extends AsynchronousMessage {
+		public EndGameMessage() {
+			super(MessageType.END_GAME);
+		}
+
+		@Override
+		public String toString() {
+			return "[" + this.getClass().getSimpleName() + "]";
 		}
 	}
 
@@ -70,6 +108,10 @@ public abstract class AsynchronousMessage {
 		public String toString() {
 			return "[" + this.getClass().getSimpleName() + "]";
 		}
+	}
+
+	public enum MessageType {
+		ADD_PLAYER, END_GAME_PREMATURELY, REPLACE_PLAYER, PLAYER_LEAVE, PASS_CARDS, PLAY_CARD, SEND_LOCAL_CHAT_MESSAGE, ALL_PASSED_CARDS, END_GAME, BOT_PLAY, BOT_ACTIVATE, BOT_PASS
 	}
 
 	public static class PlayerLeaveMessage extends AsynchronousMessage {
@@ -106,7 +148,8 @@ public abstract class AsynchronousMessage {
 		@Override
 		public String toString() {
 			return "[" + this.getClass().getSimpleName() + ": player name "
-					+ playerName + ", position " + position + "]";
+					+ playerName + ", position " + position + ", cards "
+					+ Arrays.toString(cards) + "]";
 		}
 	}
 
@@ -167,11 +210,7 @@ public abstract class AsynchronousMessage {
 		}
 	}
 
-	protected enum MessageType {
-		ADD_PLAYER, END_GAME_PREMATURELY, REPLACE_PLAYER, PLAYER_LEAVE, PASS_CARDS, PLAY_CARD, SEND_LOCAL_CHAT_MESSAGE, START_GAME, ALL_PASSED_CARDS, END_GAME
-	}
-
-	protected final MessageType type;
+	public final MessageType type;
 
 	public AsynchronousMessage(MessageType type) {
 		this.type = type;

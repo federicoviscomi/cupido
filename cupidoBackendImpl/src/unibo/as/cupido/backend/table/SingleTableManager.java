@@ -89,9 +89,10 @@ public class SingleTableManager implements TableInterface {
 		this.gameStatus = GameStatus.INIT;
 		this.viewers = new ViewersSwarm();
 		this.databaseManager = new DatabaseManager();
-		this.playersManager = new PlayersManager(owner, snf, databaseManager);
+		this.controller = new Controller(this);
+		this.playersManager = new PlayersManager(owner, snf, databaseManager,
+				controller);
 		this.cardsManager = new CardsManager();
-		this.controller = new Controller(this, table);
 		this.controller.start();
 	}
 
@@ -118,10 +119,10 @@ public class SingleTableManager implements TableInterface {
 			playersManager.addBot(userName, position, botNames[position],
 					tableInterface);
 
-			controller.addPlayer(botName, true, 0, position);
+			controller.produceAddPlayer(botName, true, 0, position);
 			if (playersManager.playersCount() == 4) {
 				gameStatus = GameStatus.PASSING_CARDS;
-				controller.startGame();
+				// controller.produceStartGame();
 			}
 			return botName;
 		} catch (NoSuchTableException e) {
@@ -153,10 +154,10 @@ public class SingleTableManager implements TableInterface {
 		int score = databaseManager.getPlayerScore(userName);
 		int position = playersManager.addPlayer(userName, snf, score);
 
-		controller.addPlayer(userName, false, score, position);
+		controller.produceAddPlayer(userName, false, score, position);
 		if (playersManager.playersCount() == 4) {
 			gameStatus = GameStatus.PASSING_CARDS;
-			controller.startGame();
+			// controller.produceStartGame();
 		}
 		return playersManager.getInitialTableStatus(position);
 	}
@@ -174,7 +175,6 @@ public class SingleTableManager implements TableInterface {
 		}
 
 		if (viewers.isAViewer(userName)) {
-			System.out.println("viewer " + userName + " left");
 			try {
 				viewers.removeViewer(userName);
 			} catch (NoSuchViewerException e) {
@@ -182,10 +182,8 @@ public class SingleTableManager implements TableInterface {
 				e.printStackTrace();
 			}
 		} else if (table.owner.equals(userName)) {
-			controller.endGamePrematurely();
+			controller.produceEndGamePrematurely();
 		} else if (!gameStatus.equals(GameStatus.INIT)) {
-			System.out.println("player " + userName
-					+ " left after game start. Replaycing...");
 			int position = playersManager.getPlayerPosition(userName);
 			if (tableInterface == null) {
 				try {
@@ -202,12 +200,10 @@ public class SingleTableManager implements TableInterface {
 
 			}
 			playersManager.replacePlayer(userName, position, tableInterface);
-			controller.replacePlayer(userName, position);
+			controller.produceReplacePlayer(userName, position);
 		} else {
-			System.out
-					.println("player " + userName + " left before game start");
 			playersManager.removePlayer(userName);
-			controller.playerLeave(userName);
+			controller.producePlayerLeave(userName);
 		}
 	}
 
@@ -345,10 +341,6 @@ public class SingleTableManager implements TableInterface {
 
 		if (!gameStatus.equals(GameStatus.PASSING_CARDS))
 			throw new IllegalStateException();
-
-		System.out.println("\n single table manager passCards(" + userName
-				+ ", " + Arrays.toString(cards) + ")");
-
 		/*
 		 * NOTE: playerName is name of the player who passes cards. Not name of
 		 * the player who receives the cards!
@@ -361,10 +353,10 @@ public class SingleTableManager implements TableInterface {
 		cardsManager.setCardPassing(position, cards);
 		playersManager.replacementBotPassCards(position, cards);
 
-		controller.passCards(userName, position, cards);
-		if(cardsManager.allPlayerPassedCards()){
+		controller.producePassCards(userName, position, cards);
+		if (cardsManager.allPlayerPassedCards()) {
 			gameStatus = GameStatus.STARTED;
-			controller.allPassedCards();
+			controller.produceAllPassedCards();
 		}
 	}
 
@@ -372,8 +364,6 @@ public class SingleTableManager implements TableInterface {
 	public synchronized void playCard(String userName, Card card)
 			throws IllegalMoveException, RemoteException,
 			IllegalArgumentException, NoSuchPlayerException {
-		System.out.println("single table manager play card " + userName + " "
-				+ card);
 		if (!gameStatus.equals(GameStatus.STARTED))
 			throw new IllegalStateException();
 		if (userName == null || card == null)
@@ -382,10 +372,10 @@ public class SingleTableManager implements TableInterface {
 		int playerPosition = playersManager.getPlayerPosition(userName);
 		cardsManager.playCard(userName, playerPosition, card);
 		playersManager.replacementBotPlayCard(playerPosition, card);
-		controller.playCard(userName, playerPosition, card);
-		if(cardsManager.gameEnded()){
+		controller.producePlayCard(userName, playerPosition, card);
+		if (cardsManager.gameEnded()) {
 			gameStatus = GameStatus.ENDED;
-			controller.endGame();
+			controller.produceEndGame();
 		}
 	}
 
@@ -396,7 +386,7 @@ public class SingleTableManager implements TableInterface {
 				|| message.userName == null)
 			throw new IllegalArgumentException();
 
-		controller.sendLocalChatMessage(message);
+		controller.produceSendLocalChatMessage(message);
 	}
 
 	@Override
