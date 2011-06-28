@@ -340,6 +340,8 @@ public class SingleTableManager implements TableInterface {
 	public synchronized void passCards(String userName, Card[] cards)
 			throws IllegalArgumentException, RemoteException,
 			NoSuchPlayerException {
+		
+		System.out.println("STM: entering passCards(" + userName + ", {...})");
 
 		if (!gameStatus.equals(GameStatus.PASSING_CARDS))
 			throw new IllegalStateException();
@@ -355,12 +357,14 @@ public class SingleTableManager implements TableInterface {
 		cardsManager.setCardPassing(position, cards);
 		playersManager.replacementBotPassCards(position, cards);
 
-		notifyPlayerPassedCards(position, cards);
 		if (cardsManager.allPlayerPassedCards()) {
 			gameStatus = GameStatus.STARTED;
 			
-			// TODO: All the player passed their cards. Should we send some notifications here?
+			for (int i = 0; i < 4; i++)
+				notifyPlayerPassedCards(i, cardsManager.getPassedCards(i));
 		}
+		
+		System.out.println("STM: exiting from passCards(" + userName + ", {...})");
 	}
 
 	@Override

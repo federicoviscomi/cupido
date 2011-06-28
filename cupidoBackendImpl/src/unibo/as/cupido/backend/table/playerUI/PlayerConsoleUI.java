@@ -51,6 +51,7 @@ import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
@@ -106,7 +107,7 @@ public class PlayerConsoleUI {
 	private final BufferedReader in;
 	private final PrintWriter out;
 	private boolean logged = false;
-	private Bot botNotification;
+	private ServletNotificationsInterface botNotification;
 	private RemoteBot remoteBot;
 	private RemoteViewerUI remoteViewer;
 
@@ -284,8 +285,8 @@ public class PlayerConsoleUI {
 						remoteBot = new RemoteBot(new InitialTableStatus(
 								new String[3], new int[3], new boolean[3]),
 								null, playerName);
-						botNotification = (Bot) UnicastRemoteObject
-								.exportObject(remoteBot);
+						botNotification = (ServletNotificationsInterface) UnicastRemoteObject
+								.exportObject(remoteBot.getServletNotificationsInterface());
 
 						TableInfoForClient tableInfo = gtm.getTableList()
 								.iterator().next();
@@ -293,7 +294,7 @@ public class PlayerConsoleUI {
 								tableInfo.tableDescriptor.ltmId).getTable(
 								tableInfo.tableDescriptor.id);
 						remoteBot.initialTableStatus = remoteBot.singleTableManager
-								.joinTable(playerName, remoteBot);
+								.joinTable(playerName, botNotification);
 						out.println("successfully joined " + tableInfo);
 					} catch (NoSuchElementException e) {
 						out.println("no table to join!");
@@ -357,8 +358,8 @@ public class PlayerConsoleUI {
 						remoteBot = new RemoteBot(new InitialTableStatus(
 								new String[3], new int[3], new boolean[3]),
 								null, playerName);
-						botNotification = (Bot) UnicastRemoteObject
-								.exportObject(remoteBot);
+						botNotification = (ServletNotificationsInterface) UnicastRemoteObject
+								.exportObject(remoteBot.getServletNotificationsInterface());
 
 						remoteBot.singleTableManager = gtm.createTable(
 								playerName, botNotification);

@@ -239,6 +239,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	private ArrayList<Card> chooseValidCards() {
+		System.out.println(botName + ": in chooseValidCards(): playedCardCount = " + playedCardCount);
 		ArrayList<Card> validCards = new ArrayList<Card>(13);
 		if (cards.contains(CardsManager.twoOfClubs)) {
 			validCards.add(CardsManager.twoOfClubs);
@@ -283,6 +284,8 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		this.cards = new ArrayList<Card>(13);
 		for (int i = 0; i < cards.length; i++)
 			this.cards.add(cards[i]);
+		if (active)
+			passCards();
 	}
 
 	private void onLocalChatMessage(ChatMessage message) {
@@ -435,7 +438,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		if (firstDealer == -1) {
 			firstDealer = playerPosition;
 		}
-		if (((firstDealer + playedCardCount + 4) % 4) != playerPosition) {
+		if ((firstDealer + playedCardCount % 4) != playerPosition) {
 			throw new IllegalStateException(" current player should be "
 					+ ((firstDealer + playedCardCount + 4) % 4)
 					+ " instead is " + playerPosition + " " + botName
