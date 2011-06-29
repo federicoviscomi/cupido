@@ -551,13 +551,15 @@ public class PlayersManager {
 			throw new IllegalArgumentException();
 		if (players[position] == null)
 			throw new IllegalStateException();
-		try {
-			if (!players[position].isBot) {
-				players[position].inactiveReplacementBot.passCards(cards);
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (!players[position].isBot) {
+			final Card[] clonedCards = cloneCardArray(cards);
+			final NonRemoteBotInterface inactiveReplacementBot = players[position].inactiveReplacementBot;
+			controller.enqueue(new RemoteAction () {
+				@Override
+				public void onExecute() throws RemoteException {
+					inactiveReplacementBot.passCards(clonedCards);
+				}
+			});
 		}
 	}
 
@@ -566,18 +568,20 @@ public class PlayersManager {
 			throw new IllegalArgumentException();
 		if (players[position] == null)
 			throw new IllegalStateException();
-		try {
-			if (!players[position].isBot) {
-				players[position].inactiveReplacementBot.playCard(card);
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (!players[position].isBot) {
+			final NonRemoteBotInterface inactiveReplacementBot = players[position].inactiveReplacementBot;
+			final Card cardClone = card.clone();
+			controller.enqueue(new RemoteAction() {
+				@Override
+				public void onExecute() throws RemoteException {
+					inactiveReplacementBot.playCard(cardClone);
+				}
+			});
 		}
 	}
 
 	public void replacePlayer(String playerName, int position,
-			TableInterface tableInterface) throws NoSuchPlayerException {
+			final TableInterface tableInterface) throws NoSuchPlayerException {
 		if (playerName == null || tableInterface == null || position < 1
 				|| position > 3)
 			throw new IllegalArgumentException();
@@ -587,12 +591,13 @@ public class PlayersManager {
 		players[position].isBot = true;
 		players[position].replaced = true;
 		players[position].playerNotificationInterface = players[position].inactiveReplacementBotSNI;
-		try {
-			players[position].inactiveReplacementBot.activate(tableInterface);
-		} catch (RemoteException e) {
-			// never thrown
-			e.printStackTrace();
-		}
+		final NonRemoteBotInterface inactiveReplacementBot = players[position].inactiveReplacementBot;
+		controller.enqueue(new RemoteAction() {
+			@Override
+			public void onExecute() throws RemoteException {
+				inactiveReplacementBot.activate(tableInterface);
+			}
+		});
 		players[position].inactiveReplacementBot = null;
 		players[position].inactiveReplacementBotSNI = null;
 	}

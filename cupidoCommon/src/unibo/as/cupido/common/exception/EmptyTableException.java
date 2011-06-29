@@ -17,9 +17,14 @@
 
 package unibo.as.cupido.common.exception;
 
-public class EmptyTableException extends Exception {
+import java.io.Serializable;
+
+public class EmptyTableException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	public EmptyTableException() {
+	}
 
 	public EmptyTableException(String string) {
 		super(string);

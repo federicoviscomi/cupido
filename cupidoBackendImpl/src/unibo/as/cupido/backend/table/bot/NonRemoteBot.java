@@ -30,6 +30,7 @@ import unibo.as.cupido.backend.table.AsynchronousMessage;
 import unibo.as.cupido.backend.table.CardsManager;
 import unibo.as.cupido.backend.table.LoggerSingleTableManager;
 import unibo.as.cupido.backend.table.NonRemoteBotInterface;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
@@ -145,6 +146,8 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			public void execute() {
 				bot.tableInterface = tableInterface;
 				bot.active = true;
+				if (firstDealer != -1 && (firstDealer + playedCardCount) == 3)
+					playCard();
 			}
 		});
 	}
@@ -396,12 +399,19 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		} catch (NoSuchPlayerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (GameInterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
 	private void playCard() {
-		Card cardToPlay = chooseCard();
-		processPlayCard(cardToPlay);
+		actionQueue.enqueue(new Action() {
+			@Override
+			public void execute() {
+				processPlayCard(chooseCard());
+			}
+		});
 	}
 
 	@Override
@@ -431,6 +441,9 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		} catch (NoSuchPlayerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (GameInterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -438,9 +451,9 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 		if (firstDealer == -1) {
 			firstDealer = playerPosition;
 		}
-		if ((firstDealer + playedCardCount % 4) != playerPosition) {
+		if (((firstDealer + playedCardCount) % 4) != playerPosition) {
 			throw new IllegalStateException(" current player should be "
-					+ ((firstDealer + playedCardCount + 4) % 4)
+					+ ((firstDealer + playedCardCount) % 4)
 					+ " instead is " + playerPosition + " " + botName
 					+ " first: " + firstDealer + " count: " + playedCardCount);
 		}
@@ -463,7 +476,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 					else if (c.equals(CardsManager.twoOfClubs))
 						points += 5;
 				}
-				if (active) {
+				if (active && !cards.isEmpty()) {
 					// TODO: Check this.
 					playCard();
 				}
@@ -471,7 +484,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			Arrays.fill(playedCard, null);
 		} else {
 			if (playerPosition == 2) {
-				if (active) {
+				if (active && !cards.isEmpty()) {
 					// TODO: Check this.
 					playCard();
 				}

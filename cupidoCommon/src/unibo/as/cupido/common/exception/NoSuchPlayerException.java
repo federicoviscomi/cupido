@@ -1,6 +1,8 @@
 package unibo.as.cupido.common.exception;
 
-public class NoSuchPlayerException extends Exception {
+import java.io.Serializable;
+
+public class NoSuchPlayerException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

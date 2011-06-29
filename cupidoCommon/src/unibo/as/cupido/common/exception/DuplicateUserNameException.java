@@ -17,7 +17,9 @@
 
 package unibo.as.cupido.common.exception;
 
-public class DuplicateUserNameException extends Exception {
+import java.io.Serializable;
+
+public class DuplicateUserNameException extends Exception implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public DuplicateUserNameException(){
 	}

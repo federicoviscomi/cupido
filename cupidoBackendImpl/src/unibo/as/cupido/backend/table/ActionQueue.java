@@ -15,21 +15,6 @@ public class ActionQueue extends Thread {
 	public ActionQueue() {
 	}
 
-	private void consume() throws InterruptedException {
-		synchronized (lock) {
-			// Make sure the caller has returned.
-			// Note that no actions can be added in the meantime.
-			Thread.sleep(10);
-			
-			List<Action> actions = this.actions;
-			this.actions = new ArrayList<Action>();
-			System.err.println("ActionQueue: entering consume().");
-			for (Action action : actions)
-				action.execute();
-			System.err.println("ActionQueue: exiting consume().");
-		}
-	}
-	
 	public void enqueue(Action action) {
 		synchronized (lock) {
 			actions.add(action);
@@ -40,11 +25,23 @@ public class ActionQueue extends Thread {
 	@Override
 	public void run() {
 		try {
-			synchronized (lock) {
-				while (true) {
-					lock.wait();
-					this.consume();
+			while (true) {
+				List<Action> list;
+				synchronized (lock) {
+					while (actions.isEmpty())
+						lock.wait();
+					
+					// Make sure the caller has returned.
+					// Note that no actions can be added in the meantime.
+					Thread.sleep(10);
+					
+					list = this.actions;
+					this.actions = new ArrayList<Action>();
 				}
+				System.err.println("ActionQueue: executing actions.");
+				for (Action action : list)
+					action.execute();
+				System.err.println("ActionQueue: finished executing actions.");
 			}
 		} catch (InterruptedException e) {
 			//

@@ -44,6 +44,7 @@ import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
@@ -278,6 +279,9 @@ public class PlayerConsoleUI {
 					} catch (NoSuchPlayerException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					} catch (GameInterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				} else if (command[0].equals("join")) {
 					try {
@@ -320,6 +324,9 @@ public class PlayerConsoleUI {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (NoSuchUserException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (GameInterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -426,6 +433,9 @@ public class PlayerConsoleUI {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (NotCreatorException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (GameInterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
