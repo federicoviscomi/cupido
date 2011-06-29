@@ -131,7 +131,14 @@ public class SingleTableManager implements TableInterface {
 		if (userName == null || snf == null)
 			throw new IllegalArgumentException();
 
-		int score = databaseManager.getPlayerScore(userName);
+		int score;
+		try {
+			score = databaseManager.getPlayerScore(userName);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new NoSuchUserException();
+		}
 		int position = playersManager.addPlayer(userName, snf, score);
 
 		notifyPlayerJoined(userName, false, score, position);
