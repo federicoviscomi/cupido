@@ -21,6 +21,8 @@ import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManager;
 import unibo.as.cupido.client.viewerstates.ViewerStateManagerImpl;
+import unibo.as.cupido.common.exception.GameEndedException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.Card;
@@ -138,18 +140,18 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 							public void onFailure(Throwable caught) {
 								try {
 									throw caught;
-								} catch (UserNotAuthenticatedException e) {
-									screenManager.displayGeneralErrorScreen(e);
 								} catch (NoSuchTableException e) {
-									// The table has been deleted by the owner,
-									// before the leaveTable() request was
-									// processed.
-									// Just ignore this exception.
-									screenManager
-											.displayMainMenuScreen(username);
+									// This can happen even if no problems occur.
+								} catch (GameInterruptedException e) {
+									// This can happen even if no problems occur.
+								} catch (GameEndedException e) {
+									// This can happen even if no problems occur.
 								} catch (Throwable e) {
 									screenManager.displayGeneralErrorScreen(e);
+									return;
 								}
+								screenManager
+								.displayMainMenuScreen(username);
 							}
 
 							@Override

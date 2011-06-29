@@ -27,6 +27,8 @@ import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.client.widgets.ChatWidget;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
+import unibo.as.cupido.common.exception.GameEndedException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -377,6 +379,10 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				try {
 					throw caught;
 				} catch (NoSuchTableException e) {
+					// This can happen even if no problems occur.
+				} catch (GameInterruptedException e) {
+					// This can happen even if no problems occur.
+				} catch (GameEndedException e) {
 					// This can happen even if no problems occur.
 				} catch (Throwable e) {
 					// Can't call screenManager.displayGeneralErrorScreen() because
