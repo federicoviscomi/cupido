@@ -17,7 +17,6 @@
 
 package unibo.as.cupido.backend.table;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -28,6 +27,7 @@ import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.GameEndedException;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
@@ -38,6 +38,7 @@ import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.EmptyPositionException;
+import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
@@ -93,53 +94,42 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized String addBot(String userName, int position)
-			throws FullPositionException, IllegalArgumentException, FullTableException, NotCreatorException,
-			IllegalStateException, GameInterruptedException {
-		if (gameStatus.equals(GameStatus.INTERRUPTED)) {
+			throws FullPositionException, IllegalArgumentException, NotCreatorException,
+			GameInterruptedException {
+		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
-		}
-		if (!gameStatus.equals(GameStatus.INIT)) {
-			throw new IllegalStateException();
-		}
+		if (!gameStatus.equals(GameStatus.INIT))
+			throw new FullPositionException();
+		
 		if (userName == null || position < 0 || position > 3) {
 			throw new IllegalArgumentException();
 		}
-		try {
-			String botName = botNames[position];
+		String botName = botNames[position];
 
-			playersManager.addBot(userName, position, botNames[position],
-					this);
+		playersManager.addBot(userName, position, botNames[position],
+				this);
 
-			notifyPlayerJoined(botName, true, 0, position);
-			
-			if (playersManager.playersCount() == 4) {
-				notifyGameStarted();
-				gameStatus = GameStatus.PASSING_CARDS;
-				// controller.produceStartGame();
-			}
-			return botName;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		notifyPlayerJoined(botName, true, 0, position);
+		
+		if (playersManager.playersCount() == 4) {
+			notifyGameStarted();
+			gameStatus = GameStatus.PASSING_CARDS;
+			// controller.produceStartGame();
 		}
-		throw new Error();
+		return botName;
 	}
 
 	@Override
 	public synchronized InitialTableStatus joinTable(String userName,
 			ServletNotificationsInterface snf) throws FullTableException,
-			NoSuchTableException, IllegalArgumentException,
-			IllegalStateException, DuplicateUserNameException, SQLException,
+			IllegalArgumentException, DuplicateUserNameException,
 			NoSuchUserException, GameInterruptedException {
-		if (gameStatus.equals(GameStatus.INTERRUPTED)) {
+		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
-		}
-		if (!gameStatus.equals(GameStatus.INIT)) {
-			throw new IllegalStateException();
-		}
-		if (userName == null || snf == null) {
+		if (!gameStatus.equals(GameStatus.INIT))
+			throw new FullTableException();
+		if (userName == null || snf == null)
 			throw new IllegalArgumentException();
-		}
 
 		int score = databaseManager.getPlayerScore(userName);
 		int position = playersManager.addPlayer(userName, snf, score);
@@ -156,21 +146,16 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized void leaveTable(String userName)
-			throws NoSuchPlayerException, GameInterruptedException {
-		if (userName == null) {
+			throws IllegalArgumentException,
+			NoSuchPlayerException, GameEndedException,
+			GameInterruptedException {
+		if (userName == null)
 			throw new IllegalArgumentException();
-		}
+		if (gameStatus == GameStatus.INTERRUPTED)
+			throw new GameInterruptedException();
 
-		if (gameStatus == GameStatus.INTERRUPTED) {
-			throw new GameInterruptedException(
-					"the game was interrupted, cannot call leaveTable");
-		}
-
-		if (cardsManager.gameEnded() || gameStatus == GameStatus.ENDED) {
-			throw new IllegalStateException(
-					"game ended, cannot call leaveTable");
-		}
-
+		if (cardsManager.gameEnded() || gameStatus == GameStatus.ENDED)
+			throw new GameEndedException();
 
 		if (viewers.isAViewer(userName)) {
 			try {
@@ -330,14 +315,14 @@ public class SingleTableManager implements TableInterface {
 	@Override
 	public synchronized void passCards(String userName, Card[] cards)
 			throws IllegalArgumentException,
-			NoSuchPlayerException, GameInterruptedException {
+			NoSuchPlayerException, GameInterruptedException, WrongGameStateException {
 		
 		System.out.println("STM: entering passCards(" + userName + ", {...})");
 
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
 		if (!gameStatus.equals(GameStatus.PASSING_CARDS))
-			throw new IllegalStateException();
+			throw new WrongGameStateException();
 		/*
 		 * NOTE: playerName is name of the player who passes cards. Not name of
 		 * the player who receives the cards!
@@ -363,11 +348,12 @@ public class SingleTableManager implements TableInterface {
 	@Override
 	public synchronized void playCard(String userName, Card card)
 			throws IllegalMoveException,
-			IllegalArgumentException, NoSuchPlayerException, GameInterruptedException {
+			IllegalArgumentException, NoSuchPlayerException, GameInterruptedException,
+			WrongGameStateException {
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
 		if (!gameStatus.equals(GameStatus.STARTED))
-			throw new IllegalStateException();
+			throw new WrongGameStateException();
 		if (userName == null || card == null)
 			throw new IllegalArgumentException("playerName " + userName
 					+ " card " + card);
@@ -383,9 +369,12 @@ public class SingleTableManager implements TableInterface {
 	}
 
 	@Override
-	public synchronized void sendMessage(final ChatMessage message) throws IllegalStateException {
-		if (gameStatus == GameStatus.INTERRUPTED || gameStatus == GameStatus.ENDED)
-			throw new IllegalStateException();
+	public synchronized void sendMessage(final ChatMessage message)
+		throws GameInterruptedException, GameEndedException {
+		if (gameStatus == GameStatus.INTERRUPTED)
+			throw new GameInterruptedException();
+		if (gameStatus == GameStatus.ENDED)
+			throw new GameEndedException();
 		if (message == null || message.message == null
 				|| message.userName == null)
 			throw new IllegalArgumentException();
@@ -396,9 +385,12 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized ObservedGameStatus viewTable(String viewerName,
-			ServletNotificationsInterface snf) throws DuplicateViewerException, IllegalStateException {
-		if (gameStatus == GameStatus.INTERRUPTED || gameStatus == GameStatus.ENDED)
-			throw new IllegalStateException();
+			ServletNotificationsInterface snf) throws DuplicateViewerException,
+			WrongGameStateException, GameInterruptedException {
+		if (gameStatus == GameStatus.INTERRUPTED)
+			throw new GameInterruptedException();
+		if (gameStatus == GameStatus.ENDED)
+			throw new WrongGameStateException();
 		if (viewerName == null || snf == null)
 			throw new IllegalArgumentException();
 		viewers.addViewer(viewerName, snf);

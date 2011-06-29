@@ -30,8 +30,10 @@ import java.util.List;
 import unibo.as.cupido.backend.table.Action;
 import unibo.as.cupido.backend.table.ActionQueue;
 import unibo.as.cupido.backend.table.CardsManager;
+import unibo.as.cupido.common.exception.GameEndedException;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
+import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
@@ -348,9 +350,6 @@ public class RemoteBot implements Bot, Serializable {
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -358,6 +357,9 @@ public class RemoteBot implements Bot, Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WrongGameStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

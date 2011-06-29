@@ -164,11 +164,9 @@ public class PlayersManager {
 	}
 
 	public void addBot(String userName, int position, String botName,
-			TableInterface tableInterface) throws FullTableException,
-			FullPositionException, NotCreatorException, IOException {
+			TableInterface tableInterface) throws
+			FullPositionException, NotCreatorException {
 
-		if (playersCount >= 4)
-			throw new FullTableException();
 		if (position < 1 || position > 3 || userName == null
 				|| tableInterface == null)
 			throw new IllegalArgumentException();
@@ -188,8 +186,8 @@ public class PlayersManager {
 	}
 
 	public int addPlayer(String playerName, ServletNotificationsInterface sni,
-			int score) throws FullTableException, SQLException,
-			NoSuchUserException, DuplicateUserNameException {
+			int score) throws FullTableException,
+			DuplicateUserNameException {
 
 		if (playerName == null)
 			throw new IllegalArgumentException();
@@ -633,9 +631,6 @@ public class PlayersManager {
 				try {
 					databaseManager.updateScore(players[i].name,
 							players[i].score);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} catch (NoSuchUserException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

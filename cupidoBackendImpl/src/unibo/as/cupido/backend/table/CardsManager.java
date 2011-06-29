@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Random;
 
 import unibo.as.cupido.common.exception.IllegalMoveException;
+import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
@@ -198,7 +199,7 @@ public class CardsManager {
 	}
 
 	public void playCard(String playerName, int playerPosition, Card card)
-			throws IllegalMoveException {
+			throws IllegalMoveException, WrongGameStateException {
 
 		System.out.println(playerName + " " + playerPosition + " play card "
 				+ card + " turn " + turn);
@@ -209,7 +210,7 @@ public class CardsManager {
 		checkMoveValidity(playerPosition, card);
 
 		if (((firstDealerInTurn + playedCardsCount + 4) % 4) != playerPosition) {
-			throw new IllegalStateException(" current player should be "
+			throw new WrongGameStateException(" current player should be "
 					+ ((firstDealerInTurn + playedCardsCount + 4) % 4)
 					+ " instead is " + playerPosition + " first: "
 					+ firstDealerInTurn + " count: " + playedCardsCount);

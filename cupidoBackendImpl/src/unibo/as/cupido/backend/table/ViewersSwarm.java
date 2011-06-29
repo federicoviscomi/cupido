@@ -42,7 +42,7 @@ public class ViewersSwarm {
 	}
 
 	public void addViewer(String viewerName, ServletNotificationsInterface snf)
-			throws DuplicateViewerException {
+			throws DuplicateViewerException, IllegalArgumentException {
 		if (viewerName == null || snf == null)
 			throw new IllegalArgumentException();
 		if (snfs.put(viewerName, snf) != null)

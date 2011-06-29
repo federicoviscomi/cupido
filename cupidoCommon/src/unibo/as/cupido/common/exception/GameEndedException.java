@@ -15,21 +15,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.backend.table.playerUI;
+package unibo.as.cupido.common.exception;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import java.io.Serializable;
 
-import unibo.as.cupido.common.exception.GameEndedException;
-import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+public class GameEndedException extends Exception implements Serializable {
 
-public interface Bot extends Remote {
+	private static final long serialVersionUID = 1L;
 
-	void addBot(int i) throws RemoteException;
-
-	void passCards() throws RemoteException;
-
-	void playNextCard() throws RemoteException, GameEndedException;
-
-	ServletNotificationsInterface getServletNotificationsInterface() throws RemoteException;
+	public GameEndedException() {
+	}
+	
+	public GameEndedException(String string) {
+		super(string);
+	}
 }

@@ -31,8 +31,7 @@ public final class LoggerSingleTableManager implements TableInterface {
 	@Override
 	public String addBot(String userName, int position)
 			throws FullPositionException, RemoteException,
-			IllegalArgumentException, FullTableException, NotCreatorException,
-			IllegalStateException {
+			IllegalArgumentException, NotCreatorException {
 		throw new IllegalStateException(
 				"a replacement inactiveReplacementBot should never call this");
 	}
@@ -40,9 +39,8 @@ public final class LoggerSingleTableManager implements TableInterface {
 	@Override
 	public InitialTableStatus joinTable(String userName,
 			ServletNotificationsInterface snf) throws FullTableException,
-			NoSuchTableException, RemoteException, IllegalArgumentException,
-			IllegalStateException, DuplicateUserNameException, SQLException,
-			NoSuchUserException {
+			RemoteException, IllegalArgumentException,
+			DuplicateUserNameException, NoSuchUserException {
 		throw new IllegalStateException(
 				"a replacement inactiveReplacementBot should never call this");
 	}
@@ -71,8 +69,7 @@ public final class LoggerSingleTableManager implements TableInterface {
 	}
 
 	@Override
-	public void sendMessage(ChatMessage message) throws NoSuchUserException,
-			RemoteException {
+	public void sendMessage(ChatMessage message) throws RemoteException {
 		throw new IllegalStateException(
 				"a replacement inactiveReplacementBot should not call this before it is awoken");
 	}

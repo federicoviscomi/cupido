@@ -44,12 +44,14 @@ import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.GameEndedException;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
+import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
@@ -259,6 +261,12 @@ public class PlayerConsoleUI {
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					} catch (WrongGameStateException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (GameInterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				} else if (command[0].equals("leave")) {
 					try {
@@ -280,6 +288,9 @@ public class PlayerConsoleUI {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (GameInterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (GameEndedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -311,16 +322,10 @@ public class PlayerConsoleUI {
 					} catch (IllegalArgumentException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (IllegalStateException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					} catch (FullTableException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (DuplicateUserNameException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (NoSuchUserException e) {
@@ -423,13 +428,7 @@ public class PlayerConsoleUI {
 					} catch (IllegalArgumentException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (IllegalStateException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					} catch (FullPositionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (FullTableException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (NotCreatorException e) {

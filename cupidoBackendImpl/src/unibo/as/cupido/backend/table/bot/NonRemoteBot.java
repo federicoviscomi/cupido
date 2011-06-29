@@ -33,6 +33,7 @@ import unibo.as.cupido.backend.table.NonRemoteBotInterface;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
+import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
@@ -387,12 +388,6 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 					+ Arrays.toString(cardsToPass) + ")");
 			setCardsPassed(cardsToPass);
 			tableInterface.passCards(botName, cardsToPass);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -400,6 +395,9 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WrongGameStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -442,6 +440,9 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WrongGameStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

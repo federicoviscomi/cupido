@@ -5,7 +5,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 
 import unibo.as.cupido.common.exception.DuplicateViewerException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
@@ -23,7 +25,8 @@ public class RemoteViewerUI implements ServletNotificationsInterface {
 	public RemoteViewerUI(String viewerName,
 			LocalTableManagerInterface ltmInterface,
 			TableInfoForClient tableInfo) throws RemoteException,
-			NoSuchTableException, DuplicateViewerException {
+			NoSuchTableException, DuplicateViewerException,
+			WrongGameStateException, GameInterruptedException {
 		if (viewerName == null)
 			throw new IllegalArgumentException();
 
