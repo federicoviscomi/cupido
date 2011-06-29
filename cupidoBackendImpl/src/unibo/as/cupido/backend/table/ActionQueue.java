@@ -38,10 +38,8 @@ public class ActionQueue extends Thread {
 					list = this.actions;
 					this.actions = new ArrayList<Action>();
 				}
-				System.err.println("ActionQueue: executing actions.");
 				for (Action action : list)
 					action.execute();
-				System.err.println("ActionQueue: finished executing actions.");
 			}
 		} catch (InterruptedException e) {
 			//

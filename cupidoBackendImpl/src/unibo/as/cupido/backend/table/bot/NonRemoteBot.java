@@ -243,7 +243,6 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	private ArrayList<Card> chooseValidCards() {
-		System.out.println(botName + ": in chooseValidCards(): playedCardCount = " + playedCardCount);
 		ArrayList<Card> validCards = new ArrayList<Card>(13);
 		if (cards.contains(CardsManager.twoOfClubs)) {
 			validCards.add(CardsManager.twoOfClubs);

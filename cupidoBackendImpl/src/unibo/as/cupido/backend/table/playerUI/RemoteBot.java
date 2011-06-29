@@ -117,9 +117,7 @@ public class RemoteBot implements Bot, Serializable {
 				actionQueue.enqueue(new Action() {
 					@Override
 					public void execute() {
-						System.out.println("ActionQueue: executing onPlayerReplaced()");
 						onPlayerReplaced(botName, position);
-						System.out.println("ActionQueue: exiting from onPlayerReplaced()");
 					}
 				});
 			}
@@ -129,9 +127,7 @@ public class RemoteBot implements Bot, Serializable {
 				actionQueue.enqueue(new Action() {
 					@Override
 					public void execute() {
-						System.out.println("ActionQueue: executing onPlayerLeft()");
 						onPlayerLeft(playerName);
-						System.out.println("ActionQueue: exiting from onPlayerLeft()");
 					}
 				});
 			}
@@ -142,9 +138,7 @@ public class RemoteBot implements Bot, Serializable {
 				actionQueue.enqueue(new Action() {
 					@Override
 					public void execute() {
-						System.out.println("ActionQueue: executing onPlayerjoined()");
 						onPlayerJoined(playerName, isBot, score, position);
-						System.out.println("ActionQueue: exiting from onPlayerJoined()");
 					}
 				});
 			}
@@ -155,9 +149,7 @@ public class RemoteBot implements Bot, Serializable {
 				actionQueue.enqueue(new Action() {
 					@Override
 					public void execute() {
-						System.out.println("ActionQueue: executing onPlayedCard()");
 						onPlayedCard(card, playerPosition);
-						System.out.println("ActionQueue: exiting from onPlayedCard()");
 					}
 				});
 			}
@@ -167,9 +159,7 @@ public class RemoteBot implements Bot, Serializable {
 				actionQueue.enqueue(new Action() {
 					@Override
 					public void execute() {
-						System.out.println("ActionQueue: executing onPassedCards()");
 						onPassedCards(cards);
-						System.out.println("ActionQueue: exiting from onPassedCards()");
 					}
 				});
 			}
@@ -180,9 +170,7 @@ public class RemoteBot implements Bot, Serializable {
 				actionQueue.enqueue(new Action() {
 					@Override
 					public void execute() {
-						System.out.println("ActionQueue: executing onLocalChatMessage()");
 						onLocalChatMessage(message);
-						System.out.println("ActionQueue: exiting from onLocalChatMessage()");
 					}
 				});
 			}
@@ -192,9 +180,7 @@ public class RemoteBot implements Bot, Serializable {
 				actionQueue.enqueue(new Action() {
 					@Override
 					public void execute() {
-						System.out.println("ActionQueue: executing onGameStarted()");
 						onGameStarted(cards);
-						System.out.println("ActionQueue: exiting from onGameStarted()");
 					}
 				});
 			}
@@ -205,9 +191,7 @@ public class RemoteBot implements Bot, Serializable {
 				actionQueue.enqueue(new Action() {
 					@Override
 					public void execute() {
-						System.out.println("ActionQueue: executing onGameEnded()");
 						onGameEnded(matchPoints, playersTotalPoint);
-						System.out.println("ActionQueue: exiting from onGameEnded()");
 					}
 				});
 			}
@@ -338,7 +322,6 @@ public class RemoteBot implements Bot, Serializable {
 		if (!ableToPass)
 			return false;
 		
-		System.out.println("ActionQueue: executing the body of processPassCards()");
 		try {
 			if (turn != 0) {
 				throw new IllegalStateException();
@@ -363,7 +346,6 @@ public class RemoteBot implements Bot, Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("ActionQueue: exiting from the body of processPassCards()");
 		
 		synchronized (passCardsSignal) {
 			passCardsSignal.notify();
@@ -376,7 +358,6 @@ public class RemoteBot implements Bot, Serializable {
 		if (!ableToPlay)
 			return false;
 		
-		System.out.println("ActionQueue: executing the body of processPlayNextCard()");
 		try {
 			assert turn != 13;
 			
@@ -394,7 +375,6 @@ public class RemoteBot implements Bot, Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("ActionQueue: exiting from the body of processPassCards()");
 		
 		synchronized (playNextCardSignal) {
 			playNextCardSignal.notify();
@@ -450,7 +430,6 @@ public class RemoteBot implements Bot, Serializable {
 			actionQueue.enqueue(new Action() {
 				@Override
 				public void execute() {
-					System.out.println("ActionQueue: executing addBot()");
 					if (position < 0 || position > 2
 							|| initialTableStatus.opponents[position] != null)
 						throw new IllegalArgumentException("illegal position " + position
@@ -458,7 +437,6 @@ public class RemoteBot implements Bot, Serializable {
 					initialTableStatus.opponents[position] = "_bot." + userName + "."
 							+ position;
 					initialTableStatus.whoIsBot[position] = true;
-					System.out.println("ActionQueue: exiting from addBot()");
 					synchronized (addBotSignal) {
 						addBotSignal.notify();
 					}
@@ -479,9 +457,7 @@ public class RemoteBot implements Bot, Serializable {
 			actionQueue.enqueue(new Action() {
 				@Override
 				public void execute() {
-					System.out.println("ActionQueue: executing passCards()");
 					tryProcessingPassCards();
-					System.out.println("ActionQueue: exiting from passCards()");
 				}
 			});
 			try {
@@ -499,9 +475,7 @@ public class RemoteBot implements Bot, Serializable {
 			actionQueue.enqueue(new Action() {
 				@Override
 				public void execute() {
-					System.out.println("ActionQueue: executing playNextCard()");
 					tryProcessingPlayNextCard();
-					System.out.println("ActionQueue: exiting from playNextCard()");
 				}
 			});
 			try {
