@@ -63,14 +63,13 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 * The (ordered) list of cards played in the current trick.
 	 */
 	private List<Card> playedCards = new ArrayList<Card>();
-	private ChatWidget chatWidget;
 	private CupidoInterfaceAsync cupidoService;
 
 	/**
 	 * Initialize the state manager. The current user is a viewer.
 	 */
 	public ViewerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			ChatWidget chatWidget, ObservedGameStatus observedGameStatus,
+			ObservedGameStatus observedGameStatus,
 			String username, CupidoInterfaceAsync cupidoService) {
 
 		if (observedGameStatus.firstDealerInTrick == -1) {
@@ -84,7 +83,6 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		this.username = username;
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
-		this.chatWidget = chatWidget;
 		this.cardsGameWidget = new CardsGameWidget(tableSize,
 				observedGameStatus, null, new VerticalPanel(),
 				new GameEventListener() {
@@ -185,8 +183,6 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 					.println("Client: notice: the transitionToGameEnded() method was called while frozen, ignoring it.");
 			return;
 		}
-
-		chatWidget.freeze();
 
 		transitionTo(new GameEndedState(cardsGameWidget, this));
 	}

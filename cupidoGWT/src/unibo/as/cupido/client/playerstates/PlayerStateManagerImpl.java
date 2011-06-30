@@ -68,7 +68,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	private boolean frozen = false;
 	private CupidoInterfaceAsync cupidoService;
-	private ChatWidget chatWidget;
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
@@ -79,13 +78,12 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 *            clockwise order. The scores in initialTableStatus are ignored.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			ChatWidget chatWidget, InitialTableStatus initialTableStatus,
+			InitialTableStatus initialTableStatus,
 			int[] scores, Card[] cards, String username,
 			CupidoInterfaceAsync cupidoService) {
 		this.username = username;
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
-		this.chatWidget = chatWidget;
 
 		for (String opponent : initialTableStatus.opponents)
 			assert opponent != null;
@@ -282,8 +280,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 					.println("Client: notice: the transitionToGameEnded() method was called while frozen, ignoring it.");
 			return;
 		}
-
-		chatWidget.freeze();
 
 		transitionTo(new GameEndedState(cardsGameWidget, this, cupidoService));
 	}

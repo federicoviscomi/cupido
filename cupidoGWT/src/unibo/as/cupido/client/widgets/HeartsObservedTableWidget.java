@@ -45,7 +45,6 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 	private ObservedGameStatus observedGameStatus;
 	private boolean frozen = false;
-	private ChatWidget chatWidget;
 	private CupidoInterfaceAsync cupidoService;
 
 	/**
@@ -55,7 +54,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	 * @param username
 	 */
 	public HeartsObservedTableWidget(int tableSize, final String username,
-			final ScreenManager screenManager, ChatWidget chatWidget,
+			final ScreenManager screenManager,
 			ObservedGameStatus observedGameStatus,
 			final CupidoInterfaceAsync cupidoService) {
 
@@ -63,7 +62,6 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
 		this.observedGameStatus = observedGameStatus;
-		this.chatWidget = chatWidget;
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 
@@ -203,7 +201,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		assert !frozen;
 
 		stateManager = new ViewerStateManagerImpl(tableSize, screenManager,
-				chatWidget, observedGameStatus, username, cupidoService);
+				observedGameStatus, username, cupidoService);
 
 		cardsGameWidget = stateManager.getWidget();
 		add(cardsGameWidget, 0, 0);

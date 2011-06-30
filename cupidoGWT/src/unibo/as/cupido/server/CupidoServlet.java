@@ -178,6 +178,19 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				} catch (GameInterruptedException e) {
 					// Nothing to do.
 				}
+				try {
+					Object sni = hSession.getAttribute(SNI);
+					if (sni != null) {
+						UnicastRemoteObject.unexportObject(
+								(ServletNotificationsInterface) sni, true);
+						hSession.removeAttribute(SNI);
+					}
+				} catch (NoSuchObjectException e) {
+					System.out
+							.println("Servlet: on leavetable() catched NoSuchObjectException while unexporting obj ->"
+									+ e.getMessage());
+					e.printStackTrace();
+				}
 			}
 		});
 	}
@@ -333,18 +346,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				g.matchPoints = matchPoints;
 				g.playersTotalPoints = playersTotalPoint;
 				cometSession.enqueue(g);
-				httpSession.removeAttribute(TI);
-				try {
-					UnicastRemoteObject.unexportObject(
-							(ServletNotificationsInterface) httpSession
-									.getAttribute(SNI), true);
-				} catch (NoSuchObjectException e) {
-					System.out
-							.println("SNI: on notifyGameEnded() catched NoSuchObjectException while unexporting obj ->"
-									+ e.getMessage());
-					// e.printStackTrace();
-				}
-				httpSession.removeAttribute(SNI);
 			}
 		};
 	}
@@ -419,15 +420,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	/**
 	 * Send Message in Local chat. TODO: IllegalArgumentExceptions never thrown.
 	 * TODO: choose legal messages
-	 * 
-	 * @throws GameEndedException
-	 * @throws GameInterruptedException
+	 * @throws GameEndedException 
+	 * @throws GameInterruptedException 
 	 */
 	@Override
 	public void sendLocalChatMessage(String message)
 			throws IllegalArgumentException, UserNotAuthenticatedException,
-			FatalException, NoSuchTableException, GameInterruptedException,
-			GameEndedException {
+			FatalException, NoSuchTableException, GameInterruptedException, GameEndedException {
 
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		if (httpSession == null) {
@@ -665,14 +664,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 * @throws FatalException
 	 *             in case of internal serious error while joining the table,
 	 *             probably future action will not be performed
-	 * @throws GameInterruptedException
+	 * @throws GameInterruptedException 
 	 */
 	@Override
 	public InitialTableStatus joinTable(String ltmId, int tableId)
 			throws FullTableException, NoSuchTableException,
 			NoSuchServerException, DuplicateUserNameException,
-			UserNotAuthenticatedException, FatalException,
-			GameInterruptedException {
+			UserNotAuthenticatedException, FatalException, GameInterruptedException {
 		try {
 			HttpSession httpSession = getThreadLocalRequest().getSession(false);
 			if (httpSession == null) {
@@ -745,8 +743,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public ObservedGameStatus viewTable(String server, int tableId)
 			throws NoSuchTableException, UserNotAuthenticatedException,
-			FatalException, NoSuchServerException, WrongGameStateException,
-			GameInterruptedException {
+			FatalException, NoSuchServerException, WrongGameStateException, GameInterruptedException {
 
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		if (httpSession == null) {
@@ -804,7 +801,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public void leaveTable() throws UserNotAuthenticatedException,
 			NoSuchTableException, FatalException, IllegalArgumentException,
-			GameInterruptedException, GameEndedException {
+			GameInterruptedException {
 		HttpSession httpSession = getThreadLocalRequest().getSession();
 		if (httpSession == null) {
 			return;
@@ -845,8 +842,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public void playCard(Card card) throws IllegalMoveException,
 			FatalException, IllegalArgumentException, NoSuchTableException,
-			UserNotAuthenticatedException, GameInterruptedException,
-			WrongGameStateException {
+			UserNotAuthenticatedException, GameInterruptedException, WrongGameStateException {
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		if (httpSession == null) {
 			return;
@@ -915,8 +911,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public String addBot(int position) throws FullPositionException,
 			NotCreatorException, IllegalArgumentException,
-			UserNotAuthenticatedException, FatalException,
-			NoSuchTableException, GameInterruptedException {
+			UserNotAuthenticatedException, FatalException, NoSuchTableException,
+			GameInterruptedException {
 
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		assert httpSession != null;
