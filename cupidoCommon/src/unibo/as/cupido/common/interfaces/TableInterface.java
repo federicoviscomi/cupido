@@ -237,11 +237,9 @@ public interface TableInterface extends Remote {
 	 *            holds name of user and message sent by user
 	 * @throws GameInterruptedException
 	 *             if the game status is INTERRUPTED. TODO: Remove this in 2.0.
-	 * @throws GameEndedException
-	 *             if the game status is ENDED. TODO: Remove this in 2.0.
 	 */
 	void sendMessage(ChatMessage message) throws RemoteException,
-			GameInterruptedException, GameEndedException;
+			GameInterruptedException;
 
 	/**
 	 * Add a viewer <code>userName</code>to this table. This can be called any

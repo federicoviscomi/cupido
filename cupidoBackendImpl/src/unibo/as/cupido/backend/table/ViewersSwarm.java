@@ -73,7 +73,6 @@ public class ViewersSwarm {
 				}
 			});
 		}
-		snfs = null;
 	}
 
 	public void notifyGameEndedPrematurely() {
