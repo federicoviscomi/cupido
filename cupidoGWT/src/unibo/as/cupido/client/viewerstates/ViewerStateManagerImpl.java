@@ -73,6 +73,14 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 			ChatWidget chatWidget, ObservedGameStatus observedGameStatus,
 			String username, CupidoInterfaceAsync cupidoService) {
 
+		if (observedGameStatus.firstDealerInTrick == -1) {
+			// No-one has played the two of clubs yet. The players may or may
+			// not have passed cards. So the number of cards in each hand
+			// may be 10 or 13, make sure that all players have 13 cards.
+			for (PlayerStatus player : observedGameStatus.playerStatus)
+				player.numOfCardsInHand = 13;
+		}
+		
 		this.username = username;
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
@@ -126,11 +134,8 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		remainingTricks = observedGameStatus.playerStatus[0].numOfCardsInHand;
 		if (observedGameStatus.playerStatus[0].playedCard != null)
 			++remainingTricks;
-
-		if (observedGameStatus.playerStatus[0].numOfCardsInHand == 13
-				&& observedGameStatus.playerStatus[1].numOfCardsInHand == 13
-				&& observedGameStatus.playerStatus[2].numOfCardsInHand == 13
-				&& observedGameStatus.playerStatus[3].numOfCardsInHand == 13) {
+		
+		if (firstPlayerInTrick == -1) {
 			transitionToWaitingFirstLead();
 			return;
 		}
