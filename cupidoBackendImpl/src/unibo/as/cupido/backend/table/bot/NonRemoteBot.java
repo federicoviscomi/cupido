@@ -55,6 +55,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	private int turn = 0;
 	private int playedCardCount = 0;
 	private int firstDealer = -1;
+	private boolean alreadyPassedCards = false;
 	private boolean alreadyGotCards = false;
 	private boolean brokenHearted = false;
 
@@ -148,6 +149,8 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 				bot.active = true;
 				if (firstDealer != -1 && (firstDealer + playedCardCount) == 3)
 					playCard();
+				if (cards != null && !alreadyPassedCards)
+					passCards();
 			}
 		});
 	}
@@ -497,6 +500,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	private void setCardsPassed(Card[] cardsToPass) {
+		alreadyPassedCards = true;
 		if (cardsToPass.length != 3)
 			throw new IllegalArgumentException();
 		for (int i = 0; i < 3; i++)
