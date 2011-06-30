@@ -206,7 +206,8 @@ public interface DatabaseInterface {
 
 	/**
 	 * Close the connection with database.
+	 * @throws SQLException 
 	 */
-	void close();
+	void close() throws SQLException;
 
 }

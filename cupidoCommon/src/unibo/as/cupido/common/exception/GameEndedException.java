@@ -15,30 +15,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.backend.table;
+package unibo.as.cupido.common.exception;
 
-public class StartNotifierThread extends Thread {
+import java.io.Serializable;
 
-	private final SingleTableManager stm;
-	Object lock = new Object();
-	boolean gameStarted = false;
+public class GameEndedException extends Exception implements Serializable {
 
-	public StartNotifierThread(SingleTableManager stm) {
-		this.stm = stm;
+	private static final long serialVersionUID = 1L;
+
+	public GameEndedException() {
 	}
-
-	@Override
-	public void run() {
-		try {
-			synchronized (lock) {
-				while (!gameStarted)
-					lock.wait();
-			}
-			stm.notifyGameStarted();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
+	public GameEndedException(String string) {
+		super(string);
 	}
-
 }

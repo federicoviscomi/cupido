@@ -23,6 +23,8 @@ import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.client.widgets.cardsgame.AnimationCompletedListener;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
+import unibo.as.cupido.common.exception.GameInterruptedException;
+import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 
@@ -126,6 +128,12 @@ public class FirstLeaderState implements PlayerState {
 				try {
 					throw caught;
 				} catch (NoSuchTableException e) {
+					// The table does not exist anymore, because the owner has
+					// left.
+					// Do nothing yet, this situation will be handled when the
+					// GameEnded
+					// notification arrives.
+				} catch (GameInterruptedException e) {
 					// The table does not exist anymore, because the owner has
 					// left.
 					// Do nothing yet, this situation will be handled when the

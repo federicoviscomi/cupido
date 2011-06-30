@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Random;
 
 import unibo.as.cupido.common.exception.IllegalMoveException;
+import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
@@ -34,8 +35,11 @@ public class CardsManager {
 	private static final Comparator<Card> cardsComparator = new Comparator<Card>() {
 		@Override
 		public int compare(Card o1, Card o2) {
-			return (o1.suit.ordinal() * 13 + (o1.value == 1 ? 14 : o1.value))
-					- (o2.suit.ordinal() * 13 + (o2.value == 1 ? 14 : o2.value));
+			// return (o1.suit.ordinal() * 13 + (o1.value == 1 ? 14 :
+			// o1.value))- (o2.suit.ordinal() * 13 + (o2.value == 1 ? 14 :
+			// o2.value));
+			return (o2.suit.ordinal() + (o2.value == 1 ? 14 : o2.value) * 4)
+					- (o1.suit.ordinal() + (o1.value == 1 ? 14 : o1.value) * 4);
 		}
 	};
 
@@ -43,6 +47,11 @@ public class CardsManager {
 	public static final Card queenOfSpades = new Card(12, Card.Suit.SPADES);
 
 	public static int whoWins(final Card[] playedCard, final int firstDealer) {
+		assert firstDealer >= 0;
+		assert firstDealer <= 3;
+		for (int i = 0; i < 4; i++)
+			assert playedCard[i] != null;
+
 		int winner = firstDealer;
 		for (int i = 0; i < 4; i++) {
 			if (playedCard[i].suit == playedCard[firstDealer].suit) {
@@ -176,6 +185,10 @@ public class CardsManager {
 		return points;
 	}
 
+	public Card[] getPassedCards(int i) {
+		return allPassedCards[i];
+	}
+
 	public boolean hasPassedCards(int position) {
 		return allPassedCards[position] != null;
 	}
@@ -189,17 +202,18 @@ public class CardsManager {
 	}
 
 	public void playCard(String playerName, int playerPosition, Card card)
-			throws IllegalMoveException {
-		
-		System.out.println(playerName+ " " + playerPosition + " play card " + card + " turn " + turn);
-		
+			throws IllegalMoveException, WrongGameStateException {
+
+		System.out.println(playerName + " " + playerPosition + " play card "
+				+ card + " turn " + turn);
+
 		if (card == null || playerPosition < 0 || playerPosition > 4)
 			throw new IllegalArgumentException();
 
 		checkMoveValidity(playerPosition, card);
 
 		if (((firstDealerInTurn + playedCardsCount + 4) % 4) != playerPosition) {
-			throw new IllegalStateException(" current player should be "
+			throw new WrongGameStateException(" current player should be "
 					+ ((firstDealerInTurn + playedCardsCount + 4) % 4)
 					+ " instead is " + playerPosition + " first: "
 					+ firstDealerInTurn + " count: " + playedCardsCount);
@@ -269,10 +283,6 @@ public class CardsManager {
 
 	public int whoShouldPlay() {
 		return (firstDealerInTurn + playedCardsCount + 4) % 4;
-	}
-
-	public Card[] getPassedCards(int i) {
-		return allPassedCards[i];
 	}
 
 }

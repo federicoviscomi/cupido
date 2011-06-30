@@ -28,12 +28,16 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.GameEndedException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
+import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.FullPositionException;
+import unibo.as.cupido.common.exception.WrongGameStateException;
 
 /**
  * 
@@ -59,9 +63,11 @@ public interface TableInterface extends Remote {
 	 * 
 	 * ENDED means that the table has four players and none of them has cards
 	 * left to play.
+	 * 
+	 * INTERRUPTED means that the owner left the table.
 	 */
 	public static enum GameStatus {
-		INIT, PASSING_CARDS, STARTED, ENDED
+		INIT, PASSING_CARDS, STARTED, ENDED, INTERRUPTED
 	}
 
 	/**
@@ -94,18 +100,16 @@ public interface TableInterface extends Remote {
 	 *             .LEFT, {@link Positions}.UP or {@link Positions}.RIGHT.</li>
 	 *             </ul>
 	 * 
-	 * @throws FullTableException
-	 *             if the table already has four player
 	 * @throws NotCreatorException
 	 *             if this method is called by a player who is not the creator
-	 *             of the table. TODO e' necessaria questa eccezione?
-	 * @throws IllegalStateException
-	 *             if game status is ENDED
+	 *             of the table.
+	 * @throws GameInterruptedException
+	 *             if the game status is INTERRUPTED
 	 * @return The name of the bot.
 	 */
 	String addBot(String userName, int position) throws FullPositionException,
-			RemoteException, IllegalArgumentException, FullTableException,
-			NotCreatorException, IllegalStateException;
+			RemoteException, IllegalArgumentException, NotCreatorException,
+			GameInterruptedException;
 
 	/**
 	 * Called by player <code>userName</code> to join this table. A player can
@@ -117,11 +121,6 @@ public interface TableInterface extends Remote {
 	 *         {@link InitialTableStatus}
 	 * @throws FullTableException
 	 *             if the table already has four player
-	 * @throws NoSuchTableException
-	 *             TODO what's the meaning of this?
-	 * @throws IllegalStateException
-	 *             if game status is not {@link GameStatus}.INIT FIXME: are not
-	 *             this and FullTableException threw in the same case?
 	 * @throws IllegalArgumentException
 	 *             if an argument is null
 	 * @throws DuplicateUserNameException
@@ -130,12 +129,13 @@ public interface TableInterface extends Remote {
 	 * @throws NoSuchUserException
 	 *             if the database contains no player named
 	 *             <code>userName</code>
-	 * @throws SQLException
+	 * @throws GameInterruptedException
+	 *             if the game status is INTERRUPTED
 	 */
 	public InitialTableStatus joinTable(String userName,
 			ServletNotificationsInterface snf) throws FullTableException,
-			NoSuchTableException, RemoteException, IllegalArgumentException,
-			IllegalStateException, DuplicateUserNameException, SQLException,
+			RemoteException, IllegalArgumentException,
+			DuplicateUserNameException, GameInterruptedException,
 			NoSuchUserException;
 
 	/**
@@ -149,10 +149,14 @@ public interface TableInterface extends Remote {
 	 * @param userName
 	 * @throws NoSuchPlayerException
 	 *             if player <code>userName</code> is not in the table
-	 * @throws NoSuchPlayerException
+	 * @throws GameInterruptedException
+	 *             if the game status is INTERRUPTED
+	 * @throws GameEndedException
+	 * @throws IllegalArgumentException
 	 */
 	void leaveTable(String userName) throws RemoteException,
-			NoSuchPlayerException;
+			NoSuchPlayerException, GameInterruptedException,
+			IllegalArgumentException;
 
 	/**
 	 * The user <code>userName</code> passes cards <code>cards</code> to the
@@ -171,14 +175,17 @@ public interface TableInterface extends Remote {
 	 *             he wants to pass</li>
 	 *             <li>if the user <code>userName</code> does not exists</li>
 	 *             </ul>
-	 * @throws IllegalStateException
+	 * @throws WrongGameStateException
 	 *             if the card must not be passed in this state of the game
 	 * @throws RemoteException
 	 * @throws NoSuchPlayerException
+	 * @throws GameInterruptedException
+	 *             if the game status is INTERRUPTED
 	 */
 	void passCards(String userName, Card[] cards)
-			throws IllegalArgumentException, IllegalStateException,
-			RemoteException, NoSuchPlayerException;
+			throws IllegalArgumentException, RemoteException,
+			NoSuchPlayerException, GameInterruptedException,
+			WrongGameStateException;
 
 	/**
 	 * Player <code>platerName</code> plays card <code>card</code>.
@@ -215,32 +222,39 @@ public interface TableInterface extends Remote {
 	 *             <li>if this player does not own the card</li>
 	 *             </ul>
 	 * @throws NoSuchPlayerException
+	 * @throws GameInterruptedException
+	 *             if the game status is INTERRUPTED
+	 * @throws WrongGameStateException
 	 */
 	void playCard(String userName, Card card) throws IllegalMoveException,
-			RemoteException, IllegalArgumentException, NoSuchPlayerException;
+			RemoteException, IllegalArgumentException, NoSuchPlayerException,
+			GameInterruptedException, WrongGameStateException;
 
 	/**
 	 * Sends a message to the table chat
 	 * 
 	 * @param message
 	 *            holds name of user and message sent by user
-	 * @throws NoSuchUserException
-	 *             if user message.userName is not playing or viewing the table
+	 * @throws GameInterruptedException
+	 *             if the game status is INTERRUPTED. TODO: Remove this in 2.0.
 	 */
-	void sendMessage(ChatMessage message) throws NoSuchUserException,
-			RemoteException;
+	void sendMessage(ChatMessage message) throws RemoteException,
+			GameInterruptedException;
 
 	/**
 	 * Add a viewer <code>userName</code>to this table. This can be called any
-	 * time except when game status is {@link Positions}.ENDED
-	 * 
+	 * time except when game status is {@link Positions}.ENDED or
+	 * {@link Positions}.INTERRUPTED
 	 * 
 	 * @param userName
 	 * @return
-	 * @throws NoSuchTableException
+	 * @throws GameInterruptedException
+	 *             When the game status is {@link Positions}.INTERRUPTED
+	 * @throws WrongGameStateException
+	 *             When the game status is {@link Positions}.ENDED
 	 */
 	public ObservedGameStatus viewTable(String userName,
 			ServletNotificationsInterface snf) throws DuplicateViewerException,
-			RemoteException;
+			RemoteException, WrongGameStateException, GameInterruptedException;
 
 }

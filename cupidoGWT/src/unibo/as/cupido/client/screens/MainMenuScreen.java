@@ -260,9 +260,12 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 			public void onFailure(Throwable caught) {
 				try {
 					throw caught;
+					/*
+					 TODO: Enable this when this exception is thrown.
 				} catch (MaxNumTableReachedException e) {
 					screenManager.displayMainMenuScreen(username);
 					Window.alert("\310 stato raggiunto il numero massimo di tavoli supportati. Riprova pi\371 tardi.");
+					*/
 				} catch (Throwable e) {
 					screenManager.displayGeneralErrorScreen(caught);
 				}

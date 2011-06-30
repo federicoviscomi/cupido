@@ -19,6 +19,7 @@ package unibo.as.cupido.backend.table.playerUI;
 
 import jargs.gnu.CmdLineParser;
 import jargs.gnu.CmdLineParser.IllegalOptionValueException;
+import jargs.gnu.CmdLineParser.Option;
 import jargs.gnu.CmdLineParser.UnknownOptionException;
 
 import java.io.BufferedReader;
@@ -33,7 +34,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -44,13 +44,18 @@ import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.GameEndedException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
+import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
@@ -85,18 +90,20 @@ public class PlayerConsoleUI {
 			+ String.format(FORMAT, "TODOjoin TABLE", "", "",
 					"joins specified table")
 			+ String.format(FORMAT, "TODOview TABLE", "", "",
-					"views specified table");
+					"views specified table")
+			+ String.format(FORMAT, "chat MESSAGE", "", "",
+					"send specified message to the local chat");
 	private static final String[] allCommands = { "create", "join", "list",
 			"login", "pass", "play", "addbot", "help", "exit", "sleep",
-			"leave", "view" };
+			"leave", "view", "chat" };
 
 	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
-			new PlayerConsoleUI().execute();
+			new PlayerConsoleUI().runInterpreter();
 		} else if (args.length == 1) {
-			new PlayerConsoleUI(args[0]).execute();
+			new PlayerConsoleUI(args[0]).runInterpreter();
 		} else {
-			new PlayerConsoleUI(args[0], args[1]).execute();
+			new PlayerConsoleUI(args[0], args[1]).runInterpreter();
 		}
 	}
 
@@ -106,13 +113,25 @@ public class PlayerConsoleUI {
 	private final BufferedReader in;
 	private final PrintWriter out;
 	private boolean logged = false;
-	private Bot botNotification;
+	private ServletNotificationsInterface botNotification;
 	private RemoteBot remoteBot;
 	private RemoteViewerUI remoteViewer;
 
-	private boolean createdATable = false;
-	private boolean joinedATable = false;
-	private boolean viewedATable = false;
+	private boolean creatingATable = false;
+	private boolean joiningATable = false;
+	private boolean viewingATable = false;
+
+	private boolean error;
+	private CmdLineParser parser;
+	private Option cardsOption;
+	private Option listPlayersOption;
+	private Option listTablesOption;
+	private Option arbitraryCardsOption;
+	private String[] command;
+
+	private boolean exit;
+
+	private String nextCommandLine;
 
 	public PlayerConsoleUI() {
 		this(new BufferedReader(new InputStreamReader(System.in)),
@@ -122,6 +141,13 @@ public class PlayerConsoleUI {
 	public PlayerConsoleUI(BufferedReader in, PrintWriter out) {
 		this.in = in;
 		this.out = out;
+
+		parser = new CmdLineParser();
+		cardsOption = parser.addBooleanOption('c', "cards");
+		listPlayersOption = parser.addBooleanOption('p', "players");
+		listTablesOption = parser.addBooleanOption('t', "tables");
+		arbitraryCardsOption = parser.addBooleanOption('a', "arbitrary");
+
 		try {
 			gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
 					.lookup(GlobalTableManagerInterface.globalTableManagerName);
@@ -146,319 +172,399 @@ public class PlayerConsoleUI {
 				outputFileName)));
 	}
 
-	public void execute() throws IOException {
-		CmdLineParser parser = new CmdLineParser();
-		CmdLineParser.Option cardsOption = parser
-				.addBooleanOption('c', "cards");
-		CmdLineParser.Option listPlayersOption = parser.addBooleanOption('p',
-				"players");
-		CmdLineParser.Option listTablesOption = parser.addBooleanOption('t',
-				"tables");
-		CmdLineParser.Option arbitraryCardsOption = parser.addBooleanOption(
-				'a', "arbitrary");
-
-		String nextCommandLine;
-
-		while (true) {
-			boolean error;
-			String[] command = null;
-			do {
-				error = false;
-				out.print("\n#: ");
+	private void executeAddbot() throws RemoteException {
+		try {
+			if (command.length < 2) {
+				out.println("missin bot position");
 				out.flush();
-				nextCommandLine = in.readLine();
-				out.println(nextCommandLine);
-				out.flush();
-				if (nextCommandLine == null) {
-					exit(0);
-				}
+			} else {
+				int position = Integer.parseInt(command[1]);
+				remoteBot.singleTableManager.addBot(playerName, position);
+				position--;
+				remoteBot.addBot(position);
+			}
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FullPositionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotCreatorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GameInterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void executeCreate() {
+		try {
+			// TODO really check the database
+			remoteBot = new RemoteBot(new InitialTableStatus(new String[3],
+					new int[3], new boolean[3]), null, playerName);
+			botNotification = (ServletNotificationsInterface) UnicastRemoteObject
+					.exportObject(remoteBot.getServletNotificationsInterface());
+
+			remoteBot.singleTableManager = gtm.createTable(playerName,
+					botNotification);
+			creatingATable = true;
+			out.println("successfully created table "
+					+ remoteBot.singleTableManager);
+		} catch (AllLTMBusyException e) {
+			out.println("cannot create a table rigth now because all LTM are busy, try again later");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void executeExit() {
+		// exit = true;
+		try {
+			if (remoteBot != null) {
+				remoteBot.singleTableManager.leaveTable(playerName);
+			} else if (remoteViewer != null) {
+				remoteViewer.singleTableManager.leaveTable(playerName);
+			}
+		} catch (Exception e) {
+			//
+		}
+		try {
+			in.close();
+		} catch (IOException e) {
+			//
+		}
+		out.println("bye!");
+		out.close();
+		System.exit(0);
+	}
+
+	private void executeHelp() {
+		out.println(USAGE);
+		out.flush();
+	}
+
+	private void executeJoin() {
+		try {
+			// TODO really check the database
+			remoteBot = new RemoteBot(new InitialTableStatus(new String[3],
+					new int[3], new boolean[3]), null, playerName);
+			botNotification = (ServletNotificationsInterface) UnicastRemoteObject
+					.exportObject(remoteBot.getServletNotificationsInterface());
+
+			TableInfoForClient tableInfo = gtm.getTableList().iterator().next();
+			remoteBot.singleTableManager = gtm.getLTMInterface(
+					tableInfo.tableDescriptor.ltmId).getTable(
+					tableInfo.tableDescriptor.id);
+			remoteBot.initialTableStatus = remoteBot.singleTableManager
+					.joinTable(playerName, botNotification);
+			joiningATable = true;
+			out.println("successfully joined " + tableInfo);
+		} catch (NoSuchElementException e) {
+			out.println("no table to join!");
+		} catch (NoSuchTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchLTMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FullTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DuplicateUserNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchUserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GameInterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void executeLeave() {
+		try {
+			if (remoteBot != null) {
+				remoteBot.singleTableManager.leaveTable(playerName);
+				out.println("table " + remoteBot.singleTableManager + " left");
+				remoteBot = null;
+			} else if (remoteViewer != null) {
+				remoteViewer.singleTableManager.leaveTable(playerName);
+				out.println("table " + remoteViewer.singleTableManager
+						+ " left");
+				remoteViewer = null;
+			} else {
+				out.println("there is no table to leave!");
+			}
+			creatingATable = joiningATable = viewingATable = false;
+		} catch (NoSuchPlayerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GameInterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void executeList() throws RemoteException {
+		boolean listTables = (parser.getOptionValue(listTablesOption) == null ? false
+				: true);
+		boolean listPlayers = (parser.getOptionValue(listPlayersOption) == null ? false
+				: true);
+		boolean listCards = (parser.getOptionValue(cardsOption) == null ? false
+				: true);
+		if (listTables) {
+			out.println("tables list follows:");
+			Iterator<TableInfoForClient> list = gtm.getTableList().iterator();
+			while (list.hasNext()) {
+				out.println(list.next());
+			}
+		} else if (listPlayers) {
+			out.println("players list follows:");
+			out.println(remoteBot.initialTableStatus);
+		} else if (listCards) {
+			if (remoteBot.cards == null) {
+				out.println("you don't have any cards");
+			} else {
+				out.print("\nplayer cards " + remoteBot.cards.toString()
+						+ ". \nround cards: "
+						+ Arrays.toString(remoteBot.playedCard));
+			}
+		} else {
+			out.println("what to list?");
+		}
+		out.flush();
+	}
+
+	private void executeLogin() {
+		if (command.length < 2) {
+			out.println("missing user name");
+			out.flush();
+		} else {
+			playerName = command[1];
+			if (gtm == null) {
 				try {
-					parser.parse(nextCommandLine.split("\\s+"));
-					command = parser.getRemainingArgs();
-					if (command.length < 1) {
-						error = true;
-						out.println("\n1 sintax error\n " + USAGE);
-						out.flush();
-					} else {
-						command[0] = command[0].trim();
-						if (command[0].length() == 0) {
-							error = true;
-						} else {
-							boolean recognizedCommand = false;
-							for (String c : allCommands) {
-								if (c.equals(command[0])) {
-									recognizedCommand = true;
-								}
-							}
-							if (!recognizedCommand) {
-								out.println(command[0] + ": command not found");
-								out.println(USAGE);
-								error = true;
-							}
+					gtm = (GlobalTableManagerInterface) LocateRegistry
+							.getRegistry()
+							.lookup(GlobalTableManagerInterface.globalTableManagerName);
+				} catch (AccessException e) {
+					out.println("cannot connect to gtm");
+				} catch (RemoteException e) {
+					out.println("cannot connect to gtm");
+				} catch (NotBoundException e) {
+					out.println("cannot connect to gtm");
+				}
+			}
+			if (gtm != null) {
+				logged = true;
+				out.println("successfully logged in " + playerName);
+			}
+		}
+	}
+
+	private void executePass() throws RemoteException {
+		boolean specifiedCards = (parser.getOptionValue(cardsOption) == null ? false
+				: true);
+		boolean arbitraryCards = (parser.getOptionValue(arbitraryCardsOption) == null ? false
+				: true);
+		if (arbitraryCards) {
+			remoteBot.passCards();
+		} else if (specifiedCards) {
+			// TODO
+			throw new UnsupportedOperationException();
+		} else {
+			out.println("\nmissing option");
+			out.flush();
+		}
+	}
+
+	private void executePlay() throws RemoteException {
+		boolean arbitraryCards = (parser.getOptionValue(arbitraryCardsOption) == null ? false
+				: true);
+		if (arbitraryCards) {
+			try {
+				remoteBot.playNextCard();
+			} catch (GameEndedException e) {
+				out.println("cannot play a card: game ended");
+			}
+		} else {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	private void executeSleep() {
+		try {
+			int sleepMillis = Integer.parseInt(command[1]);
+			out.println("zzz");
+			out.flush();
+			Thread.sleep(sleepMillis);
+		} catch (NumberFormatException e) {
+			out.println("invalid millis " + command[1]);
+			return;
+		} catch (InterruptedException e) {
+			//
+		}
+	}
+
+	private void executeView() {
+		try {
+			// TODO really check the database
+
+			TableInfoForClient tableInfo = gtm.getTableList().iterator().next();
+			LocalTableManagerInterface ltmInterface = gtm
+					.getLTMInterface(tableInfo.tableDescriptor.ltmId);
+
+			remoteViewer = new RemoteViewerUI(playerName, ltmInterface,
+					tableInfo);
+
+			out.flush();
+			viewingATable = true;
+			Thread.sleep(200);
+			System.in.read();
+		} catch (NoSuchElementException e) {
+			out.println("there is no table to view");
+			out.flush();
+		} catch (NoSuchLTMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchTableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DuplicateViewerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (WrongGameStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GameInterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void parseCommand() {
+		try {
+			nextCommandLine = in.readLine();
+			out.println(nextCommandLine);
+			out.flush();
+			if (nextCommandLine == null) {
+				executeExit();
+				return;
+			}
+			nextCommandLine = nextCommandLine.trim();
+			parser.parse(nextCommandLine.split("\\s+"));
+			command = parser.getRemainingArgs();
+			if (command.length < 1) {
+				error = true;
+				out.println("\n1 sintax error\n " + USAGE);
+				out.flush();
+			} else {
+				command[0] = command[0].trim();
+				if (command[0].length() == 0) {
+					error = true;
+				} else {
+					boolean recognizedCommand = false;
+					for (String c : allCommands) {
+						if (c.equals(command[0])) {
+							recognizedCommand = true;
 						}
 					}
-				} catch (IllegalOptionValueException e) {
-					error = true;
-					out.println("\n2 sintax error\n " + USAGE);
-					out.flush();
-				} catch (UnknownOptionException e) {
-					error = true;
-					out.println("\n3 sintax error\n " + USAGE);
-					out.flush();
+					if (!recognizedCommand) {
+						out.println(command[0] + ": command not found");
+						out.println(USAGE);
+						error = true;
+					}
 				}
+			}
+		} catch (IllegalOptionValueException e) {
+			error = true;
+			out.println("\n2 sintax error\n " + USAGE);
+			out.flush();
+		} catch (UnknownOptionException e) {
+			error = true;
+			out.println("\n3 sintax error\n " + USAGE);
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+
+	private void prompt() {
+		out.print("\n#: ");
+		out.flush();
+	}
+
+	public void runInterpreter() throws IOException {
+
+		while (true) {
+			do {
+				error = false;
+				prompt();
+				parseCommand();
 			} while (error);
 
 			if (command[0].equals("help")) {
-				out.println(USAGE);
-				out.flush();
+				executeHelp();
 			} else if (command[0].equals("exit")) {
-				out.println("bye!");
-				exit(0);
+				executeExit();
 			} else if (command[0].equals("sleep")) {
-				out.println("...");
-				out.flush();
-				try {
-					Thread.sleep(Integer.parseInt(command[1]));
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				executeSleep();
 			} else if (logged) {
-				if (command[0].equals("view")) {
-					try {
-						// TODO really check the database
-
-						TableInfoForClient tableInfo = gtm.getTableList()
-								.iterator().next();
-						LocalTableManagerInterface ltmInterface = gtm
-								.getLTMInterface(tableInfo.tableDescriptor.ltmId);
-
-						remoteViewer = new RemoteViewerUI(playerName,
-								ltmInterface, tableInfo);
-
-						out.flush();
-						Thread.sleep(200);
-						System.in.read();
-					} catch (NoSuchElementException e) {
-						out.println("there is no table to view");
-						out.flush();
-					} catch (NoSuchLTMException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (NoSuchTableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (DuplicateViewerException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				if (command[0].equals("chat")) {
+					executeChat();
+				} else if (command[0].equals("view")) {
+					executeView();
 				} else if (command[0].equals("leave")) {
-					try {
-						if (remoteBot != null) {
-							remoteBot.singleTableManager.leaveTable(playerName);
-							out.println("table " + remoteBot.singleTableManager
-									+ " left");
-							remoteBot = null;
-						} else if (remoteViewer != null) {
-							remoteViewer.singleTableManager
-									.leaveTable(playerName);
-							out.println("table "
-									+ remoteViewer.singleTableManager + " left");
-							remoteViewer = null;
-						} else {
-							out.println("there is no table to leave!");
-						}
-					} catch (NoSuchPlayerException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					executeLeave();
 				} else if (command[0].equals("join")) {
-					try {
-						// TODO really check the database
-						remoteBot = new RemoteBot(new InitialTableStatus(
-								new String[3], new int[3], new boolean[3]),
-								null, playerName);
-						botNotification = (Bot) UnicastRemoteObject
-								.exportObject(remoteBot);
-
-						TableInfoForClient tableInfo = gtm.getTableList()
-								.iterator().next();
-						remoteBot.singleTableManager = gtm.getLTMInterface(
-								tableInfo.tableDescriptor.ltmId).getTable(
-								tableInfo.tableDescriptor.id);
-						remoteBot.initialTableStatus = remoteBot.singleTableManager
-								.joinTable(playerName, remoteBot);
-						out.println("successfully joined " + tableInfo);
-					} catch (NoSuchElementException e) {
-						out.println("no table to join!");
-					} catch (NoSuchTableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (NoSuchLTMException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalStateException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (FullTableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (DuplicateUserNameException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (NoSuchUserException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					executeJoin();
 				} else if (command[0].equals("pass")) {
-					boolean specifiedCards = (parser
-							.getOptionValue(cardsOption) == null ? false : true);
-					boolean arbitraryCards = (parser
-							.getOptionValue(arbitraryCardsOption) == null ? false
-							: true);
-					if (arbitraryCards) {
-						remoteBot.passCards();
-					} else if (specifiedCards) {
-						throw new UnsupportedOperationException();
-					} else {
-						out.println("\nmissing option");
-						out.flush();
-					}
+					executePass();
 				} else if (command[0].equals("play")) {
-					boolean arbitraryCards = (parser
-							.getOptionValue(arbitraryCardsOption) == null ? false
-							: true);
-					if (arbitraryCards) {
-						try {
-							remoteBot.playNextCard();
-						} catch (GameEndedException e) {
-							out.println("cannot play a card: game ended");
-						}
-					} else {
-						throw new UnsupportedOperationException();
-					}
+					executePlay();
 				} else if (command[0].equals("login")) {
 					out.println("\n already logged in " + playerName);
 				} else if (command[0].equals("create")) {
-					try {
-						// TODO really check the database
-						remoteBot = new RemoteBot(new InitialTableStatus(
-								new String[3], new int[3], new boolean[3]),
-								null, playerName);
-						botNotification = (Bot) UnicastRemoteObject
-								.exportObject(remoteBot);
-
-						remoteBot.singleTableManager = gtm.createTable(
-								playerName, botNotification);
-						out.println("successfully created table "
-								+ remoteBot.singleTableManager);
-					} catch (AllLTMBusyException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					executeCreate();
 				} else if (command[0].equals("list")) {
-					boolean listTables = (parser
-							.getOptionValue(listTablesOption) == null ? false
-							: true);
-					boolean listPlayers = (parser
-							.getOptionValue(listPlayersOption) == null ? false
-							: true);
-					boolean listCards = (parser.getOptionValue(cardsOption) == null ? false
-							: true);
-					if (listTables) {
-						out.println("tables list follows:");
-						Iterator<TableInfoForClient> list = gtm.getTableList()
-								.iterator();
-						while (list.hasNext()) {
-							out.println(list.next());
-						}
-					} else if (listPlayers) {
-						out.println("players list follows:");
-						out.println(remoteBot.initialTableStatus);
-					} else if (listCards) {
-						if (remoteBot.cards == null) {
-							out.println("you don't have any cards");
-						} else {
-							out.print("\nplayer cards "
-									+ remoteBot.cards.toString()
-									+ ". \nround cards: "
-									+ Arrays.toString(remoteBot.playedCard));
-						}
-					} else {
-						out.println("what to list?");
-					}
-					out.flush();
+					executeList();
 				} else if (command[0].equals("addbot")) {
-					try {
-						if (command.length < 2) {
-							out.println("missin bot position");
-							out.flush();
-						} else {
-							int position = Integer.parseInt(command[1]);
-							remoteBot.singleTableManager.addBot(playerName,
-									position);
-							position--;
-							remoteBot.addBot(position);
-						}
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalStateException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (FullPositionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (FullTableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (NotCreatorException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					executeAddbot();
 				} else {
 					throw new Error();
 				}
-			} else {// not logged
+			} else {
 				if (command[0].equals("login")) {
-					if (command.length < 2) {
-						out.println("missing user name");
-						out.flush();
-					} else {
-						playerName = command[1];
-						if (gtm == null) {
-							try {
-								gtm = (GlobalTableManagerInterface) LocateRegistry
-										.getRegistry()
-										.lookup(GlobalTableManagerInterface.globalTableManagerName);
-							} catch (AccessException e) {
-								out.println("cannot connect to gtm");
-							} catch (RemoteException e) {
-								out.println("cannot connect to gtm");
-							} catch (NotBoundException e) {
-								out.println("cannot connect to gtm");
-							}
-						}
-						if (gtm != null) {
-							logged = true;
-							out.println("successfully logged in " + playerName);
-						}
-					}
+					executeLogin();
 				} else {
 					out.println("log first!");
-					out.println(USAGE);
 					out.flush();
 				}
 			}
@@ -466,15 +572,26 @@ public class PlayerConsoleUI {
 		}
 	}
 
-	private void exit(int exitStatus) {
+	private void executeChat() {
 		try {
-			in.close();
-		} catch (IOException e) {
+			ChatMessage message = new ChatMessage(playerName,
+					nextCommandLine.substring("chat".length()));
+			if (creatingATable || joiningATable) {
+				out.println("sent message " + message);
+				remoteBot.singleTableManager.sendMessage(message);
+			} else if (viewingATable) {
+				out.println("sent message " + message);
+				remoteViewer.singleTableManager
+						.sendMessage(message);
+			} else {
+				out.println("cannot send a chat message rigth now");
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GameInterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		out.close();
-		System.exit(exitStatus);
 	}
-
 }

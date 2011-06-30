@@ -64,4 +64,8 @@ public class Card implements Serializable {
 		Card otherCard = (Card) other;
 		return this.value == otherCard.value && this.suit == otherCard.suit;
 	}
+	
+	public Card clone() {
+		return new Card(value, suit);
+	}
 }

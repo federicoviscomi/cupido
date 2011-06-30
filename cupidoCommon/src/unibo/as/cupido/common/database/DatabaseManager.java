@@ -48,7 +48,7 @@ public class DatabaseManager implements DatabaseInterface {
 	private Connection connection;
 	private final int NUMLOCALRANKENTRIES = DatabaseInterface.NUMLOCALRANKENTRIES;
 	
-	public DatabaseManager() {
+	public DatabaseManager() throws SQLException {
 		try {
 			Class.forName("org.gjt.mm.mysql.Driver");
 			String url = "jdbc:mysql://" + host + "/" + database;
@@ -60,11 +60,7 @@ public class DatabaseManager implements DatabaseInterface {
 		} catch (ClassNotFoundException e) {
 			System.out.println("DBManager: on DatabaseManager() catched ClassNotFoundException");
 			e.printStackTrace();
-		} catch (SQLException e) {
-			System.out.println("DBManager: on DatabaseManager() catched SQLException");
-			e.printStackTrace();
 		}
-
 	}
 
 	@Override
@@ -79,19 +75,9 @@ public class DatabaseManager implements DatabaseInterface {
 	}
 
 	@Override
-	public void close() {
-		try {
-			statement.close();
-		} catch (SQLException e) {
-			System.out.println("DBManager: on close() catched SQLException");
-			e.printStackTrace();
-		}
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			System.out.println("DBManager: on close() catched SQLException");
-			e.printStackTrace();
-		}
+	public void close() throws SQLException {
+		statement.close();
+		connection.close();
 	}
 
 	@Override
@@ -132,19 +118,15 @@ public class DatabaseManager implements DatabaseInterface {
 	}
 
 	@Override
-	public int getPlayerScore(String userName) throws SQLException,
-			NoSuchUserException {
+	public int getPlayerScore(String userName) throws NoSuchUserException, SQLException {
 		if (userName == null)
 			throw new IllegalArgumentException();
-		if (!this.contains(userName))
-			throw new NoSuchUserException(userName);
 		ResultSet res = statement
-				.executeQuery("SELECT score FROM User WHERE name = '"
-						+ userName + "' LIMIT 1;");
+		.executeQuery("SELECT score FROM User WHERE name = '"
+				+ userName + "' LIMIT 1;");
 		if (res.next())
 			return res.getInt(1);
-		// TODO
-		return 0;
+		throw new NoSuchUserException();
 	}
 
 
@@ -174,8 +156,7 @@ public class DatabaseManager implements DatabaseInterface {
 	 * name='echo';
 	 */
 	@Override
-	public RankingEntry getUserRank(String userName) throws SQLException,
-			NoSuchUserException {
+	public RankingEntry getUserRank(String userName) throws NoSuchUserException, SQLException {
 		if (userName == null)
 			throw new IllegalArgumentException();
 
@@ -191,16 +172,20 @@ public class DatabaseManager implements DatabaseInterface {
 	}
 
 	@Override
-	public boolean login(String userName, String password) throws SQLException,
-			NoSuchUserException {
+	public boolean login(String userName, String password) throws NoSuchUserException {
 		if (userName == null || password == null)
 			throw new IllegalArgumentException();
-		if (!this.contains(userName))
-			throw new NoSuchUserException(userName);
-		ResultSet res = statement
-				.executeQuery("SELECT * FROM User WHERE name = '" + userName
-						+ "' AND password ='" + password + "' LIMIT 1;");
-		return res.next();
+		try {
+			if (!this.contains(userName))
+				throw new NoSuchUserException(userName);
+			ResultSet res = statement
+					.executeQuery("SELECT * FROM User WHERE name = '" + userName
+							+ "' AND password ='" + password + "' LIMIT 1;");
+			return res.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 
@@ -266,8 +251,7 @@ public class DatabaseManager implements DatabaseInterface {
 	}
 
 	@Override
-	public void updateScore(String userName, int score) throws SQLException,
-			NoSuchUserException {
+	public void updateScore(String userName, int score) throws NoSuchUserException, SQLException {
 		if (userName == null)
 			throw new IllegalArgumentException();
 		if (!this.contains(userName))

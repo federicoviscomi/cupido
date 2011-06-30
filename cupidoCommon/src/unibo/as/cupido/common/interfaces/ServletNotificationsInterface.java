@@ -134,7 +134,7 @@ public interface ServletNotificationsInterface extends Remote {
 	 * @throws NoSuchPlayerException
 	 */
 	public void notifyPlayerReplaced(String botName, int position)
-			throws RemoteException, NoSuchPlayerException;
+			throws RemoteException;
 
 	/**
 	 * When a player leaves the table BEFORE the game starts, every other

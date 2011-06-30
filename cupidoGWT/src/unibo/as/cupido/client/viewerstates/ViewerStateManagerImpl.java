@@ -27,6 +27,8 @@ import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.client.widgets.ChatWidget;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
+import unibo.as.cupido.common.exception.GameEndedException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
@@ -61,20 +63,26 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 * The (ordered) list of cards played in the current trick.
 	 */
 	private List<Card> playedCards = new ArrayList<Card>();
-	private ChatWidget chatWidget;
 	private CupidoInterfaceAsync cupidoService;
 
 	/**
 	 * Initialize the state manager. The current user is a viewer.
 	 */
 	public ViewerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			ChatWidget chatWidget, ObservedGameStatus observedGameStatus,
+			ObservedGameStatus observedGameStatus,
 			String username, CupidoInterfaceAsync cupidoService) {
 
+		if (observedGameStatus.firstDealerInTrick == -1) {
+			// No-one has played the two of clubs yet. The players may or may
+			// not have passed cards. So the number of cards in each hand
+			// may be 10 or 13, make sure that all players have 13 cards.
+			for (PlayerStatus player : observedGameStatus.playerStatus)
+				player.numOfCardsInHand = 13;
+		}
+		
 		this.username = username;
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
-		this.chatWidget = chatWidget;
 		this.cardsGameWidget = new CardsGameWidget(tableSize,
 				observedGameStatus, null, new VerticalPanel(),
 				new GameEventListener() {
@@ -124,11 +132,8 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		remainingTricks = observedGameStatus.playerStatus[0].numOfCardsInHand;
 		if (observedGameStatus.playerStatus[0].playedCard != null)
 			++remainingTricks;
-
-		if (observedGameStatus.playerStatus[0].numOfCardsInHand == 13
-				&& observedGameStatus.playerStatus[1].numOfCardsInHand == 13
-				&& observedGameStatus.playerStatus[2].numOfCardsInHand == 13
-				&& observedGameStatus.playerStatus[3].numOfCardsInHand == 13) {
+		
+		if (firstPlayerInTrick == -1) {
 			transitionToWaitingFirstLead();
 			return;
 		}
@@ -178,8 +183,6 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 					.println("Client: notice: the transitionToGameEnded() method was called while frozen, ignoring it.");
 			return;
 		}
-
-		chatWidget.freeze();
 
 		transitionTo(new GameEndedState(cardsGameWidget, this));
 	}
@@ -281,6 +284,10 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 				try {
 					throw caught;
 				} catch (NoSuchTableException e) {
+					// This can happen even if no problems occur.
+				} catch (GameInterruptedException e) {
+					// This can happen even if no problems occur.
+				} catch (GameEndedException e) {
 					// This can happen even if no problems occur.
 				} catch (Throwable e) {
 					// Can't call screenManager.displayGeneralErrorScreen() because

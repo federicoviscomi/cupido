@@ -27,6 +27,8 @@ import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.client.widgets.ChatWidget;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
+import unibo.as.cupido.common.exception.GameEndedException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -66,7 +68,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	private boolean frozen = false;
 	private CupidoInterfaceAsync cupidoService;
-	private ChatWidget chatWidget;
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
@@ -77,13 +78,12 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 *            clockwise order. The scores in initialTableStatus are ignored.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			ChatWidget chatWidget, InitialTableStatus initialTableStatus,
+			InitialTableStatus initialTableStatus,
 			int[] scores, Card[] cards, String username,
 			CupidoInterfaceAsync cupidoService) {
 		this.username = username;
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
-		this.chatWidget = chatWidget;
 
 		for (String opponent : initialTableStatus.opponents)
 			assert opponent != null;
@@ -281,8 +281,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return;
 		}
 
-		chatWidget.freeze();
-
 		transitionTo(new GameEndedState(cardsGameWidget, this, cupidoService));
 	}
 
@@ -377,6 +375,10 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				try {
 					throw caught;
 				} catch (NoSuchTableException e) {
+					// This can happen even if no problems occur.
+				} catch (GameInterruptedException e) {
+					// This can happen even if no problems occur.
+				} catch (GameEndedException e) {
 					// This can happen even if no problems occur.
 				} catch (Throwable e) {
 					// Can't call screenManager.displayGeneralErrorScreen() because

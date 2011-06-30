@@ -67,7 +67,7 @@ public class TableScreen extends AbsolutePanel implements Screen {
 
 		tableWidget = new HeartsTableWidget(Cupido.height, username,
 				initialTableStatus, isOwner, userScore, screenManager,
-				chatWidget, cupidoService);
+				cupidoService);
 		add(tableWidget, 0, 0);
 
 		screenManager.setListener(new CometMessageListener() {

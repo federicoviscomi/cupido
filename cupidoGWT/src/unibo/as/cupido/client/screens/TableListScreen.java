@@ -23,8 +23,14 @@ import java.util.Collection;
 import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.client.Cupido;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
+import unibo.as.cupido.common.exception.DuplicateUserNameException;
+import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
+import unibo.as.cupido.common.exception.NoSuchServerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
+import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.RankingEntry;
@@ -167,6 +173,14 @@ public class TableListScreen extends VerticalPanel implements Screen {
 									screenManager
 											.displayMainMenuScreen(username);
 									Window.alert("Il tavolo che volevi guardare non esiste pi\371.");
+								} catch (WrongGameStateException e) {
+									screenManager
+											.displayMainMenuScreen(username);
+									Window.alert("Il tavolo che volevi guardare non esiste pi\371.");
+								} catch (GameInterruptedException e) {
+									screenManager
+											.displayMainMenuScreen(username);
+									Window.alert("Il tavolo che volevi guardare non esiste pi\371.");
 								} catch (Throwable e) {
 									screenManager.displayGeneralErrorScreen(e);
 								}
@@ -216,6 +230,10 @@ public class TableListScreen extends VerticalPanel implements Screen {
 													.displayMainMenuScreen(username);
 											Window.alert("Il tavolo in cui volevi entrare non ha pi\371 posti liberi.");
 										} catch (NoSuchTableException e) {
+											screenManager
+													.displayMainMenuScreen(username);
+											Window.alert("Il tavolo in cui volevi entrare non esiste pi\371.");
+										} catch (GameInterruptedException e) {
 											screenManager
 													.displayMainMenuScreen(username);
 											Window.alert("Il tavolo in cui volevi entrare non esiste pi\371.");

@@ -23,6 +23,7 @@ import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.client.widgets.cardsgame.AnimationCompletedListener;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 
@@ -186,6 +187,10 @@ public class YourTurnState implements PlayerState {
 				try {
 					throw caught;
 				} catch (NoSuchTableException e) {
+					// The owner has left the table, so the game was
+					// interrupted.
+					// Nothing to do.
+				} catch (GameInterruptedException e) {
 					// The owner has left the table, so the game was
 					// interrupted.
 					// Nothing to do.

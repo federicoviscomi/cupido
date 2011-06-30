@@ -40,4 +40,8 @@ public class ChatMessage implements Serializable {
 	public String toString() {
 		return userName + ": " + message;
 	}
+	
+	public ChatMessage clone() {
+		return new ChatMessage(userName, message);
+	}
 }

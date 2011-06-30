@@ -74,7 +74,7 @@ public class ObservedTableScreen extends AbsolutePanel implements Screen {
 		add(chatWidget, Cupido.width - chatWidth, 0);
 
 		tableWidget = new HeartsObservedTableWidget(Cupido.height, username,
-				screenManager, chatWidget, observedGameStatus, cupidoService);
+				screenManager, observedGameStatus, cupidoService);
 		add(tableWidget, 0, 0);
 
 		screenManager.setListener(new CometMessageListener() {

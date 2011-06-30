@@ -21,6 +21,8 @@ import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.playerstates.PlayerStateManager;
 import unibo.as.cupido.client.playerstates.PlayerStateManagerImpl;
 import unibo.as.cupido.client.screens.ScreenManager;
+import unibo.as.cupido.common.exception.GameEndedException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.Card;
@@ -42,7 +44,6 @@ public class HeartsTableWidget extends AbsolutePanel {
 	private String username;
 	private CupidoInterfaceAsync cupidoService;
 	private int[] scores;
-	private ChatWidget chatWidget;
 
 	/**
 	 * 
@@ -56,12 +57,11 @@ public class HeartsTableWidget extends AbsolutePanel {
 	public HeartsTableWidget(int tableSize, final String username,
 			InitialTableStatus initialTableStatus, final boolean isOwner,
 			int userScore, final ScreenManager screenManager,
-			ChatWidget chatWidget, final CupidoInterfaceAsync cupidoService) {
+			final CupidoInterfaceAsync cupidoService) {
 
 		this.username = username;
 		this.tableSize = tableSize;
 		this.screenManager = screenManager;
-		this.chatWidget = chatWidget;
 		this.cupidoService = cupidoService;
 
 		setWidth(tableSize + "px");
@@ -109,18 +109,17 @@ public class HeartsTableWidget extends AbsolutePanel {
 							public void onFailure(Throwable caught) {
 								try {
 									throw caught;
-								} catch (UserNotAuthenticatedException e) {
-									screenManager.displayGeneralErrorScreen(e);
 								} catch (NoSuchTableException e) {
-									// The table has been deleted by the owner,
-									// before
-									// the leaveTable() request was processed.
-									// Just ignore this exception.
-									screenManager
-											.displayMainMenuScreen(username);
+									// This can happen even if no problems occur.
+								} catch (GameInterruptedException e) {
+									// This can happen even if no problems occur.
+								} catch (GameEndedException e) {
+									// This can happen even if no problems occur.
 								} catch (Throwable e) {
 									screenManager.displayGeneralErrorScreen(e);
+									return;
 								}
+								screenManager.displayMainMenuScreen(username);
 							}
 
 							@Override
@@ -162,7 +161,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		beforeGameWidget = null;
 
 		stateManager = new PlayerStateManagerImpl(tableSize, screenManager,
-				chatWidget, initialTableStatus, scores, myCards, username,
+				initialTableStatus, scores, myCards, username,
 				cupidoService);
 
 		cardsGameWidget = stateManager.getWidget();

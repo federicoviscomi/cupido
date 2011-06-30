@@ -24,6 +24,7 @@ import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
@@ -226,6 +227,9 @@ public class BeforeGameWidget extends AbsolutePanel {
 							// The table has been destroyed in the meantime,
 							// nothing to do. The GameEnded notification will
 							// bring back the user to the main menu.
+						} catch (GameInterruptedException e) {
+							// The table has been destroyed in the meantime,
+							// nothing to do.
 						} catch (UserNotAuthenticatedException e) {
 							listener.onFatalException(e);
 						} catch (FatalException e) {
