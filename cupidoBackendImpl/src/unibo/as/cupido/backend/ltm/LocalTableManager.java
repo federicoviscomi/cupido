@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.AccessException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -190,7 +191,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	@Override
 	public void notifyTableDestruction(int tableId) {
-		allTables.remove(tableId);
+		TableInterface remove = allTables.remove(tableId);
 	}
 
 	public void shutDown() {

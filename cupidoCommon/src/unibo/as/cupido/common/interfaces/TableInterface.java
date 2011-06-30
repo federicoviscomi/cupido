@@ -108,8 +108,8 @@ public interface TableInterface extends Remote {
 	 * @return The name of the bot.
 	 */
 	String addBot(String userName, int position) throws FullPositionException,
-			RemoteException, IllegalArgumentException,
-			NotCreatorException, GameInterruptedException;
+			RemoteException, IllegalArgumentException, NotCreatorException,
+			GameInterruptedException;
 
 	/**
 	 * Called by player <code>userName</code> to join this table. A player can
@@ -151,12 +151,12 @@ public interface TableInterface extends Remote {
 	 *             if player <code>userName</code> is not in the table
 	 * @throws GameInterruptedException
 	 *             if the game status is INTERRUPTED
-	 * @throws GameEndedException 
-	 * @throws IllegalArgumentException 
+	 * @throws GameEndedException
+	 * @throws IllegalArgumentException
 	 */
 	void leaveTable(String userName) throws RemoteException,
-			NoSuchPlayerException, GameInterruptedException, IllegalArgumentException,
-			GameEndedException;
+			NoSuchPlayerException, GameInterruptedException,
+			IllegalArgumentException;
 
 	/**
 	 * The user <code>userName</code> passes cards <code>cards</code> to the
@@ -183,8 +183,9 @@ public interface TableInterface extends Remote {
 	 *             if the game status is INTERRUPTED
 	 */
 	void passCards(String userName, Card[] cards)
-			throws IllegalArgumentException, 
-			RemoteException, NoSuchPlayerException, GameInterruptedException, WrongGameStateException;
+			throws IllegalArgumentException, RemoteException,
+			NoSuchPlayerException, GameInterruptedException,
+			WrongGameStateException;
 
 	/**
 	 * Player <code>platerName</code> plays card <code>card</code>.
@@ -223,7 +224,7 @@ public interface TableInterface extends Remote {
 	 * @throws NoSuchPlayerException
 	 * @throws GameInterruptedException
 	 *             if the game status is INTERRUPTED
-	 * @throws WrongGameStateException 
+	 * @throws WrongGameStateException
 	 */
 	void playCard(String userName, Card card) throws IllegalMoveException,
 			RemoteException, IllegalArgumentException, NoSuchPlayerException,
@@ -234,15 +235,13 @@ public interface TableInterface extends Remote {
 	 * 
 	 * @param message
 	 *            holds name of user and message sent by user
-	 * @throws GameInterruptedException 
-	 *             if the game status is INTERRUPTED.
-	 *             TODO: Remove this in 2.0.
-	 * @throws GameEndedException 
-	 *             if the game status is ENDED.
-	 *             TODO: Remove this in 2.0.
+	 * @throws GameInterruptedException
+	 *             if the game status is INTERRUPTED. TODO: Remove this in 2.0.
+	 * @throws GameEndedException
+	 *             if the game status is ENDED. TODO: Remove this in 2.0.
 	 */
-	void sendMessage(ChatMessage message) throws
-			RemoteException, GameInterruptedException, GameEndedException;
+	void sendMessage(ChatMessage message) throws RemoteException,
+			GameInterruptedException, GameEndedException;
 
 	/**
 	 * Add a viewer <code>userName</code>to this table. This can be called any
@@ -251,11 +250,13 @@ public interface TableInterface extends Remote {
 	 * 
 	 * @param userName
 	 * @return
-	 * @throws GameInterruptedException When the game status is  {@link Positions}.INTERRUPTED
-	 * @throws WrongGameStateException When the game status is {@link Positions}.ENDED 
+	 * @throws GameInterruptedException
+	 *             When the game status is {@link Positions}.INTERRUPTED
+	 * @throws WrongGameStateException
+	 *             When the game status is {@link Positions}.ENDED
 	 */
 	public ObservedGameStatus viewTable(String userName,
 			ServletNotificationsInterface snf) throws DuplicateViewerException,
-			RemoteException,  WrongGameStateException, GameInterruptedException;
+			RemoteException, WrongGameStateException, GameInterruptedException;
 
 }

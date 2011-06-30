@@ -6,13 +6,19 @@ import java.util.List;
 
 public class ActionQueue extends Thread {
 
-	private Object lock = new Object();
-	private List<Action> actions = new LinkedList<Action>();
+	private Object lock;
+	private List<Action> actions;
+	boolean exit;
 
 	public ActionQueue() {
+		lock = new Object();
+		actions = new LinkedList<Action>();
+		exit = false;
 	}
 
 	public void enqueue(Action action) {
+		if (exit)
+			return;
 		synchronized (lock) {
 			actions.add(action);
 			lock.notify();
@@ -22,7 +28,7 @@ public class ActionQueue extends Thread {
 	@Override
 	public void run() {
 		try {
-			while (true) {
+			while (!exit) {
 				List<Action> list;
 				synchronized (lock) {
 					while (actions.isEmpty())
@@ -35,11 +41,19 @@ public class ActionQueue extends Thread {
 					list = this.actions;
 					this.actions = new ArrayList<Action>();
 				}
-				for (Action action : list)
+				for (Action action : list) {
 					action.execute();
+				}
 			}
 		} catch (InterruptedException e) {
 			//
+		}
+	}
+
+	public void killConsumer() {
+		exit = true;
+		synchronized (lock) {
+			lock.notify();
 		}
 	}
 }

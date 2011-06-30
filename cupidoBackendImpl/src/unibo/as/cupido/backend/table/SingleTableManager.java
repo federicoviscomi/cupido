@@ -18,6 +18,7 @@
 package unibo.as.cupido.backend.table;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -152,14 +153,28 @@ public class SingleTableManager implements TableInterface {
 	@Override
 	public synchronized void leaveTable(String userName)
 			throws IllegalArgumentException, NoSuchPlayerException,
-			GameEndedException, GameInterruptedException {
+			GameInterruptedException {
 		if (userName == null)
 			throw new IllegalArgumentException();
 		if (gameStatus == GameStatus.INTERRUPTED)
 			throw new GameInterruptedException();
 
-		if (cardsManager.gameEnded() || gameStatus == GameStatus.ENDED)
-			throw new GameEndedException();
+		if (cardsManager.gameEnded() || gameStatus == GameStatus.ENDED) {
+			if (viewers.isAViewer(userName)) {
+				try {
+					viewers.removeViewer(userName);
+				} catch (NoSuchViewerException e) {
+					//
+				}
+			} else {
+				playersManager.removePlayer(userName);
+			}
+			if (playersManager.playersCount() == 0
+					&& viewers.viewersCount() == 0) {
+				actionQueue.killConsumer();
+			}
+			return;
+		}
 
 		if (viewers.isAViewer(userName)) {
 			try {
@@ -202,18 +217,6 @@ public class SingleTableManager implements TableInterface {
 
 	private void notifyGameStarted() {
 		playersManager.notifyGameStarted(cardsManager.getCards());
-	}
-
-	private void notifyLocalChatMessage(ChatMessage message) {
-		playersManager.notifyNewLocalChatMessage(message);
-		viewers.notifyNewLocalChatMessage(message);
-	}
-
-	private void notifyPassedCards() {
-		for (int i = 0; i < 4; i++) {
-			playersManager.notifyPlayerPassedCards((i + 5) % 4,
-					cardsManager.getPassedCards(i));
-		}
 	}
 
 	private void notifyPlayerJoined(String userName, boolean isBot, int score,

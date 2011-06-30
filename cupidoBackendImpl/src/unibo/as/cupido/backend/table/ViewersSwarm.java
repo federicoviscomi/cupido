@@ -161,4 +161,8 @@ public class ViewersSwarm {
 			throw new NoSuchViewerException();
 	}
 
+	public int viewersCount() {
+		return snfs.size();
+	}
+
 }
