@@ -106,7 +106,7 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 		boxContainer.setHeight("30px");
 		SimplePanel box = new SimplePanel();
 		box.setWidth("260px");
-		box.setHeight("20px");
+		box.setHeight("21px");
 		boxContainer.add(box);
 		boxContainer.setCellHorizontalAlignment(box, ALIGN_CENTER);
 		DOM.setStyleAttribute(box.getElement(), "borderLeftWidth", "3px");
