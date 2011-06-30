@@ -664,8 +664,12 @@ public class PlayersManager {
 	public int nonBotPlayersCount() {
 		int nonBotPlayersCount = 4;
 		for (int i = 0; i < 4; i++) {
-			if (players[i].isBot) {
+			if (players[i] == null) {
 				nonBotPlayersCount--;
+			} else {
+				if (players[i].isBot) {
+					nonBotPlayersCount--;
+				}
 			}
 		}
 		return nonBotPlayersCount;
