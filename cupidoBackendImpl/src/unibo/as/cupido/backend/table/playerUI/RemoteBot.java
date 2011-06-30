@@ -175,99 +175,103 @@ public class RemoteBot implements Bot, Serializable {
 		return chooseValidCards().get(0);
 	}
 
+	public class RemoteBotNotificationInterface implements
+			ServletNotificationsInterface {
+
+		@Override
+		public void notifyGameEnded(final int[] matchPoints,
+				final int[] playersTotalPoint) throws RemoteException {
+			actionQueue.enqueue(new Action() {
+				@Override
+				public void execute() {
+					onGameEnded(matchPoints, playersTotalPoint);
+				}
+			});
+		}
+
+		@Override
+		public void notifyGameStarted(final Card[] cards)
+				throws RemoteException {
+			actionQueue.enqueue(new Action() {
+				@Override
+				public void execute() {
+					onGameStarted(cards);
+				}
+			});
+		}
+
+		@Override
+		public void notifyLocalChatMessage(final ChatMessage message)
+				throws RemoteException {
+			actionQueue.enqueue(new Action() {
+				@Override
+				public void execute() {
+					onLocalChatMessage(message);
+				}
+			});
+		}
+
+		@Override
+		public void notifyPassedCards(final Card[] cards)
+				throws RemoteException {
+			actionQueue.enqueue(new Action() {
+				@Override
+				public void execute() {
+					onPassedCards(cards);
+				}
+			});
+		}
+
+		@Override
+		public void notifyPlayedCard(final Card card, final int playerPosition)
+				throws RemoteException {
+			actionQueue.enqueue(new Action() {
+				@Override
+				public void execute() {
+					onPlayedCard(card, playerPosition);
+				}
+			});
+		}
+
+		@Override
+		public void notifyPlayerJoined(final String playerName,
+				final boolean isBot, final int score, final int position)
+				throws RemoteException {
+			actionQueue.enqueue(new Action() {
+				@Override
+				public void execute() {
+					onPlayerJoined(playerName, isBot, score, position);
+				}
+			});
+		}
+
+		@Override
+		public void notifyPlayerLeft(final String playerName)
+				throws RemoteException {
+			actionQueue.enqueue(new Action() {
+				@Override
+				public void execute() {
+					onPlayerLeft(playerName);
+				}
+			});
+		}
+
+		@Override
+		public void notifyPlayerReplaced(final String botName,
+				final int position) throws RemoteException {
+			actionQueue.enqueue(new Action() {
+				@Override
+				public void execute() {
+					onPlayerReplaced(botName, position);
+				}
+			});
+		}
+	}
+
 	@Override
 	public ServletNotificationsInterface getServletNotificationsInterface()
 			throws RemoteException {
-		return new ServletNotificationsInterface() {
-			@Override
-			public void notifyGameEnded(final int[] matchPoints,
-					final int[] playersTotalPoint) throws RemoteException {
-				actionQueue.enqueue(new Action() {
-					@Override
-					public void execute() {
-						onGameEnded(matchPoints, playersTotalPoint);
-					}
-				});
-			}
-
-			@Override
-			public void notifyGameStarted(final Card[] cards)
-					throws RemoteException {
-				actionQueue.enqueue(new Action() {
-					@Override
-					public void execute() {
-						onGameStarted(cards);
-					}
-				});
-			}
-
-			@Override
-			public void notifyLocalChatMessage(final ChatMessage message)
-					throws RemoteException {
-				actionQueue.enqueue(new Action() {
-					@Override
-					public void execute() {
-						onLocalChatMessage(message);
-					}
-				});
-			}
-
-			@Override
-			public void notifyPassedCards(final Card[] cards)
-					throws RemoteException {
-				actionQueue.enqueue(new Action() {
-					@Override
-					public void execute() {
-						onPassedCards(cards);
-					}
-				});
-			}
-
-			@Override
-			public void notifyPlayedCard(final Card card,
-					final int playerPosition) throws RemoteException {
-				actionQueue.enqueue(new Action() {
-					@Override
-					public void execute() {
-						onPlayedCard(card, playerPosition);
-					}
-				});
-			}
-
-			@Override
-			public void notifyPlayerJoined(final String playerName,
-					final boolean isBot, final int score, final int position)
-					throws RemoteException {
-				actionQueue.enqueue(new Action() {
-					@Override
-					public void execute() {
-						onPlayerJoined(playerName, isBot, score, position);
-					}
-				});
-			}
-
-			@Override
-			public void notifyPlayerLeft(final String playerName)
-					throws RemoteException {
-				actionQueue.enqueue(new Action() {
-					@Override
-					public void execute() {
-						onPlayerLeft(playerName);
-					}
-				});
-			}
-
-			@Override
-			public void notifyPlayerReplaced(final String botName,
-					final int position) throws RemoteException {
-				actionQueue.enqueue(new Action() {
-					@Override
-					public void execute() {
-						onPlayerReplaced(botName, position);
-					}
-				});
-			}
-		};
+		return this.new RemoteBotNotificationInterface();
 	}
 
 	private void onGameEnded(int[] matchPoints, int[] playersTotalPoint) {

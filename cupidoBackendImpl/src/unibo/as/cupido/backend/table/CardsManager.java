@@ -35,8 +35,11 @@ public class CardsManager {
 	private static final Comparator<Card> cardsComparator = new Comparator<Card>() {
 		@Override
 		public int compare(Card o1, Card o2) {
-			return (o1.suit.ordinal() * 13 + (o1.value == 1 ? 14 : o1.value))
-					- (o2.suit.ordinal() * 13 + (o2.value == 1 ? 14 : o2.value));
+			// return (o1.suit.ordinal() * 13 + (o1.value == 1 ? 14 :
+			// o1.value))- (o2.suit.ordinal() * 13 + (o2.value == 1 ? 14 :
+			// o2.value));
+			return (o2.suit.ordinal() + (o2.value == 1 ? 14 : o2.value) * 4)
+					- (o1.suit.ordinal() + (o1.value == 1 ? 14 : o1.value) * 4);
 		}
 	};
 

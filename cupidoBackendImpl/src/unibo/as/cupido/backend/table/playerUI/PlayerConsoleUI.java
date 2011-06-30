@@ -214,6 +214,7 @@ public class PlayerConsoleUI {
 	}
 
 	private void executeExit() {
+		//exit = true;
 		try {
 			if (remoteBot != null) {
 				remoteBot.singleTableManager.leaveTable(playerName);
@@ -223,7 +224,6 @@ public class PlayerConsoleUI {
 		} catch (Exception e) {
 			//
 		}
-		exit = true;
 		try {
 			in.close();
 		} catch (IOException e) {
@@ -231,6 +231,7 @@ public class PlayerConsoleUI {
 		}
 		out.println("bye!");
 		out.close();
+		System.exit(0);
 	}
 
 	private void executeHelp() {
@@ -515,7 +516,7 @@ public class PlayerConsoleUI {
 
 	public void runInterpreter() throws IOException {
 
-		while (!exit) {
+		while (true) {
 			do {
 				error = false;
 				prompt();
