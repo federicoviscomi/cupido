@@ -110,7 +110,7 @@ public class SingleTableManager implements TableInterface {
 
 		notifyPlayerJoined(botName, true, 0, position);
 
-		if (playersManager.playersCount() == 4) {
+		if (playersManager.olayersCount() == 4) {
 			notifyGameStarted();
 			gameStatus = GameStatus.PASSING_CARDS;
 			// controller.produceStartGame();
@@ -142,7 +142,7 @@ public class SingleTableManager implements TableInterface {
 
 		notifyPlayerJoined(userName, false, score, position);
 
-		if (playersManager.playersCount() == 4) {
+		if (playersManager.olayersCount() == 4) {
 			notifyGameStarted();
 			gameStatus = GameStatus.PASSING_CARDS;
 			// controller.produceStartGame();
@@ -169,7 +169,7 @@ public class SingleTableManager implements TableInterface {
 			} else {
 				playersManager.removePlayer(userName);
 			}
-			if (playersManager.playersCount() == 0
+			if (playersManager.nonBotPlayersCount() == 0
 					&& viewers.viewersCount() == 0) {
 				actionQueue.killConsumer();
 			}
@@ -377,15 +377,12 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized void sendMessage(final ChatMessage message)
-			throws GameInterruptedException, GameEndedException {
+			throws GameInterruptedException{
 		if (gameStatus == GameStatus.INTERRUPTED)
 			throw new GameInterruptedException();
-		if (gameStatus == GameStatus.ENDED)
-			throw new GameEndedException();
 		if (message == null || message.message == null
 				|| message.userName == null)
 			throw new IllegalArgumentException();
-
 		playersManager.notifyNewLocalChatMessage(message);
 		viewers.notifyNewLocalChatMessage(message);
 	}

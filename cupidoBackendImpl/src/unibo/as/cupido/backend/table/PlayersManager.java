@@ -544,7 +544,7 @@ public class PlayersManager {
 		}
 	}
 
-	public int playersCount() {
+	public int olayersCount() {
 		return playersCount;
 	}
 
@@ -659,5 +659,15 @@ public class PlayersManager {
 			}
 		}
 		return newScore;
+	}
+
+	public int nonBotPlayersCount() {
+		int nonBotPlayersCount = 4;
+		for (int i = 0; i < 4; i++) {
+			if (players[i].isBot) {
+				nonBotPlayersCount--;
+			}
+		}
+		return nonBotPlayersCount;
 	}
 }

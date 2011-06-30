@@ -592,9 +592,6 @@ public class PlayerConsoleUI {
 		} catch (GameInterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (GameEndedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 }

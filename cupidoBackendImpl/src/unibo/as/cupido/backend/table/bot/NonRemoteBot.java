@@ -50,7 +50,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	private ArrayList<Card> cards;
 	private Card[] playedCard = new Card[4];
 
-	private ActionQueue actionQueue;
+	private final ActionQueue actionQueue;
 
 	private int turn = 0;
 	private int playedCardCount = 0;
@@ -282,7 +282,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	}
 
 	private void onGameEnded(int[] matchPoints, int[] playersTotalPoint) {
-		// TODO: There is really nothing to do?
+		actionQueue.killConsumer();
 	}
 
 	private void onGameStarted(Card[] cards) {
