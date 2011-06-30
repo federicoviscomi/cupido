@@ -3,6 +3,7 @@ package unibo.as.cupido.backend.table;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
+import unibo.as.cupido.backend.table.bot.LocalBotInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
 import unibo.as.cupido.common.structures.Card;
@@ -11,7 +12,7 @@ import unibo.as.cupido.common.structures.ChatMessage;
 /**
  * Logs creator operations
  */
-public class LoggerBot implements NonRemoteBotInterface {
+public class LoggerBot implements LocalBotInterface {
 
 	private final String botName;
 
@@ -91,7 +92,7 @@ public class LoggerBot implements NonRemoteBotInterface {
 	}
 
 	@Override
-	public void playCard(Card card) throws RemoteException {
+	public void playCard(Card card)  {
 		System.out.println("" + botName + " playCard(" + card + ")");
 	}
 }

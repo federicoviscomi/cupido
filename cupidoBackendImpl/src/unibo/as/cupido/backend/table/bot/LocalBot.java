@@ -28,7 +28,6 @@ import unibo.as.cupido.backend.table.Action;
 import unibo.as.cupido.backend.table.ActionQueue;
 import unibo.as.cupido.backend.table.CardsManager;
 import unibo.as.cupido.backend.table.LoggerSingleTableManager;
-import unibo.as.cupido.backend.table.NonRemoteBotInterface;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
@@ -40,7 +39,7 @@ import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
-public class NonRemoteBot implements NonRemoteBotInterface {
+public class LocalBot implements LocalBotInterface {
 
 	private final String botName;
 	private TableInterface tableInterface;
@@ -71,7 +70,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	 * @param stmController
 	 * @param bot
 	 */
-	public NonRemoteBot(final String botName,
+	public LocalBot(final String botName,
 			InitialTableStatus initialTableStatus, int position) {
 
 		this.botName = botName;
@@ -112,7 +111,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 	 * @param tableInterface
 	 * @param controller
 	 */
-	public NonRemoteBot(final String botName,
+	public LocalBot(final String botName,
 			InitialTableStatus initialTableStatus,
 			TableInterface tableInterface, int position) {
 
@@ -141,7 +140,7 @@ public class NonRemoteBot implements NonRemoteBotInterface {
 
 	@Override
 	public void activate(final TableInterface tableInterface) {
-		final NonRemoteBot bot = this;
+		final LocalBot bot = this;
 		actionQueue.enqueue(new Action() {
 			@Override
 			public void execute() {

@@ -21,7 +21,8 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import unibo.as.cupido.backend.table.bot.NonRemoteBot;
+import unibo.as.cupido.backend.table.bot.LocalBot;
+import unibo.as.cupido.backend.table.bot.LocalBotInterface;
 import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.FullTableException;
@@ -77,7 +78,7 @@ public class PlayersManager {
 		 * if <code>isBot==false</code> then this field is the bot who could
 		 * replace this player; otherwise this field is <code>null<code>.
 		 */
-		NonRemoteBotInterface inactiveReplacementBot;
+		LocalBotInterface inactiveReplacementBot;
 
 		/**
 		 * if <code>isBot==false</code> then this field is the notification
@@ -100,7 +101,7 @@ public class PlayersManager {
 
 		public PlayerInfo(String name, int score,
 				ServletNotificationsInterface notificationInterface,
-				NonRemoteBotInterface replacementBot) {
+				LocalBotInterface replacementBot) {
 
 			if (name == null || notificationInterface == null
 					|| replacementBot == null)
@@ -187,7 +188,7 @@ public class PlayersManager {
 
 		InitialTableStatus initialTableStatus = this
 				.getInitialTableStatus(position);
-		NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus,
+		LocalBot bot = new LocalBot(botName, initialTableStatus,
 				tableInterface, position);
 		players[position] = new PlayerInfo(botName,
 				bot.getServletNotificationsInterface());
@@ -216,7 +217,7 @@ public class PlayersManager {
 			}
 		}
 
-		NonRemoteBot replacementBot = new NonRemoteBot(playerName,
+		LocalBot replacementBot = new LocalBot(playerName,
 				this.getInitialTableStatus(position), position);
 
 		players[position] = new PlayerInfo(playerName, score, sni,
@@ -569,7 +570,7 @@ public class PlayersManager {
 			throw new IllegalStateException();
 		if (!players[position].isBot) {
 			final Card[] clonedCards = cloneCardArray(cards);
-			final NonRemoteBotInterface inactiveReplacementBot = players[position].inactiveReplacementBot;
+			final LocalBotInterface inactiveReplacementBot = players[position].inactiveReplacementBot;
 			controller.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {
@@ -585,7 +586,7 @@ public class PlayersManager {
 		if (players[position] == null)
 			throw new IllegalStateException();
 		if (!players[position].isBot) {
-			final NonRemoteBotInterface inactiveReplacementBot = players[position].inactiveReplacementBot;
+			final LocalBotInterface inactiveReplacementBot = players[position].inactiveReplacementBot;
 			final Card cardClone = card.clone();
 			controller.enqueue(new RemoteAction() {
 				@Override
@@ -607,7 +608,7 @@ public class PlayersManager {
 		players[position].isBot = true;
 		players[position].replaced = true;
 		players[position].playerNotificationInterface = players[position].inactiveReplacementBotSNI;
-		final NonRemoteBotInterface inactiveReplacementBot = players[position].inactiveReplacementBot;
+		final LocalBotInterface inactiveReplacementBot = players[position].inactiveReplacementBot;
 		controller.enqueue(new RemoteAction() {
 			@Override
 			public void onExecute() throws RemoteException {
