@@ -55,6 +55,7 @@ import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
@@ -89,10 +90,12 @@ public class PlayerConsoleUI {
 			+ String.format(FORMAT, "TODOjoin TABLE", "", "",
 					"joins specified table")
 			+ String.format(FORMAT, "TODOview TABLE", "", "",
-					"views specified table");
+					"views specified table")
+			+ String.format(FORMAT, "chat MESSAGE", "", "",
+					"send specified message to the local chat");
 	private static final String[] allCommands = { "create", "join", "list",
 			"login", "pass", "play", "addbot", "help", "exit", "sleep",
-			"leave", "view" };
+			"leave", "view", "chat" };
 
 	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
@@ -114,9 +117,9 @@ public class PlayerConsoleUI {
 	private RemoteBot remoteBot;
 	private RemoteViewerUI remoteViewer;
 
-	private boolean createdATable = false;
-	private boolean joinedATable = false;
-	private boolean viewedATable = false;
+	private boolean creatingATable = false;
+	private boolean joiningATable = false;
+	private boolean viewingATable = false;
 
 	private boolean error;
 	private CmdLineParser parser;
@@ -127,6 +130,8 @@ public class PlayerConsoleUI {
 	private String[] command;
 
 	private boolean exit;
+
+	private String nextCommandLine;
 
 	public PlayerConsoleUI() {
 		this(new BufferedReader(new InputStreamReader(System.in)),
@@ -203,6 +208,7 @@ public class PlayerConsoleUI {
 
 			remoteBot.singleTableManager = gtm.createTable(playerName,
 					botNotification);
+			creatingATable = true;
 			out.println("successfully created table "
 					+ remoteBot.singleTableManager);
 		} catch (AllLTMBusyException e) {
@@ -214,7 +220,7 @@ public class PlayerConsoleUI {
 	}
 
 	private void executeExit() {
-		//exit = true;
+		// exit = true;
 		try {
 			if (remoteBot != null) {
 				remoteBot.singleTableManager.leaveTable(playerName);
@@ -253,6 +259,7 @@ public class PlayerConsoleUI {
 					tableInfo.tableDescriptor.id);
 			remoteBot.initialTableStatus = remoteBot.singleTableManager
 					.joinTable(playerName, botNotification);
+			joiningATable = true;
 			out.println("successfully joined " + tableInfo);
 		} catch (NoSuchElementException e) {
 			out.println("no table to join!");
@@ -300,13 +307,11 @@ public class PlayerConsoleUI {
 			} else {
 				out.println("there is no table to leave!");
 			}
+			creatingATable = joiningATable = viewingATable = false;
 		} catch (NoSuchPlayerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (GameEndedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (RemoteException e) {
@@ -430,6 +435,7 @@ public class PlayerConsoleUI {
 					tableInfo);
 
 			out.flush();
+			viewingATable = true;
 			Thread.sleep(200);
 			System.in.read();
 		} catch (NoSuchElementException e) {
@@ -464,13 +470,14 @@ public class PlayerConsoleUI {
 
 	private void parseCommand() {
 		try {
-			String nextCommandLine = in.readLine();
+			nextCommandLine = in.readLine();
 			out.println(nextCommandLine);
 			out.flush();
 			if (nextCommandLine == null) {
 				executeExit();
 				return;
 			}
+			nextCommandLine = nextCommandLine.trim();
 			parser.parse(nextCommandLine.split("\\s+"));
 			command = parser.getRemainingArgs();
 			if (command.length < 1) {
@@ -530,7 +537,9 @@ public class PlayerConsoleUI {
 			} else if (command[0].equals("sleep")) {
 				executeSleep();
 			} else if (logged) {
-				if (command[0].equals("view")) {
+				if (command[0].equals("chat")) {
+					executeChat();
+				} else if (command[0].equals("view")) {
 					executeView();
 				} else if (command[0].equals("leave")) {
 					executeLeave();
@@ -563,4 +572,29 @@ public class PlayerConsoleUI {
 		}
 	}
 
+	private void executeChat() {
+		try {
+			ChatMessage message = new ChatMessage(playerName,
+					nextCommandLine.substring("chat".length()));
+			if (creatingATable || joiningATable) {
+				out.println("sent message " + message);
+				remoteBot.singleTableManager.sendMessage(message);
+			} else if (viewingATable) {
+				out.println("sent message " + message);
+				remoteViewer.singleTableManager
+						.sendMessage(message);
+			} else {
+				out.println("cannot send a chat message rigth now");
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GameInterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GameEndedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
