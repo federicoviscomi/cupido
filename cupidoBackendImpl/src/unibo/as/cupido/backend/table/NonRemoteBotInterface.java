@@ -11,11 +11,11 @@ public interface NonRemoteBotInterface {
 	// not really throws RemoteException
 	void activate(TableInterface tableInterface) throws RemoteException;
 
+	ServletNotificationsInterface getServletNotificationsInterface();
+
 	// not really throws RemoteException
 	void passCards(Card[] cards) throws RemoteException;
 
 	// not really throws RemoteException
 	void playCard(Card card) throws RemoteException;
-	
-	ServletNotificationsInterface getServletNotificationsInterface();
 }

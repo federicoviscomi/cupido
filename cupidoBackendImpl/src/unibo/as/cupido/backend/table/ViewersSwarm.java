@@ -68,7 +68,8 @@ public class ViewersSwarm {
 			actionQueue.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {
-					snf.notifyGameEnded(matchPointsClone, playersTotalPointsClone);
+					snf.notifyGameEnded(matchPointsClone,
+							playersTotalPointsClone);
 				}
 			});
 		}
@@ -105,8 +106,8 @@ public class ViewersSwarm {
 		}
 	}
 
-	public void notifyPlayerJoined(final String playerName, final boolean isBot, final int score,
-			final int position) {
+	public void notifyPlayerJoined(final String playerName,
+			final boolean isBot, final int score, final int position) {
 		for (final ServletNotificationsInterface snf : snfs.values()) {
 			actionQueue.enqueue(new RemoteAction() {
 				@Override
@@ -146,7 +147,8 @@ public class ViewersSwarm {
 				@Override
 				public void onExecute() throws RemoteException {
 					// FIXME: Is this correct?
-					snf.notifyLocalChatMessage(new ChatMessage(userName, "joined"));
+					snf.notifyLocalChatMessage(new ChatMessage(userName,
+							"joined"));
 				}
 			});
 		}

@@ -45,10 +45,10 @@ public class CardsManager {
 
 	public static int whoWins(final Card[] playedCard, final int firstDealer) {
 		assert firstDealer >= 0;
-		assert firstDealer <= 3;		
+		assert firstDealer <= 3;
 		for (int i = 0; i < 4; i++)
 			assert playedCard[i] != null;
-		
+
 		int winner = firstDealer;
 		for (int i = 0; i < 4; i++) {
 			if (playedCard[i].suit == playedCard[firstDealer].suit) {

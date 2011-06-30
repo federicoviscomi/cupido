@@ -17,7 +17,6 @@
 
 package unibo.as.cupido.backend.table;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -75,9 +74,8 @@ public class PlayersManager {
 		ServletNotificationsInterface playerNotificationInterface;
 
 		/**
-		 * if <code>isBot==false</code> then this field is the bot
-		 * who could replace this
-		 * player; otherwise this field is <code>null<code>.
+		 * if <code>isBot==false</code> then this field is the bot who could
+		 * replace this player; otherwise this field is <code>null<code>.
 		 */
 		NonRemoteBotInterface inactiveReplacementBot;
 
@@ -113,7 +111,8 @@ public class PlayersManager {
 			this.score = score;
 			this.playerNotificationInterface = notificationInterface;
 			this.inactiveReplacementBot = replacementBot;
-			this.inactiveReplacementBotSNI = replacementBot.getServletNotificationsInterface();
+			this.inactiveReplacementBotSNI = replacementBot
+					.getServletNotificationsInterface();
 			this.isBot = false;
 			this.replaced = false;
 		}
@@ -143,10 +142,19 @@ public class PlayersManager {
 		}
 	}
 
+	private static Card[] cloneCardArray(Card[] cards) {
+		int n = cards.length;
+		Card[] result = new Card[n];
+		for (int i = 0; i < n; i++)
+			result[i] = cards[i].clone();
+		return result;
+	}
+
 	private PlayerInfo[] players = new PlayerInfo[4];
 	private int playersCount = 1;
 	private final DatabaseManager databaseManager;
 	private final ActionQueue controller;
+
 	private ChatMessage clonedMessage;
 
 	public PlayersManager(String owner, ServletNotificationsInterface snf,
@@ -164,8 +172,8 @@ public class PlayersManager {
 	}
 
 	public void addBot(String userName, int position, String botName,
-			TableInterface tableInterface) throws
-			FullPositionException, NotCreatorException {
+			TableInterface tableInterface) throws FullPositionException,
+			NotCreatorException {
 
 		if (position < 1 || position > 3 || userName == null
 				|| tableInterface == null)
@@ -179,15 +187,15 @@ public class PlayersManager {
 
 		InitialTableStatus initialTableStatus = this
 				.getInitialTableStatus(position);
-		NonRemoteBot bot = new NonRemoteBot(botName,
-				initialTableStatus, tableInterface, position);
-		players[position] = new PlayerInfo(botName, bot.getServletNotificationsInterface());
+		NonRemoteBot bot = new NonRemoteBot(botName, initialTableStatus,
+				tableInterface, position);
+		players[position] = new PlayerInfo(botName,
+				bot.getServletNotificationsInterface());
 		playersCount++;
 	}
 
 	public int addPlayer(String playerName, ServletNotificationsInterface sni,
-			int score) throws FullTableException,
-			DuplicateUserNameException {
+			int score) throws FullTableException, DuplicateUserNameException {
 
 		if (playerName == null)
 			throw new IllegalArgumentException();
@@ -262,14 +270,6 @@ public class PlayersManager {
 		throw new NoSuchPlayerException("\"" + playerName + "\"\n"
 				+ Arrays.toString(players));
 	}
-	
-	private static Card[] cloneCardArray(Card[] cards) {
-		int n = cards.length;
-		Card[] result = new Card[n];
-		for (int i = 0; i < n; i++)
-			result[i] = cards[i].clone();
-		return result;
-	}
 
 	public void notifyBotJoined(final String botName, final int position) {
 		/*
@@ -291,8 +291,9 @@ public class PlayersManager {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBotSNI.notifyPlayerJoined(
-									botName, true, 0, relativePosition);
+							player.inactiveReplacementBotSNI
+									.notifyPlayerJoined(botName, true, 0,
+											relativePosition);
 						}
 					});
 				}
@@ -343,15 +344,15 @@ public class PlayersManager {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBotSNI.notifyGameEnded(null,
-									null);
+							player.inactiveReplacementBotSNI.notifyGameEnded(
+									null, null);
 						}
 					});
 				}
 			}
 		}
 	}
-	
+
 	public void notifyGameStarted(Card[][] cards) {
 		for (int i = 0; i < 4; i++) {
 			final PlayerInfo player = players[i];
@@ -363,7 +364,8 @@ public class PlayersManager {
 			controller.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {
-					player.playerNotificationInterface.notifyGameStarted(playerCards);
+					player.playerNotificationInterface
+							.notifyGameStarted(playerCards);
 				}
 			});
 			final Card[] playerCards2 = cloneCardArray(cards[i]);
@@ -371,7 +373,8 @@ public class PlayersManager {
 				controller.enqueue(new RemoteAction() {
 					@Override
 					public void onExecute() throws RemoteException {
-						player.inactiveReplacementBotSNI.notifyGameStarted(playerCards2);
+						player.inactiveReplacementBotSNI
+								.notifyGameStarted(playerCards2);
 					}
 				});
 			}
@@ -381,11 +384,13 @@ public class PlayersManager {
 	public void notifyNewLocalChatMessage(ChatMessage message) {
 		for (final PlayerInfo player : players) {
 			clonedMessage = message.clone();
-			if (player != null && !player.isBot && !player.name.equals(message.userName)) {
+			if (player != null && !player.isBot
+					&& !player.name.equals(message.userName)) {
 				controller.enqueue(new RemoteAction() {
 					@Override
 					public void onExecute() throws RemoteException {
-						player.playerNotificationInterface.notifyLocalChatMessage(clonedMessage);
+						player.playerNotificationInterface
+								.notifyLocalChatMessage(clonedMessage);
 					}
 				});
 			}
@@ -424,7 +429,8 @@ public class PlayersManager {
 		}
 	}
 
-	public void notifyPlayerJoined(final String playerName, final int score, int position) {
+	public void notifyPlayerJoined(final String playerName, final int score,
+			int position) {
 		/* notify every players but the one who is joining */
 		for (int i = 0; i < 4; i++) {
 			final PlayerInfo player = players[i];
@@ -441,8 +447,9 @@ public class PlayersManager {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBotSNI.notifyPlayerJoined(
-									playerName, false, score, relativePosition);
+							player.inactiveReplacementBotSNI
+									.notifyPlayerJoined(playerName, false,
+											score, relativePosition);
 						}
 					});
 				}
@@ -456,14 +463,16 @@ public class PlayersManager {
 				controller.enqueue(new RemoteAction() {
 					@Override
 					public void onExecute() throws RemoteException {
-						player.playerNotificationInterface.notifyPlayerLeft(playerName);
+						player.playerNotificationInterface
+								.notifyPlayerLeft(playerName);
 					}
 				});
 				if (!player.isBot) {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBotSNI.notifyPlayerLeft(playerName);
+							player.inactiveReplacementBotSNI
+									.notifyPlayerLeft(playerName);
 						}
 					});
 				}
@@ -471,8 +480,11 @@ public class PlayersManager {
 		}
 	}
 
-	/** <code>position</code> is the position of player who passed cards 
-	 * @param playerName */
+	/**
+	 * <code>position</code> is the position of player who passed cards
+	 * 
+	 * @param playerName
+	 */
 	public void notifyPlayerPassedCards(int position, Card[] cards) {
 		int receiverIndex = (position + 5) % 4;
 		final PlayerInfo receiver = players[receiverIndex];
@@ -484,7 +496,8 @@ public class PlayersManager {
 		controller.enqueue(new RemoteAction() {
 			@Override
 			public void onExecute() throws RemoteException {
-				receiver.playerNotificationInterface.notifyPassedCards(cardsClone);
+				receiver.playerNotificationInterface
+						.notifyPassedCards(cardsClone);
 			}
 		});
 		if (!receiver.isBot) {
@@ -492,7 +505,8 @@ public class PlayersManager {
 			controller.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {
-					receiver.inactiveReplacementBotSNI.notifyPassedCards(cardsClone2);
+					receiver.inactiveReplacementBotSNI
+							.notifyPassedCards(cardsClone2);
 				}
 			});
 		}
@@ -511,14 +525,18 @@ public class PlayersManager {
 				controller.enqueue(new RemoteAction() {
 					@Override
 					public void onExecute() throws RemoteException {
-						player.playerNotificationInterface.notifyPlayerReplaced(playerLeftName, relativePosition);
+						player.playerNotificationInterface
+								.notifyPlayerReplaced(playerLeftName,
+										relativePosition);
 					}
 				});
 				if (!player.isBot) {
 					controller.enqueue(new RemoteAction() {
 						@Override
 						public void onExecute() throws RemoteException {
-							player.inactiveReplacementBotSNI.notifyPlayerReplaced(playerLeftName, relativePosition);
+							player.inactiveReplacementBotSNI
+									.notifyPlayerReplaced(playerLeftName,
+											relativePosition);
 						}
 					});
 				}
@@ -552,7 +570,7 @@ public class PlayersManager {
 		if (!players[position].isBot) {
 			final Card[] clonedCards = cloneCardArray(cards);
 			final NonRemoteBotInterface inactiveReplacementBot = players[position].inactiveReplacementBot;
-			controller.enqueue(new RemoteAction () {
+			controller.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {
 					inactiveReplacementBot.passCards(clonedCards);

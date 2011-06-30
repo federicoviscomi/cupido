@@ -1,7 +1,6 @@
 package unibo.as.cupido.backend.table;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.Arrays;
 
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
@@ -9,7 +8,6 @@ import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
-import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.FullPositionException;

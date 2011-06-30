@@ -8,8 +8,6 @@ import unibo.as.cupido.common.structures.ChatMessage;
 
 public abstract class AsynchronousMessage {
 
-
-
 	public static class BotActivateMessage extends AsynchronousMessage {
 		public final int position;
 

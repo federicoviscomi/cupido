@@ -27,9 +27,10 @@ public interface Bot extends Remote {
 
 	void addBot(int i) throws RemoteException;
 
+	ServletNotificationsInterface getServletNotificationsInterface()
+			throws RemoteException;
+
 	void passCards() throws RemoteException;
 
 	void playNextCard() throws RemoteException, GameEndedException;
-
-	ServletNotificationsInterface getServletNotificationsInterface() throws RemoteException;
 }
