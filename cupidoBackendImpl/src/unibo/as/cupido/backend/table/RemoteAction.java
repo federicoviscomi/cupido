@@ -4,8 +4,6 @@ import java.rmi.RemoteException;
 
 public abstract class RemoteAction implements Action {
 
-	abstract public void onExecute() throws RemoteException;
-	
 	@Override
 	public void execute() {
 		try {
@@ -14,4 +12,6 @@ public abstract class RemoteAction implements Action {
 			e.printStackTrace();
 		}
 	}
+
+	abstract public void onExecute() throws RemoteException;
 }

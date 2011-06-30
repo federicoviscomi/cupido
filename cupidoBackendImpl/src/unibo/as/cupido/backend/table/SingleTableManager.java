@@ -18,6 +18,7 @@
 package unibo.as.cupido.backend.table;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -72,8 +73,7 @@ public class SingleTableManager implements TableInterface {
 
 	public SingleTableManager(ServletNotificationsInterface snf,
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
-			throws SQLException, NoSuchUserException,
-			NoSuchLTMException {
+			throws SQLException, NoSuchUserException, NoSuchLTMException {
 
 		if (snf == null || table == null || gtm == null) {
 			throw new IllegalArgumentException(snf + " " + table + " " + gtm);
@@ -94,23 +94,22 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized String addBot(String userName, int position)
-			throws FullPositionException, IllegalArgumentException, NotCreatorException,
-			GameInterruptedException {
+			throws FullPositionException, IllegalArgumentException,
+			NotCreatorException, GameInterruptedException {
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
 		if (!gameStatus.equals(GameStatus.INIT))
 			throw new FullPositionException();
-		
+
 		if (userName == null || position < 0 || position > 3) {
 			throw new IllegalArgumentException();
 		}
 		String botName = botNames[position];
 
-		playersManager.addBot(userName, position, botNames[position],
-				this);
+		playersManager.addBot(userName, position, botNames[position], this);
 
 		notifyPlayerJoined(botName, true, 0, position);
-		
+
 		if (playersManager.playersCount() == 4) {
 			notifyGameStarted();
 			gameStatus = GameStatus.PASSING_CARDS;
@@ -142,7 +141,7 @@ public class SingleTableManager implements TableInterface {
 		int position = playersManager.addPlayer(userName, snf, score);
 
 		notifyPlayerJoined(userName, false, score, position);
-		
+
 		if (playersManager.playersCount() == 4) {
 			notifyGameStarted();
 			gameStatus = GameStatus.PASSING_CARDS;
@@ -153,16 +152,29 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized void leaveTable(String userName)
-			throws IllegalArgumentException,
-			NoSuchPlayerException, GameEndedException,
+			throws IllegalArgumentException, NoSuchPlayerException,
 			GameInterruptedException {
 		if (userName == null)
 			throw new IllegalArgumentException();
 		if (gameStatus == GameStatus.INTERRUPTED)
 			throw new GameInterruptedException();
 
-		if (cardsManager.gameEnded() || gameStatus == GameStatus.ENDED)
-			throw new GameEndedException();
+		if (cardsManager.gameEnded() || gameStatus == GameStatus.ENDED) {
+			if (viewers.isAViewer(userName)) {
+				try {
+					viewers.removeViewer(userName);
+				} catch (NoSuchViewerException e) {
+					//
+				}
+			} else {
+				playersManager.removePlayer(userName);
+			}
+			if (playersManager.playersCount() == 0
+					&& viewers.viewersCount() == 0) {
+				actionQueue.killConsumer();
+			}
+			return;
+		}
 
 		if (viewers.isAViewer(userName)) {
 			try {
@@ -172,19 +184,19 @@ public class SingleTableManager implements TableInterface {
 				e.printStackTrace();
 			}
 		} else if (table.owner.equals(userName)) {
-			
+
 			gameStatus = GameStatus.INTERRUPTED;
 			notifyGameEndedPrematurely();
-			
+
 		} else if (!gameStatus.equals(GameStatus.INIT)) {
 			int position = playersManager.getPlayerPosition(userName);
 			playersManager.replacePlayer(userName, position, this);
-			
+
 			notifyPlayerReplaced(userName, position);
-			
+
 		} else {
 			playersManager.removePlayer(userName);
-			
+
 			notifyPlayerLeft(userName);
 		}
 	}
@@ -207,24 +219,11 @@ public class SingleTableManager implements TableInterface {
 		playersManager.notifyGameStarted(cardsManager.getCards());
 	}
 
-	private void notifyLocalChatMessage(ChatMessage message) {
-		playersManager.notifyNewLocalChatMessage(message);
-		viewers.notifyNewLocalChatMessage(message);
-	}
-
-	private void notifyPassedCards() {
-		for (int i = 0; i < 4; i++) {
-			playersManager.notifyPlayerPassedCards((i + 5) % 4,
-					cardsManager.getPassedCards(i));
-		}
-	}
-
 	private void notifyPlayerJoined(String userName, boolean isBot, int score,
 			int position) {
 
 		if (isBot) {
-			playersManager
-					.notifyBotJoined(userName, position);
+			playersManager.notifyBotJoined(userName, position);
 		} else {
 			playersManager.notifyPlayerJoined(userName, score, position);
 		}
@@ -264,13 +263,12 @@ public class SingleTableManager implements TableInterface {
 		});
 	}
 
-	private void notifyPlayerPassedCards(
-			int position, Card[] cards) {
+	private void notifyPlayerPassedCards(int position, Card[] cards) {
 		playersManager.notifyPlayerPassedCards(position, cards);
 	}
 
-	private void notifyPlayerPlayedCard(
-			String playerName, int position, Card card) {
+	private void notifyPlayerPlayedCard(String playerName, int position,
+			Card card) {
 		try {
 			playersManager.notifyPlayedCard(playerName, card);
 		} catch (NoSuchPlayerException e) {
@@ -302,7 +300,8 @@ public class SingleTableManager implements TableInterface {
 			@Override
 			public void onExecute() throws RemoteException {
 				try {
-					LocalTableManagerInterface ltm = gtm.getLTMInterface(table.tableDescriptor.ltmId);
+					LocalTableManagerInterface ltm = gtm
+							.getLTMInterface(table.tableDescriptor.ltmId);
 					gtm.notifyTableDestruction(table.tableDescriptor, ltm);
 					ltm.notifyTableDestruction(table.tableDescriptor.id);
 				} catch (NoSuchLTMException e) {
@@ -321,9 +320,9 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized void passCards(String userName, Card[] cards)
-			throws IllegalArgumentException,
-			NoSuchPlayerException, GameInterruptedException, WrongGameStateException {
-		
+			throws IllegalArgumentException, NoSuchPlayerException,
+			GameInterruptedException, WrongGameStateException {
+
 		System.out.println("STM: entering passCards(" + userName + ", {...})");
 
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
@@ -344,18 +343,19 @@ public class SingleTableManager implements TableInterface {
 
 		if (cardsManager.allPlayerPassedCards()) {
 			gameStatus = GameStatus.STARTED;
-			
+
 			for (int i = 0; i < 4; i++)
 				notifyPlayerPassedCards(i, cardsManager.getPassedCards(i));
 		}
-		
-		System.out.println("STM: exiting from passCards(" + userName + ", {...})");
+
+		System.out.println("STM: exiting from passCards(" + userName
+				+ ", {...})");
 	}
 
 	@Override
 	public synchronized void playCard(String userName, Card card)
-			throws IllegalMoveException,
-			IllegalArgumentException, NoSuchPlayerException, GameInterruptedException,
+			throws IllegalMoveException, IllegalArgumentException,
+			NoSuchPlayerException, GameInterruptedException,
 			WrongGameStateException {
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
@@ -367,7 +367,7 @@ public class SingleTableManager implements TableInterface {
 		int playerPosition = playersManager.getPlayerPosition(userName);
 		cardsManager.playCard(userName, playerPosition, card);
 		playersManager.replacementBotPlayCard(playerPosition, card);
-		
+
 		notifyPlayerPlayedCard(userName, playerPosition, card);
 		if (cardsManager.gameEnded()) {
 			gameStatus = GameStatus.ENDED;
@@ -377,7 +377,7 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized void sendMessage(final ChatMessage message)
-		throws GameInterruptedException, GameEndedException {
+			throws GameInterruptedException, GameEndedException {
 		if (gameStatus == GameStatus.INTERRUPTED)
 			throw new GameInterruptedException();
 		if (gameStatus == GameStatus.ENDED)

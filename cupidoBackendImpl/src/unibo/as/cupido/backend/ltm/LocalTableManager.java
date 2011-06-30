@@ -18,11 +18,12 @@
 package unibo.as.cupido.backend.ltm;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.AccessException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -55,13 +56,8 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	private static final String LOCALTABLEMANAGER_CONFIGURATION_FILE = "localTableManager.config";
 
-	public static void main(String[] args) {
-		try {
-			new LocalTableManager();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public static void main(String[] args) throws NotBoundException {
+		new LocalTableManager();
 	}
 
 	private GlobalTableManagerInterface gtmRemote;
@@ -85,8 +81,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	private String localAddress;
 
-	public LocalTableManager() throws RemoteException {
-
+	public LocalTableManager() throws NotBoundException {
 		// reads configuration file
 		try {
 			BufferedReader configuration = new BufferedReader(new FileReader(
@@ -136,16 +131,17 @@ public class LocalTableManager implements LocalTableManagerInterface {
 				}
 			});
 
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch (RemoteException e) {
 			e.printStackTrace();
+			System.exit(-1);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			System.exit(-1);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("cannot read configuration file: "
+					+ LOCALTABLEMANAGER_CONFIGURATION_FILE);
 			e.printStackTrace();
-		} catch (NotBoundException e) {
-			System.err.println("Error:"
-					+ GlobalTableManagerInterface.globalTableManagerName
-					+ " is not bound to anything in the rmiregistry");
+			System.exit(-1);
 		}
 	}
 
@@ -195,7 +191,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	@Override
 	public void notifyTableDestruction(int tableId) {
-		allTables.remove(tableId);
+		TableInterface remove = allTables.remove(tableId);
 	}
 
 	public void shutDown() {

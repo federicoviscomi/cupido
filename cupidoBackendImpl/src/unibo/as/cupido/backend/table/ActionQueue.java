@@ -1,21 +1,24 @@
 package unibo.as.cupido.backend.table;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ActionQueue extends Thread {
 
-	private Object lock = new Object();
-	private List<Action> actions = new LinkedList<Action>();
+	private Object lock;
+	private List<Action> actions;
+	boolean exit;
 
 	public ActionQueue() {
+		lock = new Object();
+		actions = new LinkedList<Action>();
+		exit = false;
 	}
 
 	public void enqueue(Action action) {
+		if (exit)
+			return;
 		synchronized (lock) {
 			actions.add(action);
 			lock.notify();
@@ -25,24 +28,32 @@ public class ActionQueue extends Thread {
 	@Override
 	public void run() {
 		try {
-			while (true) {
+			while (!exit) {
 				List<Action> list;
 				synchronized (lock) {
 					while (actions.isEmpty())
 						lock.wait();
-					
+
 					// Make sure the caller has returned.
 					// Note that no actions can be added in the meantime.
 					Thread.sleep(10);
-					
+
 					list = this.actions;
 					this.actions = new ArrayList<Action>();
 				}
-				for (Action action : list)
+				for (Action action : list) {
 					action.execute();
+				}
 			}
 		} catch (InterruptedException e) {
 			//
+		}
+	}
+
+	public void killConsumer() {
+		exit = true;
+		synchronized (lock) {
+			lock.notify();
 		}
 	}
 }
