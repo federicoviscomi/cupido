@@ -350,7 +350,7 @@ public class SingleTableManager implements TableInterface {
 	}
 
 	/**
-	 * Notify gtm and stm of this table destruction
+	 * Notify gtm and stm of this table destruction.
 	 */
 	private void notifyTableDestruction() {
 		actionQueue.enqueue(new RemoteAction() {

@@ -38,11 +38,13 @@ import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 
-public class RemoteBot implements Bot, Serializable {
+/**
+ * 
+ * @author cane
+ * 
+ */
+public class AutomaticServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5795667604185475447L;
 	final String userName;
 	TableInterface singleTableManager;
@@ -77,7 +79,7 @@ public class RemoteBot implements Bot, Serializable {
 
 	List<Command> pendingCommands = new ArrayList<Command>();
 
-	public RemoteBot(InitialTableStatus initialTableStatus,
+	public AutomaticServlet(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, final String userName) {
 		if (initialTableStatus == null || userName == null)
 			throw new IllegalArgumentException();
@@ -100,7 +102,12 @@ public class RemoteBot implements Bot, Serializable {
 		actionQueue.start();
 	}
 
-	@Override
+	/**
+	 * If this is creator of a table, add a bot in specified position.
+	 * 
+	 * @param position
+	 *            position of bot to add
+	 */
 	public void addBot(final int position) {
 		synchronized (addBotSignal) {
 			actionQueue.enqueue(new Action() {
@@ -169,7 +176,12 @@ public class RemoteBot implements Bot, Serializable {
 	}
 
 	public class RemoteBotNotificationInterface implements
-			ServletNotificationsInterface {
+			ServletNotificationsInterface, Serializable {
+
+		/**
+		 * generated serial version uid
+		 */
+		private static final long serialVersionUID = -1499894147888629423L;
 
 		@Override
 		public void notifyGameEnded(final int[] matchPoints,
@@ -261,9 +273,12 @@ public class RemoteBot implements Bot, Serializable {
 		}
 	}
 
-	@Override
-	public ServletNotificationsInterface getServletNotificationsInterface()
-			throws RemoteException {
+	/**
+	 * Return an objects who handles notification from the stm to this
+	 * 
+	 * @return an objects who handles notification from the stm to this
+	 */
+	public ServletNotificationsInterface getServletNotificationsInterface() {
 		return this.new RemoteBotNotificationInterface();
 	}
 
@@ -349,8 +364,10 @@ public class RemoteBot implements Bot, Serializable {
 		initialTableStatus.whoIsBot[position] = true;
 	}
 
-	@Override
-	public void passCards() throws RemoteException {
+	/**
+	 * Pass arbitrary sound cards.
+	 */
+	public void passCards() {
 		synchronized (passCardsSignal) {
 			actionQueue.enqueue(new Action() {
 				@Override
@@ -367,8 +384,13 @@ public class RemoteBot implements Bot, Serializable {
 		}
 	}
 
-	@Override
-	public void playNextCard() throws RemoteException, GameEndedException {
+	/**
+	 * Play arbitrary sound card.
+	 * 
+	 * @throws GameEndedException
+	 *             if game ended.
+	 */
+	public void playNextCard() throws GameEndedException {
 		synchronized (playNextCardSignal) {
 			actionQueue.enqueue(new Action() {
 				@Override

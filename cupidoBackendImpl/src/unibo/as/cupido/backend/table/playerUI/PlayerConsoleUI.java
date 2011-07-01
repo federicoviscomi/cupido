@@ -115,7 +115,7 @@ public class PlayerConsoleUI {
 	private final PrintWriter out;
 	private boolean logged = false;
 	private ServletNotificationsInterface botNotification;
-	private RemoteBot remoteBot;
+	private AutomaticServlet remoteBot;
 	private RemoteViewerUI remoteViewer;
 
 	private boolean creatingATable = false;
@@ -204,9 +204,9 @@ public class PlayerConsoleUI {
 	private void executeCreate() {
 		try {
 			// TODO really check the database
-			// TODO is really necessary RemoteBot or can be used instead
+			// TODO is really necessary AutomaticServlet or can be used instead
 			// LocalBot
-			remoteBot = new RemoteBot(new InitialTableStatus(new String[3],
+			remoteBot = new AutomaticServlet(new InitialTableStatus(new String[3],
 					new int[3], new boolean[3]), null, playerName);
 			botNotification = (ServletNotificationsInterface) UnicastRemoteObject
 					.exportObject(remoteBot.getServletNotificationsInterface());
@@ -254,7 +254,7 @@ public class PlayerConsoleUI {
 	private void executeJoin() {
 		try {
 			// TODO really check the database
-			remoteBot = new RemoteBot(new InitialTableStatus(new String[3],
+			remoteBot = new AutomaticServlet(new InitialTableStatus(new String[3],
 					new int[3], new boolean[3]), null, playerName);
 			botNotification = (ServletNotificationsInterface) UnicastRemoteObject
 					.exportObject(remoteBot.getServletNotificationsInterface());
