@@ -18,8 +18,8 @@
 package unibo.as.cupido.client.widgets.cardsgame;
 
 /**
- * This interface is used by CardsGameWidget to notify 
- * the caller that an animation was completed.
+ * This interface is used by CardsGameWidget to notify the caller that an
+ * animation was completed.
  */
 public interface AnimationCompletedListener {
 	public void onComplete();

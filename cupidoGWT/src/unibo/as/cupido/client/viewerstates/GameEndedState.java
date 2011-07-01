@@ -76,7 +76,7 @@ public class GameEndedState implements ViewerState {
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -91,8 +91,9 @@ public class GameEndedState implements ViewerState {
 			return false;
 
 		if (eventReceived) {
-			stateManager.onFatalException(new Exception(
-					"Two GameEnded notifications were received while the client was in the GameEnded state."));
+			stateManager
+					.onFatalException(new Exception(
+							"Two GameEnded notifications were received while the client was in the GameEnded state."));
 			return true;
 		}
 

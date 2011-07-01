@@ -57,6 +57,7 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 		}
 		return row;
 	}
+
 	private PushButton exitButton;
 
 	private boolean frozen = false;

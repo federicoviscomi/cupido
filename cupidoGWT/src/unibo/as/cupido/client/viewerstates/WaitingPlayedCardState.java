@@ -132,10 +132,10 @@ public class WaitingPlayedCardState implements ViewerState {
 	public void handlePlayerReplaced(String name, int position) {
 		if (frozen)
 			return;
-		
+
 		if (eventReceived)
 			return;
-		
+
 		if (currentPlayer == position)
 			recomputeLabelMessage();
 	}

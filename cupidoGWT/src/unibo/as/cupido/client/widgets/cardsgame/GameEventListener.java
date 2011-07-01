@@ -20,8 +20,8 @@ package unibo.as.cupido.client.widgets.cardsgame;
 import unibo.as.cupido.common.structures.Card;
 
 /**
- * This is used by CardsGameWidget to notify users of the class about
- * various events.
+ * This is used by CardsGameWidget to notify users of the class about various
+ * events.
  */
 public interface GameEventListener {
 	/**
@@ -35,23 +35,22 @@ public interface GameEventListener {
 	public void onAnimationStart();
 
 	/**
-	 * This is called when the user clicks on a card, except during
-	 * animations and when controls are disabled.
+	 * This is called when the user clicks on a card, except during animations
+	 * and when controls are disabled.
 	 * 
 	 * @player The player to whom the card belongs
-	 * @card The card that was clicked, or null if a covered card was
-	 *       clicked.
-	 * @isRaised This is true only if state==HAND and this card is
-	 *           currently raised.
+	 * @card The card that was clicked, or null if a covered card was clicked.
+	 * @isRaised This is true only if state==HAND and this card is currently
+	 *           raised.
 	 */
 	public void onCardClicked(int player, Card card, CardRole.State state,
 			boolean isRaised);
-	
+
 	/**
 	 * This is called when the user clicks on the exit button.
 	 * 
-	 * Note that clicking the button only triggers this method; if the
-	 * caller wants to freeze the CardsGameWidget, he must do so explicitly.
+	 * Note that clicking the button only triggers this method; if the caller
+	 * wants to freeze the CardsGameWidget, he must do so explicitly.
 	 */
 	public void onExit();
 }

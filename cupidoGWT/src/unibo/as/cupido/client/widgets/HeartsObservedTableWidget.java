@@ -117,17 +117,19 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 								try {
 									throw caught;
 								} catch (NoSuchTableException e) {
-									// This can happen even if no problems occur.
+									// This can happen even if no problems
+									// occur.
 								} catch (GameInterruptedException e) {
-									// This can happen even if no problems occur.
+									// This can happen even if no problems
+									// occur.
 								} catch (GameEndedException e) {
-									// This can happen even if no problems occur.
+									// This can happen even if no problems
+									// occur.
 								} catch (Throwable e) {
 									screenManager.displayGeneralErrorScreen(e);
 									return;
 								}
-								screenManager
-								.displayMainMenuScreen(username);
+								screenManager.displayMainMenuScreen(username);
 							}
 
 							@Override
@@ -234,8 +236,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 			beforeGameWidget.handlePlayerLeft(player);
 		} else {
 			screenManager
-			.displayGeneralErrorScreen(new Exception(
-					"A PlayerLeft notification was received while playing a game that was already started."));
+					.displayGeneralErrorScreen(new Exception(
+							"A PlayerLeft notification was received while playing a game that was already started."));
 		}
 	}
 
@@ -247,8 +249,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		}
 		if (beforeGameWidget != null) {
 			screenManager
-			.displayGeneralErrorScreen(new Exception(
-					"A PlayerReplaced notification was received while viewing a game that wasn't started yet."));
+					.displayGeneralErrorScreen(new Exception(
+							"A PlayerReplaced notification was received while viewing a game that wasn't started yet."));
 		} else {
 			stateManager.handlePlayerReplaced(name, position);
 		}

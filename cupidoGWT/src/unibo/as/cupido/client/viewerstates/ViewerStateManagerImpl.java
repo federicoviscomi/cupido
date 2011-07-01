@@ -52,6 +52,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 			return false;
 		return candidate.value > previous.value;
 	}
+
 	/**
 	 * Computes the index of the winning card in a trick.
 	 * 
@@ -68,6 +69,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 				winner = candidate;
 		return winner;
 	}
+
 	private CardsGameWidget cardsGameWidget;
 	private CupidoInterfaceAsync cupidoService;
 	private ViewerState currentState = null;
@@ -98,8 +100,8 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 * Initialize the state manager. The current user is a viewer.
 	 */
 	public ViewerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			ObservedGameStatus observedGameStatus,
-			String username, CupidoInterfaceAsync cupidoService) {
+			ObservedGameStatus observedGameStatus, String username,
+			CupidoInterfaceAsync cupidoService) {
 
 		if (observedGameStatus.firstDealerInTrick == -1) {
 			// No-one has played the two of clubs yet. The players may or may
@@ -108,7 +110,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 			for (PlayerStatus player : observedGameStatus.playerStatus)
 				player.numOfCardsInHand = 13;
 		}
-		
+
 		this.username = username;
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
@@ -161,7 +163,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		remainingTricks = observedGameStatus.playerStatus[0].numOfCardsInHand;
 		if (observedGameStatus.playerStatus[0].playedCard != null)
 			++remainingTricks;
-		
+
 		if (firstPlayerInTrick == -1) {
 			transitionToWaitingFirstLead();
 			return;
@@ -201,10 +203,10 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 					.println("Client: notice: the exit() method was called while frozen, ignoring it.");
 			return;
 		}
-		
+
 		// The current animation (if any) is stopped.
 		freeze();
-		
+
 		// FIXME: Note that leaveTable() is called even if the game is already
 		// finished, even if this is not needed.
 		cupidoService.leaveTable(new AsyncCallback<Void>() {
@@ -219,9 +221,11 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 				} catch (GameEndedException e) {
 					// This can happen even if no problems occur.
 				} catch (Throwable e) {
-					// Can't call screenManager.displayGeneralErrorScreen() because
+					// Can't call screenManager.displayGeneralErrorScreen()
+					// because
 					// the main screen has now the flow of control.
-					System.out.println("Client: got a fatal exception in leaveTable().");
+					System.out
+							.println("Client: got a fatal exception in leaveTable().");
 				}
 			}
 
@@ -229,7 +233,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 			public void onSuccess(Void result) {
 			}
 		});
-		
+
 		screenManager.displayMainMenuScreen(username);
 	}
 

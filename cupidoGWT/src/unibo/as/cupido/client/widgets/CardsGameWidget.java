@@ -373,7 +373,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			}
 		});
 	}
-	
+
 	/**
 	 * The current roles of the cards on the table.
 	 */
@@ -382,8 +382,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	private Widget cornerWidget = null;
 
 	/**
-	 * The currently running animation (if any).
-	 * If this is not null, the table must not react to commands.
+	 * The currently running animation (if any). If this is not null, the table
+	 * must not react to commands.
 	 */
 	private Animation currentAnimation = null;
 
@@ -449,7 +449,7 @@ public class CardsGameWidget extends AbsolutePanel {
 		this.listener = listener;
 
 		setCornerWidget(cornerWidget);
-		
+
 		{
 			VerticalPanel panel = new VerticalPanel();
 			panel.setWidth("200px");
@@ -459,7 +459,7 @@ public class CardsGameWidget extends AbsolutePanel {
 			add(panel, tableSize - 200, tableSize - 50);
 			exitButton = new PushButton("Esci");
 			exitButton.setWidth("80px");
-			
+
 			final CardsGameWidget x = this;
 			exitButton.addClickHandler(new ClickHandler() {
 				@Override
@@ -633,9 +633,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * onAnimationEnd() and onAnimationStart() notifications between the two
 	 * animations.
 	 */
-	public void animateTrickTaking(
-			final int player,
-			int waitTime,
+	public void animateTrickTaking(final int player, int waitTime,
 			final int animationTime,
 			final AnimationCompletedListener animationCompletedListener) {
 
@@ -1129,9 +1127,11 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * @param position The position where the bot should be inserted.
-	 *                 0 means at the bottom, and other positions follow in clockwise order.
-	 * @param name The name of the bot.
+	 * @param position
+	 *            The position where the bot should be inserted. 0 means at the
+	 *            bottom, and other positions follow in clockwise order.
+	 * @param name
+	 *            The name of the bot.
 	 */
 	public void setBot(int position, String name) {
 		players.get(position).isBot = true;

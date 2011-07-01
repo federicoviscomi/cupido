@@ -91,11 +91,14 @@ public class HeartsTableWidget extends AbsolutePanel {
 								try {
 									throw caught;
 								} catch (NoSuchTableException e) {
-									// This can happen even if no problems occur.
+									// This can happen even if no problems
+									// occur.
 								} catch (GameInterruptedException e) {
-									// This can happen even if no problems occur.
+									// This can happen even if no problems
+									// occur.
 								} catch (GameEndedException e) {
-									// This can happen even if no problems occur.
+									// This can happen even if no problems
+									// occur.
 								} catch (Throwable e) {
 									screenManager.displayGeneralErrorScreen(e);
 									return;
@@ -204,8 +207,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		beforeGameWidget = null;
 
 		stateManager = new PlayerStateManagerImpl(tableSize, screenManager,
-				initialTableStatus, scores, myCards, username,
-				cupidoService);
+				initialTableStatus, scores, myCards, username, cupidoService);
 
 		cardsGameWidget = stateManager.getWidget();
 		add(cardsGameWidget, 0, 0);
@@ -239,8 +241,8 @@ public class HeartsTableWidget extends AbsolutePanel {
 			beforeGameWidget.handlePlayerLeft(player);
 		} else {
 			screenManager
-			.displayGeneralErrorScreen(new Exception(
-					"A PlayerLeft notification was received while playing a game that was already started."));
+					.displayGeneralErrorScreen(new Exception(
+							"A PlayerLeft notification was received while playing a game that was already started."));
 		}
 	}
 
@@ -252,8 +254,8 @@ public class HeartsTableWidget extends AbsolutePanel {
 		}
 		if (beforeGameWidget != null) {
 			screenManager
-			.displayGeneralErrorScreen(new Exception(
-					"A PlayerReplaced notification was received while playing a game that wasn't started yet."));
+					.displayGeneralErrorScreen(new Exception(
+							"A PlayerReplaced notification was received while playing a game that wasn't started yet."));
 		} else {
 			// The +1 is needed for the different meaning that `position' has
 			// for players.

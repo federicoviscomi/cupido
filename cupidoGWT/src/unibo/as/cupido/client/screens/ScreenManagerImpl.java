@@ -51,7 +51,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
 	private CometMessageListener cometMessageListener;
-	private CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
+	private CupidoInterfaceAsync cupidoService = GWT
+			.create(CupidoInterface.class);
 
 	private Screen currentScreen = null;
 
@@ -79,74 +80,66 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
 				CometListener cometListener = new CometListener() {
 
-							@Override
-							public void onConnected(int heartbeat) {
-							}
+					@Override
+					public void onConnected(int heartbeat) {
+					}
 
-							@Override
-							public void onDisconnected() {
-							}
+					@Override
+					public void onDisconnected() {
+					}
 
-							@Override
-							public void onError(Throwable exception,
-									boolean connected) {
-							}
+					@Override
+					public void onError(Throwable exception, boolean connected) {
+					}
 
-							@Override
-							public void onHeartbeat() {
-							}
+					@Override
+					public void onHeartbeat() {
+					}
 
-							@Override
-							public void onMessage(
-									List<? extends Serializable> messages) {
-								for (Serializable message : messages) {
-									if (message instanceof CardPassed) {
-										CardPassed x = (CardPassed) message;
-										cometMessageListener
-												.onCardPassed(x.cards);
-									} else if (message instanceof CardPlayed) {
-										CardPlayed x = (CardPlayed) message;
-										cometMessageListener.onCardPlayed(
-												x.card, x.playerPosition);
-									} else if (message instanceof GameEnded) {
-										GameEnded x = (GameEnded) message;
-										cometMessageListener.onGameEnded(
-												x.matchPoints,
-												x.playersTotalPoints);
-									} else if (message instanceof GameStarted) {
-										GameStarted x = (GameStarted) message;
-										cometMessageListener
-												.onGameStarted(x.myCards);
-									} else if (message instanceof NewLocalChatMessage) {
-										NewLocalChatMessage x = (NewLocalChatMessage) message;
-										cometMessageListener
-												.onNewLocalChatMessage(x.user,
-														x.message);
-									} else if (message instanceof NewPlayerJoined) {
-										NewPlayerJoined x = (NewPlayerJoined) message;
-										cometMessageListener.onNewPlayerJoined(
-												x.name, x.isBot, x.points,
-												x.position);
-									} else if (message instanceof PlayerLeft) {
-										PlayerLeft x = (PlayerLeft) message;
-										cometMessageListener
-												.onPlayerLeft(x.player);
-									} else if (message instanceof PlayerReplaced) {
-										PlayerReplaced x = (PlayerReplaced) message;
-										cometMessageListener
-												.onPlayerReplaced(x.name, x.position);
-									} else {
-										displayGeneralErrorScreen(new Exception(
-												"Unhandled comet message: "
-														+ message.toString()));
-										break;
-									}
-								}
+					@Override
+					public void onMessage(List<? extends Serializable> messages) {
+						for (Serializable message : messages) {
+							if (message instanceof CardPassed) {
+								CardPassed x = (CardPassed) message;
+								cometMessageListener.onCardPassed(x.cards);
+							} else if (message instanceof CardPlayed) {
+								CardPlayed x = (CardPlayed) message;
+								cometMessageListener.onCardPlayed(x.card,
+										x.playerPosition);
+							} else if (message instanceof GameEnded) {
+								GameEnded x = (GameEnded) message;
+								cometMessageListener.onGameEnded(x.matchPoints,
+										x.playersTotalPoints);
+							} else if (message instanceof GameStarted) {
+								GameStarted x = (GameStarted) message;
+								cometMessageListener.onGameStarted(x.myCards);
+							} else if (message instanceof NewLocalChatMessage) {
+								NewLocalChatMessage x = (NewLocalChatMessage) message;
+								cometMessageListener.onNewLocalChatMessage(
+										x.user, x.message);
+							} else if (message instanceof NewPlayerJoined) {
+								NewPlayerJoined x = (NewPlayerJoined) message;
+								cometMessageListener.onNewPlayerJoined(x.name,
+										x.isBot, x.points, x.position);
+							} else if (message instanceof PlayerLeft) {
+								PlayerLeft x = (PlayerLeft) message;
+								cometMessageListener.onPlayerLeft(x.player);
+							} else if (message instanceof PlayerReplaced) {
+								PlayerReplaced x = (PlayerReplaced) message;
+								cometMessageListener.onPlayerReplaced(x.name,
+										x.position);
+							} else {
+								displayGeneralErrorScreen(new Exception(
+										"Unhandled comet message: "
+												+ message.toString()));
+								break;
 							}
+						}
+					}
 
-							@Override
-							public void onRefresh() {
-							}
+					@Override
+					public void onRefresh() {
+					}
 				};
 
 				CometSerializer serializer = GWT

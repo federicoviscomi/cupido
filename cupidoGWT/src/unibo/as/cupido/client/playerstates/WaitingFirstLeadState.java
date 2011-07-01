@@ -95,7 +95,7 @@ public class WaitingFirstLeadState implements PlayerState {
 	public boolean handleCardPassed(Card[] cards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -145,11 +145,11 @@ public class WaitingFirstLeadState implements PlayerState {
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen)
 			return false;
-		
+
 		if (eventReceived)
 			// Let the next state handle this.
 			return false;
-		
+
 		stateManager.exit();
 		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 		return true;
@@ -159,7 +159,7 @@ public class WaitingFirstLeadState implements PlayerState {
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager

@@ -87,6 +87,7 @@ public class YourTurnState implements PlayerState {
 
 		return true;
 	}
+
 	private CardsGameWidget cardsGameWidget;
 	private CupidoInterfaceAsync cupidoService;
 
@@ -149,7 +150,7 @@ public class YourTurnState implements PlayerState {
 
 		if (playedCard)
 			return;
-		
+
 		if (player != 0)
 			return;
 
@@ -158,7 +159,7 @@ public class YourTurnState implements PlayerState {
 			return;
 
 		playedCard = true;
-		
+
 		message.setText("");
 
 		hand.remove(card);
@@ -209,7 +210,7 @@ public class YourTurnState implements PlayerState {
 	public boolean handleCardPassed(Card[] cards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -222,13 +223,13 @@ public class YourTurnState implements PlayerState {
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen)
 			return false;
-		
+
 		if (playedCard) {
 			// The animation for the card playing is still in progress, let
 			// the next state handle this.
 			return false;
 		}
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -245,7 +246,7 @@ public class YourTurnState implements PlayerState {
 		if (playedCard)
 			// Let the next state handle this.
 			return false;
-		
+
 		stateManager.exit();
 		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 		return true;
@@ -255,7 +256,7 @@ public class YourTurnState implements PlayerState {
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager

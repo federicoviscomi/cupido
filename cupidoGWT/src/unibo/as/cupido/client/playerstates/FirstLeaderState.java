@@ -61,7 +61,8 @@ public class FirstLeaderState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		message = new HTML("Sei il primo a giocare; devi giocare il due di fiori");
+		message = new HTML(
+				"Sei il primo a giocare; devi giocare il due di fiori");
 		message.setWidth("120px");
 		message.setWordWrap(true);
 		panel.add(message);
@@ -95,7 +96,7 @@ public class FirstLeaderState implements PlayerState {
 			boolean isRaised) {
 		if (frozen)
 			return;
-		
+
 		if (player != 0 || card == null)
 			return;
 		if (card.suit != Card.Suit.CLUBS || card.value != 2)
@@ -154,7 +155,7 @@ public class FirstLeaderState implements PlayerState {
 	public boolean handleCardPassed(Card[] cards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -167,11 +168,11 @@ public class FirstLeaderState implements PlayerState {
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen)
 			return false;
-		
+
 		if (playedCard)
 			// Let the next state handle this.
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -184,11 +185,11 @@ public class FirstLeaderState implements PlayerState {
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen)
 			return false;
-		
+
 		if (playedCard)
 			// Let the next state handle this.
 			return false;
-		
+
 		stateManager.exit();
 		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 		return true;
@@ -198,7 +199,7 @@ public class FirstLeaderState implements PlayerState {
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager

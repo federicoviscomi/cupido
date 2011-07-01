@@ -85,7 +85,7 @@ public class GameEndedState implements PlayerState {
 	public boolean handleCardPassed(Card[] cards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -98,7 +98,7 @@ public class GameEndedState implements PlayerState {
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -111,10 +111,11 @@ public class GameEndedState implements PlayerState {
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen)
 			return false;
-		
+
 		if (eventReceived) {
-			stateManager.onFatalException(new Exception(
-					"Two GameEnded notifications were received while the client was in the GameEnded state."));
+			stateManager
+					.onFatalException(new Exception(
+							"Two GameEnded notifications were received while the client was in the GameEnded state."));
 			return true;
 		}
 
@@ -128,7 +129,7 @@ public class GameEndedState implements PlayerState {
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager

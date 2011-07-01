@@ -35,7 +35,7 @@ public class LoadingScreen extends VerticalPanel implements Screen {
 
 		setHorizontalAlignment(ALIGN_CENTER);
 		setVerticalAlignment(ALIGN_MIDDLE);
-		
+
 		VerticalPanel panel = new VerticalPanel();
 		panel.setWidth("300px");
 		panel.setHeight("100px");
@@ -45,7 +45,7 @@ public class LoadingScreen extends VerticalPanel implements Screen {
 		add(panel);
 
 		panel.add(new HTML("Caricamento in corso, attendere..."));
-		
+
 		panel.add(new Image("loading.gif"));
 	}
 

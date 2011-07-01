@@ -56,7 +56,8 @@ public class CardPassingWaitingState implements PlayerState {
 		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-		message = new HTML("Aspetta che gli altri giocatori decidano quali carte passare.");
+		message = new HTML(
+				"Aspetta che gli altri giocatori decidano quali carte passare.");
 		message.setWidth("120px");
 		message.setWordWrap(true);
 		panel.add(message);
@@ -105,7 +106,7 @@ public class CardPassingWaitingState implements PlayerState {
 		}
 
 		eventReceived = true;
-		
+
 		message.setText("");
 
 		List<Card> cards = new ArrayList<Card>();
@@ -147,7 +148,7 @@ public class CardPassingWaitingState implements PlayerState {
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen)
 			return false;
-		
+
 		// Let the next state handle this.
 		return false;
 	}
@@ -156,11 +157,11 @@ public class CardPassingWaitingState implements PlayerState {
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen)
 			return false;
-		
+
 		if (eventReceived)
 			// Let the next state handle this.
 			return false;
-		
+
 		stateManager.exit();
 		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 		return true;
@@ -170,7 +171,7 @@ public class CardPassingWaitingState implements PlayerState {
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen)
 			return false;
-		
+
 		// Let the next state handle this.
 		return false;
 	}

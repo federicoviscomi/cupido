@@ -55,6 +55,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			return false;
 		return candidate.value > previous.value;
 	}
+
 	/**
 	 * Computes the index of the winning card in a trick.
 	 * 
@@ -71,6 +72,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				winner = candidate;
 		return winner;
 	}
+
 	private CardsGameWidget cardsGameWidget;
 	private CupidoInterfaceAsync cupidoService;
 
@@ -107,9 +109,8 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 *            clockwise order. The scores in initialTableStatus are ignored.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
-			InitialTableStatus initialTableStatus,
-			int[] scores, Card[] cards, String username,
-			CupidoInterfaceAsync cupidoService) {
+			InitialTableStatus initialTableStatus, int[] scores, Card[] cards,
+			String username, CupidoInterfaceAsync cupidoService) {
 		this.username = username;
 		this.screenManager = screenManager;
 		this.cupidoService = cupidoService;
@@ -246,7 +247,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 		// The current animation (if any) is stopped.
 		freeze();
-		
+
 		// FIXME: Note that leaveTable() is called even if the game is already
 		// finished, even if this is not needed.
 		cupidoService.leaveTable(new AsyncCallback<Void>() {
@@ -261,9 +262,11 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				} catch (GameEndedException e) {
 					// This can happen even if no problems occur.
 				} catch (Throwable e) {
-					// Can't call screenManager.displayGeneralErrorScreen() because
+					// Can't call screenManager.displayGeneralErrorScreen()
+					// because
 					// the main screen has now the flow of control.
-					System.out.println("Client: got a fatal exception in leaveTable().");
+					System.out
+							.println("Client: got a fatal exception in leaveTable().");
 				}
 			}
 
@@ -271,7 +274,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 			public void onSuccess(Void result) {
 			}
 		});
-		
+
 		screenManager.displayMainMenuScreen(username);
 	}
 

@@ -68,6 +68,7 @@ public class TableListScreen extends VerticalPanel implements Screen {
 			}
 		}
 	}
+
 	private CellList<TableInfoForClient> cellList;
 	private boolean frozen = false;
 

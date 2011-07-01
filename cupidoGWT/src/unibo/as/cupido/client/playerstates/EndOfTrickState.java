@@ -33,9 +33,9 @@ public class EndOfTrickState implements PlayerState {
 	private boolean frozen = false;
 
 	private List<Card> hand;
-	
+
 	private PlayerStateManager stateManager;
-	
+
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand,
 			final CupidoInterfaceAsync cupidoService) {
@@ -102,7 +102,7 @@ public class EndOfTrickState implements PlayerState {
 	public boolean handleCardPassed(Card[] cards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -126,7 +126,7 @@ public class EndOfTrickState implements PlayerState {
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen)
 			return false;
-		
+
 		// Let the next state handle this.
 		return false;
 	}
@@ -135,7 +135,7 @@ public class EndOfTrickState implements PlayerState {
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager

@@ -41,8 +41,8 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.PushButton;
 
 /**
- * A widget that represents a table with no cards, and that may
- * have free seats (and probably does).
+ * A widget that represents a table with no cards, and that may have free seats
+ * (and probably does).
  */
 public class BeforeGameWidget extends AbsolutePanel {
 
@@ -74,6 +74,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 	// The width of the players' labels that contain usernames and scores.
 	private static final int playerLabelWidth = 200;
+
 	private static String constructBotLabelHtml(String username) {
 		SafeHtmlBuilder builder = new SafeHtmlBuilder();
 		builder.appendHtmlConstant("<b><big>");
@@ -125,14 +126,17 @@ public class BeforeGameWidget extends AbsolutePanel {
 	/**
 	 * The widget that represents the table before the actual game.
 	 * 
-	 * @param username Is the bottom player's username (it may be the current
-	 * user or not, depending whether the user is a player or just a viewer).
+	 * @param username
+	 *            Is the bottom player's username (it may be the current user or
+	 *            not, depending whether the user is a player or just a viewer).
 	 * 
-	 * @param scores The global scores of existing players. The scores contained
-	 *               in tableStatus are ignored.
+	 * @param scores
+	 *            The global scores of existing players. The scores contained in
+	 *            tableStatus are ignored.
 	 * 
-	 * @param isOwner Specifies whether or not the current user is the owner of the
-	 *                table.
+	 * @param isOwner
+	 *            Specifies whether or not the current user is the owner of the
+	 *            table.
 	 */
 	public BeforeGameWidget(int tableSize, String username,
 			String bottomUserName, boolean isOwner,
@@ -179,7 +183,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 		add(labels.get(2), tableSize - 10 - playerLabelWidth, tableSize / 2
 				- playerLabelHeight / 2);
 
-		bottomLabel.setHTML(constructPlayerLabelHtml(bottomUserName, scores[0]));
+		bottomLabel
+				.setHTML(constructPlayerLabelHtml(bottomUserName, scores[0]));
 
 		for (int i = 0; i < 3; i++)
 			if (tableStatus.opponents[i] != null) {
@@ -196,7 +201,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 					addBotButton(i);
 				else {
 					// Do nothing.
-					
+
 					// When changing here, also update the removePlayer()
 					// method.
 				}
@@ -306,7 +311,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 		if (buttons.get(position) != null)
 			remove(buttons.get(position));
 		assert labels.get(position).getText().isEmpty();
-		labels.get(position).setHTML(constructPlayerLabelHtml(username, points));
+		labels.get(position)
+				.setHTML(constructPlayerLabelHtml(username, points));
 
 		if (isTableFull())
 			listener.onTableFull();
@@ -334,8 +340,11 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 	/**
 	 * Adds a new player or a bot.
-	 * @param position The position in which the player or the bot has to be added.
-	 *                 0 means at the left, and other positions follow in clockwise order.
+	 * 
+	 * @param position
+	 *            The position in which the player or the bot has to be added. 0
+	 *            means at the left, and other positions follow in clockwise
+	 *            order.
 	 */
 	public void handleNewPlayerJoined(String name, boolean isBot, int points,
 			int position) {

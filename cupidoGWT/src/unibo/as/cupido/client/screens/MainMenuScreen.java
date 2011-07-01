@@ -215,7 +215,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 							public void onFailure(Throwable caught) {
 								if (frozen)
 									return;
-								
+
 								waitingServletResponse = false;
 								try {
 									throw caught;
@@ -233,7 +233,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 							public void onSuccess(ChatMessage[] messages) {
 								if (frozen)
 									return;
-								
+
 								waitingServletResponse = false;
 
 								chatWidget.setLastMessages(messages);
@@ -269,11 +269,13 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 				try {
 					throw caught;
 					/*
-					 TODO: Enable this when this exception is thrown.
-				} catch (MaxNumTableReachedException e) {
-					screenManager.displayMainMenuScreen(username);
-					Window.alert("\310 stato raggiunto il numero massimo di tavoli supportati. Riprova pi\371 tardi.");
-					*/
+					 * TODO: Enable this when this exception is thrown. } catch
+					 * (MaxNumTableReachedException e) {
+					 * screenManager.displayMainMenuScreen(username);
+					 * Window.alert(
+					 * "\310 stato raggiunto il numero massimo di tavoli supportati. Riprova pi\371 tardi."
+					 * );
+					 */
 				} catch (Throwable e) {
 					screenManager.displayGeneralErrorScreen(caught);
 				}

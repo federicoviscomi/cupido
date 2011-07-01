@@ -24,8 +24,8 @@ public class Position {
 
 	/**
 	 * The rotation is measured in degrees. When this is 0, there is no
-	 * rotation. The rotation is clockwise, so a widget with rotation `90'
-	 * will have its top pointed towards the right edge of the table.
+	 * rotation. The rotation is clockwise, so a widget with rotation `90' will
+	 * have its top pointed towards the right edge of the table.
 	 */
 	public int rotation;
 
@@ -40,8 +40,8 @@ public class Position {
 	public int y;
 
 	/**
-	 * The height of the widget. Widgets with higher values of z are drawn
-	 * above those with lower values.
+	 * The height of the widget. Widgets with higher values of z are drawn above
+	 * those with lower values.
 	 */
 	public int z;
 

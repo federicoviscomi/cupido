@@ -102,7 +102,7 @@ public class WaitingPlayedCardState implements PlayerState {
 	public boolean handleCardPassed(Card[] cards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -121,7 +121,7 @@ public class WaitingPlayedCardState implements PlayerState {
 			return false;
 
 		eventReceived = true;
-		
+
 		message.setText("");
 
 		// playerPosition was in the [0-2] interval, now it is between 1 and 3.
@@ -154,11 +154,11 @@ public class WaitingPlayedCardState implements PlayerState {
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen)
 			return false;
-		
+
 		if (eventReceived)
 			// Let the next state handle this.
 			return false;
-		
+
 		stateManager.exit();
 		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 		return true;
@@ -168,7 +168,7 @@ public class WaitingPlayedCardState implements PlayerState {
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen)
 			return false;
-		
+
 		// This notification should never arrive in this state.
 		freeze();
 		stateManager
@@ -181,7 +181,7 @@ public class WaitingPlayedCardState implements PlayerState {
 	public void handlePlayerReplaced(String name, int position) {
 		if (frozen)
 			return;
-		
+
 		if (eventReceived)
 			// Nothing to do.
 			return;

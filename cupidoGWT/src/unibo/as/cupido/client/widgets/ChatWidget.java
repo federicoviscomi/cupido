@@ -40,6 +40,7 @@ public class ChatWidget extends AbsolutePanel {
 	public interface ChatListener {
 		public void sendMessage(String message);
 	}
+
 	private static String constructMessageHtml(String username, String message) {
 		SafeHtmlBuilder x = new SafeHtmlBuilder();
 		x.appendHtmlConstant("<p><b>");
@@ -49,6 +50,7 @@ public class ChatWidget extends AbsolutePanel {
 		x.appendHtmlConstant("</p>");
 		return x.toSafeHtml().asString();
 	}
+
 	private boolean frozen = false;
 	private ChatListener listener;
 	private TextBox messageField;
@@ -61,22 +63,22 @@ public class ChatWidget extends AbsolutePanel {
 	public ChatWidget(int width, int height, ChatListener listener) {
 
 		this.listener = listener;
-		
+
 		setWidth(width + "px");
 		setHeight(height + "px");
 
 		final int bottomRowHeight = 30;
-		
+
 		scrollPanel = new ScrollPanel();
 		scrollPanel.setWidth((width - 20) + "px");
 		scrollPanel.setHeight((height - bottomRowHeight - 15) + "px");
 		add(scrollPanel, 10, 0);
-		
+
 		VerticalPanel panel = new VerticalPanel();
 		scrollPanel.add(panel);
 
 		panel.add(new HTML("<p><i>Benvenuto nella chat</i></p>"));
-		
+
 		messageList = new HTML();
 		panel.add(messageList);
 
@@ -88,8 +90,7 @@ public class ChatWidget extends AbsolutePanel {
 		int sendButtonWidth = 30;
 
 		messageField = new TextBox();
-		messageField.setWidth((width - sendButtonWidth - 40)
-				+ "px");
+		messageField.setWidth((width - sendButtonWidth - 40) + "px");
 		messageField.addKeyUpHandler(new KeyUpHandler() {
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
@@ -124,23 +125,23 @@ public class ChatWidget extends AbsolutePanel {
 		String messages = messageList.getHTML();
 
 		messages += constructMessageHtml(username, message);
-		
+
 		messageList.setHTML(messages);
 		scrollPanel.scrollToBottom();
 	}
-	
+
 	public void freeze() {
 		messageField.setEnabled(false);
 		sendButton.setEnabled(false);
 		frozen = true;
 	}
-	
+
 	private void sendMessage() {
 		if (messageField.getText().equals(""))
 			return;
-		
+
 		listener.sendMessage(messageField.getText());
-		
+
 		messageField.setText("");
 		messageField.setFocus(true);
 	}

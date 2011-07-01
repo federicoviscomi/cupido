@@ -120,7 +120,7 @@ public class CardPassingState implements PlayerState {
 			boolean isRaised) {
 		if (frozen)
 			return;
-		
+
 		if (state == CardRole.State.PLAYED)
 			return;
 		if (player != 0 || card == null)
@@ -150,7 +150,7 @@ public class CardPassingState implements PlayerState {
 	public boolean handleCardPassed(Card[] cards) {
 		if (frozen)
 			return false;
-		
+
 		// Let the next state handle this.
 		return false;
 	}
@@ -159,7 +159,7 @@ public class CardPassingState implements PlayerState {
 	public boolean handleCardPlayed(Card card, int playerPosition) {
 		if (frozen)
 			return false;
-		
+
 		// Let the next state handle this.
 		return false;
 	}
@@ -225,13 +225,11 @@ public class CardPassingState implements PlayerState {
 									sortedList.get(3 - i - 1));
 
 						for (Card card : raisedCards) {
-							boolean removedSomething = hand
-									.remove(card);
+							boolean removedSomething = hand.remove(card);
 							assert removedSomething;
 						}
 
-						stateManager
-								.transitionToCardPassingWaiting(hand);
+						stateManager.transitionToCardPassingWaiting(hand);
 					}
 				});
 	}
@@ -240,11 +238,11 @@ public class CardPassingState implements PlayerState {
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen)
 			return false;
-		
+
 		if (confirmed)
 			// Let the next state handle this.
 			return false;
-		
+
 		stateManager.exit();
 		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 		return true;
@@ -254,7 +252,7 @@ public class CardPassingState implements PlayerState {
 	public boolean handleGameStarted(Card[] myCards) {
 		if (frozen)
 			return false;
-		
+
 		// Let the next state handle this.
 		return false;
 	}

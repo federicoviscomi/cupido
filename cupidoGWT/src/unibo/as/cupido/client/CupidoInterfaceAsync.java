@@ -41,18 +41,21 @@ public interface CupidoInterfaceAsync {
 
 	public void getMyRank(AsyncCallback<RankingEntry> callback);
 
-	public void getTableList(AsyncCallback<Collection<TableInfoForClient>> callback);
+	public void getTableList(
+			AsyncCallback<Collection<TableInfoForClient>> callback);
 
 	public void getTopRank(AsyncCallback<ArrayList<RankingEntry>> callback);
 
-	public void isUserRegistered(String username, AsyncCallback<Boolean> callback);
+	public void isUserRegistered(String username,
+			AsyncCallback<Boolean> callback);
 
 	public void joinTable(String server, int tableId,
 			AsyncCallback<InitialTableStatus> callback);
 
 	public void leaveTable(AsyncCallback<Void> callback);
 
-	public void login(String username, String password, AsyncCallback<Boolean> callback);
+	public void login(String username, String password,
+			AsyncCallback<Boolean> callback);
 
 	public void logout(AsyncCallback<Void> callback);
 
@@ -65,9 +68,11 @@ public interface CupidoInterfaceAsync {
 	public void registerUser(String username, String password,
 			AsyncCallback<Void> callback);
 
-	public void sendGlobalChatMessage(String message, AsyncCallback<Void> callback);
+	public void sendGlobalChatMessage(String message,
+			AsyncCallback<Void> callback);
 
-	public void sendLocalChatMessage(String message, AsyncCallback<Void> callback);
+	public void sendLocalChatMessage(String message,
+			AsyncCallback<Void> callback);
 
 	public void viewLastMessages(AsyncCallback<ChatMessage[]> callback);
 

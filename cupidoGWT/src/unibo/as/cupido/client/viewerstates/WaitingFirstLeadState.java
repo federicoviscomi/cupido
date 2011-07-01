@@ -86,7 +86,7 @@ public class WaitingFirstLeadState implements ViewerState {
 			return false;
 
 		eventReceived = true;
-		
+
 		message.setHTML("");
 
 		stateManager.addPlayedCard(playerPosition, card);
@@ -107,7 +107,7 @@ public class WaitingFirstLeadState implements ViewerState {
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen)
 			return false;
-		
+
 		if (eventReceived)
 			// Let the next state handle this.
 			return false;

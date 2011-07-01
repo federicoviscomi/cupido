@@ -26,8 +26,8 @@ public class CardRole {
 	}
 
 	/**
-	 * This is valid only when state==HAND. It specifies whether this card
-	 * is raised.
+	 * This is valid only when state==HAND. It specifies whether this card is
+	 * raised.
 	 */
 	public boolean isRaised;
 
