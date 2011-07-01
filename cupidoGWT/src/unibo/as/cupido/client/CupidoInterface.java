@@ -366,6 +366,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws GameInterruptedException
 	 *             If the creator left the table, and so the game was interrupted.
 	 * @throws WrongGameStateException
+	 *             If the game in the specified table is already finished.
 	 */
 	public ObservedGameStatus viewTable(String server, int tableId)
 			throws NoSuchTableException, NoSuchServerException,

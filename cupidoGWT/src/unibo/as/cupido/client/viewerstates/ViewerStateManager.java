@@ -22,6 +22,9 @@ import java.util.List;
 import unibo.as.cupido.client.playerstates.PlayerStateManager;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.shared.cometNotification.CardPlayed;
+import unibo.as.cupido.shared.cometNotification.GameEnded;
+import unibo.as.cupido.shared.cometNotification.PlayerReplaced;
 
 /**
  * The interface implemented by the manager of the game states used
@@ -31,14 +34,28 @@ import unibo.as.cupido.common.structures.Card;
  */
 public interface ViewerStateManager {
 
+	/**
+	 * This class stores the information that the state manager needs about each player.
+	 */
 	public class PlayerInfo {
+		/**
+		 * Specifies whether this player is a bot or a human player.
+		 */
 		public boolean isBot;
+		
 		/**
 		 * This is relevant only when `isBot' is false.
 		 */
 		public String name;
 	}
 
+	/**
+	 * Lets the state manager know that the player in the specified position
+	 * played the specified card.
+	 * 
+	 * @param player The position of the player that played the card.
+	 * @param card The card that has been played.
+	 */
 	public void addPlayedCard(int player, Card card);
 
 	/**
@@ -56,9 +73,8 @@ public interface ViewerStateManager {
 	 * @return Returns the leading player for the current trick. A return value of 0
 	 *         means the bottom player, and other players' indexes follow in clockwise
 	 *         order.
-	 * 
-	 * This returns -1 in the initial card-passing states and at the beginning
-	 * of the first trick.
+	 *         Returns -1 in the initial card-passing states and at the beginning
+	 *         of the first trick.
 	 */
 	public int getFirstPlayerInTrick();
 
@@ -68,6 +84,10 @@ public interface ViewerStateManager {
 	 */
 	public List<Card> getPlayedCards();
 
+	/**
+	 * @return A list in which each element contains information about a specific player
+	 *         in the game.
+	 */
 	public List<PlayerInfo> getPlayerInfo();
 
 	/**
@@ -76,26 +96,75 @@ public interface ViewerStateManager {
 	 */
 	public int getRemainingTricks();
 
+	/**
+	 * @return The CardsGameWidget that is managed by this class.
+	 */
 	public CardsGameWidget getWidget();
 
+	/**
+	 * Notifies the state manager that the current trick is completed,
+	 * and starts a new trick.
+	 */
 	public void goToNextTrick();
 
+	/**
+	 * This is called when a CardPlayed notification is received
+	 * from the servlet.
+	 * 
+	 * @param card The card that has been played.
+	 * @param playerPosition The position of the player that played this card.
+	 * 
+	 * @see CardPlayed
+	 */
 	public void handleCardPlayed(Card card, int playerPosition);
 
+	/**
+	 * This is called when a GameEnded notification is received
+	 * from the servlet.
+	 * 
+	 * @param matchPoints The points scored by the players during the current game.
+	 * @param playersTotalPoints The total points of the players, already updated
+	 *                           with the results of the current game.
+	 * 
+	 * @see GameEnded
+	 */
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
 
-	public void handlePlayerReplaced(String name, int i);
+	/**
+	 * This is called when a PlayerReplaced notification is received
+	 * from the servlet.
+	 * 
+	 * @param name The name of the bot that replaced the player.
+	 * @param position The position in the table where the player resided.
+	 * 
+	 * @see PlayerReplaced
+	 */
+	public void handlePlayerReplaced(String name, int position);
 
 	/**
 	 * Reacts to a fatal exception.
+	 * 
+	 * @param e The exception that was caught.
 	 */
 	public void onFatalException(Throwable e);
 
+	/**
+	 * Changes the current state to EndOfTrickState.
+	 */
 	public void transitionToEndOfTrick();
 
+	/**
+	 * Changes the current state to GameEndedState.
+	 */
 	public void transitionToGameEnded();
 
+	/**
+	 * Changes the current state to WaitingFirstLeadState.
+	 */
 	public void transitionToWaitingFirstLead();
 
+	/**
+	 * Changes the current state to WaitingPlayedCardState.
+	 */
 	public void transitionToWaitingPlayedCard();
 }

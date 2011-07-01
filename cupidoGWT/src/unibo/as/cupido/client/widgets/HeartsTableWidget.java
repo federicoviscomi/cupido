@@ -35,7 +35,12 @@ public class HeartsTableWidget extends AbsolutePanel {
 
 	private BeforeGameWidget beforeGameWidget;
 	private CardsGameWidget cardsGameWidget = null;
+
+	/**
+	 * This is used to communicate with the servlet using RPC.
+	 */
 	private CupidoInterfaceAsync cupidoService;
+
 	private boolean frozen = false;
 
 	private int[] scores;
@@ -139,6 +144,10 @@ public class HeartsTableWidget extends AbsolutePanel {
 		add(beforeGameWidget, 0, 0);
 	}
 
+	/**
+	 * When this is called, the widget stops responding to events
+	 * and disables all user controls.
+	 */
 	public void freeze() {
 		if (beforeGameWidget != null)
 			beforeGameWidget.freeze();
@@ -200,7 +209,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 		}
 
 		InitialTableStatus initialTableStatus = beforeGameWidget
-				.getInitialTableStatus();
+				.getTableStatus();
 
 		remove(beforeGameWidget);
 		beforeGameWidget = null;

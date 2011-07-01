@@ -22,5 +22,8 @@ package unibo.as.cupido.client.widgets.cardsgame;
  * animation was completed.
  */
 public interface AnimationCompletedListener {
+	/**
+	 * This is called when the animation is completed.
+	 */
 	public void onComplete();
 }

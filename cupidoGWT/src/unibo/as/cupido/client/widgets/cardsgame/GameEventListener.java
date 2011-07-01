@@ -38,9 +38,10 @@ public interface GameEventListener {
 	 * This is called when the user clicks on a card, except during animations
 	 * and when controls are disabled.
 	 * 
-	 * @player The player to whom the card belongs
-	 * @card The card that was clicked, or null if a covered card was clicked.
-	 * @isRaised This is true only if state==HAND and this card is currently
+	 * @param player The player to whom the card belongs
+	 * @param card The card that was clicked, or null if a covered card was clicked.
+	 * @param state The current state of the card.
+	 * @param isRaised This is true only if state==HAND and this card is currently
 	 *           raised.
 	 */
 	public void onCardClicked(int player, Card card, CardRole.State state,

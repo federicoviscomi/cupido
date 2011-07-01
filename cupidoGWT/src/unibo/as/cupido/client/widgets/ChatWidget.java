@@ -35,12 +35,32 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * A widget that manages a chat.
+ */
 public class ChatWidget extends AbsolutePanel {
 
+	/**
+	 * A listener used by this class to notify the user code
+	 * when the user sends a message.
+	 */
 	public interface ChatListener {
+		/**
+		 * This is called when the user sends a message.
+		 * 
+		 * @param message The message entered by the user.
+		 */
 		public void sendMessage(String message);
 	}
 
+	/**
+	 * A helper method to generate the HTML for a chat message.
+	 * 
+	 * @param username The user that posted the message.
+	 * @param message The actual message.
+	 * 
+	 * @return A string containing the HTML for the message.
+	 */
 	private static String constructMessageHtml(String username, String message) {
 		SafeHtmlBuilder x = new SafeHtmlBuilder();
 		x.appendHtmlConstant("<p><b>");
@@ -130,6 +150,10 @@ public class ChatWidget extends AbsolutePanel {
 		scrollPanel.scrollToBottom();
 	}
 
+	/**
+	 * When this is called, the widget stops responding to events
+	 * and disables all user controls.
+	 */
 	public void freeze() {
 		messageField.setEnabled(false);
 		sendButton.setEnabled(false);
