@@ -80,6 +80,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	/** rmi registry */
 	private final Registry registry;
 
+	/** this thread does some clean up before the gtm is shut down */
 	private final Thread shutdownHook;
 
 	/**
@@ -103,7 +104,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 		registry.bind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME,
 				UnicastRemoteObject.exportObject(new GlobalChatImpl()));
 
-		shutdownHook = new ShutdownHook(registry, ltmSwarm);
+		shutdownHook = new ShutdownHook(this);
 		Runtime.getRuntime().addShutdownHook(shutdownHook);
 
 		System.out
@@ -111,33 +112,24 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 						+ InetAddress.getLocalHost());
 	}
 
+	/** calls the gtm shutdown method on exit */
 	private static final class ShutdownHook extends Thread {
-		private final Registry registry;
-		private final LTMSwarm ltmSwarm;
+		/** the gtm to shut down */
+		private final GlobalTableManager gmt;
 
-		public ShutdownHook(Registry registry, LTMSwarm ltmSwarm) {
-			this.ltmSwarm = ltmSwarm;
-			this.registry = registry;
+		/**
+		 * Create a new shutdown hook
+		 * 
+		 * @param gmt
+		 *            the gtm to shut down
+		 */
+		public ShutdownHook(GlobalTableManager gmt) {
+			this.gmt = gmt;
 		}
 
 		@Override
 		public void run() {
-			try {
-				try {
-					registry.unbind(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
-				} catch (Exception e) {
-					//
-				}
-				try {
-					registry.unbind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME);
-				} catch (Exception e) {
-					//
-				}
-				ltmSwarm.shutdown();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			gmt.shutDown();
 		}
 	}
 
