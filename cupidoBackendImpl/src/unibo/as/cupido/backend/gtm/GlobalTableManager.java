@@ -78,10 +78,12 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	private AllTables allTables;
 
 	/** manage a swarm of LTM */
-	private LTMSwarm ltmSwarm;
+	private final LTMSwarm ltmSwarm;
 
 	/** rmi registry */
 	private final Registry registry;
+
+	private final Thread shutdownHook;
 
 	/**
 	 * Creates a <tt>GlobalTableManager</tt> and tries to bind it in rmi
@@ -104,22 +106,42 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 		registry.bind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME,
 				UnicastRemoteObject.exportObject(new GlobalChatImpl()));
 
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				try {
-					registry.unbind(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
-					registry.unbind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
+		shutdownHook = new ShutdownHook(registry, ltmSwarm);
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
 
 		System.out
 				.println("Global table manager server started correctly at address "
 						+ InetAddress.getLocalHost());
+	}
+
+	private static final class ShutdownHook extends Thread {
+		private final Registry registry;
+		private final LTMSwarm ltmSwarm;
+
+		public ShutdownHook(Registry registry, LTMSwarm ltmSwarm) {
+			this.ltmSwarm = ltmSwarm;
+			this.registry = registry;
+		}
+
+		@Override
+		public void run() {
+			try {
+				try {
+					registry.unbind(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
+				} catch (Exception e) {
+					//
+				}
+				try {
+					registry.unbind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME);
+				} catch (Exception e) {
+					//
+				}
+				ltmSwarm.shutdown();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -209,16 +231,15 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	public void shutDown() {
 		try {
 			registry.unbind(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
-			registry.unbind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME);
-			for (LocalTableManagerInterface ltmi : ltmSwarm) {
-				ltmi.notifyGTMShutDown();
-			}
-		} catch (AccessException e) {
-			//
-		} catch (RemoteException e) {
-			//
-		} catch (NotBoundException e) {
+		} catch (Exception e) {
 			//
 		}
+		try {
+			registry.unbind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME);
+		} catch (Exception e) {
+			//
+		}
+		ltmSwarm.shutdown();
+		Runtime.getRuntime().removeShutdownHook(shutdownHook);
 	}
 }

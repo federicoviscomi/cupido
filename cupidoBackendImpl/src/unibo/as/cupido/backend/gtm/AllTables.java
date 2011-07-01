@@ -35,9 +35,9 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
 public class AllTables {
 
 	/** stores association between table descriptors and table infos */
-	Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
+	private final Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
 	/** stores association between ltm names and ltm interfaces */
-	Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
+	private final Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
 
 	/**
 	 * Adds a table.
