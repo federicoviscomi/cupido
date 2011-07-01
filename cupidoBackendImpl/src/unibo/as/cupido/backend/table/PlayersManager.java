@@ -42,7 +42,7 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 
 /**
- *
+ * Manages player.
  */
 public class PlayersManager {
 
@@ -102,18 +102,30 @@ public class PlayersManager {
 		 */
 		boolean replaced;
 
+		/**
+		 * Create info for a player.
+		 * 
+		 * @param name
+		 *            player name
+		 * @param score
+		 *            player score
+		 * @param playerNotificationInterface
+		 *            player notification interface
+		 * @param replacementBot
+		 *            interface of local replacement bot of the player
+		 */
 		public PlayerInfo(String name, int score,
-				ServletNotificationsInterface notificationInterface,
+				ServletNotificationsInterface playerNotificationInterface,
 				LocalBotInterface replacementBot) {
 
-			if (name == null || notificationInterface == null
+			if (name == null || playerNotificationInterface == null
 					|| replacementBot == null)
 				throw new IllegalArgumentException(name + " "
-						+ notificationInterface);
+						+ playerNotificationInterface);
 
 			this.name = name;
 			this.score = score;
-			this.playerNotificationInterface = notificationInterface;
+			this.playerNotificationInterface = playerNotificationInterface;
 			this.inactiveReplacementBot = replacementBot;
 			this.inactiveReplacementBotSNI = replacementBot
 					.getServletNotificationsInterface();
@@ -121,6 +133,14 @@ public class PlayersManager {
 			this.replaced = false;
 		}
 
+		/**
+		 * Create new info for a bot
+		 * 
+		 * @param name
+		 *            bot name
+		 * @param bot
+		 *            bot notification interface
+		 */
 		public PlayerInfo(String name, ServletNotificationsInterface bot) {
 			if (name == null || bot == null)
 				throw new IllegalArgumentException();
@@ -486,7 +506,6 @@ public class PlayersManager {
 	/**
 	 * <code>position</code> is the position of player who passed cards
 	 * 
-	 * @param playerName
 	 */
 	public void notifyPlayerPassedCards(int position, Card[] cards) {
 		int receiverIndex = (position + 5) % 4;

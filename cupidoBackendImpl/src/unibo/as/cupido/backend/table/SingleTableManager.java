@@ -59,7 +59,7 @@ public class SingleTableManager implements TableInterface {
 	private final GlobalTableManagerInterface gtm;
 	private final String owner;
 	private final ActionQueue actionQueue;
-
+	
 	private GameStatus gameStatus;
 
 	public static final String[] botNames = { "", "cupido", "venere", "marte" };
@@ -162,9 +162,9 @@ public class SingleTableManager implements TableInterface {
 			} else {
 				playersManager.removePlayer(userName);
 			}
-			if (playersManager.nonBotPlayersCount() == 0
-					&& viewers.viewersCount() == 0) {
+			if (playersManager.nonBotPlayersCount() == 0) {
 				actionQueue.killConsumer();
+				viewers.killConsumer();
 			}
 			return;
 		}

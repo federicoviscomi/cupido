@@ -133,7 +133,7 @@ public class LTMSwarm {
 			return (o.tableCount / o.maximumTable)
 					- (this.tableCount / this.maximumTable);
 		}
-
+		
 		@Override
 		public int hashCode() {
 			return this.ltmi.hashCode();
