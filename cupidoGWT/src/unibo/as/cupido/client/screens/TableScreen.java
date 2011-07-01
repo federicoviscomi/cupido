@@ -35,10 +35,10 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	 * The width of the chat sidebar.
 	 */
 	public static final int chatWidth = Cupido.width - Cupido.height;
-	private HeartsTableWidget tableWidget;
 	private ChatWidget chatWidget;
-
 	private boolean frozen = false;
+
+	private HeartsTableWidget tableWidget;
 
 	public TableScreen(ScreenManager screenManager, final String username,
 			boolean isOwner, InitialTableStatus initialTableStatus,
@@ -71,16 +71,6 @@ public class TableScreen extends AbsolutePanel implements Screen {
 		add(tableWidget, 0, 0);
 
 		screenManager.setListener(new CometMessageListener() {
-			@Override
-			public void onNewLocalChatMessage(String user, String message) {
-				if (frozen) {
-					System.out
-							.println("Client: notice: the NewLocalChatMessage notification was received while frozen, ignoring it.");
-					return;
-				}
-				chatWidget.displayMessage(user, message);
-			}
-
 			@Override
 			public void onCardPassed(Card[] cards) {
 				if (frozen) {
@@ -122,6 +112,16 @@ public class TableScreen extends AbsolutePanel implements Screen {
 			}
 
 			@Override
+			public void onNewLocalChatMessage(String user, String message) {
+				if (frozen) {
+					System.out
+							.println("Client: notice: the NewLocalChatMessage notification was received while frozen, ignoring it.");
+					return;
+				}
+				chatWidget.displayMessage(user, message);
+			}
+
+			@Override
 			public void onNewPlayerJoined(String name, boolean isBot,
 					int points, int position) {
 				if (frozen) {
@@ -134,16 +134,6 @@ public class TableScreen extends AbsolutePanel implements Screen {
 			}
 
 			@Override
-			public void onPlayerReplaced(String name, int position) {
-				if (frozen) {
-					System.out
-							.println("Client: notice: the PlayerReplaced notification was received while frozen, ignoring it.");
-					return;
-				}
-				tableWidget.handlePlayerReplaced(name, position);
-			}
-
-			@Override
 			public void onPlayerLeft(String player) {
 				if (frozen) {
 					System.out
@@ -152,11 +142,17 @@ public class TableScreen extends AbsolutePanel implements Screen {
 				}
 				tableWidget.handlePlayerLeft(player);
 			}
-		});
-	}
 
-	@Override
-	public void prepareRemoval() {
+			@Override
+			public void onPlayerReplaced(String name, int position) {
+				if (frozen) {
+					System.out
+							.println("Client: notice: the PlayerReplaced notification was received while frozen, ignoring it.");
+					return;
+				}
+				tableWidget.handlePlayerReplaced(name, position);
+			}
+		});
 	}
 
 	@Override
@@ -164,5 +160,9 @@ public class TableScreen extends AbsolutePanel implements Screen {
 		tableWidget.freeze();
 		chatWidget.freeze();
 		frozen = true;
+	}
+
+	@Override
+	public void prepareRemoval() {
 	}
 }

@@ -59,10 +59,10 @@ public class GeneralErrorScreen extends AbsolutePanel implements Screen {
 	}
 
 	@Override
-	public void prepareRemoval() {
+	public void freeze() {
 	}
 
 	@Override
-	public void freeze() {
+	public void prepareRemoval() {
 	}
 }

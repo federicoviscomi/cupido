@@ -30,10 +30,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class GameEndedState implements PlayerState {
 
 	private CardsGameWidget cardsGameWidget;
-	private PlayerStateManager stateManager;
+	private boolean eventReceived = false;
 
 	private boolean frozen = false;
-	private boolean eventReceived = false;
+	private PlayerStateManager stateManager;
 
 	public GameEndedState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager,
@@ -63,13 +63,13 @@ public class GameEndedState implements PlayerState {
 	}
 
 	@Override
-	public void handleAnimationStart() {
+	public void handleAnimationEnd() {
 		if (frozen)
 			return;
 	}
 
 	@Override
-	public void handleAnimationEnd() {
+	public void handleAnimationStart() {
 		if (frozen)
 			return;
 	}

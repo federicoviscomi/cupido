@@ -35,15 +35,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class WaitingPlayedCardState implements PlayerState {
 
 	private CardsGameWidget cardsGameWidget;
-	private PlayerStateManager stateManager;
-
-	private boolean frozen = false;
-	private boolean eventReceived = false;
-
-	private List<Card> hand;
 	private final int currentPlayer;
 
+	private boolean eventReceived = false;
+	private boolean frozen = false;
+
+	private List<Card> hand;
 	private HTML message;
+
+	private PlayerStateManager stateManager;
 
 	public WaitingPlayedCardState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
@@ -70,19 +70,6 @@ public class WaitingPlayedCardState implements PlayerState {
 		cardsGameWidget.setCornerWidget(panel);
 	}
 
-	private void recomputeLabelMessage() {
-		PlayerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
-				.get(currentPlayer);
-
-		assert currentPlayer != 0;
-
-		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
-		safeHtmlBuilder.appendEscaped(playerInfo.name);
-		safeHtmlBuilder.appendHtmlConstant(" giochi.");
-		message = new HTML(safeHtmlBuilder.toSafeHtml().asString());
-	}
-
 	@Override
 	public void activate() {
 	}
@@ -93,13 +80,13 @@ public class WaitingPlayedCardState implements PlayerState {
 	}
 
 	@Override
-	public void handleAnimationStart() {
+	public void handleAnimationEnd() {
 		if (frozen)
 			return;
 	}
 
 	@Override
-	public void handleAnimationEnd() {
+	public void handleAnimationStart() {
 		if (frozen)
 			return;
 	}
@@ -200,5 +187,18 @@ public class WaitingPlayedCardState implements PlayerState {
 			return;
 		if (currentPlayer == position)
 			recomputeLabelMessage();
+	}
+
+	private void recomputeLabelMessage() {
+		PlayerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
+				.get(currentPlayer);
+
+		assert currentPlayer != 0;
+
+		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+		safeHtmlBuilder.appendEscaped(playerInfo.name);
+		safeHtmlBuilder.appendHtmlConstant(" giochi.");
+		message = new HTML(safeHtmlBuilder.toSafeHtml().asString());
 	}
 }

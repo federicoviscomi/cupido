@@ -29,46 +29,9 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
 public interface ScreenManager {
 
 	/**
-	 * Shows the login screen instead of the current one.
-	 */
-	public void displayLoginScreen();
-
-	/**
-	 * Shows the login screen instead of the current one.
-	 */
-	public void displayRegistrationScreen();
-
-	/**
-	 * Shows the main menu screen instead of the current one.
-	 */
-	public void displayMainMenuScreen(String username);
-
-	/**
-	 * Shows the scores' screen instead of the current one.
-	 */
-	public void displayScoresScreen(String username,
-			ArrayList<RankingEntry> topRanks, ArrayList<RankingEntry> localRanks);
-
-	/**
 	 * Shows the about screen instead of the current one.
 	 */
 	public void displayAboutScreen(String username);
-
-	/**
-	 * Shows the table screen (as a player) instead of the current one.
-	 * 
-	 * @param inititalTableStatus
-	 */
-	public void displayTableScreen(String username, boolean isOwner,
-			InitialTableStatus inititalTableStatus, int userScore);
-
-	/**
-	 * Shows the table screen (as a viewer) instead of the current one.
-	 * 
-	 * @param observedGameStatus
-	 */
-	public void displayObservedTableScreen(String username,
-			ObservedGameStatus observedGameStatus);
 
 	/**
 	 * Shows the general error screen instead of the current one.
@@ -84,10 +47,47 @@ public interface ScreenManager {
 	public void displayLoadingScreen();
 
 	/**
+	 * Shows the login screen instead of the current one.
+	 */
+	public void displayLoginScreen();
+
+	/**
+	 * Shows the main menu screen instead of the current one.
+	 */
+	public void displayMainMenuScreen(String username);
+
+	/**
+	 * Shows the table screen (as a viewer) instead of the current one.
+	 * 
+	 * @param observedGameStatus
+	 */
+	public void displayObservedTableScreen(String username,
+			ObservedGameStatus observedGameStatus);
+
+	/**
+	 * Shows the login screen instead of the current one.
+	 */
+	public void displayRegistrationScreen();
+
+	/**
+	 * Shows the scores' screen instead of the current one.
+	 */
+	public void displayScoresScreen(String username,
+			ArrayList<RankingEntry> topRanks, ArrayList<RankingEntry> localRanks);
+
+	/**
 	 * Shows the table list screen instead of the current one.
 	 */
 	public void displayTableListScreen(String username,
 			Collection<TableInfoForClient> tableCollection);
+
+	/**
+	 * Shows the table screen (as a player) instead of the current one.
+	 * 
+	 * @param inititalTableStatus
+	 */
+	public void displayTableScreen(String username, boolean isOwner,
+			InitialTableStatus inititalTableStatus, int userScore);
 
 	public void setListener(CometMessageListener listener);
 }

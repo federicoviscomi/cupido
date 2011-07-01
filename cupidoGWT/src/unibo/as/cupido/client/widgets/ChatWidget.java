@@ -37,16 +37,26 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ChatWidget extends AbsolutePanel {
 
-	private HTML messageList;
-	private TextBox messageField;
-	private PushButton sendButton;
-	private ChatListener listener;
-	private boolean frozen = false;
-	private ScrollPanel scrollPanel;
-
 	public interface ChatListener {
 		public void sendMessage(String message);
 	}
+	private static String constructMessageHtml(String username, String message) {
+		SafeHtmlBuilder x = new SafeHtmlBuilder();
+		x.appendHtmlConstant("<p><b>");
+		x.appendEscaped(username);
+		x.appendHtmlConstant("</b>: ");
+		x.appendEscaped(message);
+		x.appendHtmlConstant("</p>");
+		return x.toSafeHtml().asString();
+	}
+	private boolean frozen = false;
+	private ChatListener listener;
+	private TextBox messageField;
+	private HTML messageList;
+
+	private ScrollPanel scrollPanel;
+
+	private PushButton sendButton;
 
 	public ChatWidget(int width, int height, ChatListener listener) {
 
@@ -104,6 +114,27 @@ public class ChatWidget extends AbsolutePanel {
 		add(bottomRow, 0, (height - bottomRowHeight - 10));
 	}
 
+	public void displayMessage(String username, String message) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: displayMessage() was called while frozen, ignoring it.");
+			return;
+		}
+
+		String messages = messageList.getHTML();
+
+		messages += constructMessageHtml(username, message);
+		
+		messageList.setHTML(messages);
+		scrollPanel.scrollToBottom();
+	}
+	
+	public void freeze() {
+		messageField.setEnabled(false);
+		sendButton.setEnabled(false);
+		frozen = true;
+	}
+	
 	private void sendMessage() {
 		if (messageField.getText().equals(""))
 			return;
@@ -128,36 +159,5 @@ public class ChatWidget extends AbsolutePanel {
 
 		messageList.setHTML(message);
 		scrollPanel.scrollToBottom();
-	}
-	
-	public void displayMessage(String username, String message) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: displayMessage() was called while frozen, ignoring it.");
-			return;
-		}
-
-		String messages = messageList.getHTML();
-
-		messages += constructMessageHtml(username, message);
-		
-		messageList.setHTML(messages);
-		scrollPanel.scrollToBottom();
-	}
-	
-	private static String constructMessageHtml(String username, String message) {
-		SafeHtmlBuilder x = new SafeHtmlBuilder();
-		x.appendHtmlConstant("<p><b>");
-		x.appendEscaped(username);
-		x.appendHtmlConstant("</b>: ");
-		x.appendEscaped(message);
-		x.appendHtmlConstant("</p>");
-		return x.toSafeHtml().asString();
-	}
-
-	public void freeze() {
-		messageField.setEnabled(false);
-		sendButton.setEnabled(false);
-		frozen = true;
 	}
 }

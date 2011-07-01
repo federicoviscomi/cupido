@@ -21,6 +21,44 @@ package unibo.as.cupido.client.widgets.cardsgame;
  * This contains some data about a card on the table.
  */
 public class CardRole {
+	public enum State {
+		HAND, PLAYED
+	}
+
+	/**
+	 * This is valid only when state==HAND. It specifies whether this card
+	 * is raised.
+	 */
+	public boolean isRaised;
+
+	/**
+	 * The player to whom the card belongs.
+	 */
+	public int player;
+
+	/**
+	 * The state of the card (see the State enum).
+	 */
+	public CardRole.State state;
+
+	public CardRole() {
+	}
+
+	public CardRole(CardRole.State state, boolean raised, int player) {
+		this.state = state;
+		this.player = player;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// Note that the `isRaised' field is *not* compared.
+		if (obj != null && obj instanceof CardRole) {
+			CardRole x = (CardRole) obj;
+			return (player == x.player && state == x.state);
+		} else
+			return false;
+	}
+
 	@Override
 	public int hashCode() {
 		// Note that the `isRaised' field does *not* change the hash code.
@@ -34,43 +72,5 @@ public class CardRole {
 			return player + 4;
 		}
 		throw new IllegalStateException();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		// Note that the `isRaised' field is *not* compared.
-		if (obj != null && obj instanceof CardRole) {
-			CardRole x = (CardRole) obj;
-			return (player == x.player && state == x.state);
-		} else
-			return false;
-	}
-
-	public enum State {
-		HAND, PLAYED
-	}
-
-	/**
-	 * The state of the card (see the State enum).
-	 */
-	public CardRole.State state;
-
-	/**
-	 * This is valid only when state==HAND. It specifies whether this card
-	 * is raised.
-	 */
-	public boolean isRaised;
-
-	/**
-	 * The player to whom the card belongs.
-	 */
-	public int player;
-
-	public CardRole() {
-	}
-
-	public CardRole(CardRole.State state, boolean raised, int player) {
-		this.state = state;
-		this.player = player;
 	}
 }

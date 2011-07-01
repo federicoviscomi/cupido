@@ -38,15 +38,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class FirstLeaderState implements PlayerState {
 
 	private CardsGameWidget cardsGameWidget;
-	private PlayerStateManager stateManager;
 	private CupidoInterfaceAsync cupidoService;
-
 	private boolean frozen = false;
-	private boolean playedCard = false;
 
 	private List<Card> hand;
-
 	private HTML message;
+
+	private boolean playedCard = false;
+
+	private PlayerStateManager stateManager;
 
 	public FirstLeaderState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
@@ -79,13 +79,13 @@ public class FirstLeaderState implements PlayerState {
 	}
 
 	@Override
-	public void handleAnimationStart() {
+	public void handleAnimationEnd() {
 		if (frozen)
 			return;
 	}
 
 	@Override
-	public void handleAnimationEnd() {
+	public void handleAnimationStart() {
 		if (frozen)
 			return;
 	}

@@ -43,20 +43,20 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class CardPassingState implements PlayerState {
 
 	private CardsGameWidget cardsGameWidget;
-	private PlayerStateManager stateManager;
-	private CupidoInterfaceAsync cupidoService;
-
-	private boolean frozen = false;
 	/**
 	 * Whether the user has already confirmed to pass the selected cards.
 	 */
 	private boolean confirmed = false;
+	private CupidoInterfaceAsync cupidoService;
 
+	private boolean frozen = false;
 	private List<Card> hand;
-	private List<Card> raisedCards = new ArrayList<Card>();
 
 	private HTML message;
 	private PushButton okButton;
+
+	private List<Card> raisedCards = new ArrayList<Card>();
+	private PlayerStateManager stateManager;
 
 	public CardPassingState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand,
@@ -89,6 +89,79 @@ public class CardPassingState implements PlayerState {
 		cornerWidget.add(okButton);
 
 		cardsGameWidget.setCornerWidget(cornerWidget);
+	}
+
+	@Override
+	public void activate() {
+	}
+
+	@Override
+	public void freeze() {
+		okButton.setEnabled(false);
+		frozen = true;
+	}
+
+	@Override
+	public void handleAnimationEnd() {
+		if (frozen)
+			return;
+		okButton.setEnabled(!confirmed && raisedCards.size() == 3);
+	}
+
+	@Override
+	public void handleAnimationStart() {
+		if (frozen)
+			return;
+		okButton.setEnabled(false);
+	}
+
+	@Override
+	public void handleCardClicked(int player, Card card, CardRole.State state,
+			boolean isRaised) {
+		if (frozen)
+			return;
+		
+		if (state == CardRole.State.PLAYED)
+			return;
+		if (player != 0 || card == null)
+			return;
+
+		if (isRaised) {
+			boolean found = raisedCards.remove(card);
+			assert found;
+			cardsGameWidget.lowerRaisedCard(0, card);
+		} else {
+			if (raisedCards.size() == 3)
+				// Never raise more than 3 cards at once.
+				return;
+			raisedCards.add(card);
+			cardsGameWidget.raiseCard(0, card);
+		}
+
+		cardsGameWidget.runPendingAnimations(200,
+				new AnimationCompletedListener() {
+					@Override
+					public void onComplete() {
+					}
+				});
+	}
+
+	@Override
+	public boolean handleCardPassed(Card[] cards) {
+		if (frozen)
+			return false;
+		
+		// Let the next state handle this.
+		return false;
+	}
+
+	@Override
+	public boolean handleCardPlayed(Card card, int playerPosition) {
+		if (frozen)
+			return false;
+		
+		// Let the next state handle this.
+		return false;
 	}
 
 	private void handleConfirmSelectedCards() {
@@ -161,79 +234,6 @@ public class CardPassingState implements PlayerState {
 								.transitionToCardPassingWaiting(hand);
 					}
 				});
-	}
-
-	@Override
-	public void activate() {
-	}
-
-	@Override
-	public void freeze() {
-		okButton.setEnabled(false);
-		frozen = true;
-	}
-
-	@Override
-	public void handleAnimationStart() {
-		if (frozen)
-			return;
-		okButton.setEnabled(false);
-	}
-
-	@Override
-	public void handleAnimationEnd() {
-		if (frozen)
-			return;
-		okButton.setEnabled(!confirmed && raisedCards.size() == 3);
-	}
-
-	@Override
-	public void handleCardClicked(int player, Card card, CardRole.State state,
-			boolean isRaised) {
-		if (frozen)
-			return;
-		
-		if (state == CardRole.State.PLAYED)
-			return;
-		if (player != 0 || card == null)
-			return;
-
-		if (isRaised) {
-			boolean found = raisedCards.remove(card);
-			assert found;
-			cardsGameWidget.lowerRaisedCard(0, card);
-		} else {
-			if (raisedCards.size() == 3)
-				// Never raise more than 3 cards at once.
-				return;
-			raisedCards.add(card);
-			cardsGameWidget.raiseCard(0, card);
-		}
-
-		cardsGameWidget.runPendingAnimations(200,
-				new AnimationCompletedListener() {
-					@Override
-					public void onComplete() {
-					}
-				});
-	}
-
-	@Override
-	public boolean handleCardPassed(Card[] cards) {
-		if (frozen)
-			return false;
-		
-		// Let the next state handle this.
-		return false;
-	}
-
-	@Override
-	public boolean handleCardPlayed(Card card, int playerPosition) {
-		if (frozen)
-			return false;
-		
-		// Let the next state handle this.
-		return false;
 	}
 
 	@Override

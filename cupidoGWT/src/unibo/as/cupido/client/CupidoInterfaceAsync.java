@@ -31,46 +31,46 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface CupidoInterfaceAsync {
 
-	public void logout(AsyncCallback<Void> callback);
+	public void addBot(int position, AsyncCallback<String> callback);
 
-	public void isUserRegistered(String username, AsyncCallback<Boolean> callback);
+	public void createTable(AsyncCallback<InitialTableStatus> callback);
 
-	public void registerUser(String username, String password,
-			AsyncCallback<Void> callback);
+	public void destroySession(AsyncCallback<Void> callback);
 
-	public void login(String username, String password, AsyncCallback<Boolean> callback);
+	public void getLocalRank(AsyncCallback<ArrayList<RankingEntry>> callback);
+
+	public void getMyRank(AsyncCallback<RankingEntry> callback);
 
 	public void getTableList(AsyncCallback<Collection<TableInfoForClient>> callback);
 
-	public void createTable(AsyncCallback<InitialTableStatus> callback);
+	public void getTopRank(AsyncCallback<ArrayList<RankingEntry>> callback);
+
+	public void isUserRegistered(String username, AsyncCallback<Boolean> callback);
 
 	public void joinTable(String server, int tableId,
 			AsyncCallback<InitialTableStatus> callback);
 
-	public void viewTable(String server, int tableId,
-			AsyncCallback<ObservedGameStatus> callback);
+	public void leaveTable(AsyncCallback<Void> callback);
+
+	public void login(String username, String password, AsyncCallback<Boolean> callback);
+
+	public void logout(AsyncCallback<Void> callback);
 
 	public void openCometConnection(AsyncCallback<Void> callback);
 
-	public void leaveTable(AsyncCallback<Void> callback);
+	public void passCards(Card[] cards, AsyncCallback<Void> callback);
 
 	public void playCard(Card card, AsyncCallback<Void> callback);
 
-	public void passCards(Card[] cards, AsyncCallback<Void> callback);
-
-	public void addBot(int position, AsyncCallback<String> callback);
-
-	public void viewLastMessages(AsyncCallback<ChatMessage[]> callback);
+	public void registerUser(String username, String password,
+			AsyncCallback<Void> callback);
 
 	public void sendGlobalChatMessage(String message, AsyncCallback<Void> callback);
 
 	public void sendLocalChatMessage(String message, AsyncCallback<Void> callback);
 
-	public void destroySession(AsyncCallback<Void> callback);
+	public void viewLastMessages(AsyncCallback<ChatMessage[]> callback);
 
-	public void getMyRank(AsyncCallback<RankingEntry> callback);
-
-	public void getLocalRank(AsyncCallback<ArrayList<RankingEntry>> callback);
-
-	public void getTopRank(AsyncCallback<ArrayList<RankingEntry>> callback);
+	public void viewTable(String server, int tableId,
+			AsyncCallback<ObservedGameStatus> callback);
 }

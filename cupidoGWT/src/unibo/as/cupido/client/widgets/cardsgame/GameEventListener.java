@@ -25,14 +25,14 @@ import unibo.as.cupido.common.structures.Card;
  */
 public interface GameEventListener {
 	/**
-	 * This is called before starting an animation.
-	 */
-	public void onAnimationStart();
-
-	/**
 	 * This is called when an animation finishes.
 	 */
 	public void onAnimationEnd();
+
+	/**
+	 * This is called before starting an animation.
+	 */
+	public void onAnimationStart();
 
 	/**
 	 * This is called when the user clicks on a card, except during

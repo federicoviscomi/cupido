@@ -54,12 +54,17 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	// milliseconds.
 	private final static int chatRefreshInterval = 2000;
 
+	/**
+	 * The width of the chat sidebar.
+	 */
+	public static final int chatWidth = 300;
+
 	private List<PushButton> buttons = new ArrayList<PushButton>();
 
 	private Timer chatTimer;
+	private ChatWidget chatWidget;
 
-	private boolean stoppedRefreshing = false;
-	private boolean waitingServletResponse = false;
+	private CupidoInterfaceAsync cupidoService;
 
 	private boolean frozen = false;
 
@@ -69,18 +74,13 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	 */
 	private boolean needRefresh = false;
 
-	private ChatWidget chatWidget;
-
 	private ScreenManager screenManager;
 
-	private CupidoInterfaceAsync cupidoService;
+	private boolean stoppedRefreshing = false;
 
 	private String username;
 
-	/**
-	 * The width of the chat sidebar.
-	 */
-	public static final int chatWidth = 300;
+	private boolean waitingServletResponse = false;
 
 	public MainMenuScreen(final ScreenManager screenManager,
 			final String username, final CupidoInterfaceAsync cupidoService) {
@@ -253,6 +253,14 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		chatTimer.run();
 	}
 
+	@Override
+	public void freeze() {
+		for (PushButton w : buttons)
+			w.setEnabled(false);
+		chatWidget.freeze();
+		frozen = true;
+	}
+
 	private void handleCreateTable() {
 		freeze();
 		cupidoService.createTable(new AsyncCallback<InitialTableStatus>() {
@@ -292,22 +300,6 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		});
 	}
 
-	private void handleDisplayTableList() {
-		freeze();
-		cupidoService
-				.getTableList(new AsyncCallback<Collection<TableInfoForClient>>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						screenManager.displayGeneralErrorScreen(caught);
-					}
-
-					@Override
-					public void onSuccess(Collection<TableInfoForClient> result) {
-						screenManager.displayTableListScreen(username, result);
-					}
-				});
-	}
-
 	private void handleDisplayScores() {
 		freeze();
 		cupidoService.getTopRank(new AsyncCallback<ArrayList<RankingEntry>>() {
@@ -338,6 +330,22 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		});
 	}
 
+	private void handleDisplayTableList() {
+		freeze();
+		cupidoService
+				.getTableList(new AsyncCallback<Collection<TableInfoForClient>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						screenManager.displayGeneralErrorScreen(caught);
+					}
+
+					@Override
+					public void onSuccess(Collection<TableInfoForClient> result) {
+						screenManager.displayTableListScreen(username, result);
+					}
+				});
+	}
+
 	private void handleLogout() {
 		freeze();
 		cupidoService.logout(new AsyncCallback<Void>() {
@@ -351,14 +359,6 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 				screenManager.displayLoginScreen();
 			}
 		});
-	}
-
-	@Override
-	public void freeze() {
-		for (PushButton w : buttons)
-			w.setEnabled(false);
-		chatWidget.freeze();
-		frozen = true;
 	}
 
 	@Override

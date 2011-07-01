@@ -41,20 +41,20 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class RegistrationScreen extends VerticalPanel implements Screen {
 
+	private PushButton abortButton;
+	private PushButton checkUsernameAvailability;
+
+	private HTML checkUsernameAvailabilityLabel;
 	private CupidoInterfaceAsync cupidoService;
+	private boolean frozen = false;
+
+	private PushButton okButton;
+	private PasswordTextBox passwordBox;
+
+	private PasswordTextBox passwordConfirmBox;
 	private ScreenManager screenManager;
 
 	private TextBox usernameBox;
-	private PasswordTextBox passwordBox;
-	private PasswordTextBox passwordConfirmBox;
-
-	private PushButton okButton;
-	private PushButton abortButton;
-
-	private HTML checkUsernameAvailabilityLabel;
-	private PushButton checkUsernameAvailability;
-
-	private boolean frozen = false;
 
 	public RegistrationScreen(final ScreenManager screenManager,
 			final CupidoInterfaceAsync cupidoService) {
@@ -218,6 +218,24 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 				});
 	}
 
+	@Override
+	public void freeze() {
+		usernameBox.setEnabled(false);
+		passwordBox.setEnabled(false);
+		passwordConfirmBox.setEnabled(false);
+
+		okButton.setEnabled(false);
+		abortButton.setEnabled(false);
+
+		checkUsernameAvailability.setEnabled(false);
+
+		frozen = true;
+	}
+
+	@Override
+	public void prepareRemoval() {
+	}
+
 	private void tryRegistering() {
 		if (usernameBox.getText().isEmpty()) {
 			// Remove the focus, so if the user dismisses the alert with Enter,
@@ -330,23 +348,5 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 					}
 
 				});
-	}
-
-	@Override
-	public void prepareRemoval() {
-	}
-
-	@Override
-	public void freeze() {
-		usernameBox.setEnabled(false);
-		passwordBox.setEnabled(false);
-		passwordConfirmBox.setEnabled(false);
-
-		okButton.setEnabled(false);
-		abortButton.setEnabled(false);
-
-		checkUsernameAvailability.setEnabled(false);
-
-		frozen = true;
 	}
 }

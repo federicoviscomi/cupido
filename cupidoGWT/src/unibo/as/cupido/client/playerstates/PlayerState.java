@@ -32,14 +32,14 @@ public interface PlayerState {
 	public void freeze();
 
 	/**
-	 * This is called before starting an animation.
-	 */
-	public void handleAnimationStart();
-
-	/**
 	 * This is called when an animation finishes.
 	 */
 	public void handleAnimationEnd();
+
+	/**
+	 * This is called before starting an animation.
+	 */
+	public void handleAnimationStart();
 
 	/**
 	 * This is called when the user clicks on a card, except during animations

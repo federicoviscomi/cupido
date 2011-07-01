@@ -22,15 +22,12 @@ package unibo.as.cupido.client.widgets.cardsgame;
  */
 public class Position {
 
-	public Position() {
-	}
-
-	public Position(int x, int y, int z, int rotation) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.rotation = rotation;
-	}
+	/**
+	 * The rotation is measured in degrees. When this is 0, there is no
+	 * rotation. The rotation is clockwise, so a widget with rotation `90'
+	 * will have its top pointed towards the right edge of the table.
+	 */
+	public int rotation;
 
 	/**
 	 * The distance between the left margin and the center of the widget.
@@ -48,10 +45,13 @@ public class Position {
 	 */
 	public int z;
 
-	/**
-	 * The rotation is measured in degrees. When this is 0, there is no
-	 * rotation. The rotation is clockwise, so a widget with rotation `90'
-	 * will have its top pointed towards the right edge of the table.
-	 */
-	public int rotation;
+	public Position() {
+	}
+
+	public Position(int x, int y, int z, int rotation) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.rotation = rotation;
+	}
 }

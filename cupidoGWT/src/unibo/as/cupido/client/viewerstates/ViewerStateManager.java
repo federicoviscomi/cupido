@@ -25,12 +25,21 @@ import unibo.as.cupido.common.structures.Card;
 public interface ViewerStateManager {
 
 	public class PlayerInfo {
+		public boolean isBot;
 		/**
 		 * This is relevant only when `isBot' is false.
 		 */
 		public String name;
-		public boolean isBot;
 	}
+
+	public void addPlayedCard(int player, Card card);
+
+	/**
+	 * Exits from the game, stopping the current animation (if any).
+	 */
+	public void exit();
+
+	public void freeze();
 
 	/**
 	 * Returns the leading player for the current trick. A return value of 0
@@ -48,9 +57,7 @@ public interface ViewerStateManager {
 	 */
 	public List<Card> getPlayedCards();
 
-	public void addPlayedCard(int player, Card card);
-
-	public void goToNextTrick();
+	public List<PlayerInfo> getPlayerInfo();
 
 	/**
 	 * @return The number of remaining tricks, including the current one (if
@@ -58,33 +65,26 @@ public interface ViewerStateManager {
 	 */
 	public int getRemainingTricks();
 
-	/**
-	 * Exits from the game, stopping the current animation (if any).
-	 */
-	public void exit();
-
-	/**
-	 * Reacts to a fatal exception.
-	 */
-	public void onFatalException(Throwable e);
-
-	public List<PlayerInfo> getPlayerInfo();
-
 	public CardsGameWidget getWidget();
 
-	public void transitionToEndOfTrick();
-
-	public void transitionToWaitingFirstLead();
-
-	public void transitionToGameEnded();
-
-	public void transitionToWaitingPlayedCard();
-
-	public void freeze();
+	public void goToNextTrick();
 
 	public void handleCardPlayed(Card card, int playerPosition);
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
 
 	public void handlePlayerReplaced(String name, int i);
+
+	/**
+	 * Reacts to a fatal exception.
+	 */
+	public void onFatalException(Throwable e);
+
+	public void transitionToEndOfTrick();
+
+	public void transitionToGameEnded();
+
+	public void transitionToWaitingFirstLead();
+
+	public void transitionToWaitingPlayedCard();
 }

@@ -36,8 +36,30 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ScoresScreen extends VerticalPanel implements Screen {
 
-	private boolean frozen = false;
+	private static HTML constructRow(RankingEntry entry, boolean highlight) {
+		SafeHtmlBuilder builder = new SafeHtmlBuilder();
+		builder.append(entry.rank);
+		builder.appendHtmlConstant(". ");
+		if (highlight)
+			builder.appendHtmlConstant("<b>");
+		builder.appendEscaped(entry.username);
+		if (highlight)
+			builder.appendHtmlConstant("</b>");
+		builder.appendHtmlConstant(": ");
+		builder.append(entry.points);
+		builder.appendHtmlConstant("<br />");
+		HTML row = new HTML(builder.toSafeHtml());
+		row.setWidth("290px");
+		DOM.setStyleAttribute(row.getElement(), "padding", "2px");
+		if (highlight) {
+			DOM.setStyleAttribute(row.getElement(), "borderWidth", "1px");
+			DOM.setStyleAttribute(row.getElement(), "borderStyle", "solid");
+		}
+		return row;
+	}
 	private PushButton exitButton;
+
+	private boolean frozen = false;
 
 	public ScoresScreen(final ScreenManager screenManager,
 			final String username, ArrayList<RankingEntry> topRanks,
@@ -114,35 +136,13 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 		return boxContainer;
 	}
 
-	private static HTML constructRow(RankingEntry entry, boolean highlight) {
-		SafeHtmlBuilder builder = new SafeHtmlBuilder();
-		builder.append(entry.rank);
-		builder.appendHtmlConstant(". ");
-		if (highlight)
-			builder.appendHtmlConstant("<b>");
-		builder.appendEscaped(entry.username);
-		if (highlight)
-			builder.appendHtmlConstant("</b>");
-		builder.appendHtmlConstant(": ");
-		builder.append(entry.points);
-		builder.appendHtmlConstant("<br />");
-		HTML row = new HTML(builder.toSafeHtml());
-		row.setWidth("290px");
-		DOM.setStyleAttribute(row.getElement(), "padding", "2px");
-		if (highlight) {
-			DOM.setStyleAttribute(row.getElement(), "borderWidth", "1px");
-			DOM.setStyleAttribute(row.getElement(), "borderStyle", "solid");
-		}
-		return row;
-	}
-
-	@Override
-	public void prepareRemoval() {
-	}
-
 	@Override
 	public void freeze() {
 		exitButton.setEnabled(false);
 		frozen = true;
+	}
+
+	@Override
+	public void prepareRemoval() {
 	}
 }

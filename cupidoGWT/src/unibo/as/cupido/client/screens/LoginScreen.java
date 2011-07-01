@@ -39,15 +39,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class LoginScreen extends VerticalPanel implements Screen {
 
-	private ScreenManager screenManager;
 	private CupidoInterfaceAsync cupidoService;
+	private boolean frozen = false;
+
+	private PushButton okButton;
+	private PasswordTextBox passwordBox;
+	private PushButton registerButton;
+	private ScreenManager screenManager;
 
 	private TextBox usernameBox;
-	private PasswordTextBox passwordBox;
-	private PushButton okButton;
-	private PushButton registerButton;
-
-	private boolean frozen = false;
 
 	public LoginScreen(final ScreenManager screenManager,
 			CupidoInterfaceAsync cupidoService) {
@@ -131,6 +131,19 @@ public class LoginScreen extends VerticalPanel implements Screen {
 		bottomPanel.add(okButton);
 	}
 
+	@Override
+	public void freeze() {
+		usernameBox.setEnabled(false);
+		passwordBox.setEnabled(false);
+		okButton.setEnabled(false);
+		registerButton.setEnabled(false);
+		frozen = true;
+	}
+
+	@Override
+	public void prepareRemoval() {
+	}
+
 	private void tryLogin() {
 		final String username = usernameBox.getText();
 		cupidoService.login(username, passwordBox.getText(),
@@ -159,18 +172,5 @@ public class LoginScreen extends VerticalPanel implements Screen {
 						}
 					}
 				});
-	}
-
-	@Override
-	public void prepareRemoval() {
-	}
-
-	@Override
-	public void freeze() {
-		usernameBox.setEnabled(false);
-		passwordBox.setEnabled(false);
-		okButton.setEnabled(false);
-		registerButton.setEnabled(false);
-		frozen = true;
 	}
 }

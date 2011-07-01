@@ -37,21 +37,21 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class Cupido implements EntryPoint {
 
-	/**
-	 * The width of the application's screens.
-	 */
-	public static final int width = 900;
+	@SerialTypes({ CardPassed.class, CardPlayed.class, GameEnded.class,
+			GameStarted.class, NewLocalChatMessage.class,
+			NewPlayerJoined.class, PlayerLeft.class, PlayerReplaced.class })
+	public static abstract class CupidoCometSerializer extends CometSerializer {
+	}
 
 	/**
 	 * The height of the application's screens.
 	 */
 	public static final int height = 700;
 
-	@SerialTypes({ CardPassed.class, CardPlayed.class, GameEnded.class,
-			GameStarted.class, NewLocalChatMessage.class,
-			NewPlayerJoined.class, PlayerLeft.class, PlayerReplaced.class })
-	public static abstract class CupidoCometSerializer extends CometSerializer {
-	}
+	/**
+	 * The width of the application's screens.
+	 */
+	public static final int width = 900;
 
 	/**
 	 * This is the entry point method.

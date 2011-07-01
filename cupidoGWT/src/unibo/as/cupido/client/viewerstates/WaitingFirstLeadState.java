@@ -30,12 +30,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class WaitingFirstLeadState implements ViewerState {
 
 	private CardsGameWidget cardsGameWidget;
-	private ViewerStateManager stateManager;
-
-	private boolean frozen = false;
 	private boolean eventReceived = false;
 
+	private boolean frozen = false;
 	private HTML message;
+
+	private ViewerStateManager stateManager;
 
 	public WaitingFirstLeadState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
@@ -65,13 +65,13 @@ public class WaitingFirstLeadState implements ViewerState {
 	}
 
 	@Override
-	public void handleAnimationStart() {
+	public void handleAnimationEnd() {
 		if (frozen)
 			return;
 	}
 
 	@Override
-	public void handleAnimationEnd() {
+	public void handleAnimationStart() {
 		if (frozen)
 			return;
 	}

@@ -30,11 +30,11 @@ import com.google.gwt.user.client.ui.SimplePanel;
 public class EndOfTrickState implements PlayerState {
 
 	private CardsGameWidget cardsGameWidget;
-	private PlayerStateManager stateManager;
-
 	private boolean frozen = false;
-	
+
 	private List<Card> hand;
+	
+	private PlayerStateManager stateManager;
 	
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand,
@@ -75,9 +75,8 @@ public class EndOfTrickState implements PlayerState {
 	}
 
 	@Override
-	public void handleAnimationStart() {
-		if (frozen)
-			return;
+	public void freeze() {
+		frozen = true;
 	}
 
 	@Override
@@ -87,15 +86,16 @@ public class EndOfTrickState implements PlayerState {
 	}
 
 	@Override
-	public void handleCardClicked(int player, Card card, CardRole.State state,
-			boolean isRaised) {
+	public void handleAnimationStart() {
 		if (frozen)
 			return;
 	}
 
 	@Override
-	public void freeze() {
-		frozen = true;
+	public void handleCardClicked(int player, Card card, CardRole.State state,
+			boolean isRaised) {
+		if (frozen)
+			return;
 	}
 
 	@Override

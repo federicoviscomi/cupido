@@ -34,16 +34,16 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 
 public class HeartsTableWidget extends AbsolutePanel {
 
-	private ScreenManager screenManager;
 	private BeforeGameWidget beforeGameWidget;
 	private CardsGameWidget cardsGameWidget = null;
-	private int tableSize;
-
-	private PlayerStateManager stateManager = null;
-	private boolean frozen = false;
-	private String username;
 	private CupidoInterfaceAsync cupidoService;
+	private boolean frozen = false;
+
 	private int[] scores;
+	private ScreenManager screenManager;
+	private PlayerStateManager stateManager = null;
+	private int tableSize;
+	private String username;
 
 	/**
 	 * 
@@ -77,25 +77,6 @@ public class HeartsTableWidget extends AbsolutePanel {
 		beforeGameWidget = new BeforeGameWidget(tableSize, username, username,
 				isOwner, initialTableStatus, scores, cupidoService,
 				new BeforeGameWidget.Listener() {
-					@Override
-					public void onTableFull() {
-						// Just wait for the GameStarted notification.
-						beforeGameWidget.freeze();
-					}
-
-					@Override
-					public void onGameEnded() {
-						if (frozen) {
-							System.out
-									.println("Client: notice: the onGameEnded() event was received while frozen, ignoring it.");
-							return;
-						}
-
-						assert !isOwner;
-						screenManager.displayMainMenuScreen(username);
-						Window.alert("L'owner ha lasciato il tavolo, e quindi la partita \350 stata annullata.");
-					}
-
 					@Override
 					public void onExit() {
 						if (frozen) {
@@ -133,6 +114,25 @@ public class HeartsTableWidget extends AbsolutePanel {
 					public void onFatalException(Throwable e) {
 						screenManager.displayGeneralErrorScreen(e);
 					}
+
+					@Override
+					public void onGameEnded() {
+						if (frozen) {
+							System.out
+									.println("Client: notice: the onGameEnded() event was received while frozen, ignoring it.");
+							return;
+						}
+
+						assert !isOwner;
+						screenManager.displayMainMenuScreen(username);
+						Window.alert("L'owner ha lasciato il tavolo, e quindi la partita \350 stata annullata.");
+					}
+
+					@Override
+					public void onTableFull() {
+						// Just wait for the GameStarted notification.
+						beforeGameWidget.freeze();
+					}
 				});
 		add(beforeGameWidget, 0, 0);
 	}
@@ -145,27 +145,6 @@ public class HeartsTableWidget extends AbsolutePanel {
 			stateManager.freeze();
 		}
 		frozen = true;
-	}
-
-	public void handleGameStarted(Card[] myCards) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: handleGameStarted() was called while frozen, ignoring it.");
-			return;
-		}
-
-		InitialTableStatus initialTableStatus = beforeGameWidget
-				.getInitialTableStatus();
-
-		remove(beforeGameWidget);
-		beforeGameWidget = null;
-
-		stateManager = new PlayerStateManagerImpl(tableSize, screenManager,
-				initialTableStatus, scores, myCards, username,
-				cupidoService);
-
-		cardsGameWidget = stateManager.getWidget();
-		add(cardsGameWidget, 0, 0);
 	}
 
 	public void handleCardPassed(Card[] cards) {
@@ -209,6 +188,27 @@ public class HeartsTableWidget extends AbsolutePanel {
 		} else {
 			stateManager.handleGameEnded(matchPoints, playersTotalPoints);
 		}
+	}
+
+	public void handleGameStarted(Card[] myCards) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: handleGameStarted() was called while frozen, ignoring it.");
+			return;
+		}
+
+		InitialTableStatus initialTableStatus = beforeGameWidget
+				.getInitialTableStatus();
+
+		remove(beforeGameWidget);
+		beforeGameWidget = null;
+
+		stateManager = new PlayerStateManagerImpl(tableSize, screenManager,
+				initialTableStatus, scores, myCards, username,
+				cupidoService);
+
+		cardsGameWidget = stateManager.getWidget();
+		add(cardsGameWidget, 0, 0);
 	}
 
 	public void handleNewPlayerJoined(String name, boolean isBot, int points,

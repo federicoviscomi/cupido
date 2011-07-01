@@ -26,9 +26,9 @@ import com.google.gwt.user.client.ui.SimplePanel;
 public class EndOfTrickState implements ViewerState {
 
 	private CardsGameWidget cardsGameWidget;
-	private ViewerStateManager stateManager;
-
 	private boolean frozen = false;
+
+	private ViewerStateManager stateManager;
 
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
@@ -63,13 +63,13 @@ public class EndOfTrickState implements ViewerState {
 	}
 
 	@Override
-	public void handleAnimationStart() {
+	public void handleAnimationEnd() {
 		if (frozen)
 			return;
 	}
 
 	@Override
-	public void handleAnimationEnd() {
+	public void handleAnimationStart() {
 		if (frozen)
 			return;
 	}

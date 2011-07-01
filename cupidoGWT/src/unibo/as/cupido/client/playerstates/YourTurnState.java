@@ -36,42 +36,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class YourTurnState implements PlayerState {
 
-	private CardsGameWidget cardsGameWidget;
-	private PlayerStateManager stateManager;
-	private CupidoInterfaceAsync cupidoService;
-
-	private boolean frozen = false;
-	private boolean playedCard = false;
-
-	private List<Card> hand;
-
-	private HTML message;
-
-	public YourTurnState(CardsGameWidget cardsGameWidget,
-			final PlayerStateManager stateManager, List<Card> hand,
-			final CupidoInterfaceAsync cupidoService) {
-
-		this.cardsGameWidget = cardsGameWidget;
-		this.stateManager = stateManager;
-		this.hand = hand;
-		this.cupidoService = cupidoService;
-
-		VerticalPanel panel = new VerticalPanel();
-		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-
-		message = new HTML("Tocca a te giocare.");
-		message.setWidth("120px");
-		message.setWordWrap(true);
-		panel.add(message);
-
-		cardsGameWidget.setCornerWidget(panel);
-	}
-
-	@Override
-	public void activate() {
-	}
-
 	private static boolean canPlayCard(Card card, List<Card> playedCards,
 			List<Card> hand, boolean areHeartsBroken) {
 
@@ -123,6 +87,42 @@ public class YourTurnState implements PlayerState {
 
 		return true;
 	}
+	private CardsGameWidget cardsGameWidget;
+	private CupidoInterfaceAsync cupidoService;
+
+	private boolean frozen = false;
+	private List<Card> hand;
+
+	private HTML message;
+
+	private boolean playedCard = false;
+
+	private PlayerStateManager stateManager;
+
+	public YourTurnState(CardsGameWidget cardsGameWidget,
+			final PlayerStateManager stateManager, List<Card> hand,
+			final CupidoInterfaceAsync cupidoService) {
+
+		this.cardsGameWidget = cardsGameWidget;
+		this.stateManager = stateManager;
+		this.hand = hand;
+		this.cupidoService = cupidoService;
+
+		VerticalPanel panel = new VerticalPanel();
+		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+
+		message = new HTML("Tocca a te giocare.");
+		message.setWidth("120px");
+		message.setWordWrap(true);
+		panel.add(message);
+
+		cardsGameWidget.setCornerWidget(panel);
+	}
+
+	@Override
+	public void activate() {
+	}
 
 	@Override
 	public void freeze() {
@@ -130,13 +130,13 @@ public class YourTurnState implements PlayerState {
 	}
 
 	@Override
-	public void handleAnimationStart() {
+	public void handleAnimationEnd() {
 		if (frozen)
 			return;
 	}
 
 	@Override
-	public void handleAnimationEnd() {
+	public void handleAnimationStart() {
 		if (frozen)
 			return;
 	}

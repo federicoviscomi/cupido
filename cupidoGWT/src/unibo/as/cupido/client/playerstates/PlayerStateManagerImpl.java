@@ -44,30 +44,59 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class PlayerStateManagerImpl implements PlayerStateManager {
 
-	private PlayerState currentState = null;
-	private ScreenManager screenManager;
+	private static boolean cardTakes(Card candidate, Card previous) {
+		if (candidate.suit != previous.suit)
+			return false;
+		if (candidate.value == previous.value)
+			return false;
+		if (candidate.value == 1)
+			return true;
+		if (previous.value == 1)
+			return false;
+		return candidate.value > previous.value;
+	}
+	/**
+	 * Computes the index of the winning card in a trick.
+	 * 
+	 * @param cards
+	 *            An ordered list containing the cards in the current trick.
+	 */
+	private static int winnerCard(List<Card> cards) {
+		assert cards.size() == 4;
+		for (Card card : cards)
+			assert card != null;
+		int winner = 0;
+		for (int candidate = 1; candidate < 4; candidate++)
+			if (cardTakes(cards.get(candidate), cards.get(winner)))
+				winner = candidate;
+		return winner;
+	}
 	private CardsGameWidget cardsGameWidget;
+	private CupidoInterfaceAsync cupidoService;
+
+	private PlayerState currentState = null;
+
 	private int firstPlayerInTrick = -1;
+
+	private boolean frozen = false;
 
 	private boolean heartsBroken = false;
 
 	private List<Serializable> pendingNotifications = new ArrayList<Serializable>();
 
 	/**
+	 * The (ordered) list of cards played in the current trick.
+	 */
+	private List<Card> playedCards = new ArrayList<Card>();
+	/**
 	 * Some information about the players. The first element refers to the
 	 * bottom player, and the other players follow in clockwise order.
 	 */
 	private List<PlayerInfo> players;
 
-	/**
-	 * The (ordered) list of cards played in the current trick.
-	 */
-	private List<Card> playedCards = new ArrayList<Card>();
+	private ScreenManager screenManager;
 
 	private String username;
-
-	private boolean frozen = false;
-	private CupidoInterfaceAsync cupidoService;
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
@@ -127,17 +156,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 				observedGameStatus, cards, new VerticalPanel(),
 				new GameEventListener() {
 					@Override
-					public void onAnimationStart() {
-						if (frozen) {
-							System.out
-									.println("Client: notice: the onAnimationStart() event was received while frozen, ignoring it.");
-							return;
-						}
-
-						currentState.handleAnimationStart();
-					}
-
-					@Override
 					public void onAnimationEnd() {
 						if (frozen) {
 							System.out
@@ -146,6 +164,17 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 						}
 
 						currentState.handleAnimationEnd();
+					}
+
+					@Override
+					public void onAnimationStart() {
+						if (frozen) {
+							System.out
+									.println("Client: notice: the onAnimationStart() event was received while frozen, ignoring it.");
+							return;
+						}
+
+						currentState.handleAnimationStart();
 					}
 
 					@Override
@@ -183,117 +212,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		transitionToCardPassing(handCards);
 	}
 
-	private void transitionTo(PlayerState newState) {
-		currentState = newState;
-		currentState.activate();
-		sendPendingNotifications();
-	}
-
-	@Override
-	public void transitionToCardPassing(List<Card> hand) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the transitionToCardPassing() method was called while frozen, ignoring it.");
-			return;
-		}
-
-		transitionTo(new CardPassingState(cardsGameWidget, this, hand,
-				cupidoService));
-	}
-
-	@Override
-	public void transitionToCardPassingWaiting(List<Card> hand) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the transitionToCardPassingWaiting() method was called while frozen, ignoring it.");
-			return;
-		}
-
-		transitionTo(new CardPassingWaitingState(cardsGameWidget, this, hand,
-				cupidoService));
-	}
-
-	@Override
-	public void transitionToEndOfTrick(List<Card> hand) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the transitionToEndOfTrick() method was called while frozen, ignoring it.");
-			return;
-		}
-
-		transitionTo(new EndOfTrickState(cardsGameWidget, this, hand,
-				cupidoService));
-	}
-
-	@Override
-	public void transitionToFirstLeader(List<Card> hand) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the transitionToFirstLeader() method was called while frozen, ignoring it.");
-			return;
-		}
-
-		transitionTo(new FirstLeaderState(cardsGameWidget, this, hand,
-				cupidoService));
-	}
-
-	@Override
-	public void transitionToWaitingPlayedCard(List<Card> hand) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the transitionToWaitingPlayedCard() method was called while frozen, ignoring it.");
-			return;
-		}
-
-		transitionTo(new WaitingPlayedCardState(cardsGameWidget, this, hand,
-				cupidoService));
-	}
-
-	@Override
-	public void transitionToWaitingFirstLead(List<Card> hand) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the transitionToWaitingFirstLead() method was called while frozen, ignoring it.");
-			return;
-		}
-
-		transitionTo(new WaitingFirstLeadState(cardsGameWidget, this, hand,
-				cupidoService));
-	}
-
-	@Override
-	public void transitionToYourTurn(List<Card> hand) {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the transitionToYourTurn() method was called while frozen, ignoring it.");
-			return;
-		}
-
-		transitionTo(new YourTurnState(cardsGameWidget, this, hand,
-				cupidoService));
-	}
-
-	@Override
-	public void transitionToGameEnded() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the transitionToGameEnded() method was called while frozen, ignoring it.");
-			return;
-		}
-
-		transitionTo(new GameEndedState(cardsGameWidget, this, cupidoService));
-	}
-
-	@Override
-	public int getFirstPlayerInTrick() {
-		return firstPlayerInTrick;
-	}
-
-	@Override
-	public List<Card> getPlayedCards() {
-		return playedCards;
-	}
-
 	@Override
 	public void addPlayedCard(int player, Card card) {
 
@@ -314,46 +232,8 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	}
 
 	@Override
-	public void goToNextTrick() {
-		if (frozen) {
-			System.out
-					.println("Client: notice: the goToNextTrick() method was called while frozen, ignoring it.");
-			return;
-		}
-
-		assert playedCards.size() == 4;
-		firstPlayerInTrick += winnerCard(playedCards);
-		firstPlayerInTrick = firstPlayerInTrick % 4;
-		playedCards.clear();
-	}
-
-	/**
-	 * Computes the index of the winning card in a trick.
-	 * 
-	 * @param cards
-	 *            An ordered list containing the cards in the current trick.
-	 */
-	private static int winnerCard(List<Card> cards) {
-		assert cards.size() == 4;
-		for (Card card : cards)
-			assert card != null;
-		int winner = 0;
-		for (int candidate = 1; candidate < 4; candidate++)
-			if (cardTakes(cards.get(candidate), cards.get(winner)))
-				winner = candidate;
-		return winner;
-	}
-
-	private static boolean cardTakes(Card candidate, Card previous) {
-		if (candidate.suit != previous.suit)
-			return false;
-		if (candidate.value == previous.value)
-			return false;
-		if (candidate.value == 1)
-			return true;
-		if (previous.value == 1)
-			return false;
-		return candidate.value > previous.value;
+	public boolean areHeartsBroken() {
+		return heartsBroken;
 	}
 
 	@Override
@@ -396,8 +276,20 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	}
 
 	@Override
-	public CardsGameWidget getWidget() {
-		return cardsGameWidget;
+	public void freeze() {
+		cardsGameWidget.freeze();
+		currentState.freeze();
+		frozen = true;
+	}
+
+	@Override
+	public int getFirstPlayerInTrick() {
+		return firstPlayerInTrick;
+	}
+
+	@Override
+	public List<Card> getPlayedCards() {
+		return playedCards;
 	}
 
 	@Override
@@ -406,15 +298,22 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	}
 
 	@Override
-	public boolean areHeartsBroken() {
-		return heartsBroken;
+	public CardsGameWidget getWidget() {
+		return cardsGameWidget;
 	}
 
 	@Override
-	public void freeze() {
-		cardsGameWidget.freeze();
-		currentState.freeze();
-		frozen = true;
+	public void goToNextTrick() {
+		if (frozen) {
+			System.out
+					.println("Client: notice: the goToNextTrick() method was called while frozen, ignoring it.");
+			return;
+		}
+
+		assert playedCards.size() == 4;
+		firstPlayerInTrick += winnerCard(playedCards);
+		firstPlayerInTrick = firstPlayerInTrick % 4;
+		playedCards.clear();
 	}
 
 	@Override
@@ -482,6 +381,11 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		currentState.handlePlayerReplaced(name, position);
 	}
 
+	@Override
+	public void onFatalException(Throwable e) {
+		screenManager.displayGeneralErrorScreen(e);
+	}
+
 	private void sendPendingNotifications() {
 		List<Serializable> list = pendingNotifications;
 		// Note that this may be modified in the calls to handle*() methods
@@ -511,8 +415,104 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		}
 	}
 
+	private void transitionTo(PlayerState newState) {
+		currentState = newState;
+		currentState.activate();
+		sendPendingNotifications();
+	}
+
 	@Override
-	public void onFatalException(Throwable e) {
-		screenManager.displayGeneralErrorScreen(e);
+	public void transitionToCardPassing(List<Card> hand) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: the transitionToCardPassing() method was called while frozen, ignoring it.");
+			return;
+		}
+
+		transitionTo(new CardPassingState(cardsGameWidget, this, hand,
+				cupidoService));
+	}
+
+	@Override
+	public void transitionToCardPassingWaiting(List<Card> hand) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: the transitionToCardPassingWaiting() method was called while frozen, ignoring it.");
+			return;
+		}
+
+		transitionTo(new CardPassingWaitingState(cardsGameWidget, this, hand,
+				cupidoService));
+	}
+
+	@Override
+	public void transitionToEndOfTrick(List<Card> hand) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: the transitionToEndOfTrick() method was called while frozen, ignoring it.");
+			return;
+		}
+
+		transitionTo(new EndOfTrickState(cardsGameWidget, this, hand,
+				cupidoService));
+	}
+
+	@Override
+	public void transitionToFirstLeader(List<Card> hand) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: the transitionToFirstLeader() method was called while frozen, ignoring it.");
+			return;
+		}
+
+		transitionTo(new FirstLeaderState(cardsGameWidget, this, hand,
+				cupidoService));
+	}
+
+	@Override
+	public void transitionToGameEnded() {
+		if (frozen) {
+			System.out
+					.println("Client: notice: the transitionToGameEnded() method was called while frozen, ignoring it.");
+			return;
+		}
+
+		transitionTo(new GameEndedState(cardsGameWidget, this, cupidoService));
+	}
+
+	@Override
+	public void transitionToWaitingFirstLead(List<Card> hand) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: the transitionToWaitingFirstLead() method was called while frozen, ignoring it.");
+			return;
+		}
+
+		transitionTo(new WaitingFirstLeadState(cardsGameWidget, this, hand,
+				cupidoService));
+	}
+
+	@Override
+	public void transitionToWaitingPlayedCard(List<Card> hand) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: the transitionToWaitingPlayedCard() method was called while frozen, ignoring it.");
+			return;
+		}
+
+		transitionTo(new WaitingPlayedCardState(cardsGameWidget, this, hand,
+				cupidoService));
+	}
+
+	@Override
+	public void transitionToYourTurn(List<Card> hand) {
+		if (frozen) {
+			System.out
+					.println("Client: notice: the transitionToYourTurn() method was called while frozen, ignoring it.");
+			return;
+		}
+
+		transitionTo(new YourTurnState(cardsGameWidget, this, hand,
+				cupidoService));
 	}
 }

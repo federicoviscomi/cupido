@@ -54,14 +54,6 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 public class TableListScreen extends VerticalPanel implements Screen {
 
-	private PushButton menuButton;
-	private PushButton viewButton;
-	private PushButton joinButton;
-
-	private boolean frozen = false;
-	private ArrayList<TableInfoForClient> tableList;
-	private CellList<TableInfoForClient> cellList;
-
 	private class TableCell extends AbstractCell<TableInfoForClient> {
 		@Override
 		public void render(com.google.gwt.cell.client.Cell.Context context,
@@ -76,6 +68,14 @@ public class TableListScreen extends VerticalPanel implements Screen {
 			}
 		}
 	}
+	private CellList<TableInfoForClient> cellList;
+	private boolean frozen = false;
+
+	private PushButton joinButton;
+	private PushButton menuButton;
+	private ArrayList<TableInfoForClient> tableList;
+
+	private PushButton viewButton;
 
 	public TableListScreen(final ScreenManager screenManager,
 			final String username,
@@ -270,14 +270,14 @@ public class TableListScreen extends VerticalPanel implements Screen {
 	}
 
 	@Override
-	public void prepareRemoval() {
-	}
-
-	@Override
 	public void freeze() {
 		menuButton.setEnabled(false);
 		viewButton.setEnabled(false);
 		joinButton.setEnabled(false);
 		frozen = true;
+	}
+
+	@Override
+	public void prepareRemoval() {
 	}
 }

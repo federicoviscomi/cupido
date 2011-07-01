@@ -46,39 +46,7 @@ import com.google.gwt.user.client.ui.PushButton;
  */
 public class BeforeGameWidget extends AbsolutePanel {
 
-	// The width of the players' labels that contain usernames and scores.
-	private static final int playerLabelWidth = 200;
-
-	// The height of the players' labels that contain usernames and scores.
-	private static final int playerLabelHeight = 20;
-
-	private HTML bottomLabel;
-	/*
-	 * labels.get(0) is the left label, and other labels follow in clockwise
-	 * order. This list has always 3 elements.
-	 */
-	private List<HTML> labels = new ArrayList<HTML>();
-
-	/*
-	 * A list containing the displayed "Add bot" buttons (if any).
-	 * buttons.get(0) is the left button, and other buttons follow in clockwise
-	 * order. This list has always 3 elements. Each element may be null if there
-	 * is no button displayed in that position.
-	 */
-	private List<PushButton> buttons = new ArrayList<PushButton>();
-
 	public interface Listener {
-		/**
-		 * This is called when the table becomes full of players and/or bots.
-		 */
-		public void onTableFull();
-
-		/**
-		 * This is called if the game is interrupted by another player (i.e. the
-		 * owner).
-		 */
-		public void onGameEnded();
-
 		/**
 		 * This is called if the user chooses to exit.
 		 */
@@ -88,19 +56,71 @@ public class BeforeGameWidget extends AbsolutePanel {
 		 * This is called if a fatal exception occurs.
 		 */
 		public void onFatalException(Throwable e);
+
+		/**
+		 * This is called if the game is interrupted by another player (i.e. the
+		 * owner).
+		 */
+		public void onGameEnded();
+
+		/**
+		 * This is called when the table becomes full of players and/or bots.
+		 */
+		public void onTableFull();
 	}
 
-	private InitialTableStatus tableStatus;
+	// The height of the players' labels that contain usernames and scores.
+	private static final int playerLabelHeight = 20;
 
-	private boolean isOwner;
+	// The width of the players' labels that contain usernames and scores.
+	private static final int playerLabelWidth = 200;
+	private static String constructBotLabelHtml(String username) {
+		SafeHtmlBuilder builder = new SafeHtmlBuilder();
+		builder.appendHtmlConstant("<b><big>");
+		builder.appendEscaped(username);
+		builder.appendHtmlConstant("</big></b>");
 
-	private int tableSize;
+		return builder.toSafeHtml().asString();
+	}
 
-	private Listener listener;
+	private static String constructPlayerLabelHtml(String username, int points) {
+		SafeHtmlBuilder builder = new SafeHtmlBuilder();
+		builder.appendHtmlConstant("<b><big>");
+		builder.appendEscaped(username);
+		builder.appendHtmlConstant(" (");
+		builder.append(points);
+		builder.appendHtmlConstant(")</big></b>");
+
+		return builder.toSafeHtml().asString();
+	}
+
+	private HTML bottomLabel;
+
+	/*
+	 * A list containing the displayed "Add bot" buttons (if any).
+	 * buttons.get(0) is the left button, and other buttons follow in clockwise
+	 * order. This list has always 3 elements. Each element may be null if there
+	 * is no button displayed in that position.
+	 */
+	private List<PushButton> buttons = new ArrayList<PushButton>();
+
+	private CupidoInterfaceAsync cupidoService;
 
 	private boolean frozen = false;
 
-	private CupidoInterfaceAsync cupidoService;
+	private boolean isOwner;
+
+	/*
+	 * labels.get(0) is the left label, and other labels follow in clockwise
+	 * order. This list has always 3 elements.
+	 */
+	private List<HTML> labels = new ArrayList<HTML>();
+
+	private Listener listener;
+
+	private int tableSize;
+
+	private InitialTableStatus tableStatus;
 
 	/**
 	 * The widget that represents the table before the actual game.
@@ -192,8 +212,22 @@ public class BeforeGameWidget extends AbsolutePanel {
 		add(exitButton, tableSize - 100, tableSize - 40);
 	}
 
-	public InitialTableStatus getInitialTableStatus() {
-		return tableStatus;
+	private void addBot(int position, String name) {
+		tableStatus.opponents[position] = name;
+		tableStatus.whoIsBot[position] = true;
+
+		if (isOwner) {
+			assert (buttons.get(position) != null);
+			remove(buttons.get(position));
+			buttons.set(position, null);
+		}
+
+		assert labels.get(position).getText().isEmpty();
+
+		labels.get(position).setHTML(constructBotLabelHtml(name));
+
+		if (isTableFull())
+			listener.onTableFull();
 	}
 
 	private void addBotButton(final int position) {
@@ -263,26 +297,6 @@ public class BeforeGameWidget extends AbsolutePanel {
 		}
 	}
 
-	private static String constructPlayerLabelHtml(String username, int points) {
-		SafeHtmlBuilder builder = new SafeHtmlBuilder();
-		builder.appendHtmlConstant("<b><big>");
-		builder.appendEscaped(username);
-		builder.appendHtmlConstant(" (");
-		builder.append(points);
-		builder.appendHtmlConstant(")</big></b>");
-
-		return builder.toSafeHtml().asString();
-	}
-
-	private static String constructBotLabelHtml(String username) {
-		SafeHtmlBuilder builder = new SafeHtmlBuilder();
-		builder.appendHtmlConstant("<b><big>");
-		builder.appendEscaped(username);
-		builder.appendHtmlConstant("</big></b>");
-
-		return builder.toSafeHtml().asString();
-	}
-
 	private void addPlayer(String username, int points, int position) {
 
 		tableStatus.opponents[position] = username;
@@ -298,43 +312,15 @@ public class BeforeGameWidget extends AbsolutePanel {
 			listener.onTableFull();
 	}
 
-	private boolean isTableFull() {
-		return tableStatus.opponents[0] != null
-				&& tableStatus.opponents[1] != null
-				&& tableStatus.opponents[2] != null;
-	}
-
-	private void addBot(int position, String name) {
-		tableStatus.opponents[position] = name;
-		tableStatus.whoIsBot[position] = true;
-
-		if (isOwner) {
-			assert (buttons.get(position) != null);
-			remove(buttons.get(position));
-			buttons.set(position, null);
-		}
-
-		assert labels.get(position).getText().isEmpty();
-
-		labels.get(position).setHTML(constructBotLabelHtml(name));
-
-		if (isTableFull())
-			listener.onTableFull();
-	}
-
-	private void removePlayer(int player) {
-		tableStatus.opponents[player] = null;
-
-		labels.get(player).setText("");
-		if (isOwner)
-			addBotButton(player);
-	}
-
 	public void freeze() {
 		for (PushButton button : buttons)
 			if (button != null)
 				button.setEnabled(false);
 		frozen = true;
+	}
+
+	public InitialTableStatus getInitialTableStatus() {
+		return tableStatus;
 	}
 
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
@@ -382,5 +368,19 @@ public class BeforeGameWidget extends AbsolutePanel {
 		}
 		System.out
 				.println("Client: received an invalid PlayerLeft notification: the user does not exist.");
+	}
+
+	private boolean isTableFull() {
+		return tableStatus.opponents[0] != null
+				&& tableStatus.opponents[1] != null
+				&& tableStatus.opponents[2] != null;
+	}
+
+	private void removePlayer(int player) {
+		tableStatus.opponents[player] = null;
+
+		labels.get(player).setText("");
+		if (isOwner)
+			addBotButton(player);
 	}
 }

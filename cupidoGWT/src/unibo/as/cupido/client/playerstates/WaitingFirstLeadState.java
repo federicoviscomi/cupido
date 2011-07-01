@@ -34,14 +34,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class WaitingFirstLeadState implements PlayerState {
 
 	private CardsGameWidget cardsGameWidget;
-	private PlayerStateManager stateManager;
-
-	private boolean frozen = false;
 	private boolean eventReceived = false;
 
+	private boolean frozen = false;
 	private List<Card> hand;
 
 	private HTML message;
+
+	private PlayerStateManager stateManager;
 
 	public WaitingFirstLeadState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
@@ -73,13 +73,13 @@ public class WaitingFirstLeadState implements PlayerState {
 	}
 
 	@Override
-	public void handleAnimationStart() {
+	public void handleAnimationEnd() {
 		if (frozen)
 			return;
 	}
 
 	@Override
-	public void handleAnimationEnd() {
+	public void handleAnimationStart() {
 		if (frozen)
 			return;
 	}

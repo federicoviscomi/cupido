@@ -26,25 +26,9 @@ import unibo.as.cupido.common.structures.Card;
  * assume the message can't be handled.
  */
 public class CometMessageListener {
-	public void onPlayerLeft(String player) {
+	public void onCardPassed(Card[] cards) {
 		System.out
-				.println("Client: the PlayerLeft comet message can't be handled in the current state, ignoring it.");
-	}
-
-	public void onNewPlayerJoined(String name, boolean isBot, int points,
-			int position) {
-		System.out
-				.println("Client: the NewPlayerJoined comet message can't be handled in the current state, ignoring it.");
-	}
-
-	public void onPlayerReplaced(String name, int position) {
-		System.out
-				.println("Client: the PlayerReplaced comet message can't be handled in the current state, ignoring it.");
-	}
-
-	public void onGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		System.out
-				.println("Client: the GameEnded comet message can't be handled in the current state, ignoring it.");
+				.println("Client: the CardPassed comet message can't be handled in the current state, ignoring it.");
 	}
 
 	public void onCardPlayed(Card card, int playerPosition) {
@@ -52,9 +36,9 @@ public class CometMessageListener {
 				.println("Client: the CardPlayed comet message can't be handled in the current state, ignoring it.");
 	}
 
-	public void onCardPassed(Card[] cards) {
+	public void onGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		System.out
-				.println("Client: the CardPassed comet message can't be handled in the current state, ignoring it.");
+				.println("Client: the GameEnded comet message can't be handled in the current state, ignoring it.");
 	}
 
 	public void onGameStarted(Card[] myCards) {
@@ -65,5 +49,21 @@ public class CometMessageListener {
 	public void onNewLocalChatMessage(String user, String message) {
 		System.out
 				.println("Client: the NewLocalChatMessage comet message can't be handled in the current state, ignoring it.");
+	}
+
+	public void onNewPlayerJoined(String name, boolean isBot, int points,
+			int position) {
+		System.out
+				.println("Client: the NewPlayerJoined comet message can't be handled in the current state, ignoring it.");
+	}
+
+	public void onPlayerLeft(String player) {
+		System.out
+				.println("Client: the PlayerLeft comet message can't be handled in the current state, ignoring it.");
+	}
+
+	public void onPlayerReplaced(String name, int position) {
+		System.out
+				.println("Client: the PlayerReplaced comet message can't be handled in the current state, ignoring it.");
 	}
 }

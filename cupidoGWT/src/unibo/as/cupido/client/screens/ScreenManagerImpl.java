@@ -50,16 +50,16 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
-	private Widget currentScreenWidget = null;
+	private CometMessageListener cometMessageListener;
+	private CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
+
 	private Screen currentScreen = null;
+
+	private Widget currentScreenWidget = null;
 
 	// This is used to check that no screen switches occur while switching
 	// screen.
 	private boolean switchingScreen = false;
-
-	private CupidoInterfaceAsync cupidoService = GWT.create(CupidoInterface.class);
-
-	private CometMessageListener cometMessageListener;
 
 	public ScreenManagerImpl() {
 		setHeight(Cupido.height + "px");
@@ -94,10 +94,6 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
 							@Override
 							public void onHeartbeat() {
-							}
-
-							@Override
-							public void onRefresh() {
 							}
 
 							@Override
@@ -147,6 +143,10 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 									}
 								}
 							}
+
+							@Override
+							public void onRefresh() {
+							}
 				};
 
 				CometSerializer serializer = GWT
@@ -165,74 +165,6 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 		});
 	}
 
-	private void removeCurrentScreen() {
-		if (currentScreen == null)
-			return;
-		currentScreen.prepareRemoval();
-		remove(currentScreenWidget);
-	}
-
-	@Override
-	public void displayLoginScreen() {
-		assert !switchingScreen;
-		switchingScreen = true;
-
-		removeCurrentScreen();
-		LoginScreen screen = new LoginScreen(this, cupidoService);
-		currentScreen = screen;
-		currentScreenWidget = screen;
-		add(currentScreenWidget, 0, 0);
-
-		switchingScreen = false;
-
-	}
-
-	@Override
-	public void displayRegistrationScreen() {
-		assert !switchingScreen;
-		switchingScreen = true;
-
-		removeCurrentScreen();
-		RegistrationScreen screen = new RegistrationScreen(this, cupidoService);
-		currentScreen = screen;
-		currentScreenWidget = screen;
-		add(currentScreenWidget, 0, 0);
-
-		switchingScreen = false;
-
-	}
-
-	@Override
-	public void displayMainMenuScreen(String username) {
-		assert !switchingScreen;
-		switchingScreen = true;
-
-		removeCurrentScreen();
-		MainMenuScreen screen = new MainMenuScreen(this, username,
-				cupidoService);
-		currentScreen = screen;
-		currentScreenWidget = screen;
-		add(currentScreenWidget, 0, 0);
-
-		switchingScreen = false;
-	}
-
-	@Override
-	public void displayScoresScreen(String username,
-			ArrayList<RankingEntry> topRanks, ArrayList<RankingEntry> localRanks) {
-		assert !switchingScreen;
-		switchingScreen = true;
-
-		removeCurrentScreen();
-		ScoresScreen screen = new ScoresScreen(this, username, topRanks,
-				localRanks);
-		currentScreen = screen;
-		currentScreenWidget = screen;
-		add(currentScreenWidget, 0, 0);
-
-		switchingScreen = false;
-	}
-
 	@Override
 	public void displayAboutScreen(String username) {
 		assert !switchingScreen;
@@ -240,38 +172,6 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
 		removeCurrentScreen();
 		AboutScreen screen = new AboutScreen(this, username);
-		currentScreen = screen;
-		currentScreenWidget = screen;
-		add(currentScreenWidget, 0, 0);
-
-		switchingScreen = false;
-	}
-
-	@Override
-	public void displayTableScreen(String username, boolean isOwner,
-			InitialTableStatus initialTableStatus, int userScore) {
-		assert !switchingScreen;
-		switchingScreen = true;
-
-		removeCurrentScreen();
-		TableScreen screen = new TableScreen(this, username, isOwner,
-				initialTableStatus, userScore, cupidoService);
-		currentScreen = screen;
-		currentScreenWidget = screen;
-		add(currentScreenWidget, 0, 0);
-
-		switchingScreen = false;
-	}
-
-	@Override
-	public void displayObservedTableScreen(String username,
-			ObservedGameStatus observedGameStatus) {
-		assert !switchingScreen;
-		switchingScreen = true;
-
-		removeCurrentScreen();
-		ObservedTableScreen screen = new ObservedTableScreen(this, username,
-				observedGameStatus, cupidoService);
 		currentScreen = screen;
 		currentScreenWidget = screen;
 		add(currentScreenWidget, 0, 0);
@@ -308,6 +208,83 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	}
 
 	@Override
+	public void displayLoginScreen() {
+		assert !switchingScreen;
+		switchingScreen = true;
+
+		removeCurrentScreen();
+		LoginScreen screen = new LoginScreen(this, cupidoService);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
+
+		switchingScreen = false;
+
+	}
+
+	@Override
+	public void displayMainMenuScreen(String username) {
+		assert !switchingScreen;
+		switchingScreen = true;
+
+		removeCurrentScreen();
+		MainMenuScreen screen = new MainMenuScreen(this, username,
+				cupidoService);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
+
+		switchingScreen = false;
+	}
+
+	@Override
+	public void displayObservedTableScreen(String username,
+			ObservedGameStatus observedGameStatus) {
+		assert !switchingScreen;
+		switchingScreen = true;
+
+		removeCurrentScreen();
+		ObservedTableScreen screen = new ObservedTableScreen(this, username,
+				observedGameStatus, cupidoService);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
+
+		switchingScreen = false;
+	}
+
+	@Override
+	public void displayRegistrationScreen() {
+		assert !switchingScreen;
+		switchingScreen = true;
+
+		removeCurrentScreen();
+		RegistrationScreen screen = new RegistrationScreen(this, cupidoService);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
+
+		switchingScreen = false;
+
+	}
+
+	@Override
+	public void displayScoresScreen(String username,
+			ArrayList<RankingEntry> topRanks, ArrayList<RankingEntry> localRanks) {
+		assert !switchingScreen;
+		switchingScreen = true;
+
+		removeCurrentScreen();
+		ScoresScreen screen = new ScoresScreen(this, username, topRanks,
+				localRanks);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
+
+		switchingScreen = false;
+	}
+
+	@Override
 	public void displayTableListScreen(String username,
 			Collection<TableInfoForClient> tableCollection) {
 		assert !switchingScreen;
@@ -321,6 +298,29 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 		add(currentScreenWidget, 0, 0);
 
 		switchingScreen = false;
+	}
+
+	@Override
+	public void displayTableScreen(String username, boolean isOwner,
+			InitialTableStatus initialTableStatus, int userScore) {
+		assert !switchingScreen;
+		switchingScreen = true;
+
+		removeCurrentScreen();
+		TableScreen screen = new TableScreen(this, username, isOwner,
+				initialTableStatus, userScore, cupidoService);
+		currentScreen = screen;
+		currentScreenWidget = screen;
+		add(currentScreenWidget, 0, 0);
+
+		switchingScreen = false;
+	}
+
+	private void removeCurrentScreen() {
+		if (currentScreen == null)
+			return;
+		currentScreen.prepareRemoval();
+		remove(currentScreenWidget);
 	}
 
 	@Override

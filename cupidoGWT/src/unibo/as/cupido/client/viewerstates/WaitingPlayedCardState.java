@@ -31,14 +31,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class WaitingPlayedCardState implements ViewerState {
 
 	private CardsGameWidget cardsGameWidget;
-	private ViewerStateManager stateManager;
-
-	private boolean frozen = false;
-	private boolean eventReceived = false;
-
 	private int currentPlayer;
 
+	private boolean eventReceived = false;
+	private boolean frozen = false;
+
 	private HTML message;
+
+	private ViewerStateManager stateManager;
 
 	public WaitingPlayedCardState(final CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
@@ -62,16 +62,6 @@ public class WaitingPlayedCardState implements ViewerState {
 		cardsGameWidget.setCornerWidget(panel);
 	}
 
-	private void recomputeLabelMessage() {
-		ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
-				.get(currentPlayer);
-		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
-		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
-		safeHtmlBuilder.appendEscaped(playerInfo.name);
-		safeHtmlBuilder.appendHtmlConstant(" giochi.");
-		message.setHTML(safeHtmlBuilder.toSafeHtml());
-	}
-
 	@Override
 	public void activate() {
 	}
@@ -82,13 +72,13 @@ public class WaitingPlayedCardState implements ViewerState {
 	}
 
 	@Override
-	public void handleAnimationStart() {
+	public void handleAnimationEnd() {
 		if (frozen)
 			return;
 	}
 
 	@Override
-	public void handleAnimationEnd() {
+	public void handleAnimationStart() {
 		if (frozen)
 			return;
 	}
@@ -148,5 +138,15 @@ public class WaitingPlayedCardState implements ViewerState {
 		
 		if (currentPlayer == position)
 			recomputeLabelMessage();
+	}
+
+	private void recomputeLabelMessage() {
+		ViewerStateManager.PlayerInfo playerInfo = stateManager.getPlayerInfo()
+				.get(currentPlayer);
+		SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+		safeHtmlBuilder.appendHtmlConstant("Attendi che ");
+		safeHtmlBuilder.appendEscaped(playerInfo.name);
+		safeHtmlBuilder.appendHtmlConstant(" giochi.");
+		message.setHTML(safeHtmlBuilder.toSafeHtml());
 	}
 }

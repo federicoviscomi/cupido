@@ -50,10 +50,10 @@ public class LoadingScreen extends VerticalPanel implements Screen {
 	}
 
 	@Override
-	public void prepareRemoval() {
+	public void freeze() {
 	}
 
 	@Override
-	public void freeze() {
+	public void prepareRemoval() {
 	}
 }

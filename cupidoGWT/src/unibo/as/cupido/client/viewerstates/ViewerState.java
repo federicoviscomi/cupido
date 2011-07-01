@@ -31,14 +31,14 @@ public interface ViewerState {
 	public void freeze();
 
 	/**
-	 * This is called before starting an animation.
-	 */
-	public void handleAnimationStart();
-
-	/**
 	 * This is called when an animation finishes.
 	 */
 	public void handleAnimationEnd();
+
+	/**
+	 * This is called before starting an animation.
+	 */
+	public void handleAnimationStart();
 
 	/**
 	 * Returns false if this event can't be handled right now, but it can be

@@ -25,12 +25,23 @@ import unibo.as.cupido.common.structures.Card;
 public interface PlayerStateManager {
 
 	public class PlayerInfo {
+		public boolean isBot;
 		/**
 		 * This is relevant only when `isBot' is false.
 		 */
 		public String name;
-		public boolean isBot;
 	}
+
+	public void addPlayedCard(int player, Card card);
+
+	public boolean areHeartsBroken();
+
+	/**
+	 * Exits from the game.
+	 */
+	public void exit();
+
+	public void freeze();
 
 	/**
 	 * Returns the leading player for the current trick. A return value of 0
@@ -48,43 +59,11 @@ public interface PlayerStateManager {
 	 */
 	public List<Card> getPlayedCards();
 
-	public void addPlayedCard(int player, Card card);
-
-	public void goToNextTrick();
-
-	public boolean areHeartsBroken();
-
-	/**
-	 * Exits from the game.
-	 */
-	public void exit();
-
-	/**
-	 * Reacts to a fatal exception.
-	 */
-	public void onFatalException(Throwable e);
-
 	public List<PlayerInfo> getPlayerInfo();
-
-	public void transitionToCardPassing(List<Card> hand);
-
-	public void transitionToCardPassingWaiting(List<Card> hand);
-
-	public void transitionToEndOfTrick(List<Card> hand);
-
-	public void transitionToFirstLeader(List<Card> hand);
-
-	public void transitionToWaitingPlayedCard(List<Card> hand);
-
-	public void transitionToWaitingFirstLead(List<Card> hand);
-
-	public void transitionToYourTurn(List<Card> hand);
-
-	public void transitionToGameEnded();
 
 	public CardsGameWidget getWidget();
 
-	public void freeze();
+	public void goToNextTrick();
 
 	public void handleCardPassed(Card[] cards);
 
@@ -95,4 +74,25 @@ public interface PlayerStateManager {
 	public void handleGameStarted(Card[] myCards);
 
 	public void handlePlayerReplaced(String name, int position);
+
+	/**
+	 * Reacts to a fatal exception.
+	 */
+	public void onFatalException(Throwable e);
+
+	public void transitionToCardPassing(List<Card> hand);
+
+	public void transitionToCardPassingWaiting(List<Card> hand);
+
+	public void transitionToEndOfTrick(List<Card> hand);
+
+	public void transitionToFirstLeader(List<Card> hand);
+
+	public void transitionToGameEnded();
+
+	public void transitionToWaitingFirstLead(List<Card> hand);
+
+	public void transitionToWaitingPlayedCard(List<Card> hand);
+
+	public void transitionToYourTurn(List<Card> hand);
 }
