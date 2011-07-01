@@ -188,7 +188,7 @@ public class LocalBot implements LocalBotInterface {
 	 */
 	private ArrayList<Card> getAllSoundCards() {
 		ArrayList<Card> validCards = new ArrayList<Card>(13);
-		
+
 		if (cards.contains(CardsManager.twoOfClubs)) {
 			validCards.add(CardsManager.twoOfClubs);
 			return validCards;
@@ -312,6 +312,15 @@ public class LocalBot implements LocalBotInterface {
 		};
 	}
 
+	/**
+	 * When action queue has a game ended notification, it stop itself after
+	 * processing remaining actions.
+	 * 
+	 * @param matchPoints
+	 *            points made by every player in this game
+	 * @param playersTotalPoint
+	 *            new scores of every players
+	 */
 	private void onGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		actionQueue.killConsumer();
 	}
@@ -323,14 +332,15 @@ public class LocalBot implements LocalBotInterface {
 	private static final Comparator<Card> higherFirstCardsComparator = new Comparator<Card>() {
 		@Override
 		public int compare(Card o1, Card o2) {
-			// return (o1.suit.ordinal() * 13 + (o1.value == 1 ? 14 :
-			// o1.value))- (o2.suit.ordinal() * 13 + (o2.value == 1 ? 14 :
-			// o2.value));
 			return (o2.suit.ordinal() + (o2.value == 1 ? 14 : o2.value) * 4)
 					- (o1.suit.ordinal() + (o1.value == 1 ? 14 : o1.value) * 4);
 		}
 	};
 
+	/**
+	 * 
+	 * @param cards
+	 */
 	private void onGameStarted(Card[] cards) {
 		System.out.println("\n" + botName + ": notifyGameStarted("
 				+ Arrays.toString(cards) + ")");
