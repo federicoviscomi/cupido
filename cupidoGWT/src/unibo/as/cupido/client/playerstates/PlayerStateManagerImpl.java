@@ -79,6 +79,9 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	private int firstPlayerInTrick = -1;
 
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
 	private boolean heartsBroken = false;

@@ -19,9 +19,16 @@ package unibo.as.cupido.client.viewerstates;
 
 import java.util.List;
 
+import unibo.as.cupido.client.playerstates.PlayerStateManager;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.common.structures.Card;
 
+/**
+ * The interface implemented by the manager of the game states used
+ * when the current user is a viewer.
+ * 
+ * @see PlayerStateManager
+ */
 public interface ViewerStateManager {
 
 	public class PlayerInfo {
@@ -39,12 +46,16 @@ public interface ViewerStateManager {
 	 */
 	public void exit();
 
+	/**
+	 * When this is called, the state manager stops responding to events
+	 * and disables all user controls, including the CardsGameWidget.
+	 */
 	public void freeze();
 
 	/**
-	 * Returns the leading player for the current trick. A return value of 0
-	 * means the bottom player, and other players' indexes follow in clockwise
-	 * order.
+	 * @return Returns the leading player for the current trick. A return value of 0
+	 *         means the bottom player, and other players' indexes follow in clockwise
+	 *         order.
 	 * 
 	 * This returns -1 in the initial card-passing states and at the beginning
 	 * of the first trick.

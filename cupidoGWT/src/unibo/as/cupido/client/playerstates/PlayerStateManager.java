@@ -19,9 +19,16 @@ package unibo.as.cupido.client.playerstates;
 
 import java.util.List;
 
+import unibo.as.cupido.client.viewerstates.ViewerStateManager;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.common.structures.Card;
 
+/**
+ * The interface implemented by the manager of the game states used
+ * when the current user is a player.
+ * 
+ * @see ViewerStateManager
+ */
 public interface PlayerStateManager {
 
 	public class PlayerInfo {
@@ -41,6 +48,10 @@ public interface PlayerStateManager {
 	 */
 	public void exit();
 
+	/**
+	 * When this is called, the state manager stops responding to events
+	 * and disables all user controls, including the CardsGameWidget.
+	 */
 	public void freeze();
 
 	/**
@@ -77,22 +88,62 @@ public interface PlayerStateManager {
 
 	/**
 	 * Reacts to a fatal exception.
+	 * 
+	 * @param e The exception that was caught.
 	 */
 	public void onFatalException(Throwable e);
 
+	/**
+	 * Changes the current state to CardPassingState.
+	 * 
+	 * @param hand The cards in the user's hand.
+	 */
 	public void transitionToCardPassing(List<Card> hand);
 
+	/**
+	 * Changes the current state to CardPassingWaitingState.
+	 * 
+	 * @param hand The cards in the user's hand.
+	 */
 	public void transitionToCardPassingWaiting(List<Card> hand);
 
+	/**
+	 * Changes the current state to EndOfTrickState.
+	 * 
+	 * @param hand The cards in the user's hand.
+	 */
 	public void transitionToEndOfTrick(List<Card> hand);
 
+	/**
+	 * Changes the current state to FirstLeaderState.
+	 * 
+	 * @param hand The cards in the user's hand.
+	 */
 	public void transitionToFirstLeader(List<Card> hand);
 
+	/**
+	 * Changes the current state to GameEndedState.
+	 */
 	public void transitionToGameEnded();
 
+	/**
+	 * Changes the current state to WaitingFirstLeadState.
+	 * 
+	 * @param hand The cards in the user's hand.
+	 */
 	public void transitionToWaitingFirstLead(List<Card> hand);
 
+	/**
+	 * Changes the current state to CardPassingWaitingState.
+	 * 
+	 * @param hand The cards in the user's hand.
+	 */
 	public void transitionToWaitingPlayedCard(List<Card> hand);
 
+	/**
+	 * Changes the current state to YourTurnState.
+	 * 
+	 * @param hand The cards in the user's hand.
+	 */
 	public void transitionToYourTurn(List<Card> hand);
 }
