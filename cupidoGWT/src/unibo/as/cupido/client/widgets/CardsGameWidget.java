@@ -50,8 +50,35 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * A widget that displays a table for a generic card-based game.
+ * 
+ * There are four players, and each one can have some cards in his hand
+ * and some played cards. All cards can be covered or not.
+ * 
+ * This class handles animations in which the cards move around
+ * the table, and supports covering/uncovering cards (but not during
+ * animations).
+ * 
+ * Each player has an associated label that displays the username
+ * and, for human players, the score.
+ * 
+ * An exit button is provided to exit the game, and the user can specify
+ * an additional widget that is displayed on top of the table, in the
+ * bottom-right corner, just above the exit button. That widget can be
+ * changed when needed.
+ * 
+ * This class is not tied to a specific game, so all game logic and rules
+ * must be handled by the caller. For this purpose, the caller is notified
+ * about all game-related events.
+ */
 public class CardsGameWidget extends AbsolutePanel {
 
+	/**
+	 * A class that describes all widgets on the table with no static
+	 * position. Note that the bottom and top labels are actually static, but
+	 * they are kept here for consistency.
+	 */
 	private static class MovableWidgets {
 		/**
 		 * The widgets displaying the cards on the table. The relative order of
@@ -66,6 +93,9 @@ public class CardsGameWidget extends AbsolutePanel {
 		public List<Label> playerNames;
 	}
 
+	/**
+	 * A class that describes a specific layout for the widgets on the table.
+	 */
 	private static class TableLayout {
 		/**
 		 * The positions of the cards on the table.
@@ -79,24 +109,43 @@ public class CardsGameWidget extends AbsolutePanel {
 		public List<Position> names;
 	}
 
-	// This is added to every z-index to allow "positive" and "negative"
-	// z-indexes.
+	/**
+	 *  This is added to every z-index to allow "positive" and "negative"
+	 *  z-indexes.
+	 */
 	private static final int defaultZIndex = 50;
 
-	// The distance between the center of the bottom player's hand and the
-	// bottom of the screen.
+	/**
+	 * The distance between the center of the bottom player's hand and the
+	 * bottom of the screen.
+	 */
 	private static final int handCardsOffset = 90;
 
-	// The distance between the center of the bottom player's played cards and
-	// the bottom of the screen.
+	/**
+	 * The distance between the center of the bottom player's played cards
+	 * and the bottom of the screen.
+	 */
 	private static final int playedCardsOffset = 260;
 
-	// The height of the players' labels that contain usernames and scores.
+	/** 
+	 * The height of the players' labels that contain usernames and scores.
+	 */
 	private static final int playerLabelHeight = 20;
 
-	// The width of the players' labels that contain usernames and scores.
+	/**
+	 *  The width of the players' labels that contain usernames and scores.
+	 */
 	private static final int playerLabelWidth = 200;
 
+	/**
+	 * Computes the layout of the table from the specified card roles
+	 * and table size.
+	 * 
+	 * @param movableWidgets The widgets to lay out.
+	 * @param cardRoles The roles of the cards on the table.
+	 * @param tableSize The size of the table (both width and height), in pixels.
+	 * @return The computed layout.
+	 */
 	private static TableLayout computePositions(MovableWidgets movableWidgets,
 			Map<CardWidget, CardRole> cardRoles, int tableSize) {
 
@@ -220,13 +269,15 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * Computes the positions of a set of cards as if they belong to the bottom
+	 * Computes the positions of a list of cards as if they belong to the bottom
 	 * player, centered horizontally and with the center `offset' pixels above
 	 * the bottom edge. The z values are *not* computed.
 	 * 
-	 * @param cards
-	 * @param offset
-	 * @return
+	 * @param cards The player's cards (either hand cards or played cards).
+	 * @param state The state of these cards.
+	 * @param tableSize The size of the table (both width and height), in pixels.
+	 * 
+	 * @return The computed positions.
 	 */
 	private static List<Position> computePositionsHelper(
 			List<CardWidget> cards, CardRole.State state, int tableSize) {
@@ -260,11 +311,12 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * Gets a comparator that uses the same ordering that is used for displaying
-	 * cards.
 	 * 
-	 * This is public to help callers to satisfy the preconditions for
+	 * This is public to help callers satisfying the preconditions for
 	 * revealCoveredCard().
+	 * 
+	 * @return A comparator that uses the same ordering that is used for
+	 *         displaying cards.
 	 */
 	public static Comparator<Card> getCardComparator() {
 		return new Comparator<Card>() {
@@ -323,6 +375,20 @@ public class CardsGameWidget extends AbsolutePanel {
 		};
 	}
 
+	/**
+	 * Calculates an interpolated position between startPosition and
+	 * endPosition, with the specified progress.
+	 * 
+	 * @param startPosition The starting position.
+	 * @param endPosition The final position.
+	 * @param progress The progress (a number between 0.0 and 1.0, inclusive)
+	 *                 that specifies where the desidered value lies in the
+	 *                 segment between startPosition and endPosition.
+	 *                 If this is 0.0, startPosition is returned; if it is
+	 *                 1.0, endPosition is returned.
+	 * 
+	 * @return The computed position.
+	 */
 	private static Position interpolatePosition(Position startPosition,
 			Position endPosition, double progress) {
 		Position position = new Position();
@@ -341,7 +407,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * Rotates the given list of positions clockwise by 90 degrees around the
 	 * table center.
 	 * 
-	 * @param positions
+	 * @param positions The positions that have to be rotated.
+	 * @param tableSize The size of the table (both height and width), in pixels.
 	 */
 	private static void rotatePositions(List<Position> positions, int tableSize) {
 		for (Position position : positions) {
@@ -353,6 +420,12 @@ public class CardsGameWidget extends AbsolutePanel {
 		}
 	}
 
+	/**
+	 * Rotates the specified layout by 90 degrees, clockwise.
+	 * 
+	 * @param layout The layout that has to be rotated.
+	 * @param tableSize The size of the table (both height and width), in pixels. 
+	 */
 	private static void rotateTableLayout(TableLayout layout, int tableSize) {
 		for (Position position : layout.cards.values()) {
 			position.rotation = (position.rotation + 90) % 360;
@@ -364,6 +437,11 @@ public class CardsGameWidget extends AbsolutePanel {
 		rotatePositions(layout.names, tableSize);
 	}
 
+	/**
+	 * Sorts the given list of cards.
+	 * 
+	 * @param list The list that has to be sorted.
+	 */
 	public static void sortCardWidgets(List<CardWidget> list) {
 		final Comparator<Card> cardComparator = getCardComparator();
 		Collections.sort(list, new Comparator<CardWidget>() {
@@ -379,6 +457,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	 */
 	private Map<CardWidget, CardRole> cardRoles;
 
+	/**
+	 * The widget currently displayed in the bottom-right corner.
+	 */
 	private Widget cornerWidget = null;
 
 	/**
@@ -387,10 +468,19 @@ public class CardsGameWidget extends AbsolutePanel {
 	 */
 	private Animation currentAnimation = null;
 
+	/**
+	 * The exit button.
+	 */
 	private PushButton exitButton;
 
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
+	/**
+	 * The listener that is notified about game-related events.
+	 */
 	private GameEventListener listener;
 
 	/**
@@ -425,8 +515,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	/**
 	 * 
-	 * @param tableSize
-	 *            The width and height of this widget.
+	 * @param tableSize The width and height of this widget.
 	 * @param gameStatus
 	 *            The game status, except the cards of the bottom player (if
 	 *            they are shown).
@@ -436,6 +525,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * @param cornerWidget
 	 *            An arbitrary 200x150 pixel widget placed in the bottom-right
 	 *            corner, above the exit button.
+	 * @param listener The listener that will be notified about game-related events.
 	 */
 	public CardsGameWidget(int tableSize, ObservedGameStatus gameStatus,
 			Card[] bottomPlayerCards, Widget cornerWidget,
@@ -582,6 +672,15 @@ public class CardsGameWidget extends AbsolutePanel {
 		updateLabels();
 	}
 
+	/**
+	 * Runs an animation that moves the widgets on the table from
+	 * previousTableLayout to targetTableLayout, with the specified duration.
+	 * 
+	 * @param duration The duration of the animation, in milliseconds.
+	 * @param targetTableLayout The final layout of widgets on the table.
+	 * @param animationCompletedListener A listener that is notified when
+	 *                                   the animation completes.
+	 */
 	private void animateLayoutChange(int duration,
 			final TableLayout targetTableLayout,
 			final AnimationCompletedListener animationCompletedListener) {
@@ -632,6 +731,14 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * different animations. So the GameEventListener receives the
 	 * onAnimationEnd() and onAnimationStart() notifications between the two
 	 * animations.
+	 * 
+	 * @param player The player that takes the current trick.
+	 * @param waitTime The time to wait before moving the cards towards the
+	 *                 specified player, in milliseconds.
+	 * @param animationTime The duration of the card-moving animation, in
+	 *                      milliseconds.
+	 * @param animationCompletedListener A listener that is notified when
+	 *                                   the animation completes.
 	 */
 	public void animateTrickTaking(final int player, int waitTime,
 			final int animationTime,
@@ -727,6 +834,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * ensure that it will be at the right position even when covered.
 	 * 
 	 * NOTE: There must be no animations pending when this method is called.
+	 * 
+	 * @param player The player to whom the card belongs.
+	 * @param card The card that has to be covered.
 	 */
 	public void coverCard(int player, Card card) {
 
@@ -779,7 +889,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * player, and other elements contain information about the other players,
 	 * in clockwise order.
 	 * 
-	 * The totalScore array contains unspecified values for bots.
+	 * @param matchPoints The points scored by players in the current game.
+	 * @param totalScore The global scores. This array contains unspecified
+	 *                   values for bots.
 	 */
 	public void displayScores(int[] matchPoints, int[] totalScore) {
 		assert matchPoints.length == 4;
@@ -863,6 +975,10 @@ public class CardsGameWidget extends AbsolutePanel {
 		updateLabels();
 	}
 
+	/**
+	 * When this is called, the widget stops responding to events
+	 * and disables all user controls.
+	 */
 	public void freeze() {
 		if (currentAnimation != null) {
 			currentAnimation.cancel();
@@ -878,6 +994,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * 
 	 * The corresponding animation will be executed at the next call to
 	 * runPendingAnimations().
+	 * 
+	 * @param player The player that owns the specified card.
+	 * @param card The card that has to be lowered.
 	 */
 	public void lowerRaisedCard(int player, Card card) {
 
@@ -922,6 +1041,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * 
 	 * The corresponding animation will be executed at the next call to
 	 * runPendingAnimations().
+	 * 
+	 * @param player The player that owns the specified card.
+	 * @param card The card that has to be picked up.
 	 */
 	public void pickCard(int player, Card card) {
 
@@ -966,6 +1088,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * 
 	 * The corresponding animation will be executed at the next call to
 	 * runPendingAnimations().
+	 * 
+	 * @param player The player that owns the specified card.
+	 * @param card The card that has to be played.
 	 */
 	public void playCard(int player, Card card) {
 
@@ -1009,6 +1134,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * 
 	 * The corresponding animation will be executed at the next call to
 	 * runPendingAnimations().
+	 * 
+	 * @param player The player that owns the specified card.
+	 * @param card The card that has to be raised.
 	 */
 	public void raiseCard(int player, Card card) {
 
@@ -1056,6 +1184,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * ensure that it will be at the right position even when uncovered.
 	 * 
 	 * NOTE: There must be no animations pending when this method is called.
+	 * 
+	 * @param player The player that owns the specified card.
+	 * @param card The card that has to be covered.
 	 */
 	public void revealCoveredCard(int player, Card card) {
 
@@ -1110,6 +1241,8 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * 
 	 * @param duration
 	 *            The duration of the animation, in milliseconds.
+	 * @param animationCompletedListener A listener that is notified when all of the
+	 *                                   animations are completed.
 	 */
 	public void runPendingAnimations(int duration,
 			AnimationCompletedListener animationCompletedListener) {
@@ -1139,6 +1272,12 @@ public class CardsGameWidget extends AbsolutePanel {
 		updateLabels();
 	}
 
+	/**
+	 * A helper method to set the position of a CardWidget on the table.
+	 * 
+	 * @param x The card widget.
+	 * @param position The desired position.
+	 */
 	private void setCardPosition(CardWidget x, Position position) {
 		int rotation = position.rotation;
 		x.setRotation(rotation);
@@ -1154,6 +1293,12 @@ public class CardsGameWidget extends AbsolutePanel {
 		DOM.setIntStyleAttribute(x.getElement(), "zIndex", position.z);
 	}
 
+	/**
+	 * Removes the widget currently displayed in the bottom-right
+	 * corner, and replaces it with the specified widget.
+	 * 
+	 * @param cornerWidget The desired widget.
+	 */
 	public void setCornerWidget(Widget cornerWidget) {
 
 		if (frozen) {
@@ -1171,6 +1316,12 @@ public class CardsGameWidget extends AbsolutePanel {
 		add(cornerWidget, tableSize - 200, tableSize - 200);
 	}
 
+	/**
+	 * A helper method to set the position of a label.
+	 * 
+	 * @param x The label.
+	 * @param position The desired position.
+	 */
 	private void setLabelPosition(Label x, Position position) {
 		assert position.rotation == 0;
 		setWidgetPosition(x, position.x - playerLabelWidth / 2, position.y
@@ -1178,6 +1329,9 @@ public class CardsGameWidget extends AbsolutePanel {
 		DOM.setIntStyleAttribute(x.getElement(), "zIndex", position.z);
 	}
 
+	/**
+	 * Updates the contents of the players' labels.
+	 */
 	private void updateLabels() {
 		for (int i = 0; i < 4; i++) {
 			PlayerData playerInfo = players.get(i);

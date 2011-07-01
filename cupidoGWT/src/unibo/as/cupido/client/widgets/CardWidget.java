@@ -24,6 +24,9 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.ui.Image;
 
+/**
+ * A widget that represents a (possibly-rotated) card.
+ */
 public class CardWidget extends Image {
 
 	/**
@@ -40,6 +43,15 @@ public class CardWidget extends Image {
 	 */
 	public static final int cardWidth = 72;
 
+	/**
+	 * A helper method that constructs the file name of the correct
+	 * image from the provided arguments.
+	 * 
+	 * @param card The desired card.
+	 * @param rotation The desired rotation for the card, in degrees.
+	 * 
+	 * @return The filename of the desired image.
+	 */
 	private static String constructCardName(Card card, int rotation) {
 		final String path_prefix = "classic_cards/";
 		rotation = rotation % 360;
@@ -69,8 +81,14 @@ public class CardWidget extends Image {
 		return result + ".png";
 	}
 
+	/**
+	 * The card currently displayed by this widget.
+	 */
 	private Card card;
 
+	/**
+	 * The current rotation of this widget.
+	 */
 	private int rotation;
 
 	/**
@@ -85,6 +103,8 @@ public class CardWidget extends Image {
 
 	/**
 	 * Constructs a CardWidget that displays the specified card.
+	 * 
+	 * @param card The desired card.
 	 */
 	public CardWidget(Card card) {
 		super(constructCardName(card, 0));
@@ -96,8 +116,8 @@ public class CardWidget extends Image {
 	/**
 	 * Constructs a CardWidget that displays the specified card.
 	 * 
-	 * @param rotation
-	 *            This is the rotation of the card, in degrees.
+	 * @param card The desired card.
+	 * @param rotation The desired rotation for the card, in degrees.
 	 */
 	public CardWidget(Card card, int rotation) {
 		super(constructCardName(card, rotation));
@@ -119,10 +139,16 @@ public class CardWidget extends Image {
 		this.rotation = rotation;
 	}
 
+	/**
+	 * @return The currently displayed card, or null if a covered card is displayed.
+	 */
 	public Card getCard() {
 		return card;
 	}
 
+	/**
+	 * A helper method to prevent the user from dragging the card.
+	 */
 	private void preventDrag() {
 		addMouseDownHandler(new MouseDownHandler() {
 			@Override
@@ -132,6 +158,11 @@ public class CardWidget extends Image {
 		});
 	}
 
+	/**
+	 * Changes the displayed card to newCard.
+	 * 
+	 * @param newCard The desired card.
+	 */
 	public void setCard(Card newCard) {
 		if (card == null && newCard == null)
 			return;
@@ -142,6 +173,11 @@ public class CardWidget extends Image {
 		setUrl(constructCardName(card, rotation));
 	}
 
+	/**
+	 * Changes the displayed card to newRotation.
+	 * 
+	 * @param newRotation The desired rotation.
+	 */
 	public void setRotation(int newRotation) {
 		if (rotation == newRotation)
 			return;

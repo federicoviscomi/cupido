@@ -21,8 +21,19 @@ package unibo.as.cupido.client.widgets.cardsgame;
  * This contains some data about a card on the table.
  */
 public class CardRole {
+	/**
+	 * This enum specifies a card's state.
+	 */
 	public enum State {
-		HAND, PLAYED
+		/**
+		 * The card is in a player's hand.
+		 */
+		HAND,
+		
+		/**
+		 * The card is on the table.
+		 */
+		PLAYED
 	}
 
 	/**
@@ -37,13 +48,23 @@ public class CardRole {
 	public int player;
 
 	/**
-	 * The state of the card (see the State enum).
+	 * The state of the card.
 	 */
 	public CardRole.State state;
 
+	/**
+	 * The default constructor.
+	 */
 	public CardRole() {
 	}
 
+	/**
+	 * Initializes all fields with the specified values.
+	 * 
+	 * @param state The desired card state.
+	 * @param raised Specifies whether or not the card is raised.
+	 * @param player Specifies the player to whom the card belongs.
+	 */
 	public CardRole(CardRole.State state, boolean raised, int player) {
 		this.state = state;
 		this.player = player;

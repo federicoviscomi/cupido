@@ -45,9 +45,21 @@ public class Position {
 	 */
 	public int z;
 
+	/**
+	 * The default constructor.
+	 */
 	public Position() {
 	}
 
+	/**
+	 * Initializes all the fields with the specified values.
+	 * 
+	 * @param x The desired distance between the left margin and the center of the widget.
+	 * @param y The desired distance between the top margin and the center of the widget.
+	 * @param z The desired height for the widget. Widgets with higher values of z are drawn
+	 *          above those with lower values.
+	 * @param rotation The desired rotation, measured in degrees.
+	 */
 	public Position(int x, int y, int z, int rotation) {
 		this.x = x;
 		this.y = y;

@@ -29,6 +29,9 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.shared.cometNotification.GameEnded;
+import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
+import unibo.as.cupido.shared.cometNotification.PlayerLeft;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -46,6 +49,10 @@ import com.google.gwt.user.client.ui.PushButton;
  */
 public class BeforeGameWidget extends AbsolutePanel {
 
+	/**
+	 * An interface used by client code to be notified of
+	 * various events.
+	 */
 	public interface Listener {
 		/**
 		 * This is called if the user chooses to exit.
@@ -54,6 +61,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 		/**
 		 * This is called if a fatal exception occurs.
+		 * 
+		 * @param e The exception that was caught.
 		 */
 		public void onFatalException(Throwable e);
 
@@ -69,21 +78,40 @@ public class BeforeGameWidget extends AbsolutePanel {
 		public void onTableFull();
 	}
 
-	// The height of the players' labels that contain usernames and scores.
+	/**
+	 *  The height of the players' labels that contain usernames and scores.
+	 */
 	private static final int playerLabelHeight = 20;
 
-	// The width of the players' labels that contain usernames and scores.
+	/**
+	 *  The width of the players' labels that contain usernames and scores.
+	 */
 	private static final int playerLabelWidth = 200;
 
-	private static String constructBotLabelHtml(String username) {
+	/**
+	 * Construct the text for a bot's label.
+	 * 
+	 * @param name The name of the bot.
+	 * 
+	 * @return The text for the bot's label.
+	 */
+	private static String constructBotLabelHtml(String name) {
 		SafeHtmlBuilder builder = new SafeHtmlBuilder();
 		builder.appendHtmlConstant("<b><big>");
-		builder.appendEscaped(username);
+		builder.appendEscaped(name);
 		builder.appendHtmlConstant("</big></b>");
 
 		return builder.toSafeHtml().asString();
 	}
 
+	/**
+	 * Construct the text for a user's label.
+	 * 
+	 * @param username The name of the user.
+	 * @param points The global points of the specified user.
+	 * 
+	 * @return The text for the user's label.
+	 */
 	private static String constructPlayerLabelHtml(String username, int points) {
 		SafeHtmlBuilder builder = new SafeHtmlBuilder();
 		builder.appendHtmlConstant("<b><big>");
@@ -95,9 +123,12 @@ public class BeforeGameWidget extends AbsolutePanel {
 		return builder.toSafeHtml().asString();
 	}
 
+	/**
+	 * The label of the bottom player.
+	 */
 	private HTML bottomLabel;
 
-	/*
+	/**
 	 * A list containing the displayed "Add bot" buttons (if any).
 	 * buttons.get(0) is the left button, and other buttons follow in clockwise
 	 * order. This list has always 3 elements. Each element may be null if there
@@ -105,38 +136,59 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 */
 	private List<PushButton> buttons = new ArrayList<PushButton>();
 
+	/**
+	 * This is used to communicate with the servlet using RPC.
+	 */
 	private CupidoInterfaceAsync cupidoService;
 
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
+	/**
+	 * Specifies whether or not the current user is the owner of the table.
+	 */
 	private boolean isOwner;
 
-	/*
+	/**
 	 * labels.get(0) is the left label, and other labels follow in clockwise
 	 * order. This list has always 3 elements.
 	 */
 	private List<HTML> labels = new ArrayList<HTML>();
 
+	/**
+	 * The listener used to notify the client code about various events.
+	 */
 	private Listener listener;
 
+	/**
+	 * The size of the widget (both width and height) in pixels.
+	 */
 	private int tableSize;
 
+	/**
+	 * The current status of the table.
+	 */
 	private InitialTableStatus tableStatus;
 
 	/**
 	 * The widget that represents the table before the actual game.
 	 * 
-	 * @param username
+	 * @param tableSize The size of the widget (both width and height), in pixels.
+	 * @param username The username of the current user.
+	 * @param bottomUserName
 	 *            Is the bottom player's username (it may be the current user or
 	 *            not, depending whether the user is a player or just a viewer).
-	 * 
-	 * @param scores
-	 *            The global scores of existing players. The scores contained in
-	 *            tableStatus are ignored.
-	 * 
 	 * @param isOwner
 	 *            Specifies whether or not the current user is the owner of the
 	 *            table.
+	 * @param tableStatus This contains some information about the table status.
+	 * @param scores
+	 *            The global scores of existing players. The scores contained in
+	 *            tableStatus are ignored.
+	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param listener The listener used to notify the client code about various events.
 	 */
 	public BeforeGameWidget(int tableSize, String username,
 			String bottomUserName, boolean isOwner,
@@ -217,6 +269,12 @@ public class BeforeGameWidget extends AbsolutePanel {
 		add(exitButton, tableSize - 100, tableSize - 40);
 	}
 
+	/**
+	 * A helper method to add a bot to the table.
+	 * 
+	 * @param position The position where the bot has to be added.
+	 * @param name The name of the bot.
+	 */
 	private void addBot(int position, String name) {
 		tableStatus.opponents[position] = name;
 		tableStatus.whoIsBot[position] = true;
@@ -235,6 +293,11 @@ public class BeforeGameWidget extends AbsolutePanel {
 			listener.onTableFull();
 	}
 
+	/**
+	 * A helper method to add an 'Add bot' button in the specified position.
+	 * 
+	 * @param position The position where the button has to be added.
+	 */
 	private void addBotButton(final int position) {
 		final int buttonWidth = 95;
 		final int buttonHeight = 15;
@@ -302,6 +365,13 @@ public class BeforeGameWidget extends AbsolutePanel {
 		}
 	}
 
+	/**
+	 * A helper method to add a player to the table.
+	 * 
+	 * @param username The name of the player.
+	 * @param points The global points of the specified player.
+	 * @param position The position where the player has to be added.
+	 */
 	private void addPlayer(String username, int points, int position) {
 
 		tableStatus.opponents[position] = username;
@@ -318,6 +388,10 @@ public class BeforeGameWidget extends AbsolutePanel {
 			listener.onTableFull();
 	}
 
+	/**
+	 * When this is called, the widget stops responding to events
+	 * and disables all user controls.
+	 */
 	public void freeze() {
 		for (PushButton button : buttons)
 			if (button != null)
@@ -325,10 +399,23 @@ public class BeforeGameWidget extends AbsolutePanel {
 		frozen = true;
 	}
 
-	public InitialTableStatus getInitialTableStatus() {
+	/**
+	 * @return The current status of the table.
+	 */
+	public InitialTableStatus getTableStatus() {
 		return tableStatus;
 	}
 
+	/**
+	 * This is called when a GameEnded notification is received
+	 * from the servlet.
+	 * 
+	 * @param matchPoints The points scored by the players during the current game.
+	 * @param playersTotalPoints The total points of the players, already updated
+	 *                           with the results of the current game.
+	 * 
+	 * @see GameEnded
+	 */
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen) {
 			System.out
@@ -339,12 +426,15 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * Adds a new player or a bot.
+	 * This is called when a NewPlayerJoined notification is received
+	 * from the servlet.
 	 * 
-	 * @param position
-	 *            The position in which the player or the bot has to be added. 0
-	 *            means at the left, and other positions follow in clockwise
-	 *            order.
+	 * @param name The name of the player who joined the game.
+	 * @param isBot Specifies whether the player is a user or a bot.
+	 * @param points The (global) points of the player.
+	 * @param position The position of the player in the table.
+	 * 
+	 * @see NewPlayerJoined
 	 */
 	public void handleNewPlayerJoined(String name, boolean isBot, int points,
 			int position) {
@@ -359,6 +449,14 @@ public class BeforeGameWidget extends AbsolutePanel {
 			addPlayer(name, points, position);
 	}
 
+	/**
+	 * This is called when a Playerleft notification is received
+	 * from the servlet.
+	 * 
+	 * @param player The player that left the game.
+	 * 
+	 * @see PlayerLeft
+	 */
 	public void handlePlayerLeft(String player) {
 		if (frozen) {
 			System.out
@@ -379,12 +477,20 @@ public class BeforeGameWidget extends AbsolutePanel {
 				.println("Client: received an invalid PlayerLeft notification: the user does not exist.");
 	}
 
+	/**
+	 * @return true if the table has no free seats.
+	 */
 	private boolean isTableFull() {
 		return tableStatus.opponents[0] != null
 				&& tableStatus.opponents[1] != null
 				&& tableStatus.opponents[2] != null;
 	}
 
+	/**
+	 * Removes the specified player from the table.
+	 * 
+	 * @param player The position of the player that has to be removed.
+	 */
 	private void removePlayer(int player) {
 		tableStatus.opponents[player] = null;
 
