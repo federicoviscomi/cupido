@@ -62,7 +62,7 @@ public interface TableInterface extends Remote {
 	 * ENDED means that the table has four players and none of them has cards
 	 * left to play.
 	 * 
-	 * INTERRUPTED means that the craetor left the table.
+	 * INTERRUPTED means that the creator left the table.
 	 */
 	public static enum GameStatus {
 		INIT, PASSING_CARDS, STARTED, ENDED, INTERRUPTED

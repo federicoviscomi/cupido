@@ -60,7 +60,7 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	/**
 	 * @param screenManager The global screen manager.
 	 * @param username The username of the current user.
-	 * @param isOwner Specifies whether or not the current user is the craetor of this table.
+	 * @param isOwner Specifies whether or not the current user is the creator of this table.
 	 * @param initialTableStatus Contains information about the current state of the table.
 	 * @param userScore The global score of the current user.
 	 * @param cupidoService This is used to communicate with the servlet using RPC.

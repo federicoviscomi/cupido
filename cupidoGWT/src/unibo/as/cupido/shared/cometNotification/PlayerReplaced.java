@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 /**
  * This notification in sent when a player leaves a table during the game,
- * and he is not the craetor, so it is replaced with a bot.
+ * and he is not the creator, so it is replaced with a bot.
  */
 public class PlayerReplaced implements Serializable {
 
@@ -30,7 +30,7 @@ public class PlayerReplaced implements Serializable {
 	public String name;
 
 	/**
-	 * For viewers, position=1 means the player at the craetor's left, and so
+	 * For viewers, position=1 means the player at the creator's left, and so
 	 * the position range is [1-3].
 	 * 
 	 * For players, position=0 means the player at the user's left, and so

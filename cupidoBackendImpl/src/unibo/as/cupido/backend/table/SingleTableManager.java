@@ -83,7 +83,7 @@ public class SingleTableManager implements TableInterface {
 
 		this.table = table;
 		this.gtm = gtm;
-		this.creator = table.craetor;
+		this.creator = table.creator;
 		this.gameStatus = GameStatus.INIT;
 		this.databaseManager = new DatabaseManager();
 		this.actionQueue = new ActionQueue();
@@ -182,7 +182,7 @@ public class SingleTableManager implements TableInterface {
 			} catch (NoSuchViewerException e) {
 				e.printStackTrace();
 			}
-		} else if (table.craetor.equals(userName)) {
+		} else if (table.creator.equals(userName)) {
 
 			gameStatus = GameStatus.INTERRUPTED;
 			notifyGameEndedPrematurely();

@@ -239,11 +239,11 @@ public class YourTurnState implements PlayerState {
 				try {
 					throw caught;
 				} catch (NoSuchTableException e) {
-					// The craetor has left the table, so the game was
+					// The creator has left the table, so the game was
 					// interrupted.
 					// Nothing to do.
 				} catch (GameInterruptedException e) {
-					// The craetor has left the table, so the game was
+					// The creator has left the table, so the game was
 					// interrupted.
 					// Nothing to do.
 				} catch (Throwable e) {

@@ -59,7 +59,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 		/**
 		 * This is called if the game is interrupted by another player (i.e. the
-		 * craetor).
+		 * creator).
 		 */
 		public void onGameEnded();
 
@@ -135,7 +135,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 *            tableStatus are ignored.
 	 * 
 	 * @param isOwner
-	 *            Specifies whether or not the current user is the craetor of the
+	 *            Specifies whether or not the current user is the creator of the
 	 *            table.
 	 */
 	public BeforeGameWidget(int tableSize, String username,

@@ -37,8 +37,8 @@ public interface LocalTableManagerInterface extends Remote {
 	 * This method is used by global table manager component to create a new
 	 * table.
 	 * 
-	 * @param craetor
-	 *            the craetor of the table to be created
+	 * @param creator
+	 *            the creator of the table to be created
 	 * @param snf
 	 *            the notification interface associated with the player who
 	 *            wants to create a table
