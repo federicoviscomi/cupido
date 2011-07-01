@@ -78,7 +78,6 @@ ENGINE = MyISAM;
  * 
  * 
  * 
- * @author cane
  * 
  */
 public interface DatabaseInterface {

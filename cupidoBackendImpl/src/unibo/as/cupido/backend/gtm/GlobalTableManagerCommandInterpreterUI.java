@@ -61,9 +61,6 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
  * 
  * </table>
  * 
- * 
- * @author cane
- * 
  */
 public class GlobalTableManagerCommandInterpreterUI {
 
@@ -197,7 +194,7 @@ public class GlobalTableManagerCommandInterpreterUI {
 			execute();
 		}
 	}
-	
+
 	/**
 	 * Switch the right command
 	 */

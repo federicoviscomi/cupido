@@ -26,8 +26,6 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 
 /**
  * 
- * @author cane
- * 
  */
 public interface LocalTableManagerInterface extends Remote {
 

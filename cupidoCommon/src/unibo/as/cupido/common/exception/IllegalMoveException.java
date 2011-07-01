@@ -20,10 +20,7 @@ package unibo.as.cupido.common.exception;
 import java.io.Serializable;
 
 /**
- * 
  * This exception is thrown when the player play an illegal move
- * 
- * @author cane
  * 
  */
 public class IllegalMoveException extends Exception implements Serializable {

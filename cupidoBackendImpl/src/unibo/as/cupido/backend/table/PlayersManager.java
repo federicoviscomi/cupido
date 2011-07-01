@@ -41,6 +41,9 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 
+/**
+ *
+ */
 public class PlayersManager {
 
 	/** store information for inactiveReplacementBot or human players */

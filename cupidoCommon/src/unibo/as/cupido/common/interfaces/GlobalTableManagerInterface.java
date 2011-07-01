@@ -27,15 +27,12 @@ import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
-import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 
 /**
  * The remote interface that local tables manager(LTM), single table
  * manager(STM) and Servlets use to communicate with the global table
  * manager(GTM).
- * 
- * @author cane
  * 
  */
 public interface GlobalTableManagerInterface extends Remote {
@@ -98,12 +95,12 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * @param tableDescriptor
 	 * @param ltm
 	 * @throws RemoteException
-	 * @throws NoSuchLTMInterfaceException
-	 * @throws NoSuchTableException 
+	 * @throws NoSuchLTMException
+	 * @throws NoSuchTableException
 	 */
 	public void notifyTableDestruction(TableDescriptor tableDescriptor,
 			LocalTableManagerInterface ltm) throws RemoteException,
-			NoSuchLTMInterfaceException, NoSuchTableException;
+			NoSuchLTMException, NoSuchTableException;
 
 	/**
 	 * The components STM uses this method to notify the component GTM when a

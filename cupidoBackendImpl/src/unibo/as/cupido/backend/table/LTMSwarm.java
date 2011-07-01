@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import unibo.as.cupido.common.exception.AllLTMBusyException;
-import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
+import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 
@@ -155,6 +155,9 @@ public class LTMSwarm {
 	/** thread that polls ltms */
 	private final LTMPollingThread ltmPollingThread;
 
+	/**
+	 * Creates a new LTM swarm.
+	 */
 	public LTMSwarm() {
 		swarm = new ArrayList<LTMSwarm.Triple>();
 		ltmPollingThread = new LTMPollingThread(this);
@@ -212,26 +215,26 @@ public class LTMSwarm {
 	}
 
 	/**
-	 * 
-	 * 
+	 * Decrease number of table managed by specified LTM
 	 * 
 	 * @param ltmi
-	 * @throws NoSuchLTMInterfaceException
+	 * @throws NoSuchLTMException
 	 */
 	public void decreaseTableCount(LocalTableManagerInterface ltmi)
-			throws NoSuchLTMInterfaceException {
+			throws NoSuchLTMException, NoSuchLTMException {
 		synchronized (swarm) {
+			// works with equal
 			int index = swarm.indexOf(Triple.getDefault(ltmi));
 			if (index < 0)
-				throw new NoSuchLTMInterfaceException(ltmi.toString());
+				throw new NoSuchLTMException(ltmi.toString());
 			swarm.get(index).tableCount--;
 		}
 	}
 
 	/**
-	 * Just for debug purpose
+	 * Just for test/debug purpose
 	 * 
-	 * @return
+	 * @return all ltm in the swarm
 	 */
 	public Triple[] getAllLTM() {
 		synchronized (swarm) {
@@ -239,12 +242,21 @@ public class LTMSwarm {
 		}
 	}
 
+	/**
+	 * Remote the LTM identified by <tt>ltmi</tt>
+	 * 
+	 * @param ltmi
+	 *            the LTM to remove
+	 */
 	public void remove(LocalTableManagerInterface ltmi) {
 		synchronized (swarm) {
 			swarm.remove(Triple.getDefault(ltmi));
 		}
 	}
 
+	/**
+	 * Shuts down all LTM and interrupts polling thread.
+	 */
 	public void shutdown() {
 		synchronized (swarm) {
 			ltmPollingThread.interrupt();

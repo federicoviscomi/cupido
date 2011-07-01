@@ -35,7 +35,6 @@ import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
-import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.interfaces.GlobalChatInterface;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
@@ -205,7 +204,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	@Override
 	public void notifyTableDestruction(TableDescriptor tableDescriptor,
 			LocalTableManagerInterface ltm) throws RemoteException,
-			NoSuchLTMInterfaceException, NoSuchTableException {
+			NoSuchLTMException, NoSuchTableException {
 		System.out.println("gtm. destroying table " + tableDescriptor);
 		allTables.removeTable(tableDescriptor);
 		ltmSwarm.decreaseTableCount(ltm);
