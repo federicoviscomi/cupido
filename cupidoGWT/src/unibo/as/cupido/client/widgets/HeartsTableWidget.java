@@ -24,7 +24,6 @@ import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.common.exception.GameEndedException;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
-import unibo.as.cupido.common.exception.UserNotAuthenticatedException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 

@@ -24,7 +24,6 @@ import java.util.List;
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
-import unibo.as.cupido.client.widgets.ChatWidget;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
 import unibo.as.cupido.common.exception.GameEndedException;
