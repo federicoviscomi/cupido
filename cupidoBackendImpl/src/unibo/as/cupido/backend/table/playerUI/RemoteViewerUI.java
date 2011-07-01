@@ -18,7 +18,11 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
 /**
  * This emulates
  */
-public class RemoteViewerUI extends LoggerServletNotificationInterface {
+public class RemoteViewerUI extends LoggerServletNotificationInterface
+		implements ServletNotificationsInterface {
+
+	final TableInterface singleTableManager;
+	final ObservedGameStatus observedGameStatus;
 
 	public RemoteViewerUI(String viewerName,
 			LocalTableManagerInterface ltmInterface,
@@ -29,10 +33,10 @@ public class RemoteViewerUI extends LoggerServletNotificationInterface {
 		if (viewerName == null)
 			throw new IllegalArgumentException();
 
-		TableInterface singleTableManager = ltmInterface
+		singleTableManager = ltmInterface
 				.getTable(tableInfo.tableDescriptor.id);
-		ObservedGameStatus observedGameStatus = singleTableManager.viewTable(
-				viewerName, (ServletNotificationsInterface) UnicastRemoteObject
+		observedGameStatus = singleTableManager.viewTable(viewerName,
+				(ServletNotificationsInterface) UnicastRemoteObject
 						.exportObject(this));
 		System.out.println("viewing table\n" + observedGameStatus
 				+ "\n press a key to exit");
