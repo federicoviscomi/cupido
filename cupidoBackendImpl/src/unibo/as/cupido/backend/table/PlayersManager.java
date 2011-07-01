@@ -194,7 +194,7 @@ public class PlayersManager {
 	private ChatMessage clonedMessage;
 
 	/**
-	 * Create a new players manager and adds the specified owner.
+	 * Create a new players manager and adds the specified creator.
 	 * 
 	 * @param creator
 	 *            the creator of the table
@@ -544,6 +544,16 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * Notify every other player that specified player played specified cards
+	 * 
+	 * @param userName
+	 *            name of player who played
+	 * @param card
+	 *            card played by the player
+	 * @throws NoSuchPlayerException
+	 *             name of player who played
+	 */
 	public void notifyPlayedCard(String userName, Card card)
 			throws NoSuchPlayerException {
 		final int position = getPlayerPosition(userName);
@@ -576,6 +586,16 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * Notify every other player that specified player joined.
+	 * 
+	 * @param playerName
+	 *            name of player who joined
+	 * @param score
+	 *            score of player who joined
+	 * @param position
+	 *            position of player who joined
+	 */
 	public void notifyPlayerJoined(final String playerName, final int score,
 			int position) {
 		/* notify every players but the one who is joining */
@@ -604,6 +624,12 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * Notify every player that specified player has left
+	 * 
+	 * @param playerName
+	 *            the player who has left
+	 */
 	public void notifyPlayerLeft(final String playerName) {
 		for (final PlayerInfo player : players) {
 			if (player != null && !player.name.equals(playerName)) {
@@ -628,9 +654,13 @@ public class PlayersManager {
 	}
 
 	/**
-	 * When player in position <tt>position</tt> passes cards <tt>cards</tt> 
+	 * When player in position <tt>position</tt> passes cards <tt>cards</tt> to
+	 * a player receiver, this last player got notified.
+	 * 
 	 * @param position
+	 *            position of player who passes cards
 	 * @param cards
+	 *            cards passed
 	 */
 	public void notifyPlayerPassedCards(int position, Card[] cards) {
 		int receiverIndex = (position + 5) % 4;

@@ -19,9 +19,7 @@ package unibo.as.cupido.backend.gtm;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -144,18 +142,18 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public TableInterface createTable(String owner,
+	public TableInterface createTable(String creator,
 			ServletNotificationsInterface snf) throws RemoteException,
 			AllLTMBusyException {
 		System.out.println("\n"
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
-				+ "(" + owner + ", " + snf + ")");
+				+ "(" + creator + ", " + snf + ")");
 		/* chose an LTM according to some load balancing policy */
 		LocalTableManagerInterface chosenLTM = ltmSwarm.chooseLTM();
 
 		/* create table in the chosen local table manager */
 		Pair<TableInterface, TableInfoForClient> table = chosenLTM.createTable(
-				owner, snf);
+				creator, snf);
 
 		/* store created table */
 		allTables.addTable(table.second, chosenLTM);

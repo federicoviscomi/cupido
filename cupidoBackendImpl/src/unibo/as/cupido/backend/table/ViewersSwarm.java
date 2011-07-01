@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import unibo.as.cupido.common.exception.DuplicateViewerException;
-import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.structures.Card;

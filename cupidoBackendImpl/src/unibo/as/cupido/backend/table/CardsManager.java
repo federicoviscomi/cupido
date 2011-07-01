@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
-import java.util.concurrent.CancellationException;
-
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.structures.Card;

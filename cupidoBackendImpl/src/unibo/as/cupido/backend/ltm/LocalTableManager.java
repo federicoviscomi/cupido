@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.AccessException;
-import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -31,7 +30,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -149,15 +147,15 @@ public class LocalTableManager implements LocalTableManagerInterface {
 
 	@Override
 	public synchronized Pair<TableInterface, TableInfoForClient> createTable(
-			String owner, ServletNotificationsInterface snf)
+			String creator, ServletNotificationsInterface snf)
 			throws RemoteException {
-		if (owner == null || snf == null)
-			throw new IllegalArgumentException(owner + " " + snf);
+		if (creator == null || snf == null)
+			throw new IllegalArgumentException(creator + " " + snf);
 		if (!acceptMoreRequest) {
 			throw new RemoteException();
 		}
 		try {
-			TableInfoForClient newTable = new TableInfoForClient(owner, 3,
+			TableInfoForClient newTable = new TableInfoForClient(creator, 3,
 					new TableDescriptor(localAddress + this.toString(), nextId));
 			TableInterface tableRemote = (TableInterface) UnicastRemoteObject
 					.exportObject(new SingleTableManager(snf, newTable,
