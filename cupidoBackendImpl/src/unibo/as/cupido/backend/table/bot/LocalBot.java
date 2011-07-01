@@ -18,6 +18,7 @@
 package unibo.as.cupido.backend.table.bot;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
@@ -40,43 +41,63 @@ import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 
+/**
+ * A local bot.
+ */
 public class LocalBot implements LocalBotInterface {
 
+	/** this bot name */
 	private final String botName;
+	/** the table interface */
 	private TableInterface tableInterface;
+	/** initial table status */
 	private final InitialTableStatus initialTableStatus;
-	PrintWriter out;
+	/** output goes through here */
+	private PrintWriter out;
 
+	/** cards owned by this bot */
 	private ArrayList<Card> cards;
+	/** cards played in current trick */
 	private Card[] playedCard = new Card[4];
 
+	/** execute action on this bot */
 	private final ActionQueue actionQueue;
 
+	/** number of played trick */
 	private int turn = 0;
+	/** number of cards played in current trick */
 	private int playedCardCount = 0;
+	/** position of first dealer in current trick */
 	private int firstDealer = -1;
+	/** <tt>true</tt> if this bot passed cards; <tt>false</tt> otherwise */
 	private boolean alreadyPassedCards = false;
+	/** <tt>true</tt> if this received passed cards; <tt>false</tt> otherwise */
 	private boolean alreadyGotCards = false;
+	/** <tt>true</tt> if game is broken hearted; <tt>false</tt> otherwise */
 	private boolean brokenHearted = false;
-
+	/** this bot points in this match */
 	private int points = 0;
-	private final int position;
+	/**
+	 * <tt>true</tt> if this bot is active; <tt>false</tt> otherwise, in this
+	 * case the bot is a replacement bot.
+	 */
 	private boolean active;
 
 	/**
-	 * Create a non active bot.
+	 * Create a non active bot, i.e. a replacement bot. When a player P joins a
+	 * table, a replacement bot R is added to the game. R mimics the move of P,
+	 * i.e. after P does a move, R does the same move. If after the game starts,
+	 * player P leaves, he is replaced by R and R becames active. If a bot is
+	 * inactive it pass and play the same cards of its player but the bot moves
+	 * are not conveyed to the STM but to a logger STM.
 	 * 
-	 * @param playerName
+	 * @param botName
 	 * @param initialTableStatus
-	 * @param stmController
-	 * @param bot
 	 */
-	public LocalBot(final String botName,
-			InitialTableStatus initialTableStatus, int position) {
+	public LocalBot(final String botName, InitialTableStatus initialTableStatus) {
 
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
-		this.position = position;
 		this.tableInterface = LoggerSingleTableManager.defaultInstance;
 		this.active = false;
 		this.actionQueue = new ActionQueue();
@@ -86,41 +107,36 @@ public class LocalBot implements LocalBotInterface {
 					+ botName);
 			outputFile.delete();
 			outputFile.createNewFile();
-			// out = new PrintWriter(new FileWriter(outputFile));
-			out = new PrintWriter(System.out);
+			out = new PrintWriter(new FileWriter(outputFile));
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
+				public void run() {
+					out.close();
+				}
+			});
 		} catch (IOException e) {
 			// not a real error
 			e.printStackTrace();
 			out = new PrintWriter(System.out);
 		}
 
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				System.out.close();
-			}
-		});
-
 		actionQueue.start();
 	}
 
 	/**
-	 * Create an active bot
+	 * Create an active bot.
 	 * 
-	 * @param playerName
+	 * @param botName
 	 * @param initialTableStatus
 	 * @param tableInterface
-	 * @param controller
 	 */
 	public LocalBot(final String botName,
-			InitialTableStatus initialTableStatus,
-			TableInterface tableInterface, int position) {
+			InitialTableStatus initialTableStatus, TableInterface tableInterface) {
 
 		this.botName = botName;
 		this.initialTableStatus = initialTableStatus;
 		this.tableInterface = tableInterface;
 		this.actionQueue = new ActionQueue();
-		this.position = position;
 		this.active = true;
 
 		try {
@@ -155,12 +171,24 @@ public class LocalBot implements LocalBotInterface {
 		});
 	}
 
+	/**
+	 * Choose a card to play. The card is the first one in the bot cards that is
+	 * sound to play.
+	 * 
+	 * @return a card to play
+	 */
 	private Card chooseCard() {
-		return chooseValidCards().get(0);
+		return getAllSoundCards().get(0);
 	}
 
-	private ArrayList<Card> chooseValidCards() {
+	/**
+	 * Returns all the bot cards that are sound to play.
+	 * 
+	 * @return all the bot cards that are sound to play.
+	 */
+	private ArrayList<Card> getAllSoundCards() {
 		ArrayList<Card> validCards = new ArrayList<Card>(13);
+		
 		if (cards.contains(CardsManager.twoOfClubs)) {
 			validCards.add(CardsManager.twoOfClubs);
 			return validCards;

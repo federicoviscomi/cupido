@@ -29,7 +29,7 @@ public class LoggerBot implements LocalBotInterface {
 	}
 
 	@Override
-	public void activate(TableInterface tableInterface) throws RemoteException {
+	public void activate(TableInterface tableInterface) {
 		System.out.println("" + botName + " activate(" + tableInterface + ")");
 	}
 
@@ -113,7 +113,7 @@ public class LoggerBot implements LocalBotInterface {
 	}
 
 	@Override
-	public void passCards(Card[] cards) throws RemoteException {
+	public void passCards(Card[] cards) {
 		System.out.println("" + botName + " passCards("
 				+ Arrays.toString(cards) + ")");
 	}

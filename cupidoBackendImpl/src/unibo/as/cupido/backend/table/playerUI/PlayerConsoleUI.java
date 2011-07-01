@@ -39,6 +39,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
+import unibo.as.cupido.backend.table.LoggerBot;
+import unibo.as.cupido.backend.table.bot.LocalBot;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
@@ -133,6 +135,8 @@ public class PlayerConsoleUI {
 
 	private String nextCommandLine;
 
+	private LocalBot bot;
+
 	public PlayerConsoleUI() {
 		this(new BufferedReader(new InputStreamReader(System.in)),
 				new PrintWriter(System.out));
@@ -201,6 +205,8 @@ public class PlayerConsoleUI {
 	private void executeCreate() {
 		try {
 			// TODO really check the database
+			// TODO is really necessary RemoteBot or can be used instead
+			// LocalBot
 			remoteBot = new RemoteBot(new InitialTableStatus(new String[3],
 					new int[3], new boolean[3]), null, playerName);
 			botNotification = (ServletNotificationsInterface) UnicastRemoteObject
@@ -208,6 +214,7 @@ public class PlayerConsoleUI {
 
 			remoteBot.singleTableManager = gtm.createTable(playerName,
 					botNotification);
+
 			creatingATable = true;
 			out.println("successfully created table "
 					+ remoteBot.singleTableManager);
