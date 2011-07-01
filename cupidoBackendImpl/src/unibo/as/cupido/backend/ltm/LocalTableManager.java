@@ -31,11 +31,13 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import unibo.as.cupido.backend.table.SingleTableManager;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
@@ -46,48 +48,56 @@ import unibo.as.cupido.common.structures.TableDescriptor;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
 /**
+ * A local table manager handles a portion of all the tables of Cupido.
+ * <p>
  * 
- * 
- * 
- * @author cane
- * 
+ * When LTM starts, it reads the configuration file
+ * <tt>LOCALTABLEMANAGER_CONFIGURATION_FILE</tt>. This file contains association
+ * of variables and values, one association per line. The syntax is <center>
+ * VARIABLE_IDENTIFIER VALUE </center>
+ * <p>
+ * All associations are optional. There are two variable that can be specified
+ * in the configuration file:
+ * <ul>
+ * <li>MAX_TABLE: specifies the maximum number of table that this LTM can
+ * handle, default value is
+ * <tt>LocalTableManagerInterface.DEFAULT_MAX_TABLE</tt></li>
+ * <li>GTM_ADDRESS: specifies the GTM address, default value is
+ * <tt>LocalTableManagerInterface.DEFAULT_GTM_ADDRESS</tt></li>
+ * </ul>
  */
 public class LocalTableManager implements LocalTableManagerInterface {
 
+	/** configuration file name */
 	private static final String LOCALTABLEMANAGER_CONFIGURATION_FILE = "localTableManager.config";
 
-	public static void main(String[] args) throws NotBoundException {
+	public static void main(String[] args) throws NotBoundException,
+			RemoteException, UnknownHostException {
 		new LocalTableManager();
 	}
 
-	private GlobalTableManagerInterface gtmRemote;
+	private final GlobalTableManagerInterface gtmRemote;
 
-	/**
-	 * The maximum number of table a LocalTableManager can handle. This number
-	 * is stored in the configuration file
-	 * 
-	 * localTableManager.config
-	 * 
-	 * This file has to contain a line in the format
-	 * 
-	 * MAX_TABLE 1...*
-	 */
-	private int MAX_TABLE;
-
+	/** The maximum number of table a LocalTableManager can handle */
+	private int MAX_TABLE = LocalTableManagerInterface.DEFAULT_MAX_TABLE;
+	/** address of gtm */
+	private String gtmAddress = LocalTableManagerInterface.DEFAULT_GTM_ADDRESS;
+	/** gives a unique identifier for tables */
 	private int nextId = 0;
+	/** stores association between table identifiers and STM interfaces */
+	private final Map<Integer, TableInterface> allTables;
+	/** this LTM local host address */
+	private final String localAddress;
+	/** <tt>false</tt> if GTM or this LTM are down; <tt>true</tt> otherwise */
+	private boolean acceptMoreRequest;
 
-	// TODO can use HashSet<TableInterface> and table id is hashCode?
-	private Map<Integer, TableInterface> allTables;
-
-	private String localAddress;
-
-	public LocalTableManager() throws NotBoundException {
+	public LocalTableManager() throws NotBoundException, RemoteException,
+			UnknownHostException {
 		// reads configuration file
 		try {
 			BufferedReader configuration = new BufferedReader(new FileReader(
 					LOCALTABLEMANAGER_CONFIGURATION_FILE));
 			String nextConfigurationLine;
-			String gtmAddress = "localhost";
 			while ((nextConfigurationLine = configuration.readLine()) != null) {
 				StringTokenizer tokenizer = new StringTokenizer(
 						nextConfigurationLine.trim());
@@ -101,55 +111,51 @@ public class LocalTableManager implements LocalTableManagerInterface {
 				}
 			}
 			configuration.close();
-
-			Registry remoteServerRegistry = LocateRegistry
-					.getRegistry(gtmAddress);
-			gtmRemote = (GlobalTableManagerInterface) remoteServerRegistry
-					.lookup(GlobalTableManagerInterface.globalTableManagerName);
-
-			gtmRemote.notifyLocalTableManagerStartup(
-					(LocalTableManagerInterface) UnicastRemoteObject
-							.exportObject(this), MAX_TABLE);
-
-			allTables = new HashMap<Integer, TableInterface>(MAX_TABLE);
-			localAddress = InetAddress.getLocalHost().toString();
-
-			System.out
-					.println("Local table manager server started correctly at address "
-							+ InetAddress.getLocalHost());
-
-			final LocalTableManager ltm = this;
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				@Override
-				public void run() {
-					try {
-						gtmRemote.notifyLocalTableManagerShutdown(ltm);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			});
-
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			System.exit(-1);
 		} catch (IOException e) {
 			System.err.println("cannot read configuration file: "
 					+ LOCALTABLEMANAGER_CONFIGURATION_FILE);
-			e.printStackTrace();
 			System.exit(-1);
 		}
+
+		Registry remoteServerRegistry = LocateRegistry.getRegistry(gtmAddress);
+		gtmRemote = (GlobalTableManagerInterface) remoteServerRegistry
+				.lookup(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
+
+		gtmRemote.notifyLocalTableManagerStartup(
+				(LocalTableManagerInterface) UnicastRemoteObject
+						.exportObject(this), MAX_TABLE);
+
+		allTables = new HashMap<Integer, TableInterface>(MAX_TABLE);
+		localAddress = InetAddress.getLocalHost().toString();
+
+		acceptMoreRequest = true;
+		System.out
+				.println("Local table manager server started correctly at address "
+						+ InetAddress.getLocalHost());
+
+		final LocalTableManager ltm = this;
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				try {
+					gtmRemote.notifyLocalTableManagerShutdown(ltm);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@Override
-	public Pair<TableInterface, TableInfoForClient> createTable(String owner,
-			ServletNotificationsInterface snf) throws RemoteException {
+	public synchronized Pair<TableInterface, TableInfoForClient> createTable(
+			String owner, ServletNotificationsInterface snf)
+			throws RemoteException {
 		if (owner == null || snf == null)
 			throw new IllegalArgumentException(owner + " " + snf);
+		if (!acceptMoreRequest) {
+			throw new RemoteException();
+		}
 		try {
 			TableInfoForClient newTable = new TableInfoForClient(owner, 3,
 					new TableDescriptor(localAddress + this.toString(), nextId));
@@ -174,29 +180,36 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	}
 
 	@Override
-	public TableInterface getTable(int tableId) {
+	public synchronized TableInterface getTable(int tableId) {
 		return allTables.get(tableId);
 	}
 
 	@Override
-	public void isAlive() throws RemoteException {
-		//
+	public synchronized void isAlive() throws RemoteException {
+		if (!acceptMoreRequest) {
+			throw new RemoteException();
+		}
 	}
 
 	@Override
-	public void notifyGTMShutDown() {
-		// TODO Auto-generated method stub
-
+	public synchronized void notifyGTMShutDown() {
+		acceptMoreRequest = false;
 	}
 
 	@Override
-	public void notifyTableDestruction(int tableId) {
-		TableInterface remove = allTables.remove(tableId);
+	public synchronized void notifyTableDestruction(int tableId)
+			throws NoSuchTableException {
+		if (allTables.remove(tableId) == null)
+			throw new NoSuchTableException();
 	}
 
-	public void shutDown() {
+	/**
+	 * Shut down this LTM
+	 */
+	public synchronized void shutDown() {
 		try {
 			gtmRemote.notifyLocalTableManagerShutdown(this);
+			acceptMoreRequest = false;
 		} catch (AccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

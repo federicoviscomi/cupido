@@ -32,7 +32,6 @@ import unibo.as.cupido.common.exception.GameEndedException;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
-import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
@@ -50,12 +49,6 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
-/**
- * TODO missing all game status stuff
- * 
- * @author cane
- * 
- */
 public class SingleTableManager implements TableInterface {
 
 	private final CardsManager cardsManager;
@@ -307,9 +300,6 @@ public class SingleTableManager implements TableInterface {
 				} catch (NoSuchLTMException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (NoSuchLTMInterfaceException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} catch (NoSuchTableException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -377,7 +367,7 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized void sendMessage(final ChatMessage message)
-			throws GameInterruptedException{
+			throws GameInterruptedException {
 		if (gameStatus == GameStatus.INTERRUPTED)
 			throw new GameInterruptedException();
 		if (message == null || message.message == null

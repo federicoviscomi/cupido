@@ -6,7 +6,7 @@
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *  
- *  This program is distributed in the hope that it will be useful,
+ *  This program is distributed input the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
@@ -18,15 +18,20 @@
 package unibo.as.cupido.backend.ltm;
 
 import jargs.gnu.CmdLineParser;
+import jargs.gnu.CmdLineParser.IllegalOptionValueException;
+import jargs.gnu.CmdLineParser.Option;
+import jargs.gnu.CmdLineParser.UnknownOptionException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 /**
- * 
+ * A command interpreter console interface for an LTM.
+ * <p>
  * The list of commands follows:
  * <table border="1">
  * <tr>
@@ -51,31 +56,33 @@ import java.rmi.RemoteException;
  * </tr>
  * </table>
  * 
- * 
- * @author cane
- * 
  */
 public class LocalTableManagerCommandInterpreterUI {
 
 	private static final String FORMAT = "%-7.7s %-3.3s %-10.10s %-20.20s\n";
-	private static final String USAGE = String.format(FORMAT + FORMAT + FORMAT
-			+ FORMAT + FORMAT, "COMMAND", "OPT", "LONG_OPT", "DESCRIPTION",
-			"start", "", "", "start the LTM server", "exit", "", "",
-			"shutdown the LTM server and exit", "list", "-t", "--table",
-			"list all table managed by this LTM server", "create", "-o",
-			"--owner", "create a new table with specified owner");
+	private static final String USAGE = String.format(FORMAT, "COMMAND", "OPT",
+			"LONG_OPT", "DESCRIPTION")
+			+ String.format(FORMAT, "start", "", "", "start the LTM server")
+			+ String.format(FORMAT, "exit", "", "",
+					"shutdown the LTM server and exit")
+			+ String.format(FORMAT, "list", "-t", "--table",
+					"list all table managed by this LTM server")
+			+ String.format(FORMAT, "create", "-o", "--owner",
+					"create a new table with specified owner");
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws UnknownHostException {
 		if (args.length > 1 && "start".equals(args[1])) {
 			try {
-				new LocalTableManagerCommandInterpreterUI(true).execute();
+				new LocalTableManagerCommandInterpreterUI(true)
+						.runInterpreter();
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
 			try {
-				new LocalTableManagerCommandInterpreterUI(false).execute();
+				new LocalTableManagerCommandInterpreterUI(false)
+						.runInterpreter();
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -83,10 +90,37 @@ public class LocalTableManagerCommandInterpreterUI {
 		}
 	}
 
+	/** stores a reference to an LTM */
 	private LocalTableManager localTableManager = null;
+	/**
+	 * <tt>true</tt> if <tt>parseCommand()</tt> finds error input current input
+	 * line; <tt>false</tt> otherwise.
+	 */
+	private boolean error;
+	/** the options parser tool */
+	private CmdLineParser parser;
+	/** tells if -o option is present input current input line */
+	private Option tableOwnerOption;
+	/** tells if -t option is present input current input line */
+	private Option listTablesOption;
+	/** the input is read from this */
+	private BufferedReader input;
+	/** current input line */
+	private String currentInputLine;
+	/** parsed commands */
+	private String[] command;
+	/** <tt>true</tt> after execution of command exit; <tt>false</tt> otherwise */
+	private boolean exit;
+	/** stores all known commands */
+	private static final String[] allCommands = { "start", "exit", "list",
+			"create" };
 
 	public LocalTableManagerCommandInterpreterUI(boolean startLTM)
-			throws RemoteException {
+			throws RemoteException, UnknownHostException {
+		parser = new CmdLineParser();
+		tableOwnerOption = parser.addStringOption('o', "owner");
+		listTablesOption = parser.addBooleanOption('o', "owner");
+		input = new BufferedReader(new InputStreamReader(System.in));
 		if (startLTM) {
 			try {
 				localTableManager = new LocalTableManager();
@@ -97,86 +131,164 @@ public class LocalTableManagerCommandInterpreterUI {
 		}
 	}
 
-	public void execute() {
-		CmdLineParser parser = new CmdLineParser();
-		CmdLineParser.Option globalServerAddress = parser.addStringOption('a',
-				"adrress");
-		CmdLineParser.Option tableOwnerOption = parser.addStringOption('o',
-				"owner");
-		CmdLineParser.Option listTablesOption = parser.addBooleanOption('o',
-				"owner");
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		String nextCommandLine;
-		try {
-			while (true) {
-				System.out.print("\n#: ");
-				nextCommandLine = in.readLine();
-				if (nextCommandLine == null) {
-					exit(0);
-				} else {
-					try {
-						parser.parse(nextCommandLine.split("\\s+"));
-						String[] command = parser.getRemainingArgs();
-						if (command.length == 1) {
-							if (command[0].equals("start")) {
-								if (localTableManager != null) {
-									System.out.println("LTM already started!");
-								} else {
-									try {
-										localTableManager = new LocalTableManager();
-									} catch (NotBoundException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-								}
-							} else {
-								if (command[0].equals("exit")) {
-									exit(0);
-								} else if (localTableManager == null) {
-									System.out.println("start LTM first!");
-									System.out.println(USAGE);
-								} else {
-									if (command[0].equals("create")) {
-										String owner = (String) parser
-												.getOptionValue(tableOwnerOption);
-										localTableManager.createTable(owner,
-												null);
-									} else if (command[0].equals("list")) {
-										boolean listTables = (parser
-												.getOptionValue(listTablesOption) == null ? false
-												: true);
-										if (listTables) {
-											// TODO
-										}
-									} else {
-										System.out.println(command[0]
-												+ ": command not found");
-										System.out.println(USAGE);
-									}
-								}
-							}
-						} else {
-							System.out.println("Syntax error");
-							System.out.println(USAGE);
-						}
-					} catch (CmdLineParser.OptionException e) {
-						e.printStackTrace();
-						exit(2);
-					}
-				}
+	/**
+	 * Runs the command interpreter
+	 */
+	public void runInterpreter() {
+		while (!exit) {
+			do {
+				error = false;
+				prompt();
+				parseCommand();
+			} while (error);
+
+			execute();
+		}
+
+	}
+
+	/**
+	 * Switch the right command
+	 */
+	private void execute() {
+		if (command[0].equals("start")) {
+			try {
+				executeStart();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			exit(2);
+		} else if (command[0].equals("exit")) {
+			executeExit();
+		} else if (localTableManager == null) {
+			System.out.println("start LTM first!");
+			System.out.println(USAGE);
+		} else if (command[0].equals("create")) {
+			try {
+				executeCreate();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if (command[0].equals("list")) {
+			executeList();
+		} else {
+			throw new Error();
 		}
 	}
 
-	private void exit(int exitStatus) {
+	/**
+	 * Execute command list
+	 */
+	private void executeList() {
+		boolean listTables = (parser.getOptionValue(listTablesOption) == null ? false
+				: true);
+		if (listTables) {
+			// TODO
+		}
+	}
+
+	/**
+	 * Execute command create
+	 * 
+	 * @throws RemoteException
+	 * 
+	 */
+	private void executeCreate() throws RemoteException {
+		String owner = (String) parser.getOptionValue(tableOwnerOption);
+		localTableManager.createTable(owner, null);
+	}
+
+	/**
+	 * Execute command start
+	 * 
+	 * @throws RemoteException
+	 * @throws UnknownHostException
+	 * @throws NotBoundException
+	 */
+	private void executeStart() throws RemoteException, UnknownHostException,
+			NotBoundException {
+		if (localTableManager != null) {
+			System.out.println("LTM already started!");
+		} else {
+			localTableManager = new LocalTableManager();
+		}
+	}
+
+	/**
+	 * Reads an input line, parses it and checks if input command is one of
+	 * <tt>allCommands</tt>
+	 */
+	private void parseCommand() {
+		try {
+			currentInputLine = input.readLine();
+			System.out.println(currentInputLine);
+			System.out.flush();
+			if (currentInputLine == null) {
+				executeExit();
+				return;
+			}
+			currentInputLine = currentInputLine.trim();
+			parser.parse(currentInputLine.split("\\s+"));
+			command = parser.getRemainingArgs();
+			if (command.length < 1) {
+				error = true;
+				System.out.println("\n1 sintax error\n " + USAGE);
+				System.out.flush();
+			} else {
+				command[0] = command[0].trim();
+				if (command[0].length() == 0) {
+					error = true;
+				} else {
+					boolean recognizedCommand = false;
+					for (String c : allCommands) {
+						if (c.equals(command[0])) {
+							recognizedCommand = true;
+						}
+					}
+					if (!recognizedCommand) {
+						System.out.println(command[0] + ": command not found");
+						System.out.println(USAGE);
+						error = true;
+					}
+				}
+			}
+		} catch (IllegalOptionValueException e) {
+			error = true;
+			System.out.println("\n2 sintax error\n " + USAGE);
+			System.out.flush();
+		} catch (UnknownOptionException e) {
+			error = true;
+			System.out.println("\n3 sintax error\n " + USAGE);
+			System.out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+
+	/**
+	 * Print a prompt message in the console
+	 */
+	private void prompt() {
+		System.out.print("\n#: ");
+		System.out.flush();
+	}
+
+	/**
+	 * Execute command exit
+	 */
+	private void executeExit() {
 		if (localTableManager != null) {
 			localTableManager.shutDown();
 		}
-		System.exit(exitStatus);
+		exit = true;
 	}
 
 }

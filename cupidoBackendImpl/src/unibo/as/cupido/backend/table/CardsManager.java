@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
+import java.util.concurrent.CancellationException;
 
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.WrongGameStateException;
@@ -29,36 +30,56 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 
+/**
+ * Cards manager has various responsibility:
+ * <ul>
+ * <li>dealing cards</li>
+ * <li>keeping track of all passed and played cards</li>
+ * <li>checking for soundness of a move according to the rules of hearts</li>
+ * </ul>
+ */
 public class CardsManager {
 
-	/** used just for showing cards in a user friendly order */
-	private static final Comparator<Card> cardsComparator = new Comparator<Card>() {
+	/**
+	 * <tt>Arrays.sort(cards, higherFirstCardsComparator)</tt> sorts cards by
+	 * suit and then lower first. This is used just to show cards in a user
+	 * friendly way.
+	 */
+	private static final Comparator<Card> suitLowerFirstCardsComparator = new Comparator<Card>() {
 		@Override
 		public int compare(Card o1, Card o2) {
-			// return (o1.suit.ordinal() * 13 + (o1.value == 1 ? 14 :
-			// o1.value))- (o2.suit.ordinal() * 13 + (o2.value == 1 ? 14 :
-			// o2.value));
-			return (o2.suit.ordinal() + (o2.value == 1 ? 14 : o2.value) * 4)
-					- (o1.suit.ordinal() + (o1.value == 1 ? 14 : o1.value) * 4);
+			return (o1.suit.ordinal() * 13 + (o1.value == 1 ? 14 : o1.value))
+					- (o2.suit.ordinal() * 13 + (o2.value == 1 ? 14 : o2.value));
 		}
 	};
 
+	/** the two of clubs */
 	public static final Card twoOfClubs = new Card(2, Card.Suit.CLUBS);
+	/** the queen of spades */
 	public static final Card queenOfSpades = new Card(12, Card.Suit.SPADES);
 
-	public static int whoWins(final Card[] playedCard, final int firstDealer) {
+	/**
+	 * Determines who is the winner of the trick
+	 * 
+	 * @param trick
+	 *            cards played.
+	 * @param firstDealer
+	 *            the position of first dealer in trick.
+	 * @return the winner of the trick
+	 */
+	public static int whoWins(final Card[] trick, final int firstDealer) {
 		assert firstDealer >= 0;
 		assert firstDealer <= 3;
 		for (int i = 0; i < 4; i++)
-			assert playedCard[i] != null;
+			assert trick[i] != null;
 
 		int winner = firstDealer;
 		for (int i = 0; i < 4; i++) {
-			if (playedCard[i].suit == playedCard[firstDealer].suit) {
-				if (playedCard[i].value == 1) {
+			if (trick[i].suit == trick[firstDealer].suit) {
+				if (trick[i].value == 1) {
 					return i;
 				}
-				if (playedCard[i].value > playedCard[winner].value)
+				if (trick[i].value > trick[winner].value)
 					winner = i;
 			}
 		}
@@ -89,20 +110,32 @@ public class CardsManager {
 	public CardsManager() {
 		for (int i = 0; i < 4; i++)
 			cards[i] = new ArrayList<Card>(13);
-		Card[] mazzo = new Card[52];
+		Card[] deck = new Card[52];
+		/** fills the deck */
 		for (int i = 0; i < 52; i++) {
-			mazzo[i] = new Card(i % 13 + 1, Card.Suit.values()[i % 4]);
+			deck[i] = new Card(i % 13 + 1, Card.Suit.values()[i % 4]);
 		}
-		Collections.shuffle(Arrays.asList(mazzo),
+
+		/** shuffles the deck */
+		Collections.shuffle(Arrays.asList(deck),
 				new Random(System.currentTimeMillis()));
+
+		/** deals cards to players */
 		for (int i = 0; i < 52; i++) {
-			cards[i % 4].add(mazzo[i]);
+			cards[i % 4].add(deck[i]);
 		}
+
+		/** sort cards by suit and the lower first */
 		for (int i = 0; i < 4; i++) {
-			Collections.sort(cards[i], cardsComparator);
+			Collections.sort(cards[i], suitLowerFirstCardsComparator);
 		}
 	}
 
+	/**
+	 * Adds information for viewers to <tt>observedGameStatus</tt>
+	 * 
+	 * @param observedGameStatus
+	 */
 	void addCardsInformationForViewers(ObservedGameStatus observedGameStatus) {
 		for (int i = 0; i < 4; i++) {
 			if (observedGameStatus.playerStatus[i] != null) {
@@ -122,6 +155,13 @@ public class CardsManager {
 		}
 	}
 
+	/**
+	 * Return <tt>true</tt> if all player passed cards; <tt>false</tt>
+	 * otherwise.
+	 * 
+	 * @return <tt>true</tt> if all player passed cards; <tt>false</tt>
+	 *         otherwise.
+	 */
 	boolean allPlayerPassedCards() {
 		for (int i = 0; i < 4; i++)
 			if (allPassedCards[i] == null)
@@ -129,7 +169,28 @@ public class CardsManager {
 		return true;
 	}
 
-	private void checkMoveValidity(int playerPosition, Card card)
+	/**
+	 * Check if player <tt>playerPosition</tt> can play card <tt>card</tt>.
+	 * <p>
+	 * Specified player cannot play specified card if:
+	 * <ul>
+	 * <li>player does not own the card</li>
+	 * <li>if card is the first card played in the game and is not two of clubs</li>
+	 * <li>if card is the first card played in this trick and the game is not
+	 * broken hearted and the player owns at least a non heart card</li>
+	 * <li>if card is not the first card played in this trick and card has not
+	 * the same suit of the first card played and player owns at least one card
+	 * with the same suit of the first card played in this trick</li>
+	 * </ul>
+	 * 
+	 * @param playerPosition
+	 *            the position of player who plays
+	 * @param card
+	 *            the card played
+	 * @throws IllegalMoveException
+	 *             if specified player cannot play specified card.
+	 */
+	private void checkMoveSoundness(int playerPosition, Card card)
 			throws IllegalMoveException {
 		if (!cards[playerPosition].contains(card)) {
 			throw new IllegalArgumentException("User " + playerPosition
@@ -155,24 +216,29 @@ public class CardsManager {
 					if (currentPlayerCard.suit == cardPlayed[firstDealerInTurn].suit) {
 						throw new IllegalMoveException("\nPlayer "
 								+ playerPosition + " must play a card of suit "
-								+ cardPlayed[firstDealerInTurn].suit
-								+ "\n card played:" + card + ", first card:"
-								+ cardPlayed[firstDealerInTurn]
-								+ " all played:" + Arrays.toString(cardPlayed)
-								+ "\n player: " + playerPosition
-								+ ", player cards:"
-								+ this.cards[playerPosition].toString()
-								+ " \n played cards count: " + playedCardsCount);
+								+ cardPlayed[firstDealerInTurn].suit);
 					}
 				}
 			}
 		}
 	}
 
+	/**
+	 * Returns <tt>true</tt> if game ended because every player played all
+	 * cards; <tt>false</tt> otherwise.
+	 * 
+	 * @return <tt>true</tt> if game ended because every player played all
+	 *         cards; <tt>false</tt> otherwise.
+	 */
 	public boolean gameEnded() {
 		return turn == 13;
 	}
 
+	/**
+	 * Gets cards of all players
+	 * 
+	 * @return cards of all players
+	 */
 	public Card[][] getCards() {
 		Card[][] cards = new Card[4][];
 		for (int i = 0; i < 4; i++) {
@@ -181,18 +247,30 @@ public class CardsManager {
 		return cards;
 	}
 
+	/**
+	 * Returns an array of four position which stores each player points in this
+	 * match
+	 * 
+	 * @return an array of four position which stores each player points in this
+	 *         match
+	 */
 	public int[] getMatchPoints() {
 		return points;
 	}
 
-	public Card[] getPassedCards(int i) {
-		return allPassedCards[i];
+	/**
+	 * Returns cards passed by player <tt>position</tt>
+	 * 
+	 * @param position
+	 * @return cards passed by player <tt>position</tt>
+	 */
+	public Card[] getPassedCards(int position) {
+		return allPassedCards[position];
 	}
 
-	public boolean hasPassedCards(int position) {
-		return allPassedCards[position] != null;
-	}
-
+	/**
+	 * Moves passed cards from the players who pass to the players who receive.
+	 */
 	private void passCards() {
 		for (int i = 0; i < 4; i++) {
 			cards[i].addAll(Arrays.asList(allPassedCards[(i + 3) % 4]));
@@ -201,6 +279,25 @@ public class CardsManager {
 		}
 	}
 
+	/**
+	 * This is called by the STM when player <tt>playerName</tt> plays card
+	 * <tt>card</tt>
+	 * 
+	 * @param playerName
+	 *            name of player who plays a card.
+	 * @param playerPosition
+	 *            position of the player who plays a card.
+	 * @param card
+	 *            card played.
+	 * @throws IllegalMoveException
+	 *             if some of the condition specified in
+	 *             {@link #checkMoveSoundness(int, Card)} applies
+	 * 
+	 * @throws WrongGameStateException
+	 *             if the player who plays is not the one who should play now.
+	 *             This happens only if there is an implementation error.
+	 * 
+	 */
 	public void playCard(String playerName, int playerPosition, Card card)
 			throws IllegalMoveException, WrongGameStateException {
 
@@ -210,7 +307,7 @@ public class CardsManager {
 		if (card == null || playerPosition < 0 || playerPosition > 4)
 			throw new IllegalArgumentException();
 
-		checkMoveValidity(playerPosition, card);
+		checkMoveSoundness(playerPosition, card);
 
 		if (((firstDealerInTurn + playedCardsCount + 4) % 4) != playerPosition) {
 			throw new WrongGameStateException(" current player should be "
@@ -219,14 +316,26 @@ public class CardsManager {
 					+ firstDealerInTurn + " count: " + playedCardsCount);
 		}
 
-		setCardPlayed(playerPosition, card);
+		if (!brokenHearted && card.suit == Card.Suit.HEARTS) {
+			brokenHearted = true;
+		}
 
-	}
-
-	void print() {
-		for (int i = 0; i < 4; i++) {
-			Collections.sort(cards[i], cardsComparator);
-			System.out.println("\n" + cardPlayed[i] + ". " + (cards[i]));
+		cards[playerPosition].remove(card);
+		cardPlayed[playerPosition] = card;
+		playedCardsCount++;
+		if (playedCardsCount == 4) {
+			turn++;
+			playedCardsCount = 0;
+			firstDealerInTurn = CardsManager.whoWins(cardPlayed,
+					firstDealerInTurn);
+			for (int i = 0; i < 4; i++) {
+				if (cardPlayed[i].suit == Card.Suit.HEARTS) {
+					points[firstDealerInTurn]++;
+				} else if (cardPlayed[i].equals(queenOfSpades)) {
+					points[firstDealerInTurn] += 5;
+				}
+			}
+			Arrays.fill(cardPlayed, null);
 		}
 	}
 
@@ -234,7 +343,7 @@ public class CardsManager {
 	 * Stores the card that player whit given position wants to pass. This
 	 * method does not actually move the cards to the next player because every
 	 * player must pass cards in the same time. The card passing is accomplished
-	 * by {@link this.passCards()}
+	 * by {@link #passCards()}
 	 * 
 	 * @param position
 	 *            the position of the player who passes cards
@@ -257,32 +366,6 @@ public class CardsManager {
 		if (allPlayerPassedCards()) {
 			this.passCards();
 		}
-	}
-
-	private void setCardPlayed(int playerPosition, Card card) {
-		cards[playerPosition].remove(card);
-		if (!brokenHearted && card.suit == Card.Suit.HEARTS)
-			brokenHearted = true;
-		cardPlayed[playerPosition] = card;
-		playedCardsCount++;
-		if (playedCardsCount == 4) {
-			turn++;
-			playedCardsCount = 0;
-			firstDealerInTurn = CardsManager.whoWins(cardPlayed,
-					firstDealerInTurn);
-			for (int i = 0; i < 4; i++) {
-				if (cardPlayed[i].suit == Card.Suit.HEARTS) {
-					points[firstDealerInTurn]++;
-				} else if (cardPlayed[i].equals(queenOfSpades)) {
-					points[firstDealerInTurn] += 5;
-				}
-			}
-			Arrays.fill(cardPlayed, null);
-		}
-	}
-
-	public int whoShouldPlay() {
-		return (firstDealerInTurn + playedCardsCount + 4) % 4;
 	}
 
 }
