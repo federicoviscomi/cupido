@@ -1,6 +1,0 @@
-1: play a game with an automated human player and three bots ./deploy.sh ./cupidoBackendImpl/test/runtest in different shells
-2: play a game with two automated human player and two bots ./deploy.sh ./runtest2 ./runtest3 in different shells
-3: view a game whit an automated player and three bots ./deploy.sh ./runtest ./runviewer in different shells
-4: play a game and after a while the creator leaves ./deploy.sh ./runtest4 ./runviewer
-5: play a game and after a while a non creator player leaves ./deploy.sh ./runtest2 ./runtest5 ./runviewer
-
