@@ -164,13 +164,13 @@ public class FirstLeaderState implements PlayerState {
 				try {
 					throw caught;
 				} catch (NoSuchTableException e) {
-					// The table does not exist anymore, because the owner has
+					// The table does not exist anymore, because the craetor has
 					// left.
 					// Do nothing yet, this situation will be handled when the
 					// GameEnded
 					// notification arrives.
 				} catch (GameInterruptedException e) {
-					// The table does not exist anymore, because the owner has
+					// The table does not exist anymore, because the craetor has
 					// left.
 					// Do nothing yet, this situation will be handled when the
 					// GameEnded

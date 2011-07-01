@@ -71,7 +71,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 * @throws GameInterruptedException
-	 *             If the owner left the table, and so the game was interrupted.
+	 *             If the craetor left the table, and so the game was interrupted.
 	 * @return The name of the bot.
 	 */
 	public String addBot(int position) throws FullPositionException,
@@ -181,7 +181,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 * @throws GameInterruptedException
-	 *             If the owner left the table, and so the game was interrupted.
+	 *             If the craetor left the table, and so the game was interrupted.
 	 */
 	public InitialTableStatus joinTable(String server, int tableId)
 			throws FullTableException, NoSuchTableException,
@@ -199,7 +199,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 * @throws GameInterruptedException
-	 *             If the owner left the table, and so the game was interrupted.
+	 *             If the craetor left the table, and so the game was interrupted.
 	 */
 	public void leaveTable() throws UserNotAuthenticatedException,
 			NoSuchTableException, FatalException, GameInterruptedException;
@@ -246,7 +246,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws WrongGameStateException
 	 *             If the user is not expected to pass cards now.
 	 * @throws GameInterruptedException
-	 *             If the owner left the table, and so the game was interrupted.
+	 *             If the craetor left the table, and so the game was interrupted.
 	 */
 	public void passCards(Card[] cards) throws IllegalStateException,
 			IllegalArgumentException, NoSuchTableException,
@@ -272,7 +272,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws WrongGameStateException
 	 *             If the user is not expected to play a card now.
 	 * @throws GameInterruptedException
-	 *             If the owner left the table, and so the game was interrupted.
+	 *             If the craetor left the table, and so the game was interrupted.
 	 */
 	public void playCard(Card card) throws IllegalMoveException,
 			FatalException, NoSuchTableException, IllegalArgumentException,
@@ -324,7 +324,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws FatalException 
 	 *             If a fatal error occurs.
 	 * @throws GameInterruptedException
-	 *             If the owner left the table, and so the game was interrupted.
+	 *             If the craetor left the table, and so the game was interrupted.
 	 */
 	public void sendLocalChatMessage(String message)
 			throws IllegalArgumentException, NoSuchTableException,
@@ -364,7 +364,7 @@ public interface CupidoInterface extends RemoteService {
 	 *             When a fatal error occurs, or if the user is already viewing
 	 *             or playing at a table.
 	 * @throws GameInterruptedException
-	 *             If the owner left the table, and so the game was interrupted.
+	 *             If the craetor left the table, and so the game was interrupted.
 	 * @throws WrongGameStateException
 	 */
 	public ObservedGameStatus viewTable(String server, int tableId)

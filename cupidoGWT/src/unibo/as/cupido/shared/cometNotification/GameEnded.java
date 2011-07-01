@@ -32,13 +32,13 @@ public class GameEnded implements Serializable {
 
 	/*
 	 * matchPoint[0] are your points, if you have played matchPoint[0] are the
-	 * owner's points if you were viewing the others are in clockwise order
+	 * craetor's points if you were viewing the others are in clockwise order
 	 */
 	public int[] matchPoints;
 
 	/*
 	 * matchPoint[0] are your points, if you have played matchPoint[0] are the
-	 * owner's points if you were viewing the others are in clockwise order
+	 * craetor's points if you were viewing the others are in clockwise order
 	 */
 	public int[] playersTotalPoints;
 

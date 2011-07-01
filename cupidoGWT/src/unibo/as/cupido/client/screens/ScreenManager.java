@@ -117,7 +117,7 @@ public interface ScreenManager {
 	 * Shows the table screen (as a player) instead of the current one.
 	 * 
 	 * @param username The username of the current user.
-	 * @param isOwner Specifies whether or not the current user is the owner of this table.
+	 * @param isOwner Specifies whether or not the current user is the craetor of this table.
 	 * @param initialTableStatus Contains information about the current state of the table.
 	 * @param userScore The global score of the current user.
 	 * 
