@@ -29,17 +29,39 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
+/**
+ * This class manages the table screen for viewers.
+ * 
+ * @see TableScreen
+ */
 public class ObservedTableScreen extends AbsolutePanel implements Screen {
 
 	/**
 	 * The width of the chat sidebar.
 	 */
 	public static final int chatWidth = Cupido.width - Cupido.height;
+	
+	/**
+	 * The widget that displays the local chat on the right.
+	 */
 	private ChatWidget chatWidget;
+
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
+	/**
+	 * The widget that displays the table.
+	 */
 	private HeartsObservedTableWidget tableWidget;
 
+	/**
+	 * @param screenManager The global screen manager.
+	 * @param username The username of the current user.
+	 * @param observedGameStatus Contains information about the current state of the game.
+	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 */
 	public ObservedTableScreen(final ScreenManager screenManager,
 			final String username, ObservedGameStatus observedGameStatus,
 			final CupidoInterfaceAsync cupidoService) {

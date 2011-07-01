@@ -37,18 +37,54 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * The class that manages the login screen.
+ * This class allows the user to log in and to go to register
+ * screen if needed.
+ */
 public class LoginScreen extends VerticalPanel implements Screen {
 
+	/**
+	 * This is used to communicate with the servlet using RPC.
+	 */
 	private CupidoInterfaceAsync cupidoService;
+	
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
+	/**
+	 * The button used to confirm the entered username and password.
+	 */
 	private PushButton okButton;
+	
+	/**
+	 * The field in which the user can enter his password.
+	 */
 	private PasswordTextBox passwordBox;
+
+	/**
+	 * A button that takes the user to the registration screen.
+	 * 
+	 * @see RegistrationScreen
+	 */
 	private PushButton registerButton;
+	
+	/**
+	 * The global screen manager.
+	 */
 	private ScreenManager screenManager;
 
+	/**
+	 * The field in which the user can enter his username.
+	 */
 	private TextBox usernameBox;
 
+	/**
+	 * @param screenManager The global screen manager.
+	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 */
 	public LoginScreen(final ScreenManager screenManager,
 			CupidoInterfaceAsync cupidoService) {
 
@@ -144,6 +180,10 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	public void prepareRemoval() {
 	}
 
+	/**
+	 * Attempts to log in using the username and password in the
+	 * respective fields.
+	 */
 	private void tryLogin() {
 		final String username = usernameBox.getText();
 		cupidoService.login(username, passwordBox.getText(),

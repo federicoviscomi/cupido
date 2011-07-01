@@ -25,8 +25,16 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
+/**
+ * This class manages the Error screen, that is displayed
+ * when a fatal error occurs.
+ */
 public class GeneralErrorScreen extends AbsolutePanel implements Screen {
 
+	/**
+	 * @param screenManager The global screen manager.
+	 * @param e The fatal exception that was received.
+	 */
 	public GeneralErrorScreen(ScreenManager screenManager, Throwable e) {
 
 		// Set an empty listener (one that handles no messages).

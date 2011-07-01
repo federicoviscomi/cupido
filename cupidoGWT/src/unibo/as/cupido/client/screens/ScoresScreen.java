@@ -34,8 +34,19 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * This class handles the scores screen.
+ */
 public class ScoresScreen extends VerticalPanel implements Screen {
 
+	/**
+	 * Constructs a widget that displays the rank and the score of
+	 * a user in a row.
+	 * 
+	 * @param entry The RankingEntry of the user.
+	 * @param highlight Whether or not to highlight this row.
+	 * @return The constructed widget.
+	 */
 	private static HTML constructRow(RankingEntry entry, boolean highlight) {
 		SafeHtmlBuilder builder = new SafeHtmlBuilder();
 		builder.append(entry.rank);
@@ -58,10 +69,23 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 		return row;
 	}
 
+	/**
+	 * The button that takes back to the main menu.
+	 */
 	private PushButton exitButton;
 
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
+	/**
+	 * @param screenManager The global screen manager.
+	 * @param username The username of the current user.
+	 * @param topRanks The RankingEntry objects referring to the top 10 users.
+	 * @param localRanks The RankingEntry objects referring to the current user
+	 *             and to users with similar ranks.
+	 */
 	public ScoresScreen(final ScreenManager screenManager,
 			final String username, ArrayList<RankingEntry> topRanks,
 			ArrayList<RankingEntry> localRanks) {
@@ -122,7 +146,10 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 		add(exitButton);
 	}
 
-	private Widget constructVerticalDots() {
+	/**
+	 * @return Constructs a widget that displays a vertical column of black dots.
+	 */
+	private static Widget constructVerticalDots() {
 		VerticalPanel boxContainer = new VerticalPanel();
 		boxContainer.setVerticalAlignment(ALIGN_MIDDLE);
 		boxContainer.setWidth("290px");

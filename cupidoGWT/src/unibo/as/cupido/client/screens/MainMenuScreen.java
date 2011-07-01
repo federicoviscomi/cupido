@@ -46,10 +46,15 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * This class manages the main menu screen.
+ */
 public class MainMenuScreen extends AbsolutePanel implements Screen {
 
-	// The interval between subsequent polls to the (global) chat, in
-	// milliseconds.
+	/**
+	 * The interval between subsequent polls to the (global) chat, in
+	 * milliseconds.
+	 */
 	private final static int chatRefreshInterval = 2000;
 
 	/**
@@ -57,13 +62,29 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	 */
 	public static final int chatWidth = 300;
 
+	/**
+	 * A list containing all the buttons in the left column of the main menu.
+	 */
 	private List<PushButton> buttons = new ArrayList<PushButton>();
 
+	/**
+	 * A timer used to poll the servlet about updates to the global chat.
+	 */
 	private Timer chatTimer;
+	
+	/**
+	 * The widget that displays the global chat on the right.
+	 */
 	private ChatWidget chatWidget;
 
+	/**
+	 * This is used to communicate with the servlet using RPC.
+	 */
 	private CupidoInterfaceAsync cupidoService;
 
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
 	/**
@@ -72,14 +93,32 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	 */
 	private boolean needRefresh = false;
 
+	/**
+	 * The global screen manager.
+	 */
 	private ScreenManager screenManager;
 
+	/**
+	 * Specifies whether the global chat should stop refreshing.
+	 */
 	private boolean stoppedRefreshing = false;
 
+	/**
+	 * The username of the current user.
+	 */
 	private String username;
 
+	/**
+	 * This is true when the chat has sent a request to the servlet
+	 * and has not yet received a response.
+	 */
 	private boolean waitingServletResponse = false;
 
+	/**
+	 * @param screenManager The global screen manager.
+	 * @param username The username of the current user.
+	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 */
 	public MainMenuScreen(final ScreenManager screenManager,
 			final String username, final CupidoInterfaceAsync cupidoService) {
 
@@ -259,6 +298,9 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		frozen = true;
 	}
 
+	/**
+	 * This is called when the user clicks the 'Create table' button.
+	 */
 	private void handleCreateTable() {
 		freeze();
 		cupidoService.createTable(new AsyncCallback<InitialTableStatus>() {
@@ -300,6 +342,9 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		});
 	}
 
+	/**
+	 * This is called when the user clicks the 'Display scores' button.
+	 */
 	private void handleDisplayScores() {
 		freeze();
 		cupidoService.getTopRank(new AsyncCallback<ArrayList<RankingEntry>>() {
@@ -330,6 +375,9 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		});
 	}
 
+	/**
+	 * This is called when the user clicks the 'Display table list' button.
+	 */
 	private void handleDisplayTableList() {
 		freeze();
 		cupidoService
@@ -346,6 +394,9 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 				});
 	}
 
+	/**
+	 * This is called when the user clicks the 'logout' button.
+	 */
 	private void handleLogout() {
 		freeze();
 		cupidoService.logout(new AsyncCallback<Void>() {

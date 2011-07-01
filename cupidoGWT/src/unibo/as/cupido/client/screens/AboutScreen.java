@@ -27,10 +27,20 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * This class manages the About screen.
+ */
 public class AboutScreen extends VerticalPanel implements Screen {
 
+	/**
+	 * The button used to go back to the main menu.
+	 */
 	private PushButton menuButton;
 
+	/**
+	 * @param screenManager The global screen manager.
+	 * @param username The username of the current user.
+	 */
 	public AboutScreen(final ScreenManager screenManager, final String username) {
 
 		// Set an empty listener (one that handles no messages).
