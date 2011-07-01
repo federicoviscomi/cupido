@@ -35,7 +35,6 @@ import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
-import unibo.as.cupido.common.exception.NoSuchLTMInterfaceException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.interfaces.GlobalChatInterface;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
@@ -48,77 +47,99 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
 
 /**
  * 
- * GTM(global table manager) has various tasks:
+ * <tt>GlobalTableManager</tt> or GTM has various tasks:
  * <ul>
- * <li>Manage a set of LTM(local table manager). This includes:
+ * <li>Manage a set of local table manager(LTM). This includes:
  * <ul>
  * <li>
- * adding/removing a LocalTableManages to the set</li>
+ * adding an LTM to the set</li>
+ * <li>
+ * removing an LTM from the set</li>
  * <li>checking for consistency of the set, i.e. polling the LTM in the set
  * </ul>
  * </li>
  * <li>Dispatch the Servlet request to the right LTM i.e.:
  * <ul>
  * <li>choose an alive LTM</li>
- * <li>balance the work load between the LocalTableManagers</li>
+ * <li>balance the work load between the LTM</li>
  * </ul>
  * </ul>
- * 
- * 
- * @author cane
  * 
  */
 public class GlobalTableManager implements GlobalTableManagerInterface {
 
-	@SuppressWarnings("unused")
-	public static void main(String args[]) throws RemoteException {
+	public static void main(String args[]) throws RemoteException,
+			UnknownHostException, AlreadyBoundException {
 		new GlobalTableManager();
 	}
 
+	/** stores tables information */
 	private AllTables allTables;
 
 	/** manage a swarm of LTM */
-	private LTMSwarm ltmSwarm;
+	private final LTMSwarm ltmSwarm;
 
-	Registry registry;
+	/** rmi registry */
+	private final Registry registry;
 
-	public GlobalTableManager() throws RemoteException {
-		try {
-			allTables = new AllTables();
-			ltmSwarm = new LTMSwarm();
-			// registry = LocateRegistry.createRegistry(1099);
-			registry = LocateRegistry.getRegistry();
-			registry.bind(GlobalTableManagerInterface.globalTableManagerName,
-					UnicastRemoteObject.exportObject(this));
+	private final Thread shutdownHook;
 
-			registry.bind(GlobalChatInterface.globalChatName,
-					UnicastRemoteObject.exportObject(new GlobalChatImpl()));
+	/**
+	 * Creates a <tt>GlobalTableManager</tt> and tries to bind it in rmi
+	 * registry with name <tt>GlobalTableManagerInterface.DEFAULT_GTM_NAME</tt>.
+	 * Creates also the global chat and tries to bind it in rmi registry with
+	 * name <tt>GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME</tt>
+	 * 
+	 * @throws RemoteException
+	 * @throws UnknownHostException
+	 * @throws AlreadyBoundException
+	 */
+	public GlobalTableManager() throws RemoteException, UnknownHostException,
+			AlreadyBoundException {
+		allTables = new AllTables();
+		ltmSwarm = new LTMSwarm();
+		registry = LocateRegistry.getRegistry();
 
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				@Override
-				public void run() {
-					try {
-						registry.unbind(GlobalTableManagerInterface.globalTableManagerName);
-						registry.unbind(GlobalChatInterface.globalChatName);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+		registry.bind(GlobalTableManagerInterface.DEFAULT_GTM_NAME,
+				UnicastRemoteObject.exportObject(this));
+		registry.bind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME,
+				UnicastRemoteObject.exportObject(new GlobalChatImpl()));
+
+		shutdownHook = new ShutdownHook(registry, ltmSwarm);
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+		System.out
+				.println("Global table manager server started correctly at address "
+						+ InetAddress.getLocalHost());
+	}
+
+	private static final class ShutdownHook extends Thread {
+		private final Registry registry;
+		private final LTMSwarm ltmSwarm;
+
+		public ShutdownHook(Registry registry, LTMSwarm ltmSwarm) {
+			this.ltmSwarm = ltmSwarm;
+			this.registry = registry;
+		}
+
+		@Override
+		public void run() {
+			try {
+				try {
+					registry.unbind(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
+				} catch (Exception e) {
+					//
 				}
-			});
-
-			System.out
-					.println("Global table manager server started correctly at address "
-							+ InetAddress.getLocalHost());
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				try {
+					registry.unbind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME);
+				} catch (Exception e) {
+					//
+				}
+				ltmSwarm.shutdown();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -126,30 +147,27 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	public TableInterface createTable(String owner,
 			ServletNotificationsInterface snf) throws RemoteException,
 			AllLTMBusyException {
-		try {
-			System.out.println("\n"
-					+ Thread.currentThread().getStackTrace()[1].getMethodName()
-					+ "(" + owner + ", " + snf + ")");
-			/* chose an LTM according to some load balancing policy */
-			LocalTableManagerInterface chosenLTM = ltmSwarm.chooseLTM();
+		System.out.println("\n"
+				+ Thread.currentThread().getStackTrace()[1].getMethodName()
+				+ "(" + owner + ", " + snf + ")");
+		/* chose an LTM according to some load balancing policy */
+		LocalTableManagerInterface chosenLTM = ltmSwarm.chooseLTM();
 
-			/* create table in the chosen local table manager */
-			Pair<TableInterface, TableInfoForClient> table = chosenLTM
-					.createTable(owner, snf);
+		/* create table in the chosen local table manager */
+		Pair<TableInterface, TableInfoForClient> table = chosenLTM.createTable(
+				owner, snf);
 
-			/* store created table */
-			allTables.addTable(table.second, chosenLTM);
+		/* store created table */
+		allTables.addTable(table.second, chosenLTM);
 
-			// FIXME does not check for duplicate creator!
-
-			return table.first;
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
-		return null;
+		return table.first;
 	}
 
+	/**
+	 * Return all LTMs managed by this GTM. Just for test/debug purpose.
+	 * 
+	 * @return all LTMs managed by this GTM.
+	 */
 	public Triple[] getAllLTM() {
 		return ltmSwarm.getAllLTM();
 	}
@@ -186,7 +204,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	@Override
 	public void notifyTableDestruction(TableDescriptor tableDescriptor,
 			LocalTableManagerInterface ltm) throws RemoteException,
-			NoSuchLTMInterfaceException, NoSuchTableException {
+			NoSuchLTMException, NoSuchTableException {
 		System.out.println("gtm. destroying table " + tableDescriptor);
 		allTables.removeTable(tableDescriptor);
 		ltmSwarm.decreaseTableCount(ltm);
@@ -206,21 +224,21 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 		allTables.increaseFreePosition(tableDescriptor);
 	}
 
+	/**
+	 * Shut the GTM down.
+	 */
 	public void shutDown() {
 		try {
-			registry.unbind(globalTableManagerName);
-			for (LocalTableManagerInterface ltmi : ltmSwarm) {
-				ltmi.notifyGTMShutDown();
-			}
-		} catch (AccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			registry.unbind(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
+		} catch (Exception e) {
+			//
 		}
+		try {
+			registry.unbind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME);
+		} catch (Exception e) {
+			//
+		}
+		ltmSwarm.shutdown();
+		Runtime.getRuntime().removeShutdownHook(shutdownHook);
 	}
 }

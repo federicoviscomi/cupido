@@ -23,9 +23,6 @@ import unibo.as.cupido.common.structures.TableDescriptor;
 
 /**
  * Thrown wheter a table cannot host more players.
- * 
- * @author cane
- * 
  */
 public class FullTableException extends Exception implements Serializable {
 

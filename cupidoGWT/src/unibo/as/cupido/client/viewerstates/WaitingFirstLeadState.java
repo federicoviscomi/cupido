@@ -27,16 +27,43 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * This class handles the state of the game in which the
+ * viewer is waiting the first lead of the game.
+ */
 public class WaitingFirstLeadState implements ViewerState {
 
+	/**
+	 * The widget that displays the game.
+	 */
 	private CardsGameWidget cardsGameWidget;
+
+	/**
+	 * This specifies whether or not the PlayedCard event has already been
+	 * received.
+	 */
 	private boolean eventReceived = false;
 
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
+	
+	/**
+	 * The widget that displays the current message in the top-right corner
+	 * of the table.
+	 */
 	private HTML message;
 
+	/**
+	 * The manager of game states.
+	 */
 	private ViewerStateManager stateManager;
 
+	/**
+	 * @param cardsGameWidget The widget that displays the game.
+	 * @param stateManager The manager of game states.
+	 */
 	public WaitingFirstLeadState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
 

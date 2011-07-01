@@ -41,6 +41,9 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 
+/**
+ * Manages player in a single table.
+ */
 public class PlayersManager {
 
 	/** store information for inactiveReplacementBot or human players */
@@ -57,7 +60,7 @@ public class PlayersManager {
 
 		/**
 		 * the notification interface for this player. This field is always
-		 * meaningfull.
+		 * meaningful.
 		 * <ul>
 		 * <li>If <code>isBot==false</code> then this field is the notification
 		 * interface of a client servlet.</li>
@@ -99,18 +102,30 @@ public class PlayersManager {
 		 */
 		boolean replaced;
 
+		/**
+		 * Create info for a player.
+		 * 
+		 * @param name
+		 *            player name
+		 * @param score
+		 *            player score
+		 * @param playerNotificationInterface
+		 *            player notification interface
+		 * @param replacementBot
+		 *            interface of local replacement bot of the player
+		 */
 		public PlayerInfo(String name, int score,
-				ServletNotificationsInterface notificationInterface,
+				ServletNotificationsInterface playerNotificationInterface,
 				LocalBotInterface replacementBot) {
 
-			if (name == null || notificationInterface == null
+			if (name == null || playerNotificationInterface == null
 					|| replacementBot == null)
 				throw new IllegalArgumentException(name + " "
-						+ notificationInterface);
+						+ playerNotificationInterface);
 
 			this.name = name;
 			this.score = score;
-			this.playerNotificationInterface = notificationInterface;
+			this.playerNotificationInterface = playerNotificationInterface;
 			this.inactiveReplacementBot = replacementBot;
 			this.inactiveReplacementBotSNI = replacementBot
 					.getServletNotificationsInterface();
@@ -118,6 +133,14 @@ public class PlayersManager {
 			this.replaced = false;
 		}
 
+		/**
+		 * Create new info for a bot
+		 * 
+		 * @param name
+		 *            bot name
+		 * @param bot
+		 *            bot notification interface
+		 */
 		public PlayerInfo(String name, ServletNotificationsInterface bot) {
 			if (name == null || bot == null)
 				throw new IllegalArgumentException();
@@ -143,6 +166,14 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * Create a deep copy of the given array. No reference are shared between
+	 * the copy and the original.
+	 * 
+	 * @param cards
+	 *            the array to clone
+	 * @return a deep copy of the given array
+	 */
 	private static Card[] cloneCardArray(Card[] cards) {
 		int n = cards.length;
 		Card[] result = new Card[n];
@@ -151,27 +182,67 @@ public class PlayersManager {
 		return result;
 	}
 
+	/** stores all players informations */
 	private PlayerInfo[] players = new PlayerInfo[4];
+	/** number of player */
 	private int playersCount = 1;
+	/** used to access the database */
 	private final DatabaseManager databaseManager;
+	/** controls action for sending notification to players and bots */
 	private final ActionQueue controller;
-
+	/** a deep copy of last received chat message */
 	private ChatMessage clonedMessage;
 
-	public PlayersManager(String owner, ServletNotificationsInterface snf,
+	/**
+	 * Create a new players manager and adds the specified owner.
+	 * 
+	 * @param creator
+	 *            the creator of the table
+	 * @param snf
+	 *            the notification interface of the creator
+	 * @param databaseManager
+	 *            used to access the database
+	 * @param controller
+	 *            the action queue, used to send notification to players and
+	 *            bots
+	 * 
+	 * @throws SQLException
+	 *             if a deployment or implementation problem occurs.
+	 * @throws NoSuchUserException
+	 *             if there is no user with name <tt>creator</tt> in the
+	 *             database
+	 */
+	public PlayersManager(String creator, ServletNotificationsInterface snf,
 			DatabaseManager databaseManager, ActionQueue controller)
 			throws SQLException, NoSuchUserException {
 
-		if (owner == null || snf == null)
+		if (creator == null || snf == null)
 			throw new IllegalArgumentException();
 
 		this.databaseManager = databaseManager;
 		this.controller = controller;
 
-		int score = databaseManager.getPlayerScore(owner);
-		players[0] = new PlayerInfo(owner, score, snf, new LoggerBot(owner));
+		int score = databaseManager.getPlayerScore(creator);
+		players[0] = new PlayerInfo(creator, score, snf, new LoggerBot(creator));
 	}
 
+	/**
+	 * Add specified bot in the table
+	 * 
+	 * @param userName
+	 *            the name of player issuing the call to this method
+	 * @param position
+	 *            the position of the bot to add
+	 * @param botName
+	 *            the name of the bot to add
+	 * @param tableInterface
+	 *            the interface of the table associated with this players
+	 *            manager //TODO use a field instead of a parameter
+	 * @throws FullPositionException
+	 *             if table already has four players
+	 * @throws NotCreatorException
+	 *             if <tt>userName</tt> is not creator of this table
+	 */
 	public void addBot(String userName, int position, String botName,
 			TableInterface tableInterface) throws FullPositionException,
 			NotCreatorException {
@@ -188,13 +259,27 @@ public class PlayersManager {
 
 		InitialTableStatus initialTableStatus = this
 				.getInitialTableStatus(position);
-		LocalBot bot = new LocalBot(botName, initialTableStatus,
-				tableInterface, position);
+		LocalBot bot = new LocalBot(botName, initialTableStatus, tableInterface);
 		players[position] = new PlayerInfo(botName,
 				bot.getServletNotificationsInterface());
 		playersCount++;
 	}
 
+	/**
+	 * Adds specified player to the table
+	 * 
+	 * @param playerName
+	 *            name of player to add
+	 * @param sni
+	 *            notification interface of player to add
+	 * @param score
+	 *            score of player to add
+	 * @return position of the player added
+	 * @throws FullTableException
+	 *             if this table already has four players
+	 * @throws DuplicateUserNameException
+	 *             if this table already has a player named <tt>playerName</tt>
+	 */
 	public int addPlayer(String playerName, ServletNotificationsInterface sni,
 			int score) throws FullTableException, DuplicateUserNameException {
 
@@ -218,7 +303,7 @@ public class PlayersManager {
 		}
 
 		LocalBot replacementBot = new LocalBot(playerName,
-				this.getInitialTableStatus(position), position);
+				this.getInitialTableStatus(position));
 
 		players[position] = new PlayerInfo(playerName, score, sni,
 				replacementBot);
@@ -227,6 +312,12 @@ public class PlayersManager {
 		return position;
 	}
 
+	/**
+	 * Adds to <tt>observedGameStatus<tt> information for viewers of this table
+	 * 
+	 * @param observedGameStatus
+	 *            the observed game status from the point of view of a viewer
+	 */
 	public void addPlayersInformationForViewers(
 			ObservedGameStatus observedGameStatus) {
 		for (int i = 0; i < 4; i++) {
@@ -241,7 +332,16 @@ public class PlayersManager {
 			observedGameStatus.firstDealerInTrick = -1;
 	}
 
-	InitialTableStatus getInitialTableStatus(int position) {
+	/**
+	 * Get initial game status. This is used to get table information for new
+	 * players.
+	 * 
+	 * @param position
+	 *            position of the player who call this method.
+	 * @return information on game status from the point of view of a player who
+	 *         joins the table in specified position.
+	 */
+	public InitialTableStatus getInitialTableStatus(int position) {
 		String[] opponents = new String[3];
 		int[] playerPoints = new int[3];
 		boolean[] whoIsBot = new boolean[3];
@@ -256,12 +356,30 @@ public class PlayersManager {
 		return new InitialTableStatus(opponents, playerPoints, whoIsBot);
 	}
 
-	public String getPlayerName(int i) throws NoSuchPlayerException {
-		if (players[i] != null)
-			return players[i].name;
+	/**
+	 * Gets name of player in specified position if any.
+	 * 
+	 * @param position
+	 *            position of the player to get the name of
+	 * @return name of player in specified position if any.
+	 * @throws NoSuchPlayerException
+	 *             if there is no player in specified position
+	 */
+	public String getPlayerName(int position) throws NoSuchPlayerException {
+		if (players[position] != null)
+			return players[position].name;
 		throw new NoSuchPlayerException();
 	}
 
+	/**
+	 * Get position of player with specified name
+	 * 
+	 * @param playerName
+	 *            name of the player
+	 * @return position of player with specified name if any.
+	 * @throws NoSuchPlayerException
+	 *             it there is no player with specified name
+	 */
 	public int getPlayerPosition(String playerName)
 			throws NoSuchPlayerException {
 		for (int i = 0; i < 4; i++) {
@@ -272,11 +390,16 @@ public class PlayersManager {
 				+ Arrays.toString(players));
 	}
 
+	/**
+	 * Notify every player but the one who is adding the bot and the bot itself
+	 * that a bot joined.
+	 * 
+	 * @param botName
+	 *            name of bot who joined
+	 * @param position
+	 *            position in which the bot is joining
+	 */
 	public void notifyBotJoined(final String botName, final int position) {
-		/*
-		 * notify every players but the one who is adding the bot and the bot
-		 * itself
-		 */
 		for (int i = 1; i < 4; i++) {
 			final PlayerInfo player = players[i];
 			final int relativePosition = toRelativePosition(position, i);
@@ -302,6 +425,14 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * Notify every player that game ended.
+	 * 
+	 * @param matchPoints
+	 *            points of every player in this match
+	 * @param playersTotalPoint
+	 *            score of every player
+	 */
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		if (matchPoints == null || playersTotalPoint == null)
 			throw new IllegalArgumentException();
@@ -331,6 +462,9 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * Notify every player that game ended prematurely
+	 */
 	public void notifyGameEndedPrematurely() {
 		for (final PlayerInfo player : players) {
 			if (player != null) {
@@ -354,6 +488,12 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * Notify every player that game started.
+	 * 
+	 * @param cards
+	 *            all cards dealt
+	 */
 	public void notifyGameStarted(Card[][] cards) {
 		for (int i = 0; i < 4; i++) {
 			final PlayerInfo player = players[i];
@@ -382,6 +522,12 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * Notifiy every player that there is a new local chat message
+	 * 
+	 * @param message
+	 *            the new local chat message
+	 */
 	public void notifyNewLocalChatMessage(ChatMessage message) {
 		for (final PlayerInfo player : players) {
 			clonedMessage = message.clone();
@@ -482,9 +628,9 @@ public class PlayersManager {
 	}
 
 	/**
-	 * <code>position</code> is the position of player who passed cards
-	 * 
-	 * @param playerName
+	 * When player in position <tt>position</tt> passes cards <tt>cards</tt> 
+	 * @param position
+	 * @param cards
 	 */
 	public void notifyPlayerPassedCards(int position, Card[] cards) {
 		int receiverIndex = (position + 5) % 4;
@@ -513,9 +659,20 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * Notify every player that specified player has been replaced.
+	 * 
+	 * @param playerLeftName
+	 *            name of player who left.
+	 * @param position
+	 *            position of player who left.
+	 * @throws EmptyPositionException
+	 *             if there is no player in specified position
+	 * @throws NoSuchPlayerException
+	 *             if there is no player with name <tt>playerLeftName</tt>
+	 */
 	public void notifyPlayerReplaced(final String playerLeftName, int position)
-			throws FullPositionException, EmptyPositionException,
-			NoSuchPlayerException {
+			throws EmptyPositionException, NoSuchPlayerException {
 		for (int i = 0; i < 4; i++) {
 			if (i != position) {
 				final PlayerInfo player = players[i];
@@ -545,14 +702,23 @@ public class PlayersManager {
 		}
 	}
 
-	public int olayersCount() {
+	/**
+	 * Returns number of players in the table.
+	 * 
+	 * @return number of players in the table.
+	 */
+	public int getPlayersCount() {
 		return playersCount;
 	}
 
-	public void print() {
-		System.out.println(Arrays.toString(players));
-	}
-
+	/**
+	 * Remove specified player.
+	 * 
+	 * @param playerName
+	 *            name of player to remove.
+	 * @throws NoSuchPlayerException
+	 *             if there is no player named <tt>playerName</tt> in this table
+	 */
 	public void removePlayer(String playerName) throws NoSuchPlayerException {
 		int position = getPlayerPosition(playerName);
 		if (position == -1)
@@ -563,6 +729,18 @@ public class PlayersManager {
 		players[position] = null;
 	}
 
+	/**
+	 * When a non bot player passes a card, his replacement bot has to mimic the
+	 * non bot player. This is used to make the replacement bot in position
+	 * <tt>position</tt> pass specified cards.
+	 * 
+	 * @param position
+	 *            the position of replacement player
+	 * @param cards
+	 *            the card passed by player in specified position
+	 *            <tt>position</tt>
+	 * 
+	 */
 	public void replacementBotPassCards(int position, Card[] cards) {
 		if (position < 0 || position > 3 || cards == null)
 			throw new IllegalArgumentException();
@@ -580,6 +758,17 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * When a non bot player plays a card, his replacement bot has to mimic the
+	 * non bot player. This is used to make the replacement bot in position
+	 * <tt>position</tt> play specified card.
+	 * 
+	 * @param position
+	 *            the position of replacement player
+	 * @param card
+	 *            the card played by player in specified position
+	 *            <tt>position</tt>
+	 */
 	public void replacementBotPlayCard(int position, Card card) {
 		if (position < 0 || position > 3 || card == null)
 			throw new IllegalArgumentException();
@@ -597,6 +786,19 @@ public class PlayersManager {
 		}
 	}
 
+	/**
+	 * Replace specified player. This is accomplished by removing specified
+	 * player and then activating his replacement bot.
+	 * 
+	 * @param playerName
+	 *            name of player to be replaced
+	 * @param position
+	 *            position of player to be replaced
+	 * @param tableInterface
+	 *            this table interface
+	 * @throws NoSuchPlayerException
+	 *             if there is no player named <tt>playerName</tt>
+	 */
 	public void replacePlayer(String playerName, int position,
 			final TableInterface tableInterface) throws NoSuchPlayerException {
 		if (playerName == null || tableInterface == null || position < 1
@@ -619,7 +821,17 @@ public class PlayersManager {
 		players[position].inactiveReplacementBotSNI = null;
 	}
 
-	/* the notification is to be sent to 2 */
+	/**
+	 * Calculates position of player <tt>absolutePosition1</tt> relative to
+	 * player <tt>absolutePosition2</tt>
+	 * 
+	 * @param absolutePosition1
+	 *            absolute position of first player
+	 * @param absolutePosition2
+	 *            absolute position of second player
+	 * @return position of first player from the point of view of the second
+	 *         player.
+	 */
 	private int toRelativePosition(int absolutePosition1, int absolutePosition2) {
 		int res;
 		if (absolutePosition2 < absolutePosition1)
@@ -629,6 +841,14 @@ public class PlayersManager {
 		return res;
 	}
 
+	/**
+	 * After the game ends, score of every player are updated according to match
+	 * points.
+	 * 
+	 * @param matchPoints
+	 *            points of every player in this match
+	 * @return new score of every players
+	 */
 	public int[] updateScore(int[] matchPoints) {
 		int min = matchPoints[0];
 		for (int i = 1; i < 4; i++) {
@@ -662,6 +882,11 @@ public class PlayersManager {
 		return newScore;
 	}
 
+	/**
+	 * Returns number of non bot players remained in the table.
+	 * 
+	 * @return number of non bot players remained in the table.
+	 */
 	public int nonBotPlayersCount() {
 		int nonBotPlayersCount = 4;
 		for (int i = 0; i < 4; i++) {

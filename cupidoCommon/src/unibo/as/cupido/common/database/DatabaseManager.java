@@ -33,13 +33,6 @@ import com.mysql.jdbc.Statement;
 
 public class DatabaseManager implements DatabaseInterface {
 
-	public static void main(String[] args) throws SQLException,
-			DuplicateUserNameException, NoSuchUserException {
-		DatabaseManager databaseManager = new DatabaseManager();
-		databaseManager.test();
-		// System.out.println(databaseManager.login("cane", "bau"));
-	}
-
 	private String userDB = "root";
 
 	private String passDB = "cupido";
@@ -188,68 +181,6 @@ public class DatabaseManager implements DatabaseInterface {
 		}
 	}
 	
-
-	private void print() {
-		try {
-			ResultSet all = statement.executeQuery("SELECT * FROM User");
-			ResultSetMetaData metaData = all.getMetaData();
-			System.out.format("\n%16.16s %8.8s %8.8s\n",
-					metaData.getColumnName(1), metaData.getColumnName(2),
-					metaData.getColumnName(3));
-			while (all.next()) {
-				System.out.format("%16.16s %8.8s %8.8s\n", all.getString(1),
-						all.getString(2), all.getInt(3));
-			}
-
-		} catch (SQLException e) {
-			System.out.println("DBManager: on print() catched SQLException");
-			e.printStackTrace();
-		}
-	}
-
-	private void test() throws SQLException, NoSuchUserException {
-		try {
-			addNewUser("ciao", "bau");
-		} catch (DuplicateUserNameException e) {
-			//
-		}
-		try {
-			addNewUser("cane", "miao");
-		} catch (DuplicateUserNameException e) {
-			//
-		}
-		try {
-			addNewUser("rosa", "rosa");
-		} catch (DuplicateUserNameException e) {
-			//
-		}
-		/*ResultSet res = statement.executeQuery("SELECT * FROM User;");
-		System.out.println();
-		while (res.next()) {
-			System.out.println(res.getString(1) + " " + res.getString(2) + " "
-					+ res.getInt(3));
-		}
-		this.updateScore("rosa", 34);
-		this.updateScore("cane", 34);
-		System.out.println("Update");
-		ArrayList<RankingEntry> globalRank = this.getLocalRank("cane");
-		for (RankingEntry p : globalRank) {
-			System.out.println(":" + p.username+" "+p.rank+" "+p.points);
-		}
-		*/
-		for (RankingEntry p : this.getLocalRank("foxtrot")){
-			System.out.println(p.rank+" "+p.username+" "+p.points);
-		}
-		System.out.println("---");
-		for (RankingEntry p : this.getLocalRank("golf")){
-			System.out.println(p.rank+" "+p.username+" "+p.points);
-		}
-		System.out.println("---");
-		for (RankingEntry p : this.getTopRank(13)){
-			System.out.println(p.rank+" "+p.username+" "+p.points);
-		}
-	}
-
 	@Override
 	public void updateScore(String userName, int score) throws NoSuchUserException, SQLException {
 		if (userName == null)

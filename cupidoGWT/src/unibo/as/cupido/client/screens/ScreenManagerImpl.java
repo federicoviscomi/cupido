@@ -48,20 +48,50 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * The global screen manager.
+ * 
+ * This implements the screen switching, by both changing the displayed screen
+ * and redirecting the comet messages to the current screen.
+ */
 public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 
+	/**
+	 * The listener that handles comet messages.
+	 * 
+	 * This can be modified with the setListener() method.
+	 * Each screen changes this when it's displayed.
+	 */
 	private CometMessageListener cometMessageListener;
+	
+	/**
+	 * This is used to communicate with the servlet using RPC.
+	 */
 	private CupidoInterfaceAsync cupidoService = GWT
 			.create(CupidoInterface.class);
 
+	/**
+	 * The current screen.
+	 */
 	private Screen currentScreen = null;
 
+	/**
+	 * The widget displaying the current screen.
+	 */
 	private Widget currentScreenWidget = null;
 
-	// This is used to check that no screen switches occur while switching
-	// screen.
+	/**
+	 * This is used to check that no screen switches occur while switching
+	 * screen.
+	 */
 	private boolean switchingScreen = false;
 
+	/**
+	 * The default constructor.
+	 * 
+	 * This displays the loading screen, opens a comet connection to
+	 * the servlet and then displays the login screen.
+	 */
 	public ScreenManagerImpl() {
 		setHeight(Cupido.height + "px");
 		setWidth(Cupido.width + "px");
@@ -309,6 +339,9 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 		switchingScreen = false;
 	}
 
+	/**
+	 * A helper method used to remove the current screen.
+	 */
 	private void removeCurrentScreen() {
 		if (currentScreen == null)
 			return;

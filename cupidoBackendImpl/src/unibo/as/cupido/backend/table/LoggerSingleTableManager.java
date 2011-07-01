@@ -18,10 +18,21 @@ import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 
+/**
+ * This STM is used by replacement bot only before they are used to replace a
+ * player so this does not need to do anything.
+ * 
+ * @see PlayersManager
+ */
 public final class LoggerSingleTableManager implements TableInterface {
 
+	/** the default instance of this class */
 	public static final TableInterface defaultInstance = new LoggerSingleTableManager();
 
+	/**
+	 * Called just once to create {@link #defaultInstance}. It is not necessary
+	 * to make other instance of this.
+	 */
 	private LoggerSingleTableManager() {
 		//
 	}
@@ -31,7 +42,7 @@ public final class LoggerSingleTableManager implements TableInterface {
 			throws FullPositionException, RemoteException,
 			IllegalArgumentException, NotCreatorException {
 		throw new IllegalStateException(
-				"a replacement inactiveReplacementBot should never call this");
+				"a replacement bot should not call this");
 	}
 
 	@Override
@@ -40,21 +51,21 @@ public final class LoggerSingleTableManager implements TableInterface {
 			RemoteException, IllegalArgumentException,
 			DuplicateUserNameException, NoSuchUserException {
 		throw new IllegalStateException(
-				"a replacement inactiveReplacementBot should never call this");
+				"a replacement bot should not call this");
 	}
 
 	@Override
 	public void leaveTable(String userName) throws RemoteException,
 			NoSuchPlayerException {
 		throw new IllegalStateException(
-				"a replacement inactiveReplacementBot should not call this before it is awoken");
+				"a replacement bot should not call this");
 	}
 
 	@Override
 	public void passCards(String userName, Card[] cards)
 			throws IllegalArgumentException, IllegalStateException,
 			RemoteException {
-		System.err.println("fake stm: passCards(" + userName + ", "
+		System.err.println("logger stm: passCards(" + userName + ", "
 				+ Arrays.toString(cards) + ")");
 	}
 
@@ -62,14 +73,14 @@ public final class LoggerSingleTableManager implements TableInterface {
 	public void playCard(String userName, Card card)
 			throws IllegalMoveException, RemoteException,
 			IllegalArgumentException {
-		System.err
-				.println("fake stm: playCard(" + userName + ", " + card + ")");
+		System.err.println("logger stm: playCard(" + userName + ", " + card
+				+ ")");
 	}
 
 	@Override
 	public void sendMessage(ChatMessage message) throws RemoteException {
 		throw new IllegalStateException(
-				"a replacement inactiveReplacementBot should not call this before it is awoken");
+				"a replacement bot should not call this");
 	}
 
 	@Override
@@ -77,7 +88,7 @@ public final class LoggerSingleTableManager implements TableInterface {
 			ServletNotificationsInterface snf) throws RemoteException,
 			DuplicateViewerException {
 		throw new IllegalStateException(
-				"a replacement inactiveReplacementBot should not call this before it is awoken");
+				"a replacement bot should not call this");
 	}
 
 }
