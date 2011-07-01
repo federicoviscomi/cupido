@@ -42,7 +42,7 @@ public class NewPlayerJoined implements Serializable {
 	public int points;
 
 	/**
-	 * For viewers, position=1 means the player at the owner's left, and so
+	 * For viewers, position=1 means the player at the creator's left, and so
 	 * the position range is [1-3].
 	 * 
 	 * For players, position=0 means the player at the user's left, and so

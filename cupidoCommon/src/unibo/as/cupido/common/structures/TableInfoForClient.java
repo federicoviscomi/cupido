@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 public class TableInfoForClient implements Serializable {
 	private static final long serialVersionUID = -3002842357423083821L;
-	public String owner;
+	public String creator;
 	public int freePosition;
 	public TableDescriptor tableDescriptor;
 
@@ -31,7 +31,7 @@ public class TableInfoForClient implements Serializable {
 
 	public TableInfoForClient(String owner, int freePosition,
 			TableDescriptor tableDescriptor) {
-		this.owner = owner;
+		this.creator = owner;
 		this.freePosition = freePosition;
 		this.tableDescriptor = tableDescriptor;
 	}
@@ -53,7 +53,7 @@ public class TableInfoForClient implements Serializable {
 
 	@Override
 	public String toString() {
-		return "[owner=" + owner + ", free position=" + freePosition
+		return "[creator=" + creator + ", free position=" + freePosition
 				+ ", server=" + tableDescriptor.ltmId + ", table id="
 				+ tableDescriptor.id + "]";
 	}

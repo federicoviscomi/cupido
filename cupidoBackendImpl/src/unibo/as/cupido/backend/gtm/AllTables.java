@@ -17,7 +17,6 @@
 
 package unibo.as.cupido.backend.gtm;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

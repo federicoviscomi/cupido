@@ -64,7 +64,7 @@ public class TableListScreen extends VerticalPanel implements Screen {
 				TableInfoForClient value, SafeHtmlBuilder sb) {
 			if (value != null) {
 				sb.appendHtmlConstant("Creatore: <b>");
-				sb.appendEscaped(value.owner);
+				sb.appendEscaped(value.creator);
 				sb.appendHtmlConstant("</b></br>");
 				sb.appendHtmlConstant("Numero posti liberi: ");
 				sb.append(value.freePosition);

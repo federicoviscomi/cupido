@@ -18,7 +18,6 @@
 package unibo.as.cupido.backend.table;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -28,7 +27,6 @@ import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
-import unibo.as.cupido.common.exception.GameEndedException;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
@@ -49,20 +47,31 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
+/**
+ * Manages a single table
+ */
 public class SingleTableManager implements TableInterface {
 
+	/** handles this table cards */
 	private final CardsManager cardsManager;
+	/** used to communicate with the database */
 	private final DatabaseManager databaseManager;
+	/** handles this table players including bots */
 	private final PlayersManager playersManager;
+	/** this table info */
 	private final TableInfoForClient table;
+	/** handles viewers of this table */
 	private final ViewersSwarm viewers;
+	/** interface of GTM */
 	private final GlobalTableManagerInterface gtm;
-	private final String owner;
+	/** name of player who created the table */
+	private final String creator;
+	/** queue of action this STM has to execute */
 	private final ActionQueue actionQueue;
-
+	/** stores game current status */
 	private GameStatus gameStatus;
-
-	public static final String[] botNames = { "", "cupido", "venere", "marte" };
+	/** stores name used for bots */
+	public static final String[] botNames = { "", "cupido", "marte", "venere" };
 
 	public SingleTableManager(ServletNotificationsInterface snf,
 			TableInfoForClient table, GlobalTableManagerInterface gtm)
@@ -74,13 +83,13 @@ public class SingleTableManager implements TableInterface {
 
 		this.table = table;
 		this.gtm = gtm;
-		this.owner = table.owner;
+		this.creator = table.creator;
 		this.gameStatus = GameStatus.INIT;
 		this.databaseManager = new DatabaseManager();
 		this.actionQueue = new ActionQueue();
 		this.actionQueue.start();
 		this.viewers = new ViewersSwarm(actionQueue);
-		this.playersManager = new PlayersManager(owner, snf, databaseManager,
+		this.playersManager = new PlayersManager(creator, snf, databaseManager,
 				actionQueue);
 		this.cardsManager = new CardsManager();
 	}
@@ -103,7 +112,7 @@ public class SingleTableManager implements TableInterface {
 
 		notifyPlayerJoined(botName, true, 0, position);
 
-		if (playersManager.olayersCount() == 4) {
+		if (playersManager.getPlayersCount() == 4) {
 			notifyGameStarted();
 			gameStatus = GameStatus.PASSING_CARDS;
 			// controller.produceStartGame();
@@ -127,7 +136,6 @@ public class SingleTableManager implements TableInterface {
 		try {
 			score = databaseManager.getPlayerScore(userName);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new NoSuchUserException();
 		}
@@ -135,10 +143,9 @@ public class SingleTableManager implements TableInterface {
 
 		notifyPlayerJoined(userName, false, score, position);
 
-		if (playersManager.olayersCount() == 4) {
+		if (playersManager.getPlayersCount() == 4) {
 			notifyGameStarted();
 			gameStatus = GameStatus.PASSING_CARDS;
-			// controller.produceStartGame();
 		}
 		return playersManager.getInitialTableStatus(position);
 	}
@@ -162,9 +169,9 @@ public class SingleTableManager implements TableInterface {
 			} else {
 				playersManager.removePlayer(userName);
 			}
-			if (playersManager.nonBotPlayersCount() == 0
-					&& viewers.viewersCount() == 0) {
+			if (playersManager.nonBotPlayersCount() == 0) {
 				actionQueue.killConsumer();
+				viewers.killConsumer();
 			}
 			return;
 		}
@@ -173,10 +180,9 @@ public class SingleTableManager implements TableInterface {
 			try {
 				viewers.removeViewer(userName);
 			} catch (NoSuchViewerException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else if (table.owner.equals(userName)) {
+		} else if (table.creator.equals(userName)) {
 
 			gameStatus = GameStatus.INTERRUPTED;
 			notifyGameEndedPrematurely();
@@ -194,6 +200,10 @@ public class SingleTableManager implements TableInterface {
 		}
 	}
 
+	/**
+	 * Notify every players and viewers that game ended. Also notify table
+	 * destruction to gtm and stm.
+	 */
 	private void notifyGameEnded() {
 		int[] matchPoints = cardsManager.getMatchPoints();
 		int[] playersTotalPoint = playersManager.updateScore(matchPoints);
@@ -202,16 +212,36 @@ public class SingleTableManager implements TableInterface {
 		this.notifyTableDestruction();
 	}
 
+	/**
+	 * Notify every players and viewers that game ended prematurely. Also notify
+	 * table destruction to gtm and stm.
+	 */
 	private void notifyGameEndedPrematurely() {
 		playersManager.notifyGameEndedPrematurely();
 		viewers.notifyGameEndedPrematurely();
 		this.notifyTableDestruction();
 	}
 
+	/**
+	 * Notify every players that game started.
+	 */
 	private void notifyGameStarted() {
 		playersManager.notifyGameStarted(cardsManager.getCards());
 	}
 
+	/**
+	 * Notify every other player and viewers that a player joined.
+	 * 
+	 * @param userName
+	 *            name of player who joined
+	 * @param isBot
+	 *            <tt>true</tt> if the player who joined is a bot;
+	 *            <tt>false</tt> otherwise.
+	 * @param score
+	 *            score of player who joined
+	 * @param position
+	 *            position of player who joined
+	 */
 	private void notifyPlayerJoined(String userName, boolean isBot, int score,
 			int position) {
 
@@ -237,6 +267,12 @@ public class SingleTableManager implements TableInterface {
 		});
 	}
 
+	/**
+	 * Notify every other player and viewers that a player left.
+	 * 
+	 * @param userName
+	 *            name of player who left.
+	 */
 	private void notifyPlayerLeft(String userName) {
 		playersManager.notifyPlayerLeft(userName);
 		viewers.notifyPlayerLeft(userName);
@@ -256,10 +292,30 @@ public class SingleTableManager implements TableInterface {
 		});
 	}
 
+	/**
+	 * Notify the receiver player that player in specified position passed
+	 * specified cards
+	 * 
+	 * @param position
+	 *            position of player who passed cards
+	 * @param cards
+	 *            cards passed
+	 */
 	private void notifyPlayerPassedCards(int position, Card[] cards) {
 		playersManager.notifyPlayerPassedCards(position, cards);
 	}
 
+	/**
+	 * Notify every players and viewers that specified player played specified
+	 * card
+	 * 
+	 * @param playerName
+	 *            name of player who played card
+	 * @param position
+	 *            position of player who playd card
+	 * @param card
+	 *            card played
+	 */
 	private void notifyPlayerPlayedCard(String playerName, int position,
 			Card card) {
 		try {
@@ -271,13 +327,18 @@ public class SingleTableManager implements TableInterface {
 		viewers.notifyPlayedCard(position, card);
 	}
 
+	/**
+	 * Notify every players and viewers that specified player has been replaced
+	 * 
+	 * @param playerName
+	 *            name of player who has been replaced
+	 * @param position
+	 *            position of player who has been replaced
+	 */
 	private void notifyPlayerReplaced(String playerName, int position) {
 		try {
 			playersManager.notifyPlayerReplaced(playerName, position);
 			viewers.notifyPlayerReplaced(playerName, position);
-		} catch (FullPositionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (EmptyPositionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -288,6 +349,9 @@ public class SingleTableManager implements TableInterface {
 
 	}
 
+	/**
+	 * Notify gtm and stm of this table destruction
+	 */
 	private void notifyTableDestruction() {
 		actionQueue.enqueue(new RemoteAction() {
 			@Override

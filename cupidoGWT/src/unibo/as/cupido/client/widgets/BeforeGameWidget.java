@@ -68,7 +68,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 		/**
 		 * This is called if the game is interrupted by another player (i.e. the
-		 * owner).
+		 * creator).
 		 */
 		public void onGameEnded();
 
@@ -181,7 +181,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 *            Is the bottom player's username (it may be the current user or
 	 *            not, depending whether the user is a player or just a viewer).
 	 * @param isOwner
-	 *            Specifies whether or not the current user is the owner of the
+	 *            Specifies whether or not the current user is the creator of the
 	 *            table.
 	 * @param tableStatus This contains some information about the table status.
 	 * @param scores

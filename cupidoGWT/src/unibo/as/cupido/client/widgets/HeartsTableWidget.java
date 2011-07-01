@@ -132,7 +132,7 @@ public class HeartsTableWidget extends AbsolutePanel {
 
 						assert !isOwner;
 						screenManager.displayMainMenuScreen(username);
-						Window.alert("L'owner ha lasciato il tavolo, e quindi la partita \350 stata annullata.");
+						Window.alert("L'creator ha lasciato il tavolo, e quindi la partita \350 stata annullata.");
 					}
 
 					@Override

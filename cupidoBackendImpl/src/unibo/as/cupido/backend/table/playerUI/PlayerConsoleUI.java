@@ -39,7 +39,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import unibo.as.cupido.backend.ltm.LocalTableManager;
-import unibo.as.cupido.backend.table.LoggerBot;
 import unibo.as.cupido.backend.table.bot.LocalBot;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;

@@ -47,8 +47,8 @@ import java.rmi.RemoteException;
  * <td>Start the server</td>
  * </tr>
  * <tr>
- * <td>create -o owner</td>
- * <td>Create a new Table with specified owner</td>
+ * <td>create -o creatorName</td>
+ * <td>Create a new Table with specified creatorName</td>
  * </tr>
  * <tr>
  * <td>list</td>
@@ -67,8 +67,8 @@ public class LocalTableManagerCommandInterpreterUI {
 					"shutdown the LTM server and exit")
 			+ String.format(FORMAT, "list", "-t", "--table",
 					"list all table managed by this LTM server")
-			+ String.format(FORMAT, "create", "-o", "--owner",
-					"create a new table with specified owner");
+			+ String.format(FORMAT, "create", "-c", "--creator",
+					"create a new table with specified creator");
 
 	public static void main(String[] args) throws UnknownHostException {
 		if (args.length > 1 && "start".equals(args[1])) {
@@ -99,8 +99,8 @@ public class LocalTableManagerCommandInterpreterUI {
 	private boolean error;
 	/** the options parser tool */
 	private CmdLineParser parser;
-	/** tells if -o option is present input current input line */
-	private Option tableOwnerOption;
+	/** tells if -c option is present input current input line */
+	private Option tableCreatorOption;
 	/** tells if -t option is present input current input line */
 	private Option listTablesOption;
 	/** the input is read from this */
@@ -118,8 +118,8 @@ public class LocalTableManagerCommandInterpreterUI {
 	public LocalTableManagerCommandInterpreterUI(boolean startLTM)
 			throws RemoteException, UnknownHostException {
 		parser = new CmdLineParser();
-		tableOwnerOption = parser.addStringOption('o', "owner");
-		listTablesOption = parser.addBooleanOption('o', "owner");
+		tableCreatorOption = parser.addStringOption('c', "creator");
+		listTablesOption = parser.addBooleanOption('t', "tables");
 		input = new BufferedReader(new InputStreamReader(System.in));
 		if (startLTM) {
 			try {
@@ -201,8 +201,8 @@ public class LocalTableManagerCommandInterpreterUI {
 	 * 
 	 */
 	private void executeCreate() throws RemoteException {
-		String owner = (String) parser.getOptionValue(tableOwnerOption);
-		localTableManager.createTable(owner, null);
+		String creator = (String) parser.getOptionValue(tableCreatorOption);
+		localTableManager.createTable(creator, null);
 	}
 
 	/**

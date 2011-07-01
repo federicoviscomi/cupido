@@ -23,24 +23,38 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import unibo.as.cupido.common.exception.DuplicateViewerException;
-import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 
 /***
- * Keeps track of a viewers of a table
+ * Keeps track of all viewers of a single table
  */
 public class ViewersSwarm {
-	private Map<String, ServletNotificationsInterface> snfs;
-	private ActionQueue actionQueue;
+	/**
+	 * Stores association between viewers name and viewers notification
+	 * interfaces.
+	 */
+	private final Map<String, ServletNotificationsInterface> snfs;
+
+	private final ActionQueue actionQueue;
 
 	public ViewersSwarm(ActionQueue actionQueue) {
 		snfs = new HashMap<String, ServletNotificationsInterface>(4);
 		this.actionQueue = actionQueue;
 	}
 
+	/**
+	 * Add specified viewers to the swarm
+	 * 
+	 * @param viewerName
+	 * @param snf
+	 * @throws DuplicateViewerException
+	 *             if the swarms already contains viewers <tt>viewerName</tt>
+	 * @throws IllegalArgumentException
+	 *             if some argument is <tt>null</tt>
+	 */
 	public void addViewer(String viewerName, ServletNotificationsInterface snf)
 			throws DuplicateViewerException, IllegalArgumentException {
 		if (viewerName == null || snf == null)
@@ -49,10 +63,26 @@ public class ViewersSwarm {
 			throw new DuplicateViewerException();
 	}
 
+	/**
+	 * Returns <tt>true</tt> if specified user is a viewers; <tt>false</tt>
+	 * otherwise.
+	 * 
+	 * @param userName
+	 * @return <tt>true</tt> if specified user is a viewers; <tt>false</tt>
+	 *         otherwise.
+	 */
 	public boolean isAViewer(String userName) {
 		return snfs.containsKey(userName);
 	}
 
+	/**
+	 * Notify all viewers game ended.
+	 * 
+	 * @param matchPoints
+	 *            points of the match
+	 * @param playersTotalPoint
+	 *            score of players in the match
+	 */
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		for (final ServletNotificationsInterface snf : snfs.values()) {
 			final int[] matchPointsClone;
@@ -75,10 +105,19 @@ public class ViewersSwarm {
 		}
 	}
 
+	/**
+	 * Notify all viewers game ended prematurely
+	 */
 	public void notifyGameEndedPrematurely() {
 		this.notifyGameEnded(null, null);
 	}
 
+	/**
+	 * Notify all viewers that there is a new message in local chat.
+	 * 
+	 * @param message
+	 *            the new message in local chat.
+	 */
 	public void notifyNewLocalChatMessage(ChatMessage message) {
 		for (Entry<String, ServletNotificationsInterface> e : snfs.entrySet())
 			if (!e.getKey().equals(message.userName)) {
@@ -93,6 +132,15 @@ public class ViewersSwarm {
 			}
 	}
 
+	/**
+	 * Notify all viewers that player in position <tt>playerPosition</tt> played
+	 * card <tt>card</tt>
+	 * 
+	 * @param playerPosition
+	 *            the position of player who plays
+	 * @param card
+	 *            the card played
+	 */
 	public void notifyPlayedCard(final int playerPosition, Card card) {
 		for (final ServletNotificationsInterface snf : snfs.values()) {
 			final Card cardClone = card.clone();
@@ -105,6 +153,20 @@ public class ViewersSwarm {
 		}
 	}
 
+	/**
+	 * Notify all viewers that a player joined
+	 * 
+	 * @param playerName
+	 *            the name of player who joined
+	 * @param isBot
+	 *            <tt>true</tt> if the player who joined is a bot;
+	 *            <tt>false</tt> otherwise.
+	 * @param score
+	 *            the score of player who joined. This is meaningful only if
+	 *            <tt>isBot==false</tt>
+	 * @param position
+	 *            the position of player who joined.
+	 */
 	public void notifyPlayerJoined(final String playerName,
 			final boolean isBot, final int score, final int position) {
 		for (final ServletNotificationsInterface snf : snfs.values()) {
@@ -117,19 +179,32 @@ public class ViewersSwarm {
 		}
 	}
 
-	public void notifyPlayerLeft(final String userName) {
+	/**
+	 * Notify all viewers that a plyer left the game.
+	 * 
+	 * @param playerName
+	 *            name of player who left.
+	 */
+	public void notifyPlayerLeft(final String playerName) {
 		for (final ServletNotificationsInterface snf : snfs.values()) {
 			actionQueue.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {
-					snf.notifyPlayerLeft(userName);
+					snf.notifyPlayerLeft(playerName);
 				}
 			});
 		}
 	}
 
-	public void notifyPlayerReplaced(final String botName, final int position)
-			throws NoSuchPlayerException {
+	/**
+	 * Notify all viewers that a player has been replaced.
+	 * 
+	 * @param botName
+	 *            name of bot who replaced the player.
+	 * @param position
+	 *            position occupied by the replaced player.
+	 */
+	public void notifyPlayerReplaced(final String botName, final int position) {
 		for (final ServletNotificationsInterface snf : snfs.values()) {
 			actionQueue.enqueue(new RemoteAction() {
 				@Override
@@ -140,19 +215,34 @@ public class ViewersSwarm {
 		}
 	}
 
-	public void notifyViewerJoined(final String userName) {
+	/**
+	 * Notify all viewers that a viewer joined the table.
+	 * 
+	 * @param viewerName
+	 *            name of viewer who joined
+	 */
+	public void notifyViewerJoined(final String viewerName) {
 		for (final ServletNotificationsInterface snf : snfs.values()) {
 			actionQueue.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {
 					// FIXME: Is this correct?
-					snf.notifyLocalChatMessage(new ChatMessage(userName,
+					snf.notifyLocalChatMessage(new ChatMessage(viewerName,
 							"joined"));
 				}
 			});
 		}
 	}
 
+	/**
+	 * Removes specified viewer.
+	 * 
+	 * @param viewerName
+	 *            name of viewer to remove.
+	 * @throws NoSuchViewerException
+	 *             if there is no such viewer named <tt>viewerName</tt>
+	 * 
+	 */
 	public void removeViewer(String viewerName) throws NoSuchViewerException {
 		if (viewerName == null)
 			throw new IllegalArgumentException();
@@ -160,8 +250,20 @@ public class ViewersSwarm {
 			throw new NoSuchViewerException();
 	}
 
+	/**
+	 * Returns the number of viewers in the table
+	 * 
+	 * @return the number of viewers in the table
+	 */
 	public int viewersCount() {
 		return snfs.size();
+	}
+
+	/**
+	 * Kills the action queue
+	 */
+	public void killConsumer() {
+		actionQueue.killConsumer();
 	}
 
 }

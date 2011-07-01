@@ -226,10 +226,10 @@ public class CardPassingState implements PlayerState {
 				try {
 					throw caught;
 				} catch (NoSuchTableException e) {
-					// The owner has left the table, so the game was
+					// The creator has left the table, so the game was
 					// interrupted.
 				} catch (GameInterruptedException e) {
-					// The owner has left the table, so the game was
+					// The creator has left the table, so the game was
 					// interrupted.
 				} catch (Throwable e) {
 					stateManager.onFatalException(e);
