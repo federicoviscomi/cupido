@@ -17,9 +17,9 @@ public class ActionQueue extends Thread {
 	}
 
 	public void enqueue(Action action) {
-		if (exit)
-			return;
 		synchronized (lock) {
+			if (exit)
+				return;
 			actions.add(action);
 			lock.notify();
 		}
@@ -31,7 +31,7 @@ public class ActionQueue extends Thread {
 			while (!exit) {
 				List<Action> list;
 				synchronized (lock) {
-					while (actions.isEmpty())
+					while (actions.isEmpty() && !exit)
 						lock.wait();
 
 					// Make sure the caller has returned.
@@ -51,8 +51,8 @@ public class ActionQueue extends Thread {
 	}
 
 	public void killConsumer() {
-		exit = true;
 		synchronized (lock) {
+			exit = true;
 			lock.notify();
 		}
 	}
