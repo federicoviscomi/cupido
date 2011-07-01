@@ -26,10 +26,17 @@ import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
+/**
+ * The interface implemented by the global screen manager.
+ */
 public interface ScreenManager {
 
 	/**
 	 * Shows the about screen instead of the current one.
+	 * 
+	 * @param username The username of the current user.
+	 * 
+	 * @see AboutScreen
 	 */
 	public void displayAboutScreen(String username);
 
@@ -38,28 +45,41 @@ public interface ScreenManager {
 	 * 
 	 * @param caught
 	 *            the exception that generated the error.
+	 *            
+	 * @see GeneralErrorScreen
 	 */
 	public void displayGeneralErrorScreen(Throwable caught);
 
 	/**
 	 * Shows the loading screen instead of the current one.
+	 * 
+	 * @see LoadingScreen
 	 */
 	public void displayLoadingScreen();
 
 	/**
 	 * Shows the login screen instead of the current one.
+	 * 
+	 * @see LoginScreen
 	 */
 	public void displayLoginScreen();
 
 	/**
 	 * Shows the main menu screen instead of the current one.
+	 * 
+	 * @param username The username of the current user.
+	 * 
+	 * @see MainMenuScreen
 	 */
 	public void displayMainMenuScreen(String username);
 
 	/**
 	 * Shows the table screen (as a viewer) instead of the current one.
 	 * 
-	 * @param observedGameStatus
+	 * @param username The username of the current user.
+	 * @param observedGameStatus Contains information about the current state of the game.
+	 * 
+	 * @see ObservedTableScreen
 	 */
 	public void displayObservedTableScreen(String username,
 			ObservedGameStatus observedGameStatus);
@@ -71,12 +91,24 @@ public interface ScreenManager {
 
 	/**
 	 * Shows the scores' screen instead of the current one.
+	 * 
+	 * @param username The username of the current user.
+	 * @param topRanks The RankingEntry objects referring to the top 10 users.
+	 * @param localRanks The RankingEntry objects referring to the current user
+	 *             and to users with similar ranks.
+	 * 
+	 * @see ScoresScreen
 	 */
 	public void displayScoresScreen(String username,
 			ArrayList<RankingEntry> topRanks, ArrayList<RankingEntry> localRanks);
 
 	/**
 	 * Shows the table list screen instead of the current one.
+	 * 
+	 * @param username The username of the current user.
+	 * @param tableCollection The list of tables available for joining and/or viewing.
+	 * 
+	 * @see TableListScreen
 	 */
 	public void displayTableListScreen(String username,
 			Collection<TableInfoForClient> tableCollection);
@@ -84,10 +116,21 @@ public interface ScreenManager {
 	/**
 	 * Shows the table screen (as a player) instead of the current one.
 	 * 
-	 * @param inititalTableStatus
+	 * @param username The username of the current user.
+	 * @param isOwner Specifies whether or not the current user is the owner of this table.
+	 * @param initialTableStatus Contains information about the current state of the table.
+	 * @param userScore The global score of the current user.
+	 * 
+	 * @see TableScreen
 	 */
 	public void displayTableScreen(String username, boolean isOwner,
-			InitialTableStatus inititalTableStatus, int userScore);
+			InitialTableStatus initialTableStatus, int userScore);
 
+	/**
+	 * Changes the listener used to handle comet messages received
+	 * from the servlet.
+	 * 
+	 * @param listener The listener that will handle comet messages.
+	 */
 	public void setListener(CometMessageListener listener);
 }

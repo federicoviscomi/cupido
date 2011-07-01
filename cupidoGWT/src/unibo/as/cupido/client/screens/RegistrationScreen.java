@@ -39,23 +39,67 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * This class handles the registration screen.
+ */
 public class RegistrationScreen extends VerticalPanel implements Screen {
 
+	/**
+	 * The button used to abort the registration and go back to
+	 * the login screen.
+	 */
 	private PushButton abortButton;
+	
+	/**
+	 * The button used to check that the specified username is available.
+	 */
 	private PushButton checkUsernameAvailability;
 
+	/**
+	 * The label that displays the result of the availability check.
+	 */
 	private HTML checkUsernameAvailabilityLabel;
+
+	/**
+	 * This is used to communicate with the servlet using RPC.
+	 */
 	private CupidoInterfaceAsync cupidoService;
+
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
+	/**
+	 * The button used to confirm the data entered in the various fields.
+	 */
 	private PushButton okButton;
+	
+	/**
+	 * The field in which the user types the desired password.
+	 */
 	private PasswordTextBox passwordBox;
 
+	/**
+	 * The field in which the user has to type the desired password
+	 * again, to avoid typing errors.
+	 */
 	private PasswordTextBox passwordConfirmBox;
+	
+	/**
+	 * The global screen manager.
+	 */
 	private ScreenManager screenManager;
 
+	/**
+	 * The field in which the user types the desired username.
+	 */
 	private TextBox usernameBox;
 
+	/**
+	 * @param screenManager The global screen manager.
+	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 */
 	public RegistrationScreen(final ScreenManager screenManager,
 			final CupidoInterfaceAsync cupidoService) {
 		setHeight((Cupido.height - 280) + "px");
@@ -171,6 +215,9 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		bottomPanel.add(okButton);
 	}
 
+	/**
+	 * Checks whether or not the entered username is still available.
+	 */
 	private void checkUsername() {
 
 		usernameBox.setEnabled(false);
@@ -236,6 +283,10 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 	public void prepareRemoval() {
 	}
 
+	/**
+	 * Attempts to register a new user with the data contained
+	 * in the various fields.
+	 */
 	private void tryRegistering() {
 		if (usernameBox.getText().isEmpty()) {
 			// Remove the focus, so if the user dismisses the alert with Enter,

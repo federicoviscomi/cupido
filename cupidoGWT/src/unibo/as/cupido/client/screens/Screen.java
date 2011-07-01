@@ -17,7 +17,14 @@
 
 package unibo.as.cupido.client.screens;
 
+/**
+ * The interface implemented by all the application's screens.
+ */
 public interface Screen {
+	/**
+	 * When this is called, the screen stops responding to events
+	 * and disables all user controls.
+	 */
 	public void freeze();
 
 	/**

@@ -40,6 +40,13 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ViewerStateManagerImpl implements ViewerStateManager {
 
+	/**
+	 * Decides whether a candidate card takes the previous one in Hearts.
+	 * 
+	 * @param candidate The candidate card.
+	 * @param previous The previous card.
+	 * @return true if candidate takes previous, false otherwise.
+	 */
 	private static boolean cardTakes(Card candidate, Card previous) {
 		if (candidate.suit != previous.suit)
 			return false;
@@ -57,6 +64,7 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 * 
 	 * @param cards
 	 *            An ordered list containing the cards in the current trick.
+	 * @return The index of the winning card.
 	 */
 	private static int winnerCard(List<Card> cards) {
 		assert cards.size() == 4;
@@ -75,6 +83,9 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	private int firstPlayerInTrick = -1;
 
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
 	private List<Serializable> pendingNotifications = new ArrayList<Serializable>();

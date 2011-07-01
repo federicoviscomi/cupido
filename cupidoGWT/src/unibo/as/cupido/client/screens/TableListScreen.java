@@ -19,6 +19,7 @@ package unibo.as.cupido.client.screens;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import unibo.as.cupido.client.CometMessageListener;
 import unibo.as.cupido.client.Cupido;
@@ -48,8 +49,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 
+/**
+ * This class manages the table list screen, displaying a list of tables
+ * that the user can join or view.
+ */
 public class TableListScreen extends VerticalPanel implements Screen {
 
+	/**
+	 * This class is used for rendering a single row in the list.
+	 */
 	private class TableCell extends AbstractCell<TableInfoForClient> {
 		@Override
 		public void render(com.google.gwt.cell.client.Cell.Context context,
@@ -64,16 +72,43 @@ public class TableListScreen extends VerticalPanel implements Screen {
 			}
 		}
 	}
-
+	
+	/**
+	 * The widget that displays the list of available tables.
+	 */
 	private CellList<TableInfoForClient> cellList;
+	
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
+	/**
+	 * The button that allows the user to join the selected table.
+	 */
 	private PushButton joinButton;
-	private PushButton menuButton;
-	private ArrayList<TableInfoForClient> tableList;
 
+	/**
+	 * The button that allows the user to go back to the main menu.
+	 */
+	private PushButton menuButton;
+	
+	/**
+	 * A list containing data about the available tables.
+	 */
+	private List<TableInfoForClient> tableList;
+
+	/**
+	 * The button that allows the user to view the selected table.
+	 */
 	private PushButton viewButton;
 
+	/**
+	 * @param screenManager The global screen manager.
+	 * @param username The username of the current user.
+	 * @param tableCollection The list of tables available for joining and/or viewing.
+	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 */
 	public TableListScreen(final ScreenManager screenManager,
 			final String username,
 			Collection<TableInfoForClient> tableCollection,

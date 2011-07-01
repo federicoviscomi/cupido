@@ -33,18 +33,50 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * This class handles the state of the game in which the current
+ * user is waiting that the other players choose the cards to be passed.
+ */
 public class CardPassingWaitingState implements PlayerState {
 
+	/**
+	 * The widget that displays the game.
+	 */
 	private CardsGameWidget cardsGameWidget;
+	
+	/**
+	 * This specifies whether or not the PassedCards event has already been
+	 * received.
+	 */
 	private boolean eventReceived = false;
 
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
+	
+	/**
+	 * The list of the cards that the current user has in his hand.
+	 */
 	private List<Card> hand;
 
+	/**
+	 * The widget that displays the current message in the top-right corner
+	 * of the table.
+	 */
 	private HTML message;
 
+	/**
+	 * The manager of game states.
+	 */
 	private PlayerStateManager stateManager;
 
+	/**
+	 * @param cardsGameWidget The widget that displays the game.
+	 * @param stateManager The manager of game states.
+	 * @param hand The list of the cards that the current user has in his hand.
+	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 */
 	public CardPassingWaitingState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
 			final CupidoInterfaceAsync cupidoService) {
