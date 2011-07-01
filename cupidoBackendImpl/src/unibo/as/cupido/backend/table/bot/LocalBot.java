@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 import unibo.as.cupido.backend.table.Action;
 import unibo.as.cupido.backend.table.ActionQueue;
@@ -287,9 +288,25 @@ public class LocalBot implements LocalBotInterface {
 		actionQueue.killConsumer();
 	}
 
+	/**
+	 * <tt>Arrays.sort(cards, higherFirstCardsComparator)</tt> sorts cards
+	 * higher first
+	 */
+	private static final Comparator<Card> higherFirstCardsComparator = new Comparator<Card>() {
+		@Override
+		public int compare(Card o1, Card o2) {
+			// return (o1.suit.ordinal() * 13 + (o1.value == 1 ? 14 :
+			// o1.value))- (o2.suit.ordinal() * 13 + (o2.value == 1 ? 14 :
+			// o2.value));
+			return (o2.suit.ordinal() + (o2.value == 1 ? 14 : o2.value) * 4)
+					- (o1.suit.ordinal() + (o1.value == 1 ? 14 : o1.value) * 4);
+		}
+	};
+
 	private void onGameStarted(Card[] cards) {
 		System.out.println("\n" + botName + ": notifyGameStarted("
 				+ Arrays.toString(cards) + ")");
+		Arrays.sort(cards, higherFirstCardsComparator);
 		this.cards = new ArrayList<Card>(13);
 		for (int i = 0; i < cards.length; i++)
 			this.cards.add(cards[i]);

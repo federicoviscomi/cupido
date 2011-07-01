@@ -377,7 +377,7 @@ public class SingleTableManager implements TableInterface {
 
 	@Override
 	public synchronized void sendMessage(final ChatMessage message)
-			throws GameInterruptedException{
+			throws GameInterruptedException {
 		if (gameStatus == GameStatus.INTERRUPTED)
 			throw new GameInterruptedException();
 		if (message == null || message.message == null

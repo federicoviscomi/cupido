@@ -150,7 +150,7 @@ public class PlayerConsoleUI {
 
 		try {
 			gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
-					.lookup(GlobalTableManagerInterface.globalTableManagerName);
+					.lookup(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
 		} catch (AccessException e) {
 			out.println("cannot connect to gtm");
 		} catch (RemoteException e) {
@@ -363,7 +363,7 @@ public class PlayerConsoleUI {
 				try {
 					gtm = (GlobalTableManagerInterface) LocateRegistry
 							.getRegistry()
-							.lookup(GlobalTableManagerInterface.globalTableManagerName);
+							.lookup(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
 				} catch (AccessException e) {
 					out.println("cannot connect to gtm");
 				} catch (RemoteException e) {
@@ -581,8 +581,7 @@ public class PlayerConsoleUI {
 				remoteBot.singleTableManager.sendMessage(message);
 			} else if (viewingATable) {
 				out.println("sent message " + message);
-				remoteViewer.singleTableManager
-						.sendMessage(message);
+				remoteViewer.singleTableManager.sendMessage(message);
 			} else {
 				out.println("cannot send a chat message rigth now");
 			}

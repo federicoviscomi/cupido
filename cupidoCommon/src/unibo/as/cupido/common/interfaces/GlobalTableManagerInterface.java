@@ -41,7 +41,7 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 public interface GlobalTableManagerInterface extends Remote {
 
 	/** GTM name in the RMI registry */
-	public static final String globalTableManagerName = "globaltableserver";
+	public static final String DEFAULT_GTM_NAME = "globaltableserver";
 
 	/** delay of milliseconds that takes between each polling */
 	public static final long POLLING_DELAY = (long) 1e5;

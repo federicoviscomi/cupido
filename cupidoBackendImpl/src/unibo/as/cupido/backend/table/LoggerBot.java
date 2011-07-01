@@ -92,7 +92,7 @@ public class LoggerBot implements LocalBotInterface {
 	}
 
 	@Override
-	public void playCard(Card card)  {
+	public void playCard(Card card) {
 		System.out.println("" + botName + " playCard(" + card + ")");
 	}
 }

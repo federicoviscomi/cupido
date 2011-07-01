@@ -23,10 +23,17 @@ import java.util.concurrent.ArrayBlockingQueue;
 import unibo.as.cupido.common.interfaces.GlobalChatInterface;
 import unibo.as.cupido.common.structures.ChatMessage;
 
+/**
+ * Implements a chat shared between all users.
+ */
 public class GlobalChatImpl implements GlobalChatInterface {
 
+	/** stores MESSAGE_NUMBER chat message */
 	private ArrayBlockingQueue<ChatMessage> messages;
 
+	/**
+	 * Creates a <tt>GlobalChatImpl</tt> with MESSAGE_NUMBER capacity
+	 */
 	public GlobalChatImpl() {
 		messages = new ArrayBlockingQueue<ChatMessage>(MESSAGE_NUMBER);
 	}

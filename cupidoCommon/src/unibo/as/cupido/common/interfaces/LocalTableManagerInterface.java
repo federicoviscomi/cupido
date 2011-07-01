@@ -31,6 +31,9 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
  */
 public interface LocalTableManagerInterface extends Remote {
 
+	public static final int DEFAULT_MAX_TABLE = 100;
+	public static final String DEFAULT_GTM_ADDRESS = "localhost";
+
 	/**
 	 * 
 	 * This method is used by global table manager component to create a new
@@ -83,8 +86,9 @@ public interface LocalTableManagerInterface extends Remote {
 	 * 
 	 * @param tableId
 	 * @throws RemoteException
+	 * @throws NoSuchTableException
 	 */
-	public void notifyTableDestruction(int tableId) throws RemoteException;
+	public void notifyTableDestruction(int tableId) throws RemoteException,
+			NoSuchTableException;
 
-	
 }

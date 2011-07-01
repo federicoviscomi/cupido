@@ -29,21 +29,43 @@ import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.structures.TableDescriptor;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
+/**
+ * Manages table information for a GTM.
+ */
 public class AllTables {
 
+	/** stores association between table descriptors and table infos */
 	Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
+	/** stores association between ltm names and ltm interfaces */
 	Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
 
-	public AllTables() {
-		//
-	}
-
+	/**
+	 * Adds a table.
+	 * 
+	 * @param table
+	 *            the table to add.
+	 * @param chosenLTM
+	 *            the ltm who handles <tt>table</tt>
+	 */
 	public void addTable(TableInfoForClient table,
 			LocalTableManagerInterface chosenLTM) {
 		tifc.put(table.tableDescriptor, table);
 		ltmMap.put(table.tableDescriptor.ltmId, chosenLTM);
 	}
 
+	/**
+	 * Decrease the free position count of table identified by
+	 * <tt>tableDescriptor</tt>. Decreasing free position count is done when a
+	 * player or a bot joins the table before the game starts.
+	 * 
+	 * @param tableDescriptor
+	 *            the identifier of the table.
+	 * @throws FullTableException
+	 *             if the table is full, i.e. there are four players.
+	 * @throws NoSuchTableException
+	 *             if there is no such table identified by
+	 *             <tt>tableDescriptor</tt>
+	 */
 	public void decreaseFreePosition(TableDescriptor tableDescriptor)
 			throws FullTableException, NoSuchTableException {
 		TableInfoForClient tableInfoForClient = tifc.get(tableDescriptor);
@@ -56,17 +78,39 @@ public class AllTables {
 		}
 	}
 
+	/**
+	 * Returns all table infos.
+	 * 
+	 * @return all table infos.
+	 */
 	public Collection<TableInfoForClient> getAllTables() {
-		ArrayList<TableInfoForClient> values = new ArrayList<TableInfoForClient>();
-		values.addAll(tifc.values());
-		return values;
-		// return tifc.values();
+		return tifc.values();
 	}
 
+	/**
+	 * Gets the ltm interface identified by <tt>ltmId</tt>
+	 * 
+	 * @param ltmId
+	 *            identifier of the ltm inferface to get
+	 * @return the ltm interface identified by <tt>ltmId</tt>
+	 */
 	public LocalTableManagerInterface getLTMInterface(String ltmId) {
 		return ltmMap.get(ltmId);
 	}
 
+	/**
+	 * Increase the free position count of table identified by
+	 * <tt>tableDescriptor</tt>. Increasing free position count is done when a
+	 * player or a bot leaves the table before the game starts.
+	 * 
+	 * @param tableDescriptor
+	 *            the identifier of the table
+	 * @throws EmptyTableException
+	 *             if the table is empty
+	 * @throws NoSuchTableException
+	 *             if there is no such table identified by
+	 *             <tt>tableDescriptor</tt>
+	 */
 	public void increaseFreePosition(TableDescriptor tableDescriptor)
 			throws EmptyTableException, NoSuchTableException {
 		TableInfoForClient tableInfoForClient = tifc.get(tableDescriptor);
@@ -79,6 +123,15 @@ public class AllTables {
 		}
 	}
 
+	/**
+	 * Removes table identified by <tt>tableDescriptor</tt>.
+	 * 
+	 * @param tableDescriptor
+	 *            identifier of the table to be removed
+	 * @throws NoSuchTableException
+	 *             if there is no such table identified by
+	 *             <tt>tableDescriptor</tt>
+	 */
 	public void removeTable(TableDescriptor tableDescriptor)
 			throws NoSuchTableException {
 		if (tifc.remove(tableDescriptor) == null)

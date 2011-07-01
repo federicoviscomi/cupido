@@ -17,5 +17,5 @@ public interface LocalBotInterface {
 	void passCards(Card[] cards) throws RemoteException;
 
 	// not really throws RemoteException
-	void playCard(Card card) ;
+	void playCard(Card card);
 }
