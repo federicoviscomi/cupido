@@ -59,7 +59,7 @@ public class SingleTableManager implements TableInterface {
 	private final GlobalTableManagerInterface gtm;
 	private final String owner;
 	private final ActionQueue actionQueue;
-	
+
 	private GameStatus gameStatus;
 
 	public static final String[] botNames = { "", "cupido", "venere", "marte" };
@@ -103,7 +103,7 @@ public class SingleTableManager implements TableInterface {
 
 		notifyPlayerJoined(botName, true, 0, position);
 
-		if (playersManager.olayersCount() == 4) {
+		if (playersManager.getPlayersCount() == 4) {
 			notifyGameStarted();
 			gameStatus = GameStatus.PASSING_CARDS;
 			// controller.produceStartGame();
@@ -135,7 +135,7 @@ public class SingleTableManager implements TableInterface {
 
 		notifyPlayerJoined(userName, false, score, position);
 
-		if (playersManager.olayersCount() == 4) {
+		if (playersManager.getPlayersCount() == 4) {
 			notifyGameStarted();
 			gameStatus = GameStatus.PASSING_CARDS;
 			// controller.produceStartGame();
@@ -275,9 +275,6 @@ public class SingleTableManager implements TableInterface {
 		try {
 			playersManager.notifyPlayerReplaced(playerName, position);
 			viewers.notifyPlayerReplaced(playerName, position);
-		} catch (FullPositionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (EmptyPositionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
