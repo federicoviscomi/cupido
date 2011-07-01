@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import unibo.as.cupido.client.CupidoInterfaceAsync;
+import unibo.as.cupido.client.playerstates.PlayerStateManagerImpl;
 import unibo.as.cupido.client.screens.ScreenManager;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
@@ -38,6 +39,14 @@ import unibo.as.cupido.shared.cometNotification.GameEnded;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * The manager of the game states used when the current user is a viewer.
+ * 
+ * It handles the transition of state, keeps relevant information across states
+ * and forwards comet notifications to the current state.
+ * 
+ * @see PlayerStateManagerImpl
+ */
 public class ViewerStateManagerImpl implements ViewerStateManager {
 
 	/**
@@ -77,10 +86,25 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		return winner;
 	}
 
+	/**
+	 * The widget that displays the game, and is managed by this class.
+	 */
 	private CardsGameWidget cardsGameWidget;
+	
+	/**
+	 * This is used to communicate with the servlet using RPC.
+	 */
 	private CupidoInterfaceAsync cupidoService;
+	
+	/**
+	 * The current state.
+	 */
 	private ViewerState currentState = null;
 
+	/**
+	 * The position of the first player in the next trick, or -1 if
+	 * this information is unknown or if the game hasn't started yet.
+	 */
 	private int firstPlayerInTrick = -1;
 
 	/**
@@ -88,6 +112,11 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 */
 	private boolean frozen = false;
 
+	/**
+	 * The (ordered) list of notifications that have not been processed yet.
+	 * They will be notified at the new state, at every transition, until they
+	 * are handled.
+	 */
 	private List<Serializable> pendingNotifications = new ArrayList<Serializable>();
 
 	/**
@@ -100,14 +129,31 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 	 * bottom player, and the other players follow in clockwise order.
 	 */
 	private List<PlayerInfo> players;
+	
+	/**
+	 * The number of remaining tricks (including the current one, if any)
+	 * before the end of the game.
+	 */
 	private int remainingTricks;
 
+	/**
+	 * The global screen manager.
+	 */
 	private ScreenManager screenManager;
 
+	/**
+	 * The username of the current user.
+	 */
 	private String username;
 
 	/**
 	 * Initialize the state manager. The current user is a viewer.
+	 * 
+	 * @param tableSize The size of the table widget (width and height), in pixels.
+	 * @param screenManager The global screen manager.
+	 * @param observedGameStatus Contains information about the current state of the game.
+	 * @param username The username of the current user.
+	 * @param cupidoService This is used to communicate with the servlet using RPC.
 	 */
 	public ViewerStateManagerImpl(int tableSize, ScreenManager screenManager,
 			ObservedGameStatus observedGameStatus, String username,
@@ -338,6 +384,9 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		screenManager.displayGeneralErrorScreen(e);
 	}
 
+	/**
+	 * Sends all pending notifications to the current state.
+	 */
 	private void sendPendingNotifications() {
 		List<Serializable> list = pendingNotifications;
 		// Note that this may be modified in the calls to handle*() methods
@@ -359,6 +408,11 @@ public class ViewerStateManagerImpl implements ViewerStateManager {
 		}
 	}
 
+	/**
+	 * A helper method that transitions to the specified state.
+	 * 
+	 * @param newState The desired state.
+	 */
 	private void transitionTo(ViewerState newState) {
 		currentState = newState;
 		currentState.activate();

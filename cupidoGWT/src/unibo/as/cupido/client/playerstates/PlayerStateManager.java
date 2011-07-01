@@ -22,6 +22,11 @@ import java.util.List;
 import unibo.as.cupido.client.viewerstates.ViewerStateManager;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.shared.cometNotification.CardPassed;
+import unibo.as.cupido.shared.cometNotification.CardPlayed;
+import unibo.as.cupido.shared.cometNotification.GameEnded;
+import unibo.as.cupido.shared.cometNotification.GameStarted;
+import unibo.as.cupido.shared.cometNotification.PlayerReplaced;
 
 /**
  * The interface implemented by the manager of the game states used
@@ -31,16 +36,33 @@ import unibo.as.cupido.common.structures.Card;
  */
 public interface PlayerStateManager {
 
+	/**
+	 * This class stores the information that the state manager needs about each player.
+	 */
 	public class PlayerInfo {
+		/**
+		 * Specifies whether this player is a bot or a human player.
+		 */
 		public boolean isBot;
+		
 		/**
 		 * This is relevant only when `isBot' is false.
 		 */
 		public String name;
 	}
 
+	/**
+	 * Lets the state manager know that the player in the specified position
+	 * played the specified card.
+	 * 
+	 * @param player The position of the player that played the card.
+	 * @param card The card that has been played.
+	 */
 	public void addPlayedCard(int player, Card card);
 
+	/**
+	 * @return true if the hearts have already been broken, false otherwise.
+	 */
 	public boolean areHeartsBroken();
 
 	/**
@@ -55,12 +77,11 @@ public interface PlayerStateManager {
 	public void freeze();
 
 	/**
-	 * Returns the leading player for the current trick. A return value of 0
-	 * means the bottom player, and other players' indexes follow in clockwise
-	 * order.
-	 * 
-	 * This returns -1 in the initial card-passing states and at the beginning
-	 * of the first trick.
+	 * @return Returns the leading player for the current trick. A return value of 0
+	 *         means the bottom player, and other players' indexes follow in clockwise
+	 *         order.
+	 *         Returns -1 in the initial card-passing states and at the beginning
+	 *         of the first trick.
 	 */
 	public int getFirstPlayerInTrick();
 
@@ -70,20 +91,75 @@ public interface PlayerStateManager {
 	 */
 	public List<Card> getPlayedCards();
 
+	/**
+	 * @return A list in which each element contains information about a specific player
+	 *         in the game.
+	 */
 	public List<PlayerInfo> getPlayerInfo();
 
+	/**
+	 * @return The CardsGameWidget that is managed by this class.
+	 */
 	public CardsGameWidget getWidget();
 
+	/**
+	 * Notifies the state manager that the current trick is completed,
+	 * and starts a new trick.
+	 */
 	public void goToNextTrick();
 
+	/**
+	 * This is called when a PassedCards notification is received
+	 * from the servlet.
+	 * 
+	 * @param cards The cards that were passed to the user.
+	 * 
+	 * @see CardPassed
+	 */
 	public void handleCardPassed(Card[] cards);
 
+	/**
+	 * This is called when a CardPlayed notification is received
+	 * from the servlet.
+	 * 
+	 * @param card The card that has been played.
+	 * @param playerPosition The position of the player that played this card.
+	 * 
+	 * @see CardPlayed
+	 */
 	public void handleCardPlayed(Card card, int playerPosition);
 
+	/**
+	 * This is called when a GameEnded notification is received
+	 * from the servlet.
+	 * 
+	 * @param matchPoints The points scored by the players during the current game.
+	 * @param playersTotalPoints The total points of the players, already updated
+	 *                           with the results of the current game.
+	 * 
+	 * @see GameEnded
+	 */
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
 
+	/**
+	 * This is called when a GameStarted notification is received
+	 * from the servlet.
+	 * 
+	 * @param myCards The cards that the player received from the dealer.
+	 * 
+	 * @see GameStarted
+	 */
 	public void handleGameStarted(Card[] myCards);
 
+	/**
+	 * This is called when a PlayerReplaced notification is received
+	 * from the servlet.
+	 * 
+	 * @param name The name of the bot that replaced the player.
+	 * @param position The position in the table where the player resided.
+	 * 
+	 * @see PlayerReplaced
+	 */
 	public void handlePlayerReplaced(String name, int position);
 
 	/**

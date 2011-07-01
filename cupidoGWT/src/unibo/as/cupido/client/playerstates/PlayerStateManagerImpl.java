@@ -23,6 +23,7 @@ import java.util.List;
 
 import unibo.as.cupido.client.CupidoInterfaceAsync;
 import unibo.as.cupido.client.screens.ScreenManager;
+import unibo.as.cupido.client.viewerstates.ViewerStateManagerImpl;
 import unibo.as.cupido.client.widgets.CardsGameWidget;
 import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.client.widgets.cardsgame.GameEventListener;
@@ -41,8 +42,23 @@ import unibo.as.cupido.shared.cometNotification.GameStarted;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * The manager of the game states used when the current user is a player.
+ * 
+ * It handles the transition of state, keeps relevant information across states
+ * and forwards comet notifications to the current state.
+ * 
+ * @see ViewerStateManagerImpl
+ */
 public class PlayerStateManagerImpl implements PlayerStateManager {
 
+	/**
+	 * Decides whether a candidate card takes the previous one in Hearts.
+	 * 
+	 * @param candidate The candidate card.
+	 * @param previous The previous card.
+	 * @return true if candidate takes previous, false otherwise.
+	 */
 	private static boolean cardTakes(Card candidate, Card previous) {
 		if (candidate.suit != previous.suit)
 			return false;
@@ -60,6 +76,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 * 
 	 * @param cards
 	 *            An ordered list containing the cards in the current trick.
+	 * @return The index of the winning card.
 	 */
 	private static int winnerCard(List<Card> cards) {
 		assert cards.size() == 4;
@@ -72,11 +89,25 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		return winner;
 	}
 
+	/**
+	 * The widget that displays the game, and is managed by this class.
+	 */
 	private CardsGameWidget cardsGameWidget;
+	
+	/**
+	 * This is used to communicate with the servlet using RPC.
+	 */
 	private CupidoInterfaceAsync cupidoService;
 
+	/**
+	 * The current state.
+	 */
 	private PlayerState currentState = null;
 
+	/**
+	 * The position of the first player in the next trick, or -1 if
+	 * this information is unknown or if the game hasn't started yet.
+	 */
 	private int firstPlayerInTrick = -1;
 
 	/**
@@ -84,8 +115,16 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 */
 	private boolean frozen = false;
 
+	/**
+	 * This is true if hearts have already been broken, false otherwise.
+	 */
 	private boolean heartsBroken = false;
 
+	/**
+	 * The (ordered) list of notifications that have not been processed yet.
+	 * They will be notified at the new state, at every transition, until they
+	 * are handled.
+	 */
 	private List<Serializable> pendingNotifications = new ArrayList<Serializable>();
 
 	/**
@@ -98,17 +137,29 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 */
 	private List<PlayerInfo> players;
 
+	/**
+	 * The global screen manager.
+	 */
 	private ScreenManager screenManager;
 
+	/**
+	 * The username of the current user.
+	 */
 	private String username;
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
 	 * cards are `cards'.
 	 * 
+	 * @param tableSize The size of the table widget (width and height), in pixels.
+	 * @param screenManager The global screen manager.
+	 * @param initialTableStatus Contains information about the current state of the table.
 	 * @param scores
 	 *            The four users' scores, starting from the bottom player and in
 	 *            clockwise order. The scores in initialTableStatus are ignored.
+	 * @param cards The card in the user's hand.
+	 * @param username The username of the current user.
+	 * @param cupidoService This is used to communicate with the servlet using RPC.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
 			InitialTableStatus initialTableStatus, int[] scores, Card[] cards,
@@ -391,6 +442,9 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		screenManager.displayGeneralErrorScreen(e);
 	}
 
+	/**
+	 * Sends all pending notifications to the current state.
+	 */
 	private void sendPendingNotifications() {
 		List<Serializable> list = pendingNotifications;
 		// Note that this may be modified in the calls to handle*() methods
@@ -420,6 +474,11 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		}
 	}
 
+	/**
+	 * A helper method that transitions to the specified state.
+	 * 
+	 * @param newState The desired state.
+	 */
 	private void transitionTo(PlayerState newState) {
 		currentState = newState;
 		currentState.activate();
