@@ -420,13 +420,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	/**
 	 * Send Message in Local chat. TODO: IllegalArgumentExceptions never thrown.
 	 * TODO: choose legal messages
-	 * @throws GameEndedException 
 	 * @throws GameInterruptedException 
 	 */
 	@Override
 	public void sendLocalChatMessage(String message)
 			throws IllegalArgumentException, UserNotAuthenticatedException,
-			FatalException, NoSuchTableException, GameInterruptedException, GameEndedException {
+			FatalException, NoSuchTableException, GameInterruptedException {
 
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
 		if (httpSession == null) {

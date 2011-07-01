@@ -18,50 +18,132 @@
 package unibo.as.cupido.client;
 
 import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.shared.cometNotification.CardPassed;
+import unibo.as.cupido.shared.cometNotification.CardPlayed;
+import unibo.as.cupido.shared.cometNotification.GameEnded;
+import unibo.as.cupido.shared.cometNotification.GameStarted;
+import unibo.as.cupido.shared.cometNotification.NewLocalChatMessage;
+import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
+import unibo.as.cupido.shared.cometNotification.PlayerLeft;
+import unibo.as.cupido.shared.cometNotification.PlayerReplaced;
 
 /**
  * This is meant as a base class for classes that handle messages received
- * through comet. Derived classes must override the relevant methods, without
- * calling the base class methods. This is needed because the base class methods
- * assume the message can't be handled.
+ * through comet.
+ * 
+ * Derived classes must override the relevant methods, without
+ * calling the base class' methods. This is needed because the
+ * base class methods assume that the notification can't be handled.
  */
 public class CometMessageListener {
+	/**
+	 * This is called when a PassedCards notification is received
+	 * from the servlet.
+	 * 
+	 * @param cards The cards that were passed to the user.
+	 * 
+	 * @see CardPassed
+	 */
 	public void onCardPassed(Card[] cards) {
 		System.out
 				.println("Client: the CardPassed comet message can't be handled in the current state, ignoring it.");
 	}
 
+	/**
+	 * This is called when a CardPlayed notification is received
+	 * from the servlet.
+	 * 
+	 * @param card The card that has been played.
+	 * @param playerPosition The position of the player that played this card.
+	 * 
+	 * @see CardPlayed
+	 */
 	public void onCardPlayed(Card card, int playerPosition) {
 		System.out
 				.println("Client: the CardPlayed comet message can't be handled in the current state, ignoring it.");
 	}
 
+	/**
+	 * This is called when a GameEnded notification is received
+	 * from the servlet.
+	 * 
+	 * @param matchPoints The points scored by the players during the current game.
+	 * @param playersTotalPoints The total points of the players, already updated
+	 *                           with the results of the current game.
+	 * 
+	 * @see GameEnded
+	 */
 	public void onGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		System.out
 				.println("Client: the GameEnded comet message can't be handled in the current state, ignoring it.");
 	}
 
+	/**
+	 * This is called when a GameStarted notification is received
+	 * from the servlet.
+	 * 
+	 * @param myCards The cards that the player received from the dealer.
+	 * 
+	 * @see GameStarted
+	 */
 	public void onGameStarted(Card[] myCards) {
 		System.out
 				.println("Client: the GameStarted comet message can't be handled in the current state, ignoring it.");
 	}
 
+	/**
+	 * This is called when a NewLocalChatMessage notification is received
+	 * from the servlet.
+	 * 
+	 * @param user The user that sent the specified message.
+	 * @param message The actual message.
+	 * 
+	 * @see NewLocalChatMessage
+	 */
 	public void onNewLocalChatMessage(String user, String message) {
 		System.out
 				.println("Client: the NewLocalChatMessage comet message can't be handled in the current state, ignoring it.");
 	}
 
+	/**
+	 * This is called when a NewPlayerJoined notification is received
+	 * from the servlet.
+	 * 
+	 * @param name The name of the player who joined the game.
+	 * @param isBot Specifies whether the player is a user or a bot.
+	 * @param points The (global) points of the player.
+	 * @param position The position of the player in the table.
+	 * 
+	 * @see NewPlayerJoined
+	 */
 	public void onNewPlayerJoined(String name, boolean isBot, int points,
 			int position) {
 		System.out
 				.println("Client: the NewPlayerJoined comet message can't be handled in the current state, ignoring it.");
 	}
 
+	/**
+	 * This is called when a Playerleft notification is received
+	 * from the servlet.
+	 * 
+	 * @param player The player that left the game.
+	 * 
+	 * @see PlayerLeft
+	 */
 	public void onPlayerLeft(String player) {
 		System.out
 				.println("Client: the PlayerLeft comet message can't be handled in the current state, ignoring it.");
 	}
 
+	/**
+	 * This is called when a PlayerReplaced notification is received
+	 * from the servlet.
+	 * 
+	 * @param name The name of the bot that replaced the player.
+	 * @param position The position in the table where the player resided.
+	 * 
+	 * @see PlayerReplaced
+	 */
 	public void onPlayerReplaced(String name, int position) {
 		System.out
 				.println("Client: the PlayerReplaced comet message can't be handled in the current state, ignoring it.");

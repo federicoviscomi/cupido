@@ -33,10 +33,13 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * The entry point class for clients.
  */
 public class Cupido implements EntryPoint {
 
+	/**
+	 * A serializer for the classes used through comet.
+	 */
 	@SerialTypes({ CardPassed.class, CardPlayed.class, GameEnded.class,
 			GameStarted.class, NewLocalChatMessage.class,
 			NewPlayerJoined.class, PlayerLeft.class, PlayerReplaced.class })
@@ -54,7 +57,7 @@ public class Cupido implements EntryPoint {
 	public static final int width = 900;
 
 	/**
-	 * This is the entry point method.
+	 * The entry point method for clients.
 	 */
 	@Override
 	public void onModuleLoad() {
