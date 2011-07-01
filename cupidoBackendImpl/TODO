@@ -1,0 +1,22 @@
+[7:37:59 PM CEST] Lorenzo Belli: * master
+* SRS
+* istruzzioni di deployment
+* javadoc
+* architettura scelta
+* design di massima
+[7:38:03 PM CEST] Lorenzo Belli: allora
+[7:39:39 PM CEST] Lorenzo Belli: -SRS: fatto, da modificare con le modifiche di oggi, tra poco lo faccio
+- istr di delpoy: bisogna riuscire a fare il delpoy vero con apache/tomcat, e scrivere le istr
+- arch scelta: fatto oggi
+-design di massima: fatto oggi
+sui doc che ho scritto oggi gradirei anche un vostro parere,
+[7:39:41 PM CEST] Lorenzo Belli: poi
+[7:41:20 PM CEST] Lorenzo Belli: master: a sua volta comprende:
+- desc del processo scelto e perchè (fatto oggi, gradirei una vosta review)
+- architetture scartate( non l'ho fatto ancora, perchè nn abbiam scartato nulla in effetti)
+- parlare del testing(da fare)
+- log del processo di sviluppo (ognuno di noi 3 ha il suo, io ho creato una pagina sulla servlet)
+[7:41:22 PM CEST] Lorenzo Belli: poi
+[7:41:33 PM CEST] Lorenzo Belli: -javadoc: da fare,  comprende anche commentare tutti  i file
+[7:41:40 PM CEST] Lorenzo Belli: sorry vado a cena scrivi pure che poi leggo
+

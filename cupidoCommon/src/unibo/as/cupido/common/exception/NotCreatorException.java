@@ -23,8 +23,6 @@ import java.io.Serializable;
  * Thrown by the TableManager when a user attemps to add a bot in a table he is
  * not the creator of.
  * 
- * @author cane
- * 
  */
 public class NotCreatorException extends Exception implements Serializable {
 	private static final long serialVersionUID = 1L;

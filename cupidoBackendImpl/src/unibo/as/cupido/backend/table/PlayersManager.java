@@ -41,6 +41,9 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 import unibo.as.cupido.common.structures.PlayerStatus;
 
+/**
+ *
+ */
 public class PlayersManager {
 
 	/** store information for inactiveReplacementBot or human players */
@@ -57,7 +60,7 @@ public class PlayersManager {
 
 		/**
 		 * the notification interface for this player. This field is always
-		 * meaningfull.
+		 * meaningful.
 		 * <ul>
 		 * <li>If <code>isBot==false</code> then this field is the notification
 		 * interface of a client servlet.</li>
@@ -188,8 +191,7 @@ public class PlayersManager {
 
 		InitialTableStatus initialTableStatus = this
 				.getInitialTableStatus(position);
-		LocalBot bot = new LocalBot(botName, initialTableStatus,
-				tableInterface, position);
+		LocalBot bot = new LocalBot(botName, initialTableStatus, tableInterface);
 		players[position] = new PlayerInfo(botName,
 				bot.getServletNotificationsInterface());
 		playersCount++;
@@ -218,7 +220,7 @@ public class PlayersManager {
 		}
 
 		LocalBot replacementBot = new LocalBot(playerName,
-				this.getInitialTableStatus(position), position);
+				this.getInitialTableStatus(position));
 
 		players[position] = new PlayerInfo(playerName, score, sni,
 				replacementBot);

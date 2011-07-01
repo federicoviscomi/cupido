@@ -47,8 +47,6 @@ import unibo.as.cupido.common.exception.WrongGameStateException;
  * 
  * Ther is no polling on the local table chat.
  * 
- * @author cane
- * 
  */
 public interface TableInterface extends Remote {
 	/**
