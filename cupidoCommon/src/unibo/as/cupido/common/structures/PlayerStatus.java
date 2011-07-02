@@ -24,28 +24,41 @@ public class PlayerStatus implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public String name;
-
-	/*
-	 * total player points
-	 */
+	/** total player score */
 	public int score;
-
-	/*
-	 * Card == null means player has not played a card
+	/**
+	 * last card played by this player or <tt>null</tt> if this has not played a
+	 * card yet
 	 */
 	public Card playedCard;
-
+	/** number of cards that this player owns */
 	public int numOfCardsInHand;
-
+	/** <tt>true</tt> if this player is a bot; <tt>false</tt> otherwise */
 	public boolean isBot;
 
 	public PlayerStatus() {
+		//
 	}
 
-	public PlayerStatus(String name, int point, Card playedCard,
+	/**
+	 * Create a new player status with specified arguments.
+	 * 
+	 * @param name
+	 *            name of player
+	 * @param score
+	 *            score of player
+	 * @param playedCard
+	 *            last card played by player
+	 * @param numOfCardsInHand
+	 *            number of cards that this player owns
+	 * @param isBot
+	 *            <tt>true</tt> if this player is a bot; <tt>false</tt>
+	 *            otherwise
+	 */
+	public PlayerStatus(String name, int score, Card playedCard,
 			int numOfCardsInHand, boolean isBot) {
 		this.name = name;
-		this.score = point;
+		this.score = score;
 		this.playedCard = playedCard;
 		this.numOfCardsInHand = numOfCardsInHand;
 		this.isBot = isBot;

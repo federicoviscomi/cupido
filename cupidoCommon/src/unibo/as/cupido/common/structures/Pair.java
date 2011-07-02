@@ -19,17 +19,39 @@ package unibo.as.cupido.common.structures;
 
 import java.io.Serializable;
 
+/**
+ * Used to store generic pair of value
+ * 
+ * @param <T1>
+ *            type of first component of this pair
+ * @param <T2>
+ *            type of second component of this pair
+ */
 public class Pair<T1, T2> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public T1 first;
+	/** first component of this pair */
+	public final T1 first;
+	/** second component of this pair */
+	public final T2 second;
 
-	public T2 second;
-
+	/**
+	 * Create a new pair with null components
+	 */
 	public Pair() {
+		this.first = null;
+		this.second = null;
 	}
 
+	/**
+	 * Create a new pair with specified components
+	 * 
+	 * @param first
+	 *            first component of this pair
+	 * @param second
+	 *            second component of this pair
+	 */
 	public Pair(T1 first, T2 second) {
 		this.first = first;
 		this.second = second;

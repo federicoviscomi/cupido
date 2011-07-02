@@ -27,6 +27,7 @@ import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
+import unibo.as.cupido.common.exception.GameEndedException;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;

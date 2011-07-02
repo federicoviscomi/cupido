@@ -29,30 +29,30 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
  */
 public interface LocalTableManagerInterface extends Remote {
 
+	/** default maximum number of table that this LTM can handle */
 	public static final int DEFAULT_MAX_TABLE = 100;
-	public static final String DEFAULT_GTM_ADDRESS = "localhost";
+	/** default address of rmi registry */
+	public static final String DEFAULT_RMI_REGISTRY_ADDRESS = "localhost";
 
 	/**
 	 * 
-	 * This method is used by global table manager component to create a new
-	 * table.
+	 * This method is used by GTM to create a new table.
 	 * 
 	 * @param creator
-	 *            the creator of the table to be created
+	 *            the player who is wants to create a table
 	 * @param snf
 	 *            the notification interface associated with the player who
 	 *            wants to create a table
-	 * @return a remote interface to the table manager
+	 * @return a remote interface to the table manager who handles newly created
+	 *         table
 	 * @throws RemoteException
 	 */
 	public Pair<TableInterface, TableInfoForClient> createTable(String owner,
 			ServletNotificationsInterface snf) throws RemoteException;
 
 	/***
-	 * 
 	 * The Servlet uses this method to get the remote reference to the component
 	 * who manages the table <code>tableId</code>
-	 * 
 	 * 
 	 * @return a remote reference to the component who manages the table
 	 *         <code>tableId</code>
@@ -65,7 +65,7 @@ public interface LocalTableManagerInterface extends Remote {
 			NoSuchTableException;
 
 	/**
-	 * Called by the GTM to notify his shutdown
+	 * Called by the GTM to notify it is shutting down
 	 * 
 	 * @throws RemoteException
 	 */
@@ -80,11 +80,13 @@ public interface LocalTableManagerInterface extends Remote {
 	public void isAlive() throws RemoteException;
 
 	/**
-	 * Called by an STM when a play terminates
+	 * Called by an STM when a game terminates.
 	 * 
 	 * @param tableId
+	 *            identifier of table to be destroyed
 	 * @throws RemoteException
 	 * @throws NoSuchTableException
+	 *             if this cannot find specified table
 	 */
 	public void notifyTableDestruction(int tableId) throws RemoteException,
 			NoSuchTableException;

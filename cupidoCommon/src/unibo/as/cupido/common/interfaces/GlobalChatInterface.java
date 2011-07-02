@@ -31,16 +31,18 @@ import unibo.as.cupido.common.structures.ChatMessage;
  * same remote registry of the GTM and is bounded to name
  * <code>DEFAULT_GLOBAL_CHAT_NAME</code>
  * 
- * @author
- * 
  */
 public interface GlobalChatInterface extends Remote {
 
+	/** number of messages stored */
 	public static int MESSAGE_NUMBER = 10;
 
+	/** rmi name for global chat remote object */
 	public static final String DEFAULT_GLOBAL_CHAT_NAME = "globalChat";
 
 	/**
+	 * Return the last MESSAGE_NUMBER messages
+	 * 
 	 * @return the last MESSAGE_NUMBER messages
 	 */
 	public ChatMessage[] getLastMessages() throws RemoteException;

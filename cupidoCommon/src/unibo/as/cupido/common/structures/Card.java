@@ -22,10 +22,6 @@ package unibo.as.cupido.common.structures;
 
 import java.io.Serializable;
 
-/**
- * @author Lorenzo Belli
- * 
- */
 public class Card implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -54,7 +50,7 @@ public class Card implements Serializable {
 	public String toString() {
 		return "[" + suit + " " + value + "]";
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if (other == null)
@@ -64,7 +60,8 @@ public class Card implements Serializable {
 		Card otherCard = (Card) other;
 		return this.value == otherCard.value && this.suit == otherCard.suit;
 	}
-	
+
+	@Override
 	public Card clone() {
 		return new Card(value, suit);
 	}

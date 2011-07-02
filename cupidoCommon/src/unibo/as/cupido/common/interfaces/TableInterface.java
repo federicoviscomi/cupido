@@ -19,8 +19,6 @@ package unibo.as.cupido.common.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
-
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
@@ -31,22 +29,14 @@ import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.GameEndedException;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
-import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchPlayerException;
-import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.WrongGameStateException;
 
 /**
- * 
- * Used by the Servlet
- * 
- * implemented by the Table
- * 
- * Ther is no polling on the local table chat.
- * 
+ * Implemented by STM
  */
 public interface TableInterface extends Remote {
 	/**
@@ -138,19 +128,20 @@ public interface TableInterface extends Remote {
 
 	/**
 	 * Called by a player to leave a table. If a player leaves a table when game
-	 * status is PASSING_CARDS or STARTED then a bot takes its place. TODO ? If
-	 * the creator leaves the table when game status is INIT then the table is
-	 * destoyed.? If the creator leaves the table when game status is not INIT
-	 * what happens? Can a bot leave the game?
+	 * status is PASSING_CARDS or STARTED then a bot takes its place.If the
+	 * creator leaves the table when game status is not INIT what happens? Can a
+	 * bot leave the game?
 	 * 
 	 * 
 	 * @param userName
+	 *            name of player who wants to leave
 	 * @throws NoSuchPlayerException
 	 *             if player <code>userName</code> is not in the table
 	 * @throws GameInterruptedException
 	 *             if the game status is INTERRUPTED
 	 * @throws GameEndedException
 	 * @throws IllegalArgumentException
+	 *             if argument is <tt>null</tt.
 	 */
 	void leaveTable(String userName) throws RemoteException,
 			NoSuchPlayerException, GameInterruptedException,
@@ -163,6 +154,7 @@ public interface TableInterface extends Remote {
 	 * PasscardsPolicy.getNext(position)}?
 	 * 
 	 * @param userName
+	 *            name of player
 	 * @param cards
 	 *            the cards passed
 	 * @throws IllegalArgumentException
@@ -177,6 +169,7 @@ public interface TableInterface extends Remote {
 	 *             if the card must not be passed in this state of the game
 	 * @throws RemoteException
 	 * @throws NoSuchPlayerException
+	 *             if this cannot find specified player
 	 * @throws GameInterruptedException
 	 *             if the game status is INTERRUPTED
 	 */
@@ -191,6 +184,7 @@ public interface TableInterface extends Remote {
 	 * @throws IllegalArgumentException
 	 *             if player does not own the card or card is null
 	 * @param userName
+	 *            name of player who plays
 	 * @param card
 	 *            the card played
 	 * @throws IllegalMoveException
@@ -220,9 +214,11 @@ public interface TableInterface extends Remote {
 	 *             <li>if this player does not own the card</li>
 	 *             </ul>
 	 * @throws NoSuchPlayerException
+	 *             if this cannot find specified player
 	 * @throws GameInterruptedException
 	 *             if the game status is INTERRUPTED
 	 * @throws WrongGameStateException
+	 *             if game status is no {@link GameStatus#STARTED}
 	 */
 	void playCard(String userName, Card card) throws IllegalMoveException,
 			RemoteException, IllegalArgumentException, NoSuchPlayerException,
@@ -234,7 +230,7 @@ public interface TableInterface extends Remote {
 	 * @param message
 	 *            holds name of user and message sent by user
 	 * @throws GameInterruptedException
-	 *             if the game status is INTERRUPTED. TODO: Remove this in 2.0.
+	 *             if game is interrupted
 	 */
 	void sendMessage(ChatMessage message) throws RemoteException,
 			GameInterruptedException;

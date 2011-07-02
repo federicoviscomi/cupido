@@ -47,20 +47,23 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * This method is used by the Servlet to create a new Table
 	 * 
 	 * @param creator
+	 *            name of player who creates a table
 	 * @param snf
-	 * @return
+	 *            notification interface of player who creates a table
+	 * @return a remote reference to the STM who handles the newly created table
 	 * @throws RemoteException
 	 * @throws AllLTMBusyException
+	 *             if there is no LTM that can handle more tables or there are
+	 *             no LTM at all.
 	 */
 	public TableInterface createTable(String creator,
 			ServletNotificationsInterface snf) throws RemoteException,
 			AllLTMBusyException;
 
 	/**
-	 * This method is used by the Servlet to get a list of all the tables
-	 * managed by the GTM
+	 * Return a list of all tables managed by this GTM.
 	 * 
-	 * @return
+	 * @return a list of all tables managed by this GTM.
 	 * @throws RemoteException
 	 */
 	public Collection<TableInfoForClient> getTableList() throws RemoteException;
@@ -71,6 +74,7 @@ public interface GlobalTableManagerInterface extends Remote {
 	 * LTMs every POLLING_DELAY milliseconds.
 	 * 
 	 * @param ltm
+	 *            the LTM who has shut down
 	 * @throws RemoteException
 	 */
 	public void notifyLocalTableManagerShutdown(LocalTableManagerInterface ltm)
@@ -78,10 +82,12 @@ public interface GlobalTableManagerInterface extends Remote {
 
 	/**
 	 * The GTM component keeps a set of LTM. When a new LTM wants to join this
-	 * set, it sends a notification to the GTM
+	 * set, it calls this on the GTM.
 	 * 
 	 * @param localTableManagerInterface
+	 *            the LTM who starts
 	 * @param maxTable
+	 *            maximum number of table that specified LTM can handle
 	 * @throws RemoteException
 	 */
 	public void notifyLocalTableManagerStartup(
@@ -89,55 +95,66 @@ public interface GlobalTableManagerInterface extends Remote {
 			throws RemoteException;
 
 	/**
-	 * The components STM uses this method to notify the component GTM when the
-	 * game on table <code>tableDescriptor</code> ends.
+	 * STM uses this method to notify GTM when the game on table
+	 * <tt>tableDescriptor</tt> ends.
 	 * 
 	 * @param tableDescriptor
+	 *            identifier of table to be destroyed
 	 * @param ltm
+	 *            identifier of LTM who managed the table to be destroyed
 	 * @throws RemoteException
 	 * @throws NoSuchLTMException
+	 *             if this cannot find specified LTM
 	 * @throws NoSuchTableException
+	 *             if this cannot find specified table
 	 */
 	public void notifyTableDestruction(TableDescriptor tableDescriptor,
 			LocalTableManagerInterface ltm) throws RemoteException,
 			NoSuchLTMException, NoSuchTableException;
 
 	/**
-	 * The components STM uses this method to notify the component GTM when a
-	 * player joins table <code>tableDescriptor</code>.
+	 * STM uses this method to notify GTM when a player joins table identified
+	 * by <tt>tableDescriptor</tt>.
 	 * 
 	 * @param tableDescriptor
+	 *            identifier of table where a player joined
 	 * @throws RemoteException
 	 * @throws NoSuchTableException
+	 *             if this cannot find specified table
 	 * @throws FullTableException
+	 *             if the table already contains four players
 	 */
 	public void notifyTableJoin(TableDescriptor tableDescriptor)
 			throws RemoteException, NoSuchTableException, FullTableException;
 
 	/**
-	 * Called by the STM on the GTM if a player leaves table
-	 * <code>tableDescriptor</code> before the game start. This method is not
-	 * called after the game starts because in that case a bot automatically
-	 * replaces the leaving player. The player who leaves is not table creator
-	 * because in that case the table is to be destroyed.
+	 * STM calls this if a player leaves table identified by
+	 * <tt>tableDescriptor</tt> before the game start. This method is not called
+	 * after the game starts because in that case a bot automatically replaces
+	 * the leaving player. The player who leaves is not table creator because in
+	 * that case the table is to be destroyed.
 	 * 
 	 * @param tableDescriptor
+	 *            identifier of table from which a player left
 	 * @throws RemoteException
 	 * @throws NoSuchTableException
+	 *             if this cannot find specified table
 	 * @throws EmptyTableException
-	 * @throws unibo.as.cupido.common.exception.EmptyTableException
+	 *             if specified table is empty
+	 * 
 	 */
 	public void notifyTableLeft(TableDescriptor tableDescriptor)
 			throws RemoteException, NoSuchTableException, EmptyTableException;
 
 	/**
-	 * Get the LTM remote object identified by <code>ltmId</code>
+	 * Get the LTM remote object identified by <tt>ltmId</tt>
 	 * 
 	 * @param ltmId
-	 * @return
+	 *            identifier of an LTM
+	 * @return the LTM remote object identified by <tt>ltmId</tt>
 	 * @throws RemoteException
 	 * @throws NoSuchLTMException
-	 *             if <code>ltmId</code> is not found.
+	 *             if this cannot find <tt>ltmId</tt>
 	 */
 	public LocalTableManagerInterface getLTMInterface(String ltmId)
 			throws RemoteException, NoSuchLTMException;

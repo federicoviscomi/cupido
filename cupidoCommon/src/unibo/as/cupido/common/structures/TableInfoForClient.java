@@ -19,27 +19,40 @@ package unibo.as.cupido.common.structures;
 
 import java.io.Serializable;
 
+import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
+
+/**
+ * Contains informations about a table. This is used by
+ * {@link GlobalTableManagerInterface#getTableList()}
+ */
 public class TableInfoForClient implements Serializable {
 	private static final long serialVersionUID = -3002842357423083821L;
-	public String creator;
+	/** name of table creator */
+	public final String creator;
+	/** number of free position in this table */
 	public int freePosition;
-	public TableDescriptor tableDescriptor;
+	/** identifier of the table */
+	public final TableDescriptor tableDescriptor;
 
 	public TableInfoForClient() {
-		//
+		creator = null;
+		tableDescriptor = null;
 	}
 
 	public TableInfoForClient(String owner, int freePosition,
 			TableDescriptor tableDescriptor) {
+		if (owner == null || tableDescriptor == null || freePosition < 0
+				|| freePosition > 4)
+			throw new IllegalArgumentException();
 		this.creator = owner;
 		this.freePosition = freePosition;
 		this.tableDescriptor = tableDescriptor;
 	}
 
 	/**
-	 * A Table is uniquely identified by two things: the server it's managed by,
-	 * the unique id the Table has within that server. This method is used by an
-	 * hash map in the TableManager
+	 * A Table is uniquely identified by two things: the LTM it's managed by,
+	 * the unique id the Table has within that LTM. This method is used by an
+	 * hash map in LTM
 	 */
 	@Override
 	public int hashCode() {

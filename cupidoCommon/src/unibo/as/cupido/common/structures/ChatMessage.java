@@ -19,28 +19,46 @@ package unibo.as.cupido.common.structures;
 
 import java.io.Serializable;
 
+/**
+ * A chat message.
+ */
 public class ChatMessage implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public String userName;
+	/** name of user who creates this chat message */
+	public final String userName;
+	/** actual content of chat message */
+	public final String message;
 
-	public String message;
-
+	/**
+	 * Create a chat message with specified user name and message
+	 * 
+	 * @param userName
+	 * @param message
+	 */
 	public ChatMessage(String userName, String message) {
+		if (userName == null || message == null) {
+			throw new IllegalArgumentException();
+		}
 		this.userName = userName;
 		this.message = message;
 	}
 
+	/**
+	 * Create a chat message with <tt>null</tt> values
+	 */
 	public ChatMessage() {
-		//
+		this.userName = null;
+		this.message = null;
 	}
 
 	@Override
 	public String toString() {
 		return userName + ": " + message;
 	}
-	
+
+	@Override
 	public ChatMessage clone() {
 		return new ChatMessage(userName, message);
 	}

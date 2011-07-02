@@ -49,6 +49,7 @@ public class InitialTableStatus implements Serializable {
 	public boolean[] whoIsBot;
 
 	public InitialTableStatus() {
+		//
 	}
 
 	public InitialTableStatus(String[] opponents, int[] playerScores,

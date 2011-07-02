@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 /**
  * Used to signal that an operation cannot be executed normally if specified
- * position in a table is already used.
+ * position in a table cannot be used.
  */
 public class FullPositionException extends Exception implements Serializable {
 
