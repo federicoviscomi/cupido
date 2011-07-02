@@ -111,7 +111,7 @@ public class CometMessageListener {
 	 * 
 	 * @param name The name of the player who joined the game.
 	 * @param isBot Specifies whether the player is a user or a bot.
-	 * @param score The (global) score of the player.
+	 * @param points The (global) score of the player.
 	 * @param position The position of the player in the table.
 	 * 
 	 * @see NewPlayerJoined

@@ -71,15 +71,44 @@ public class ChatWidget extends AbsolutePanel {
 		return x.toSafeHtml().asString();
 	}
 
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
+
+	/**
+	 * This listener is used to notify the client code
+	 * when the user sends a new message.
+	 */
 	private ChatListener listener;
+	
+	/**
+	 * The widget that allows the user to enter a new message.
+	 */
 	private TextBox messageField;
+	
+	/**
+	 * The list of displayed messages.
+	 */
 	private HTML messageList;
 
+	/**
+	 * A panel that contains the messageList and displays
+	 * horizontal and/or vertical scrollbars if needed.
+	 */
 	private ScrollPanel scrollPanel;
 
+	/**
+	 * The button that allows the user to send a new message.
+	 */
 	private PushButton sendButton;
 
+	/**
+	 * @param width The width of the widget, in pixels.
+	 * @param height The height of the widget, in pixels.
+	 * @param listener This listener is used to notify the client
+	 *                 code when the user sends a new message.
+	 */
 	public ChatWidget(int width, int height, ChatListener listener) {
 
 		this.listener = listener;
@@ -135,6 +164,12 @@ public class ChatWidget extends AbsolutePanel {
 		add(bottomRow, 0, (height - bottomRowHeight - 10));
 	}
 
+	/**
+	 * Adds the specified message to the list of the displayed messages.
+	 * 
+	 * @param username The user who sent the message.
+	 * @param message The actual message.
+	 */
 	public void displayMessage(String username, String message) {
 		if (frozen) {
 			System.out
@@ -160,6 +195,9 @@ public class ChatWidget extends AbsolutePanel {
 		frozen = true;
 	}
 
+	/**
+	 * This is called when the user confirms the entered message.
+	 */
 	private void sendMessage() {
 		if (messageField.getText().equals(""))
 			return;
@@ -170,6 +208,11 @@ public class ChatWidget extends AbsolutePanel {
 		messageField.setFocus(true);
 	}
 
+	/**
+	 * Replaces the displayed messages with those in the provided list.
+	 * 
+	 * @param list The list containing the messages to be displayed.
+	 */
 	public void setLastMessages(ChatMessage[] list) {
 		if (frozen) {
 			System.out

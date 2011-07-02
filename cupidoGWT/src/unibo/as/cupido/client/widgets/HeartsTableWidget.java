@@ -26,14 +26,40 @@ import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.InitialTableStatus;
+import unibo.as.cupido.shared.cometNotification.CardPassed;
+import unibo.as.cupido.shared.cometNotification.CardPlayed;
+import unibo.as.cupido.shared.cometNotification.GameEnded;
+import unibo.as.cupido.shared.cometNotification.GameStarted;
+import unibo.as.cupido.shared.cometNotification.NewPlayerJoined;
+import unibo.as.cupido.shared.cometNotification.PlayerLeft;
+import unibo.as.cupido.shared.cometNotification.PlayerReplaced;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
+/**
+ * This class displays the table for a Hearts game, for
+ * users that are viewing a game. The game may or may not
+ * be started.
+ * 
+ * If the current user is a player, HeartsTableWidget
+ * is used instead.
+ * 
+ * @see HeartsObservedTableWidget
+ */
 public class HeartsTableWidget extends AbsolutePanel {
 
+	/**
+	 * The widget used to display the table before the game start.
+	 * If the game is already started, this is null.
+	 */
 	private BeforeGameWidget beforeGameWidget;
+
+	/**
+	 * The widget used to display the table after the game start.
+	 * If the game isn't started yet, this is null.
+	 */
 	private CardsGameWidget cardsGameWidget = null;
 
 	/**
@@ -41,22 +67,53 @@ public class HeartsTableWidget extends AbsolutePanel {
 	 */
 	private CupidoInterfaceAsync cupidoService;
 
+	/**
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 */
 	private boolean frozen = false;
 
+	/**
+	 * An array containing the players' global scores.
+	 * 
+	 * The first element refers to the current user, and other positions
+	 * follow in clockwise order. If there is no player at some position
+	 * (or if there is a bot), the associated value is unspecified.
+	 */
 	private int[] scores;
+	
+	/**
+	 * The global screen manager.
+	 */
 	private ScreenManager screenManager;
+
+	/**
+	 * The manager of the game states.
+	 * 
+	 * @see PlayerStateManager
+	 * @see PlayerStateManagerImpl
+	 */
 	private PlayerStateManager stateManager = null;
+
+	/**
+	 * The size of the table (both width and height), in pixels.
+	 */
 	private int tableSize;
+	
+	/**
+	 * The username of the current user.
+	 */
 	private String username;
 
 	/**
 	 * 
 	 * @param tableSize
 	 *            The size of the table (width and height) in pixels.
-	 * @param username
-	 * @param initialTableStatus
-	 * @param isOwner
-	 * @param userScore
+	 * @param username The username of the current user.
+	 * @param initialTableStatus The current table status.
+	 * @param isOwner Specifies whether the current user is the table owner or not.
+	 * @param userScore The global score of the current user.
+	 * @param screenManager The global screen manager.
+	 * @param cupidoService This is used to communicate with the servlet using RPC.
 	 */
 	public HeartsTableWidget(int tableSize, final String username,
 			InitialTableStatus initialTableStatus, final boolean isOwner,
@@ -158,6 +215,14 @@ public class HeartsTableWidget extends AbsolutePanel {
 		frozen = true;
 	}
 
+	/**
+	 * This is called when a PassedCards notification is received
+	 * from the servlet.
+	 * 
+	 * @param cards The cards that were passed to the user.
+	 * 
+	 * @see CardPassed
+	 */
 	public void handleCardPassed(Card[] cards) {
 		if (frozen) {
 			System.out
@@ -173,6 +238,15 @@ public class HeartsTableWidget extends AbsolutePanel {
 		}
 	}
 
+	/**
+	 * This is called when a CardPlayed notification is received
+	 * from the servlet.
+	 * 
+	 * @param card The card that has been played.
+	 * @param playerPosition The position of the player that played this card.
+	 * 
+	 * @see CardPlayed
+	 */
 	public void handleCardPlayed(Card card, int playerPosition) {
 		if (frozen) {
 			System.out
@@ -188,6 +262,16 @@ public class HeartsTableWidget extends AbsolutePanel {
 		}
 	}
 
+	/**
+	 * This is called when a GameEnded notification is received
+	 * from the servlet.
+	 * 
+	 * @param matchPoints The score scored by the players during the current game.
+	 * @param playersTotalPoints The total score of the players, already updated
+	 *                           with the results of the current game.
+	 * 
+	 * @see GameEnded
+	 */
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		if (frozen) {
 			System.out
@@ -201,6 +285,14 @@ public class HeartsTableWidget extends AbsolutePanel {
 		}
 	}
 
+	/**
+	 * This is called when a GameStarted notification is received
+	 * from the servlet.
+	 * 
+	 * @param myCards The cards that the player received from the dealer.
+	 * 
+	 * @see GameStarted
+	 */
 	public void handleGameStarted(Card[] myCards) {
 		if (frozen) {
 			System.out
@@ -221,6 +313,17 @@ public class HeartsTableWidget extends AbsolutePanel {
 		add(cardsGameWidget, 0, 0);
 	}
 
+	/**
+	 * This is called when a NewPlayerJoined notification is received
+	 * from the servlet.
+	 * 
+	 * @param name The name of the player who joined the game.
+	 * @param isBot Specifies whether the player is a user or a bot.
+	 * @param points The (global) score of the player.
+	 * @param position The position of the player in the table.
+	 * 
+	 * @see NewPlayerJoined
+	 */
 	public void handleNewPlayerJoined(String name, boolean isBot, int points,
 			int position) {
 		if (frozen) {
@@ -238,6 +341,14 @@ public class HeartsTableWidget extends AbsolutePanel {
 		}
 	}
 
+	/**
+	 * This is called when a Playerleft notification is received
+	 * from the servlet.
+	 * 
+	 * @param player The player that left the game.
+	 * 
+	 * @see PlayerLeft
+	 */
 	public void handlePlayerLeft(String player) {
 		if (frozen) {
 			System.out
@@ -254,6 +365,15 @@ public class HeartsTableWidget extends AbsolutePanel {
 		}
 	}
 
+	/**
+	 * This is called when a PlayerReplaced notification is received
+	 * from the servlet.
+	 * 
+	 * @param name The name of the bot that replaced the player.
+	 * @param position The position in the table where the player resided.
+	 * 
+	 * @see PlayerReplaced
+	 */
 	public void handlePlayerReplaced(String name, int position) {
 		if (frozen) {
 			System.out

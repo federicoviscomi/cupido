@@ -20,18 +20,32 @@ package unibo.as.cupido.shared.cometNotification;
 import java.io.Serializable;
 
 /**
- * This notification is sent when a player leaves and the game is not started,
- * so that position is now free.
+ * This class is used for comet notifications.
+ * 
+ * A PlayerLeft notification is sent when a player leaves and
+ * the game is not started yet, so that position becomes free.
  */
 public class PlayerLeft implements Serializable {
 
+	/***/
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The username of the player who has left the table.
+	 */
 	public String player;
 	
+	/**
+	 * The default constructor.
+	 */
 	public PlayerLeft(){
 	}
 	
+	/**
+	 * A constructor that initializes the field with the specified value.
+	 * 
+	 * @param player The username of the player who has left the table.
+	 */
 	public PlayerLeft(String player){
 		this.player=player;
 	}

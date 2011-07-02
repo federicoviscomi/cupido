@@ -21,21 +21,34 @@ import java.io.Serializable;
 
 import unibo.as.cupido.common.structures.Card;
 
-/*
- * Card passed to you from the player at your right
+/**
+ * This class is used for comet notifications.
+ * 
+ * A CardPassed notification is sent when the user
+ * is playing a game and receives some cards from another player.
  */
 public class CardPassed implements Serializable {
 
+	/***/
 	private static final long serialVersionUID = 1L;
 
-	/*
-	 * Card.lenght is always 3
+	/**
+	 * An array containing the three cards that have been passed
+	 * to the current user.
 	 */
 	public Card[] cards;
 	
+	/**
+	 * The default constructor.
+	 */
 	public CardPassed() {
 	}
 	
+	/**
+	 * A constructor that initializes the field with the dspecified value.
+	 * 
+	 * @param cards The desired value for the corresponding field.
+	 */
 	public CardPassed(Card[] cards) {
 		this.cards = cards;
 	}
