@@ -18,3 +18,4 @@ play -a
 play -a
 play -a
 sleep 1000
+exit
