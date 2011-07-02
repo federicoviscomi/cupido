@@ -154,7 +154,7 @@ public interface DatabaseInterface {
 			throws SQLException, IllegalArgumentException;
 
 	
-	public final int NUMLOCALRANKENTRIES = 7;
+	public final int LOCAL_RANK_ENTRIES_NUM = 7;
 
 	/**
 	 * Returns one chunk the global rank that contains from four position before
@@ -163,7 +163,7 @@ public interface DatabaseInterface {
 	 * 
 	 * @param userName
 	 *            the user who wants the rank
-	 * @return a list of size {@link NUMLOCALRANKENTRIES} with user
+	 * @return a list of size {@link LOCAL_RANK_ENTRIES_NUM} with user
 	 *         {@link userName} in the middle.
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
