@@ -48,6 +48,7 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
 	 * or not.
 	 */
+	@SuppressWarnings("unused")
 	private boolean frozen = false;
 
 	/**
