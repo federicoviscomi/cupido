@@ -21,25 +21,47 @@ import java.io.Serializable;
 
 import unibo.as.cupido.common.structures.Card;
 
+/**
+ * This class is used for comet notifications.
+ * 
+ * A <code>CardPlayed</code> notification is sent when another user (or a bot)
+ * that is at the same table as the current user plays a card.
+ */
 public class CardPlayed implements Serializable {
 
+	/***/
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The card that was played.
+	 */
 	public Card card;
 
 	/**
-	 * Position of the player who played the card. If you are a viewer then
-	 * <code>playerPosition</code> is the absolute position in the table of the
-	 * player who played a card and is in range 0-3. Otherwise if you are a
-	 * player then <code>playerPosition</code> is the position of the player who
-	 * played relative you and is in range 0-2.
+	 * The position of the player who played the card.
 	 * 
+	 * If the current user is a viewer then <code>playerPosition</code> is
+	 * the absolute position in the table of the player who played a card
+	 * and is in [0-3] range.
+	 * 
+	 * Otherwise (if the current user is a player), <code>playerPosition</code>
+	 * is the relative position of the player who played the card,
+	 * and is in the [0-2] range.
 	 */
 	public int playerPosition;
 
+	/**
+	 * The default constructor.
+	 */
 	public CardPlayed() {
 	}
 
+	/**
+	 * A constructor that initializes all fields with the provided values.
+	 * 
+	 * @param card The card that was played.
+	 * @param playerPosition The position of the player who played the card.
+	 */
 	public CardPlayed(Card card, int playerPosition) {
 		this.card = card;
 		this.playerPosition = playerPosition;

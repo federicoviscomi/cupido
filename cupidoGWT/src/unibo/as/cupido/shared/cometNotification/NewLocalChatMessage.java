@@ -19,16 +19,43 @@ package unibo.as.cupido.shared.cometNotification;
 
 import java.io.Serializable;
 
+/**
+ * This class is used for comet notifications.
+ * 
+ * A <code>NewLocalChatMessage</code> notification is sent when another user
+ * (either a player or a viewer) sends a message to a table's
+ * chat.
+ * 
+ * Then an user sends a message, other users at the same table receive
+ * this notification, but the sender does not receive this.
+ */
 public class NewLocalChatMessage implements Serializable {
 
+	/***/
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The name of the user who sent this message.
+	 */
 	public String user;
+	
+	/**
+	 * The actual message.
+	 */
 	public String message;
 	
+	/**
+	 * The default constructor.
+	 */
 	public NewLocalChatMessage() {
 	}
 
+	/**
+	 * A constructor that initializes all fields with the provided values.
+	 * 
+	 * @param user The name of the user who sent this message.
+	 * @param message The actual message.
+	 */
 	public NewLocalChatMessage(String user, String message) {
 		this.user = user;
 		this.message = message;

@@ -32,8 +32,8 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * This class handles the state of the game in which the
- * player is waiting the first lead of the game.
+ * This class handles the state of the game in which the player is waiting the
+ * first lead of the game.
  */
 public class WaitingFirstLeadState implements PlayerState {
 
@@ -43,13 +43,14 @@ public class WaitingFirstLeadState implements PlayerState {
 	private CardsGameWidget cardsGameWidget;
 
 	/**
-	 * This specifies whether or not the PlayedCard event has already been
-	 * received.
+	 * This specifies whether or not the <code>PlayedCard</code> event has
+	 * already been received.
 	 */
 	private boolean eventReceived = false;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -59,8 +60,8 @@ public class WaitingFirstLeadState implements PlayerState {
 	private List<Card> hand;
 
 	/**
-	 * The widget that displays the current message in the top-right corner
-	 * of the table.
+	 * The widget that displays the current message in the top-right corner of
+	 * the table.
 	 */
 	private HTML message;
 
@@ -70,10 +71,14 @@ public class WaitingFirstLeadState implements PlayerState {
 	private PlayerStateManager stateManager;
 
 	/**
-	 * @param cardsGameWidget The widget that displays the game.
-	 * @param stateManager The manager of game states.
-	 * @param hand The list of the cards that the current user has in his hand.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param cardsGameWidget
+	 *            The widget that displays the game.
+	 * @param stateManager
+	 *            The manager of game states.
+	 * @param hand
+	 *            The list of the cards that the current user has in his hand.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public WaitingFirstLeadState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,

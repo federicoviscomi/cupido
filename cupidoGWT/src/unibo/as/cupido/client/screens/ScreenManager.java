@@ -34,7 +34,8 @@ public interface ScreenManager {
 	/**
 	 * Shows the about screen instead of the current one.
 	 * 
-	 * @param username The username of the current user.
+	 * @param username
+	 *            The username of the current user.
 	 * 
 	 * @see AboutScreen
 	 */
@@ -45,7 +46,7 @@ public interface ScreenManager {
 	 * 
 	 * @param caught
 	 *            the exception that generated the error.
-	 *            
+	 * 
 	 * @see GeneralErrorScreen
 	 */
 	public void displayGeneralErrorScreen(Throwable caught);
@@ -67,7 +68,8 @@ public interface ScreenManager {
 	/**
 	 * Shows the main menu screen instead of the current one.
 	 * 
-	 * @param username The username of the current user.
+	 * @param username
+	 *            The username of the current user.
 	 * 
 	 * @see MainMenuScreen
 	 */
@@ -76,8 +78,10 @@ public interface ScreenManager {
 	/**
 	 * Shows the table screen (as a viewer) instead of the current one.
 	 * 
-	 * @param username The username of the current user.
-	 * @param observedGameStatus Contains information about the current state of the game.
+	 * @param username
+	 *            The username of the current user.
+	 * @param observedGameStatus
+	 *            Contains information about the current state of the game.
 	 * 
 	 * @see ObservedTableScreen
 	 */
@@ -92,10 +96,14 @@ public interface ScreenManager {
 	/**
 	 * Shows the scores' screen instead of the current one.
 	 * 
-	 * @param username The username of the current user.
-	 * @param topRanks The RankingEntry objects referring to the top 10 users.
-	 * @param localRanks The RankingEntry objects referring to the current user
-	 *             and to users with similar ranks.
+	 * @param username
+	 *            The username of the current user.
+	 * @param topRanks
+	 *            The <code>RankingEntry</code> objects referring to the top 10
+	 *            users.
+	 * @param localRanks
+	 *            The <code>RankingEntry</code> objects referring to the current
+	 *            user and to users with similar ranks.
 	 * 
 	 * @see ScoresScreen
 	 */
@@ -105,8 +113,10 @@ public interface ScreenManager {
 	/**
 	 * Shows the table list screen instead of the current one.
 	 * 
-	 * @param username The username of the current user.
-	 * @param tableCollection The list of tables available for joining and/or viewing.
+	 * @param username
+	 *            The username of the current user.
+	 * @param tableCollection
+	 *            The list of tables available for joining and/or viewing.
 	 * 
 	 * @see TableListScreen
 	 */
@@ -116,10 +126,15 @@ public interface ScreenManager {
 	/**
 	 * Shows the table screen (as a player) instead of the current one.
 	 * 
-	 * @param username The username of the current user.
-	 * @param isOwner Specifies whether or not the current user is the creator of this table.
-	 * @param initialTableStatus Contains information about the current state of the table.
-	 * @param userScore The global score of the current user.
+	 * @param username
+	 *            The username of the current user.
+	 * @param isOwner
+	 *            Specifies whether or not the current user is the creator of
+	 *            this table.
+	 * @param initialTableStatus
+	 *            Contains information about the current state of the table.
+	 * @param userScore
+	 *            The global score of the current user.
 	 * 
 	 * @see TableScreen
 	 */
@@ -127,10 +142,11 @@ public interface ScreenManager {
 			InitialTableStatus initialTableStatus, int userScore);
 
 	/**
-	 * Changes the listener used to handle comet messages received
-	 * from the servlet.
+	 * Changes the listener used to handle comet messages received from the
+	 * servlet.
 	 * 
-	 * @param listener The listener that will handle comet messages.
+	 * @param listener
+	 *            The listener that will handle comet messages.
 	 */
 	public void setListener(CometMessageListener listener);
 }

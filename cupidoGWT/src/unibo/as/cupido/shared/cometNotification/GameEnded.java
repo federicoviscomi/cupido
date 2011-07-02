@@ -20,31 +20,60 @@ package unibo.as.cupido.shared.cometNotification;
 import java.io.Serializable;
 
 /**
- * Every players and every viewers in the table get this notification when game
- * ends. The game could end normally or prematurely. The last happens when
- * player creator leaves the table before normal end of the game, in this case
- * and only in this case all fileds are <code>null</code>.
+ * This class is used for comet notifications.
  * 
+ * A <code>GameEnded</code> notification is sent when a game ends
+ * 
+ * The game can end either because all players have no more
+ * cards in their hands, or because the table creator has
+ * left the table, and so the game was interrupted.
+ * In the latter case, all fields are <code>null</code>.
  */
 public class GameEnded implements Serializable {
 
+	/***/
 	private static final long serialVersionUID = 1L;
 
-	/*
-	 * matchPoint[0] are your score, if you have played matchPoint[0] are the
-	 * creator's score if you were viewing the others are in clockwise order
+	/**
+	 * The points scored by all players in the current game.
+	 * 
+	 * The values are in clockwise order.
+	 * 
+	 * If the current user is a player, the first element refers to the
+	 * current user.
+	 * 
+	 * If the current user is a viewer, the first element refers to
+	 * the table creator.
 	 */
 	public int[] matchPoints;
 
-	/*
-	 * matchPoint[0] are your score, if you have played matchPoint[0] are the
-	 * creator's score if you were viewing the others are in clockwise order
+	/**
+	 * The global scores, after they have been updated for the just-ended
+	 * game.
+	 * 
+	 * The values are in clockwise order.
+	 * 
+	 * If the current user is a player, the first element refers to the
+	 * current user.
+	 * 
+	 * If the current user is a viewer, the first element refers to
+	 * the table creator.
 	 */
 	public int[] playersTotalPoints;
 
+	/**
+	 * The default constructor.
+	 */
 	public GameEnded() {
 	}
 
+	/**
+	 * A constructor that initializes all fields with the specified values.
+	 * 
+	 * @param matchPoints The points scored by all players in the current game.
+	 * @param playersTotalPoints The global scores, after they have been updated
+	 *                           for the just-ended game.
+	 */
 	public GameEnded(int[] matchPoints, int[] playersTotalPoints) {
 		this.matchPoints = matchPoints;
 		this.playersTotalPoints = playersTotalPoints;

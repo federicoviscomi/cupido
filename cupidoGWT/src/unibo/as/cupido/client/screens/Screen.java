@@ -22,14 +22,14 @@ package unibo.as.cupido.client.screens;
  */
 public interface Screen {
 	/**
-	 * When this is called, the screen stops responding to events
-	 * and disables all user controls.
+	 * When this is called, the screen stops responding to events and disables
+	 * all user controls.
 	 */
 	public void freeze();
 
 	/**
-	 * This is called by the ScreenSwitcher implementation just before switching
-	 * to another screen.
+	 * This is called by the <code>ScreenSwitcher</code> implementation just
+	 * before switching to another screen.
 	 */
 	public void prepareRemoval();
 }

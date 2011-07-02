@@ -38,8 +38,10 @@ public class AboutScreen extends VerticalPanel implements Screen {
 	private PushButton menuButton;
 
 	/**
-	 * @param screenManager The global screen manager.
-	 * @param username The username of the current user.
+	 * @param screenManager
+	 *            The global screen manager.
+	 * @param username
+	 *            The username of the current user.
 	 */
 	public AboutScreen(final ScreenManager screenManager, final String username) {
 

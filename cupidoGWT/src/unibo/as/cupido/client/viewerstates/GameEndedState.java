@@ -26,8 +26,8 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * This class handles the state of the game in which the 
- * game has completed (without being interrupted).
+ * This class handles the state of the game in which the game has completed
+ * (without being interrupted).
  */
 public class GameEndedState implements ViewerState {
 
@@ -37,13 +37,14 @@ public class GameEndedState implements ViewerState {
 	private CardsGameWidget cardsGameWidget;
 
 	/**
-	 * This specifies whether or not the GameEnded event has already been
-	 * received.
+	 * This specifies whether or not the <code>GameEnded</code> event has
+	 * already been received.
 	 */
 	private boolean eventReceived = false;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -53,8 +54,10 @@ public class GameEndedState implements ViewerState {
 	private ViewerStateManager stateManager;
 
 	/**
-	 * @param cardsGameWidget The widget that displays the game.
-	 * @param stateManager The manager of game states.
+	 * @param cardsGameWidget
+	 *            The widget that displays the game.
+	 * @param stateManager
+	 *            The manager of game states.
 	 */
 	public GameEndedState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {

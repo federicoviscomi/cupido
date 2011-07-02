@@ -29,7 +29,7 @@ public class CardRole {
 		 * The card is in a player's hand.
 		 */
 		HAND,
-		
+
 		/**
 		 * The card is on the table.
 		 */
@@ -37,8 +37,8 @@ public class CardRole {
 	}
 
 	/**
-	 * This is valid only when state==HAND. It specifies whether this card is
-	 * raised.
+	 * This is valid only when <code>state==HAND</code>. It specifies whether
+	 * this card is raised.
 	 */
 	public boolean isRaised;
 
@@ -61,9 +61,12 @@ public class CardRole {
 	/**
 	 * Initializes all fields with the specified values.
 	 * 
-	 * @param state The desired card state.
-	 * @param raised Specifies whether or not the card is raised.
-	 * @param player Specifies the player to whom the card belongs.
+	 * @param state
+	 *            The desired card state.
+	 * @param raised
+	 *            Specifies whether or not the card is raised.
+	 * @param player
+	 *            Specifies the player to whom the card belongs.
 	 */
 	public CardRole(CardRole.State state, boolean raised, int player) {
 		this.state = state;

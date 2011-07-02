@@ -21,18 +21,36 @@ import java.io.Serializable;
 
 import unibo.as.cupido.common.structures.Card;
 
-/*
- * this notification isn's sent to viewers
+/**
+ * This class is used for comet notifications.
+ * 
+ * A <code>GameStarted</code> notification is sent when all the
+ * four seats of the table are occupied, and the players
+ * receive their cards.
+ * 
+ * This notification isn't sent to viewers.
  */
 public class GameStarted implements Serializable {
 
+	/***/
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The 13 cards received from the dealer.
+	 */
 	public Card[] myCards;
 	
+	/**
+	 * The default constructor.
+	 */
 	public GameStarted() {
 	}
 
+	/**
+	 * A constructor that initializes the field with the specified value.
+	 * 
+	 * @param myCards The 13 cards received from the dealer.
+	 */
 	public GameStarted(Card[] myCards) {
 		this.myCards = myCards;
 	}

@@ -50,8 +50,8 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 /**
- * This class manages the table list screen, displaying a list of tables
- * that the user can join or view.
+ * This class manages the table list screen, displaying a list of tables that
+ * the user can join or view.
  */
 public class TableListScreen extends VerticalPanel implements Screen {
 
@@ -72,14 +72,15 @@ public class TableListScreen extends VerticalPanel implements Screen {
 			}
 		}
 	}
-	
+
 	/**
 	 * The widget that displays the list of available tables.
 	 */
 	private CellList<TableInfoForClient> cellList;
-	
+
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -92,7 +93,7 @@ public class TableListScreen extends VerticalPanel implements Screen {
 	 * The button that allows the user to go back to the main menu.
 	 */
 	private PushButton menuButton;
-	
+
 	/**
 	 * A list containing data about the available tables.
 	 */
@@ -104,10 +105,14 @@ public class TableListScreen extends VerticalPanel implements Screen {
 	private PushButton viewButton;
 
 	/**
-	 * @param screenManager The global screen manager.
-	 * @param username The username of the current user.
-	 * @param tableCollection The list of tables available for joining and/or viewing.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param screenManager
+	 *            The global screen manager.
+	 * @param username
+	 *            The username of the current user.
+	 * @param tableCollection
+	 *            The list of tables available for joining and/or viewing.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public TableListScreen(final ScreenManager screenManager,
 			final String username,

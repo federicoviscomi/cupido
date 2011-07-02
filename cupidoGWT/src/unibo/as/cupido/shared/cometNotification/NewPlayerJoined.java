@@ -20,39 +20,61 @@ package unibo.as.cupido.shared.cometNotification;
 import java.io.Serializable;
 
 /**
- * This notification in sent when a player or a bot joins the table
- * before the game start.
+ * This class is used for comet notifications.
  * 
- * If {@link isBot}==true, the variable {@link score} is meaningless.
+ * A <code>NewPlayerJoined</code> notification is sent when a player or
+ * a bot joins the table before the game start.
+ * 
+ * If <code>isBot==true</code>, the value of the score field is meaningless.
  */
 public class NewPlayerJoined implements Serializable {
 
+	/***/
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The username of the player who joined, or the name of the bot
+	 * who joined.
+	 */
 	public String name;
 
 	/**
-	 * isBot is true is the player is a bot; otherwise is false
+	 * This is true if the player is a bot; otherwise it is false.
 	 */
 	public boolean isBot;
 
-	/*
-	 * player total score
+	/**
+	 * The global score of the player.
+	 * 
+	 * If <code>isBot==true</code>, the value of this field is meaningless.
 	 */
 	public int points;
 
 	/**
-	 * For viewers, position=1 means the player at the creator's left, and so
+	 * The position in the table of the new player.
+	 * 
+	 * For viewers, <code>position==1</code> means the player at the creator's left, and so
 	 * the position range is [1-3].
 	 * 
-	 * For players, position=0 means the player at the user's left, and so
+	 * For players, <code>position==0</code> means the player at the user's left, and so
 	 * the position range is [0-2].
 	 */
 	public int position;
 	
+	/**
+	 * The default constructor.
+	 */
 	public NewPlayerJoined() {
 	}
 	
+	/**
+	 * A constructor that initializes all fields with the specified values.
+	 * 
+	 * @param name The username of the player who joined, or the name of the bot who joined.
+	 * @param isBot This is true if the player is a bot; otherwise it is false.
+	 * @param points The global score of the player.
+	 * @param position The position in the table of the new player.
+	 */
 	public NewPlayerJoined(String name, boolean isBot, int points, int position) {
 		this.name = name;
 		this.isBot = isBot;

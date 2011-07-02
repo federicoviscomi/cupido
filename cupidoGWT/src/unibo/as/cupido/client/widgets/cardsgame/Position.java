@@ -23,9 +23,10 @@ package unibo.as.cupido.client.widgets.cardsgame;
 public class Position {
 
 	/**
-	 * The rotation is measured in degrees. When this is 0, there is no
-	 * rotation. The rotation is clockwise, so a widget with rotation `90' will
-	 * have its top pointed towards the right edge of the table.
+	 * The rotation is measured in degrees. When this is <code>0</code>, there
+	 * is no rotation. The rotation is clockwise, so a widget with rotation
+	 * <code>90</code> will have its top pointed towards the right edge of the
+	 * table.
 	 */
 	public int rotation;
 
@@ -40,8 +41,10 @@ public class Position {
 	public int y;
 
 	/**
-	 * The height of the widget. Widgets with higher values of z are drawn above
-	 * those with lower values.
+	 * The height of the widget.
+	 * 
+	 * Widgets with higher values of <code>z</code> are drawn above those with
+	 * lower values.
 	 */
 	public int z;
 
@@ -54,11 +57,17 @@ public class Position {
 	/**
 	 * Initializes all the fields with the specified values.
 	 * 
-	 * @param x The desired distance between the left margin and the center of the widget.
-	 * @param y The desired distance between the top margin and the center of the widget.
-	 * @param z The desired height for the widget. Widgets with higher values of z are drawn
-	 *          above those with lower values.
-	 * @param rotation The desired rotation, measured in degrees.
+	 * @param x
+	 *            The desired distance between the left margin and the center of
+	 *            the widget.
+	 * @param y
+	 *            The desired distance between the top margin and the center of
+	 *            the widget.
+	 * @param z
+	 *            The desired height for the widget. Widgets with higher values
+	 *            of <code>z</code> are drawn above those with lower values.
+	 * @param rotation
+	 *            The desired rotation, measured in degrees.
 	 */
 	public Position(int x, int y, int z, int rotation) {
 		this.x = x;

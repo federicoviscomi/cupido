@@ -59,11 +59,11 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	/**
 	 * The listener that handles comet messages.
 	 * 
-	 * This can be modified with the setListener() method.
-	 * Each screen changes this when it's displayed.
+	 * This can be modified with the <code>setListener()</code> method. Each
+	 * screen changes this when it's displayed.
 	 */
 	private CometMessageListener cometMessageListener;
-	
+
 	/**
 	 * This is used to communicate with the servlet using RPC.
 	 */
@@ -89,8 +89,8 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	/**
 	 * The default constructor.
 	 * 
-	 * This displays the loading screen, opens a comet connection to
-	 * the servlet and then displays the login screen.
+	 * This displays the loading screen, opens a comet connection to the servlet
+	 * and then displays the login screen.
 	 */
 	public ScreenManagerImpl() {
 		setHeight(Cupido.height + "px");
@@ -339,6 +339,11 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 		switchingScreen = false;
 	}
 
+	@Override
+	public void setListener(CometMessageListener listener) {
+		cometMessageListener = listener;
+	}
+
 	/**
 	 * A helper method used to remove the current screen.
 	 */
@@ -347,10 +352,5 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 			return;
 		currentScreen.prepareRemoval();
 		remove(currentScreenWidget);
-	}
-
-	@Override
-	public void setListener(CometMessageListener listener) {
-		cometMessageListener = listener;
 	}
 }

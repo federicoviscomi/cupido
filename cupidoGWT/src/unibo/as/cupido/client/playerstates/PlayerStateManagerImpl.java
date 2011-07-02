@@ -53,47 +53,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	/**
-	 * Decides whether a candidate card takes the previous one in Hearts.
-	 * 
-	 * @param candidate The candidate card.
-	 * @param previous The previous card.
-	 * @return true if candidate takes previous, false otherwise.
-	 */
-	private static boolean cardTakes(Card candidate, Card previous) {
-		if (candidate.suit != previous.suit)
-			return false;
-		if (candidate.value == previous.value)
-			return false;
-		if (candidate.value == 1)
-			return true;
-		if (previous.value == 1)
-			return false;
-		return candidate.value > previous.value;
-	}
-
-	/**
-	 * Computes the index of the winning card in a trick.
-	 * 
-	 * @param cards
-	 *            An ordered list containing the cards in the current trick.
-	 * @return The index of the winning card.
-	 */
-	private static int winnerCard(List<Card> cards) {
-		assert cards.size() == 4;
-		for (Card card : cards)
-			assert card != null;
-		int winner = 0;
-		for (int candidate = 1; candidate < 4; candidate++)
-			if (cardTakes(cards.get(candidate), cards.get(winner)))
-				winner = candidate;
-		return winner;
-	}
-
-	/**
 	 * The widget that displays the game, and is managed by this class.
 	 */
 	private CardsGameWidget cardsGameWidget;
-	
+
 	/**
 	 * This is used to communicate with the servlet using RPC.
 	 */
@@ -105,13 +68,14 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	private PlayerState currentState = null;
 
 	/**
-	 * The position of the first player in the next trick, or -1 if
-	 * this information is unknown or if the game hasn't started yet.
+	 * The position of the first player in the next trick, or -1 if this
+	 * information is unknown or if the game hasn't started yet.
 	 */
 	private int firstPlayerInTrick = -1;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -131,6 +95,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 * The (ordered) list of cards played in the current trick.
 	 */
 	private List<Card> playedCards = new ArrayList<Card>();
+
 	/**
 	 * Some information about the players. The first element refers to the
 	 * bottom player, and the other players follow in clockwise order.
@@ -141,7 +106,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 * The global screen manager.
 	 */
 	private ScreenManager screenManager;
-
 	/**
 	 * The username of the current user.
 	 */
@@ -149,17 +113,23 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
-	 * cards are `cards'.
+	 * cards are <code>cards</code>.
 	 * 
-	 * @param tableSize The size of the table widget (width and height), in pixels.
-	 * @param screenManager The global screen manager.
-	 * @param initialTableStatus Contains information about the current state of the table.
+	 * @param tableSize
+	 *            The size of the table widget (width and height), in pixels.
+	 * @param screenManager
+	 *            The global screen manager.
+	 * @param initialTableStatus
+	 *            Contains information about the current state of the table.
 	 * @param scores
 	 *            The four users' scores, starting from the bottom player and in
 	 *            clockwise order. The scores in initialTableStatus are ignored.
-	 * @param cards The card in the user's hand.
-	 * @param username The username of the current user.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param cards
+	 *            The card in the user's hand.
+	 * @param username
+	 *            The username of the current user.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
 			InitialTableStatus initialTableStatus, int[] scores, Card[] cards,
@@ -442,49 +412,6 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 		screenManager.displayGeneralErrorScreen(e);
 	}
 
-	/**
-	 * Sends all pending notifications to the current state.
-	 */
-	private void sendPendingNotifications() {
-		List<Serializable> list = pendingNotifications;
-		// Note that this may be modified in the calls to handle*() methods
-		// below.
-		pendingNotifications = new ArrayList<Serializable>();
-
-		for (Serializable x : list) {
-			if (x instanceof CardPassed) {
-				CardPassed message = (CardPassed) x;
-				handleCardPassed(message.cards);
-
-			} else if (x instanceof CardPlayed) {
-				CardPlayed message = (CardPlayed) x;
-				handleCardPlayed(message.card, message.playerPosition);
-
-			} else if (x instanceof GameEnded) {
-				GameEnded message = (GameEnded) x;
-				handleGameEnded(message.matchPoints, message.playersTotalPoints);
-
-			} else if (x instanceof GameStarted) {
-				GameStarted message = (GameStarted) x;
-				handleGameStarted(message.myCards);
-
-			} else {
-				assert false;
-			}
-		}
-	}
-
-	/**
-	 * A helper method that transitions to the specified state.
-	 * 
-	 * @param newState The desired state.
-	 */
-	private void transitionTo(PlayerState newState) {
-		currentState = newState;
-		currentState.activate();
-		sendPendingNotifications();
-	}
-
 	@Override
 	public void transitionToCardPassing(List<Card> hand) {
 		if (frozen) {
@@ -578,5 +505,88 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 		transitionTo(new YourTurnState(cardsGameWidget, this, hand,
 				cupidoService));
+	}
+
+	/**
+	 * Sends all pending notifications to the current state.
+	 */
+	private void sendPendingNotifications() {
+		List<Serializable> list = pendingNotifications;
+		// Note that this may be modified in the calls to handle*() methods
+		// below.
+		pendingNotifications = new ArrayList<Serializable>();
+
+		for (Serializable x : list) {
+			if (x instanceof CardPassed) {
+				CardPassed message = (CardPassed) x;
+				handleCardPassed(message.cards);
+
+			} else if (x instanceof CardPlayed) {
+				CardPlayed message = (CardPlayed) x;
+				handleCardPlayed(message.card, message.playerPosition);
+
+			} else if (x instanceof GameEnded) {
+				GameEnded message = (GameEnded) x;
+				handleGameEnded(message.matchPoints, message.playersTotalPoints);
+
+			} else if (x instanceof GameStarted) {
+				GameStarted message = (GameStarted) x;
+				handleGameStarted(message.myCards);
+
+			} else {
+				assert false;
+			}
+		}
+	}
+
+	/**
+	 * A helper method that transitions to the specified state.
+	 * 
+	 * @param newState
+	 *            The desired state.
+	 */
+	private void transitionTo(PlayerState newState) {
+		currentState = newState;
+		currentState.activate();
+		sendPendingNotifications();
+	}
+
+	/**
+	 * Decides whether a candidate card takes the previous one in Hearts.
+	 * 
+	 * @param candidate
+	 *            The candidate card.
+	 * @param previous
+	 *            The previous card.
+	 * @return true if candidate takes previous, false otherwise.
+	 */
+	private static boolean cardTakes(Card candidate, Card previous) {
+		if (candidate.suit != previous.suit)
+			return false;
+		if (candidate.value == previous.value)
+			return false;
+		if (candidate.value == 1)
+			return true;
+		if (previous.value == 1)
+			return false;
+		return candidate.value > previous.value;
+	}
+
+	/**
+	 * Computes the index of the winning card in a trick.
+	 * 
+	 * @param cards
+	 *            An ordered list containing the cards in the current trick.
+	 * @return The index of the winning card.
+	 */
+	private static int winnerCard(List<Card> cards) {
+		assert cards.size() == 4;
+		for (Card card : cards)
+			assert card != null;
+		int winner = 0;
+		for (int candidate = 1; candidate < 4; candidate++)
+			if (cardTakes(cards.get(candidate), cards.get(winner)))
+				winner = candidate;
+		return winner;
 	}
 }
