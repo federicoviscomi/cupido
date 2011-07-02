@@ -2,7 +2,7 @@
 
 CLASSPATH="cupidoGWT/war/WEB-INF/classes:cupidoBackendImpl/bin:cupidoCommon/bin:cupidoBackendImpl/jargs.jar"
 
-java -classpath "$CLASSPATH" unibo.as.cupido.backend.table.playerUI.PlayerConsoleUI cupidoBackendImpl/test/createTableAndAddTwoBot 2>&1 \
+java -classpath "$CLASSPATH" unibo.as.cupido.backend.playerUI.PlayerConsoleUI cupidoBackendImpl/test/createTableAndAddTwoBot 2>&1 \
 | {
 while read line
 do
@@ -15,7 +15,7 @@ PID1="$!"
 
 {
 sleep 5
-java -classpath "$CLASSPATH" unibo.as.cupido.backend.table.playerUI.PlayerConsoleUI cupidoBackendImpl/test/joinATable 2>&1
+java -classpath "$CLASSPATH" unibo.as.cupido.backend.playerUI.PlayerConsoleUI cupidoBackendImpl/test/joinATable 2>&1
 } | {
 while read line
 do

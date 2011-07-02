@@ -2,6 +2,6 @@
 
 CLASSPATH="cupidoGWT/war/WEB-INF/classes:cupidoBackendImpl/bin:cupidoCommon/bin:cupidoBackendImpl/jargs.jar"
 
-java -classpath "$CLASSPATH" unibo.as.cupido.backend.table.playerUI.PlayerConsoleUI cupidoBackendImpl/test/view 
+java -classpath "$CLASSPATH" unibo.as.cupido.backend.playerUI.PlayerConsoleUI cupidoBackendImpl/test/view 
 
 

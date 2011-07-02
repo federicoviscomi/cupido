@@ -1,4 +1,4 @@
-package unibo.as.cupido.backend.table.playerUI;
+package unibo.as.cupido.backend.playerUI;
 
 /**
  * This command tells the automatic servlet to pass arbitrary sound cards

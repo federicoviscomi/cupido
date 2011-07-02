@@ -19,8 +19,8 @@ import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.ObservedGameStatus;
 
 /**
- * This STM is used by replacement bot only before they are used to replace a
- * player so this does not need to do anything.
+ * An STM that does nothing but log. This is used by replacement bot prior to
+ * activation.
  * 
  * @see PlayersManager
  */

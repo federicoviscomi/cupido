@@ -45,7 +45,7 @@ import unibo.as.cupido.common.structures.PlayerStatus;
  */
 public class PlayersManager {
 
-	/** store information for inactiveReplacementBot or human players */
+	/** store information for bot or human players */
 	private static class PlayerInfo {
 
 		/** this player name */

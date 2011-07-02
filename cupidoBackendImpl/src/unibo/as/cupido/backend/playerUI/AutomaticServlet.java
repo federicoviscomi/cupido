@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.backend.table.playerUI;
+package unibo.as.cupido.backend.playerUI;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;

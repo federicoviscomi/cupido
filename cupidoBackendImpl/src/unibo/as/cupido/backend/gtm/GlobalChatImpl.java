@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package unibo.as.cupido.backend;
+package unibo.as.cupido.backend.gtm;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.ArrayBlockingQueue;
