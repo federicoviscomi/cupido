@@ -135,13 +135,13 @@ public class LTMSwarm {
 		}
 		
 		@Override
-		public int hashCode() {
-			return this.ltmi.hashCode();
+		public boolean equals(Object obj) {
+			return this.ltmi.equals(((Triple) obj).ltmi);
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			return this.ltmi.equals(((Triple) obj).ltmi);
+		public int hashCode() {
+			return this.ltmi.hashCode();
 		}
 
 		@Override

@@ -391,6 +391,34 @@ public class PlayersManager {
 	}
 
 	/**
+	 * Returns number of players in the table.
+	 * 
+	 * @return number of players in the table.
+	 */
+	public int getPlayersCount() {
+		return playersCount;
+	}
+
+	/**
+	 * Returns number of non bot players remained in the table.
+	 * 
+	 * @return number of non bot players remained in the table.
+	 */
+	public int nonBotPlayersCount() {
+		int nonBotPlayersCount = 4;
+		for (int i = 0; i < 4; i++) {
+			if (players[i] == null) {
+				nonBotPlayersCount--;
+			} else {
+				if (players[i].isBot) {
+					nonBotPlayersCount--;
+				}
+			}
+		}
+		return nonBotPlayersCount;
+	}
+
+	/**
 	 * Notify every player but the one who is adding the bot and the bot itself
 	 * that a bot joined.
 	 * 
@@ -733,15 +761,6 @@ public class PlayersManager {
 	}
 
 	/**
-	 * Returns number of players in the table.
-	 * 
-	 * @return number of players in the table.
-	 */
-	public int getPlayersCount() {
-		return playersCount;
-	}
-
-	/**
 	 * Remove specified player.
 	 * 
 	 * @param playerName
@@ -910,24 +929,5 @@ public class PlayersManager {
 			}
 		}
 		return newScore;
-	}
-
-	/**
-	 * Returns number of non bot players remained in the table.
-	 * 
-	 * @return number of non bot players remained in the table.
-	 */
-	public int nonBotPlayersCount() {
-		int nonBotPlayersCount = 4;
-		for (int i = 0; i < 4; i++) {
-			if (players[i] == null) {
-				nonBotPlayersCount--;
-			} else {
-				if (players[i].isBot) {
-					nonBotPlayersCount--;
-				}
-			}
-		}
-		return nonBotPlayersCount;
 	}
 }

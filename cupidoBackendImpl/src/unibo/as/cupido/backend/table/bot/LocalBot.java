@@ -84,6 +84,18 @@ public class LocalBot implements LocalBotInterface {
 	private boolean active;
 
 	/**
+	 * <tt>Arrays.sort(cards, higherFirstCardsComparator)</tt> sorts cards
+	 * higher first
+	 */
+	private static final Comparator<Card> higherFirstCardsComparator = new Comparator<Card>() {
+		@Override
+		public int compare(Card o1, Card o2) {
+			return (o2.suit.ordinal() + (o2.value == 1 ? 14 : o2.value) * 4)
+					- (o1.suit.ordinal() + (o1.value == 1 ? 14 : o1.value) * 4);
+		}
+	};
+
+	/**
 	 * Create a non active bot, i.e. a replacement bot. When a player P joins a
 	 * table, a replacement bot R is added to the game. R mimics the move of P,
 	 * i.e. after P does a move, R does the same move. If after the game starts,
@@ -324,18 +336,6 @@ public class LocalBot implements LocalBotInterface {
 	private void onGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		actionQueue.killConsumer();
 	}
-
-	/**
-	 * <tt>Arrays.sort(cards, higherFirstCardsComparator)</tt> sorts cards
-	 * higher first
-	 */
-	private static final Comparator<Card> higherFirstCardsComparator = new Comparator<Card>() {
-		@Override
-		public int compare(Card o1, Card o2) {
-			return (o2.suit.ordinal() + (o2.value == 1 ? 14 : o2.value) * 4)
-					- (o1.suit.ordinal() + (o1.value == 1 ? 14 : o1.value) * 4);
-		}
-	};
 
 	/**
 	 * 

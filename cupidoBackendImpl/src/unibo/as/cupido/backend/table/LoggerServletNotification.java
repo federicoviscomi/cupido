@@ -10,7 +10,7 @@ import unibo.as.cupido.common.structures.ChatMessage;
 /**
  * A servlet notification interface that just logs operations.
  */
-public class LoggerServletNotificationInterface implements
+public class LoggerServletNotification implements
 		ServletNotificationsInterface {
 
 	/** this servlet name */
@@ -21,7 +21,7 @@ public class LoggerServletNotificationInterface implements
 	 * 
 	 * @param name
 	 */
-	public LoggerServletNotificationInterface(String name) {
+	public LoggerServletNotification(String name) {
 		this.name = name;
 	}
 

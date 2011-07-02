@@ -66,6 +66,27 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
  */
 public class GlobalTableManager implements GlobalTableManagerInterface {
 
+	/** calls the gtm shutdown method on exit if necessary */
+	private static final class ShutdownHook extends Thread {
+		/** the gtm to shut down */
+		private final GlobalTableManager gmt;
+
+		/**
+		 * Create a new shutdown hook
+		 * 
+		 * @param gmt
+		 *            the gtm to shut down
+		 */
+		public ShutdownHook(GlobalTableManager gmt) {
+			this.gmt = gmt;
+		}
+
+		@Override
+		public void run() {
+			gmt.shutDown();
+		}
+	}
+
 	public static void main(String args[]) throws RemoteException,
 			UnknownHostException, AlreadyBoundException {
 		new GlobalTableManager();
@@ -110,27 +131,6 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 		System.out
 				.println("Global table manager server started correctly at address "
 						+ InetAddress.getLocalHost());
-	}
-
-	/** calls the gtm shutdown method on exit */
-	private static final class ShutdownHook extends Thread {
-		/** the gtm to shut down */
-		private final GlobalTableManager gmt;
-
-		/**
-		 * Create a new shutdown hook
-		 * 
-		 * @param gmt
-		 *            the gtm to shut down
-		 */
-		public ShutdownHook(GlobalTableManager gmt) {
-			this.gmt = gmt;
-		}
-
-		@Override
-		public void run() {
-			gmt.shutDown();
-		}
 	}
 
 	@Override
@@ -229,6 +229,10 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 			//
 		}
 		ltmSwarm.shutdown();
-		Runtime.getRuntime().removeShutdownHook(shutdownHook);
+		try {
+			Runtime.getRuntime().removeShutdownHook(shutdownHook);
+		} catch (IllegalStateException e) {
+			//
+		}
 	}
 }

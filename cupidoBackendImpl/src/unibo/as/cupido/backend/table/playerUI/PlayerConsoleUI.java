@@ -38,8 +38,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import unibo.as.cupido.backend.ltm.LocalTableManager;
-import unibo.as.cupido.backend.table.bot.LocalBot;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
@@ -60,6 +58,84 @@ import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
+/**
+ * This is a command line user interface for a player of Cupido.
+ * 
+ * The list of commands follows:
+ * <table border="1">
+ * <tr>
+ * <td>SINTAX</td>
+ * <td>SEMANTIC</td>
+ * </tr>
+ * <tr>
+ * <td>create</td>
+ * <td>create a new table</td>
+ * </tr>
+ * <tr>
+ * <td>join</td>
+ * <td>join an arbitrary table</td>
+ * </tr>
+ * <tr>
+ * <td>list -p --players</td>
+ * <td>list all players in current table</td>
+ * </tr>
+ * *
+ * <tr>
+ * <td>list -c --cards</td>
+ * <td>list cards owned by this player</td>
+ * </tr>
+ * *
+ * <tr>
+ * <td>list -t --tables</td>
+ * <td>list all tables in the gtm</td>
+ * </tr>
+ * <tr>
+ * <td>login USERNAME</td>
+ * <td>log into cupido with specified user name</td>
+ * </tr>
+ * <tr>
+ * <td>pass -a --arbitrary</td>
+ * <td>pass arbitrary sound cards</td>
+ * </tr>
+ * <tr>
+ * <td>play -a --arbitrary</td>
+ * <td>play arbitrary sound cards</td>
+ * </tr>
+ * <tr>
+ * <td>addbot POSITION</td>
+ * <td>add a bot in specified position</td>
+ * </tr>
+ * <tr>
+ * <td>help</td>
+ * <td>print an help message</td>
+ * </tr>
+ * <tr>
+ * <td>exit</td>
+ * <td>exit</td>
+ * </tr>
+ * <tr>
+ * <td>sleep MILLIS</td>
+ * <td>suspend the console for specified milliseconds</td>
+ * </tr>
+ * <tr>
+ * <td>leave</td>
+ * <td>leave the table(if any)</td>
+ * </tr>
+ * <tr>
+ * <td>view</td>
+ * <td>view an arbitrary table</td>
+ * </tr>
+ * <tr>
+ * <td>chat MESSAGE</td>
+ * <td>sends specified message to local chat(if any)</td>
+ * </tr>
+ * <tr>
+ * <td></td>
+ * </table>
+ * <p>
+ * 
+ * Commands can be read from an input file thus making an automatic player.
+ */
 public class PlayerConsoleUI {
 	private static final String FORMAT = "%-20.20s %-3.3s %-10.10s %-30.30s\n";
 
@@ -98,6 +174,16 @@ public class PlayerConsoleUI {
 			"login", "pass", "play", "addbot", "help", "exit", "sleep",
 			"leave", "view", "chat" };
 
+	/**
+	 * Starts a console player interface. If no arguments are given then input
+	 * and output are respectively <tt>System.in</tt> and <tt>System.out</tt>.
+	 * If one arguments is given then it is name of an input file. If two
+	 * arguments are given then the first is name of an input file and second is
+	 * name of an output file.
+	 * 
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
 			new PlayerConsoleUI().runInterpreter();
@@ -108,39 +194,69 @@ public class PlayerConsoleUI {
 		}
 	}
 
-	private LocalTableManager localTableManager = null;
+	/** the gtm */
 	private GlobalTableManagerInterface gtm;
+	/** this player name */
 	private String playerName;
+	/** reads input from here */
 	private final BufferedReader in;
+	/** prints output here */
 	private final PrintWriter out;
+	/** <tt>true</tt> if a player correctly logged in */
 	private boolean logged = false;
+	/** this player notification are sent to this field */
 	private ServletNotificationsInterface botNotification;
+	/**
+	 * mimic servlet operation on stm. This is meaningful only if player joined
+	 * or created a table
+	 */
 	private AutomaticServlet remoteBot;
-	private RemoteViewerUI remoteViewer;
-
+	/** viewer ui. This is meaningful only if this player is a viewer */
+	private ViewerUI remoteViewer;
+	/** <tt>true</tt> if this player created a table; <tt>false</tt> otherwise */
 	private boolean creatingATable = false;
+	/** <tt>true</tt> if this player joined a table; <tt>false</tt> otherwise */
 	private boolean joiningATable = false;
+	/** <tt>true</tt> if this player viewed a table; <tt>false</tt> otherwise */
 	private boolean viewingATable = false;
-
+	/**
+	 * <tt>true</tt> if {@link #parseCommand()} found an error in current
+	 * command line; <tt>false</tt> otherwise.
+	 */
 	private boolean error;
+	/** the options parser tool */
 	private CmdLineParser parser;
-	private Option cardsOption;
-	private Option listPlayersOption;
-	private Option listTablesOption;
-	private Option arbitraryCardsOption;
+	/** tells if -c --cards option is present input current input line */
+	private final Option cardsOption;
+	/** tells if -p --players option is present input current input line */
+	private final Option listPlayersOption;
+	/** tells if -l --tables option is present input current input line */
+	private final Option listTablesOption;
+	/** tells if -a --arbitrary option is present input current input line */
+	private final Option arbitraryCardsOption;
+	/** current command line parsed */
 	private String[] command;
-
+	/**
+	 * <tt>true</tt> after execution of command exit or end of input file;
+	 * <tt>false</tt> otherwise
+	 */
 	private boolean exit;
+	/** current input line */
+	private String currentInputLine;
 
-	private String nextCommandLine;
-
-	private LocalBot bot;
-
+	/**
+	 * Creates a player command line user interface which reads from
+	 * <tt>System.in</tt> and writes to <tt>System.out</tt>
+	 */
 	public PlayerConsoleUI() {
 		this(new BufferedReader(new InputStreamReader(System.in)),
 				new PrintWriter(System.out));
 	}
 
+	/**
+	 * Creates a player command line user interface which reads from <tt>in</tt>
+	 * and writes to file <tt>out</tt>
+	 */
 	public PlayerConsoleUI(BufferedReader in, PrintWriter out) {
 		this.in = in;
 		this.out = out;
@@ -163,11 +279,19 @@ public class PlayerConsoleUI {
 		}
 	}
 
+	/**
+	 * Creates a player command line user interface which reads from file named
+	 * <tt>inputFileName</tt> and writes to <tt>System.out</tt>
+	 */
 	public PlayerConsoleUI(String inputFileName) throws FileNotFoundException {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				inputFileName))), new PrintWriter(System.out));
 	}
 
+	/**
+	 * Creates a player command line user interface which reads from file named
+	 * <tt>inputFileName</tt> and writes to file named <tt>outputFileName</tt>
+	 */
 	public PlayerConsoleUI(String inputFileName, String outputFileName)
 			throws FileNotFoundException {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
@@ -175,6 +299,55 @@ public class PlayerConsoleUI {
 				outputFileName)));
 	}
 
+	/**
+	 * Switch the right command
+	 */
+	private void execute() throws RemoteException {
+		if (command[0].equals("help")) {
+			executeHelp();
+		} else if (command[0].equals("exit")) {
+			executeExit();
+		} else if (command[0].equals("sleep")) {
+			executeSleep();
+		} else if (logged) {
+			if (command[0].equals("chat")) {
+				executeChat();
+			} else if (command[0].equals("view")) {
+				executeView();
+			} else if (command[0].equals("leave")) {
+				executeLeave();
+			} else if (command[0].equals("join")) {
+				executeJoin();
+			} else if (command[0].equals("pass")) {
+				executePass();
+			} else if (command[0].equals("play")) {
+				executePlay();
+			} else if (command[0].equals("login")) {
+				out.println("\n already logged in " + playerName);
+			} else if (command[0].equals("create")) {
+				executeCreate();
+			} else if (command[0].equals("list")) {
+				executeList();
+			} else if (command[0].equals("addbot")) {
+				executeAddbot();
+			} else {
+				throw new Error();
+			}
+		} else {
+			if (command[0].equals("login")) {
+				executeLogin();
+			} else {
+				out.println("log first!");
+				out.flush();
+			}
+		}
+	}
+
+	/**
+	 * Execute addbot command
+	 * 
+	 * @throws RemoteException
+	 */
 	private void executeAddbot() throws RemoteException {
 		try {
 			if (command.length < 2) {
@@ -187,27 +360,52 @@ public class PlayerConsoleUI {
 				remoteBot.addBot(position);
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FullPositionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NotCreatorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Execute chat command
+	 */
+	private void executeChat() {
+		try {
+			ChatMessage message = new ChatMessage(playerName,
+					currentInputLine.substring("chat".length()));
+			if (creatingATable || joiningATable) {
+				out.println("sent message " + message);
+				remoteBot.singleTableManager.sendMessage(message);
+			} else if (viewingATable) {
+				out.println("sent message " + message);
+				remoteViewer.singleTableManager.sendMessage(message);
+			} else {
+				out.println("cannot send a chat message rigth now");
+			}
+		} catch (RemoteException e) {
+
+			e.printStackTrace();
+		} catch (GameInterruptedException e) {
+
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Execute create command
+	 */
 	private void executeCreate() {
 		try {
 			// TODO really check the database
 			// TODO is really necessary AutomaticServlet or can be used instead
 			// LocalBot
-			remoteBot = new AutomaticServlet(new InitialTableStatus(new String[3],
-					new int[3], new boolean[3]), null, playerName);
+			remoteBot = new AutomaticServlet(new InitialTableStatus(
+					new String[3], new int[3], new boolean[3]), null,
+					playerName);
 			botNotification = (ServletNotificationsInterface) UnicastRemoteObject
 					.exportObject(remoteBot.getServletNotificationsInterface());
 
@@ -220,13 +418,16 @@ public class PlayerConsoleUI {
 		} catch (AllLTMBusyException e) {
 			out.println("cannot create a table rigth now because all LTM are busy, try again later");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Execute exit command
+	 */
 	private void executeExit() {
-		// exit = true;
+		exit = true;
 		try {
 			if (remoteBot != null) {
 				remoteBot.singleTableManager.leaveTable(playerName);
@@ -241,21 +442,27 @@ public class PlayerConsoleUI {
 		} catch (IOException e) {
 			//
 		}
-		out.println("bye!");
-		out.close();
-		System.exit(0);
+		//FIXME why test1 does not work without the next line?
+		System.exit(-1);
 	}
 
+	/**
+	 * Execute help command
+	 */
 	private void executeHelp() {
 		out.println(USAGE);
 		out.flush();
 	}
 
+	/**
+	 * Execute join command
+	 */
 	private void executeJoin() {
 		try {
 			// TODO really check the database
-			remoteBot = new AutomaticServlet(new InitialTableStatus(new String[3],
-					new int[3], new boolean[3]), null, playerName);
+			remoteBot = new AutomaticServlet(new InitialTableStatus(
+					new String[3], new int[3], new boolean[3]), null,
+					playerName);
 			botNotification = (ServletNotificationsInterface) UnicastRemoteObject
 					.exportObject(remoteBot.getServletNotificationsInterface());
 
@@ -266,39 +473,41 @@ public class PlayerConsoleUI {
 			remoteBot.initialTableStatus = remoteBot.singleTableManager
 					.joinTable(playerName, botNotification);
 			joiningATable = true;
-			out.println("successfully joined " + tableInfo);
+			out.println("successfully joined "
+					+ tableInfo
+					+ ".\nnote that this does not really communicate with the database");
 		} catch (NoSuchElementException e) {
 			out.println("no table to join!");
 		} catch (NoSuchTableException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (NoSuchLTMException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (FullTableException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (DuplicateUserNameException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (NoSuchUserException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Execute leave command
+	 */
 	private void executeLeave() {
 		try {
 			if (remoteBot != null) {
@@ -315,20 +524,23 @@ public class PlayerConsoleUI {
 			}
 			creatingATable = joiningATable = viewingATable = false;
 		} catch (NoSuchPlayerException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Execute list command
+	 */
 	private void executeList() throws RemoteException {
 		boolean listTables = (parser.getOptionValue(listTablesOption) == null ? false
 				: true);
@@ -359,6 +571,9 @@ public class PlayerConsoleUI {
 		out.flush();
 	}
 
+	/**
+	 * Execute login command
+	 */
 	private void executeLogin() {
 		if (command.length < 2) {
 			out.println("missing user name");
@@ -385,6 +600,9 @@ public class PlayerConsoleUI {
 		}
 	}
 
+	/**
+	 * Execute pass command
+	 */
 	private void executePass() throws RemoteException {
 		boolean specifiedCards = (parser.getOptionValue(cardsOption) == null ? false
 				: true);
@@ -401,6 +619,9 @@ public class PlayerConsoleUI {
 		}
 	}
 
+	/**
+	 * Execute play command
+	 */
 	private void executePlay() throws RemoteException {
 		boolean arbitraryCards = (parser.getOptionValue(arbitraryCardsOption) == null ? false
 				: true);
@@ -415,6 +636,9 @@ public class PlayerConsoleUI {
 		}
 	}
 
+	/**
+	 * Execute sleep command
+	 */
 	private void executeSleep() {
 		try {
 			int sleepMillis = Integer.parseInt(command[1]);
@@ -429,6 +653,9 @@ public class PlayerConsoleUI {
 		}
 	}
 
+	/**
+	 * Execute view command
+	 */
 	private void executeView() {
 		try {
 			// TODO really check the database
@@ -437,8 +664,7 @@ public class PlayerConsoleUI {
 			LocalTableManagerInterface ltmInterface = gtm
 					.getLTMInterface(tableInfo.tableDescriptor.ltmId);
 
-			remoteViewer = new RemoteViewerUI(playerName, ltmInterface,
-					tableInfo);
+			remoteViewer = new ViewerUI(playerName, ltmInterface, tableInfo);
 
 			out.flush();
 			viewingATable = true;
@@ -448,43 +674,38 @@ public class PlayerConsoleUI {
 			out.println("there is no table to view");
 			out.flush();
 		} catch (NoSuchLTMException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchTableException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (DuplicateViewerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (WrongGameStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	private void parseCommand() {
+	/**
+	 * Read and parse a line of input
+	 */
+	private void parseCommand() throws IOException {
 		try {
-			nextCommandLine = in.readLine();
-			out.println(nextCommandLine);
+			currentInputLine = in.readLine();
+			out.println(currentInputLine);
 			out.flush();
-			if (nextCommandLine == null) {
+			if (currentInputLine == null) {
 				executeExit();
 				return;
 			}
-			nextCommandLine = nextCommandLine.trim();
-			parser.parse(nextCommandLine.split("\\s+"));
+			currentInputLine = currentInputLine.trim();
+			parser.parse(currentInputLine.split("\\s+"));
 			command = parser.getRemainingArgs();
 			if (command.length < 1) {
 				error = true;
@@ -516,87 +737,33 @@ public class PlayerConsoleUI {
 			error = true;
 			out.println("\n3 sintax error\n " + USAGE);
 			out.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(-1);
 		}
 	}
 
+	/**
+	 * Print a prompt message
+	 */
 	private void prompt() {
 		out.print("\n#: ");
 		out.flush();
 	}
 
+	/**
+	 * Run the command interpreter.
+	 * 
+	 * @throws IOException
+	 */
 	public void runInterpreter() throws IOException {
-
-		while (true) {
+		while (!exit) {
 			do {
 				error = false;
 				prompt();
 				parseCommand();
 			} while (error);
-
-			if (command[0].equals("help")) {
-				executeHelp();
-			} else if (command[0].equals("exit")) {
-				executeExit();
-			} else if (command[0].equals("sleep")) {
-				executeSleep();
-			} else if (logged) {
-				if (command[0].equals("chat")) {
-					executeChat();
-				} else if (command[0].equals("view")) {
-					executeView();
-				} else if (command[0].equals("leave")) {
-					executeLeave();
-				} else if (command[0].equals("join")) {
-					executeJoin();
-				} else if (command[0].equals("pass")) {
-					executePass();
-				} else if (command[0].equals("play")) {
-					executePlay();
-				} else if (command[0].equals("login")) {
-					out.println("\n already logged in " + playerName);
-				} else if (command[0].equals("create")) {
-					executeCreate();
-				} else if (command[0].equals("list")) {
-					executeList();
-				} else if (command[0].equals("addbot")) {
-					executeAddbot();
-				} else {
-					throw new Error();
-				}
-			} else {
-				if (command[0].equals("login")) {
-					executeLogin();
-				} else {
-					out.println("log first!");
-					out.flush();
-				}
-			}
+			
+			execute();
 			out.flush();
 		}
-	}
-
-	private void executeChat() {
-		try {
-			ChatMessage message = new ChatMessage(playerName,
-					nextCommandLine.substring("chat".length()));
-			if (creatingATable || joiningATable) {
-				out.println("sent message " + message);
-				remoteBot.singleTableManager.sendMessage(message);
-			} else if (viewingATable) {
-				out.println("sent message " + message);
-				remoteViewer.singleTableManager.sendMessage(message);
-			} else {
-				out.println("cannot send a chat message rigth now");
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (GameInterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		out.println("bye!");
 	}
 }

@@ -56,6 +56,16 @@ public class ActionQueue extends Thread {
 		}
 	}
 
+	/**
+	 * Stops the consumer thread.
+	 */
+	public void killConsumer() {
+		synchronized (lock) {
+			exit = true;
+			lock.notify();
+		}
+	}
+
 	@Override
 	public void run() {
 		try {
@@ -78,16 +88,6 @@ public class ActionQueue extends Thread {
 			}
 		} catch (InterruptedException e) {
 			//
-		}
-	}
-
-	/**
-	 * Stops the consumer thread.
-	 */
-	public void killConsumer() {
-		synchronized (lock) {
-			exit = true;
-			lock.notify();
 		}
 	}
 }

@@ -132,22 +132,6 @@ public class LocalTableManagerCommandInterpreterUI {
 	}
 
 	/**
-	 * Runs the command interpreter
-	 */
-	public void runInterpreter() {
-		while (!exit) {
-			do {
-				error = false;
-				prompt();
-				parseCommand();
-			} while (error);
-
-			execute();
-		}
-
-	}
-
-	/**
 	 * Switch the right command
 	 */
 	private void execute() {
@@ -184,17 +168,6 @@ public class LocalTableManagerCommandInterpreterUI {
 	}
 
 	/**
-	 * Execute command list
-	 */
-	private void executeList() {
-		boolean listTables = (parser.getOptionValue(listTablesOption) == null ? false
-				: true);
-		if (listTables) {
-			// TODO
-		}
-	}
-
-	/**
 	 * Execute command create
 	 * 
 	 * @throws RemoteException
@@ -203,6 +176,27 @@ public class LocalTableManagerCommandInterpreterUI {
 	private void executeCreate() throws RemoteException {
 		String creator = (String) parser.getOptionValue(tableCreatorOption);
 		localTableManager.createTable(creator, null);
+	}
+
+	/**
+	 * Execute command exit
+	 */
+	private void executeExit() {
+		if (localTableManager != null) {
+			localTableManager.shutDown();
+		}
+		exit = true;
+	}
+
+	/**
+	 * Execute command list
+	 */
+	private void executeList() {
+		boolean listTables = (parser.getOptionValue(listTablesOption) == null ? false
+				: true);
+		if (listTables) {
+			// TODO
+		}
 	}
 
 	/**
@@ -282,13 +276,19 @@ public class LocalTableManagerCommandInterpreterUI {
 	}
 
 	/**
-	 * Execute command exit
+	 * Runs the command interpreter
 	 */
-	private void executeExit() {
-		if (localTableManager != null) {
-			localTableManager.shutDown();
+	public void runInterpreter() {
+		while (!exit) {
+			do {
+				error = false;
+				prompt();
+				parseCommand();
+			} while (error);
+
+			execute();
 		}
-		exit = true;
+
 	}
 
 }

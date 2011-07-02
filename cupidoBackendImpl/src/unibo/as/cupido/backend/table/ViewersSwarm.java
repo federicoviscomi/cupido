@@ -76,6 +76,13 @@ public class ViewersSwarm {
 	}
 
 	/**
+	 * Kills the action queue
+	 */
+	public void killConsumer() {
+		actionQueue.killConsumer();
+	}
+
+	/**
 	 * Notify all viewers game ended.
 	 * 
 	 * @param matchPoints
@@ -257,13 +264,6 @@ public class ViewersSwarm {
 	 */
 	public int viewersCount() {
 		return snfs.size();
-	}
-
-	/**
-	 * Kills the action queue
-	 */
-	public void killConsumer() {
-		actionQueue.killConsumer();
 	}
 
 }

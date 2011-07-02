@@ -34,7 +34,7 @@ public class LoggerBot implements LocalBotInterface {
 
 	@Override
 	public ServletNotificationsInterface getServletNotificationsInterface() {
-		return new LoggerServletNotificationInterface(botName);
+		return new LoggerServletNotification(botName);
 	}
 
 	@Override

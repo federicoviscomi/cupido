@@ -240,16 +240,20 @@ public interface TableInterface extends Remote {
 			GameInterruptedException;
 
 	/**
-	 * Add a viewer <code>userName</code>to this table. This can be called any
-	 * time except when game status is {@link Positions}.ENDED or
-	 * {@link Positions}.INTERRUPTED
+	 * Add viewer named <code>userName</code> to this table. This can be called
+	 * any time except when game status is {@link GameStatus}.ENDED or
+	 * {@link GameStatus}.INTERRUPTED.
 	 * 
 	 * @param userName
-	 * @return
+	 *            name of user who wants to view the table
+	 * @return observed game status according to viewers
 	 * @throws GameInterruptedException
-	 *             When the game status is {@link Positions}.INTERRUPTED
+	 *             When the game status is {@link GameStatus}.INTERRUPTED
 	 * @throws WrongGameStateException
-	 *             When the game status is {@link Positions}.ENDED
+	 *             When the game status is {@link GameStatus}.ENDED
+	 * @throws DuplicateViewerException
+	 *             if this table already has a viewer named <tt>userName</tt>
+	 * @see ObservedGameStatus
 	 */
 	public ObservedGameStatus viewTable(String userName,
 			ServletNotificationsInterface snf) throws DuplicateViewerException,

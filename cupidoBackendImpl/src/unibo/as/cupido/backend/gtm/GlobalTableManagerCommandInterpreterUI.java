@@ -103,11 +103,21 @@ public class GlobalTableManagerCommandInterpreterUI {
 	private Option listTableOption;
 	/** the input is read from this */
 	private BufferedReader in;
-	/** <tt>true</tt> after execution of command exit; <tt>false</tt> otherwise */
+	/** <tt>true</tt> after execution of command exit or end of input file; <tt>false</tt> otherwise */
 	private boolean exit;
 	/** stores all known commands */
 	private static final String[] allCommands = { "start", "exit", "list" };
 
+	/**
+	 * Creates a command interpreter for a gtm
+	 * 
+	 * @param startGTM
+	 *            if <tt>true</tt> this creates also a gtm; otherwise it does
+	 *            not create a gtm
+	 * @throws RemoteException
+	 * @throws UnknownHostException
+	 * @throws AlreadyBoundException
+	 */
 	public GlobalTableManagerCommandInterpreterUI(boolean startGTM)
 			throws RemoteException, UnknownHostException, AlreadyBoundException {
 		parser = new CmdLineParser();
@@ -120,11 +130,95 @@ public class GlobalTableManagerCommandInterpreterUI {
 	}
 
 	/**
-	 * Print a prompt message in the console
+	 * Switch the right command
 	 */
-	private void prompt() {
-		System.out.print("\n#: ");
-		System.out.flush();
+	private void execute() {
+		if (command[0].equals("start")) {
+			try {
+				executeStart();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (AlreadyBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if (command[0].equals("exit")) {
+			executeExit(0);
+		} else if (globalTableManager == null) {
+			System.out.println("start GTM first!");
+			System.out.println(USAGE);
+		} else if (command[0].equals("list")) {
+			try {
+				executeList();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Execute command exit
+	 * 
+	 * @param exitStatus
+	 */
+	private void executeExit(int exitStatus) {
+		if (globalTableManager != null) {
+			globalTableManager.shutDown();
+		}
+		System.out.println("bye!");
+		System.out.close();
+		exit = true;
+	}
+
+	/**
+	 * Execute command list
+	 * 
+	 * @throws RemoteException
+	 */
+	private void executeList() throws RemoteException {
+		boolean listLTM = (parser.getOptionValue(listLocalManagersOtion) == null ? false
+				: true);
+		boolean listTables = (parser.getOptionValue(listTableOption) == null ? false
+				: true);
+		if (listLTM) {
+			Triple[] allLocalServer = globalTableManager.getAllLTM();
+			System.out.format("\n list af all local server follows:");
+			for (Triple localServer : allLocalServer) {
+				System.out.format("\n %25s", localServer);
+			}
+		}
+		if (listTables) {
+			Collection<TableInfoForClient> tableList = globalTableManager
+					.getTableList();
+			System.out.format("\n list af all tables follows:");
+			for (TableInfoForClient table : tableList) {
+				System.out.format("\n %25s", table);
+			}
+		}
+		if (!listLTM && !listTables) {
+			System.out.println(" nothing to list?");
+		}
+	}
+
+	/**
+	 * Execute command start
+	 * 
+	 * @throws RemoteException
+	 * @throws UnknownHostException
+	 * @throws AlreadyBoundException
+	 */
+	private void executeStart() throws RemoteException, UnknownHostException,
+			AlreadyBoundException {
+		if (globalTableManager == null) {
+			globalTableManager = new GlobalTableManager();
+		} else {
+			System.out.println("GTM already started!");
+		}
 	}
 
 	/**
@@ -180,6 +274,14 @@ public class GlobalTableManagerCommandInterpreterUI {
 	}
 
 	/**
+	 * Print a prompt message in the console
+	 */
+	private void prompt() {
+		System.out.print("\n#: ");
+		System.out.flush();
+	}
+
+	/**
 	 * Run the command interpreter.
 	 * 
 	 * @throws AlreadyBoundException
@@ -193,97 +295,5 @@ public class GlobalTableManagerCommandInterpreterUI {
 			} while (error);
 			execute();
 		}
-	}
-
-	/**
-	 * Switch the right command
-	 */
-	private void execute() {
-		if (command[0].equals("start")) {
-			try {
-				executeStart();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (AlreadyBoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else if (command[0].equals("exit")) {
-			executeExit(0);
-		} else if (globalTableManager == null) {
-			System.out.println("start GTM first!");
-			System.out.println(USAGE);
-		} else if (command[0].equals("list")) {
-			try {
-				executeList();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * Execute command list
-	 * 
-	 * @throws RemoteException
-	 */
-	private void executeList() throws RemoteException {
-		boolean listLTM = (parser.getOptionValue(listLocalManagersOtion) == null ? false
-				: true);
-		boolean listTables = (parser.getOptionValue(listTableOption) == null ? false
-				: true);
-		if (listLTM) {
-			Triple[] allLocalServer = globalTableManager.getAllLTM();
-			System.out.format("\n list af all local server follows:");
-			for (Triple localServer : allLocalServer) {
-				System.out.format("\n %25s", localServer);
-			}
-		}
-		if (listTables) {
-			Collection<TableInfoForClient> tableList = globalTableManager
-					.getTableList();
-			System.out.format("\n list af all tables follows:");
-			for (TableInfoForClient table : tableList) {
-				System.out.format("\n %25s", table);
-			}
-		}
-		if (!listLTM && !listTables) {
-			System.out.println(" nothing to list?");
-		}
-	}
-
-	/**
-	 * Execute command start
-	 * 
-	 * @throws RemoteException
-	 * @throws UnknownHostException
-	 * @throws AlreadyBoundException
-	 */
-	private void executeStart() throws RemoteException, UnknownHostException,
-			AlreadyBoundException {
-		if (globalTableManager == null) {
-			globalTableManager = new GlobalTableManager();
-		} else {
-			System.out.println("GTM already started!");
-		}
-	}
-
-	/**
-	 * Execute command exit
-	 * 
-	 * @param exitStatus
-	 */
-	private void executeExit(int exitStatus) {
-		if (globalTableManager != null) {
-			globalTableManager.shutDown();
-		}
-		System.out.println("bye!");
-		System.out.close();
-		exit = true;
 	}
 }

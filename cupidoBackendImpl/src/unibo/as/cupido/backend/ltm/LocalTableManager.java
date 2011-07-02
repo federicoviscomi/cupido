@@ -66,6 +66,27 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
  */
 public class LocalTableManager implements LocalTableManagerInterface {
 
+	/** Shuts down the ltm on exit if necessary */
+	private static final class ShutdownHook extends Thread {
+		/** the ltm to shut down */
+		private final LocalTableManager localTableManager;
+
+		/**
+		 * Creates a shut down hook
+		 * 
+		 * @param localTableManager
+		 *            the ltm to shut down
+		 */
+		public ShutdownHook(LocalTableManager localTableManager) {
+			this.localTableManager = localTableManager;
+		}
+
+		@Override
+		public void run() {
+			localTableManager.shutDown();
+		}
+	}
+
 	/** configuration file name */
 	private static final String LOCALTABLEMANAGER_CONFIGURATION_FILE = "localTableManager.config";
 
@@ -75,7 +96,6 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	}
 
 	private final GlobalTableManagerInterface gtmRemote;
-
 	/** The maximum number of table a LocalTableManager can handle */
 	private int MAX_TABLE = LocalTableManagerInterface.DEFAULT_MAX_TABLE;
 	/** address of gtm */
@@ -86,8 +106,11 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	private final Map<Integer, TableInterface> allTables;
 	/** this LTM local host address */
 	private final String localAddress;
+
 	/** <tt>false</tt> if GTM or this LTM are down; <tt>true</tt> otherwise */
 	private boolean acceptMoreRequest;
+
+	private ShutdownHook shutdownHook;
 
 	public LocalTableManager() throws NotBoundException, RemoteException,
 			UnknownHostException {
@@ -132,17 +155,8 @@ public class LocalTableManager implements LocalTableManagerInterface {
 						+ InetAddress.getLocalHost());
 
 		final LocalTableManager ltm = this;
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				try {
-					gtmRemote.notifyLocalTableManagerShutdown(ltm);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
+		shutdownHook = new ShutdownHook(this);
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
 	}
 
 	@Override
@@ -214,6 +228,11 @@ public class LocalTableManager implements LocalTableManagerInterface {
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		try {
+			Runtime.getRuntime().removeShutdownHook(shutdownHook);
+		} catch (IllegalStateException e) {
+			//
 		}
 	}
 }
