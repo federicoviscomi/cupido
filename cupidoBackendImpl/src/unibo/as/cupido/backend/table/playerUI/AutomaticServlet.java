@@ -36,13 +36,15 @@ import unibo.as.cupido.common.structures.Card;
 import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
-import unibo.as.cupido.common.structures.ObservedGameStatus;
 
 /**
  * This is used by player console user interface to emulate a real user servlet.
  */
 public class AutomaticServlet {
 
+	/**
+	 * This automatic servelet notification interface
+	 */
 	public class RemoteBotNotificationInterface implements
 			ServletNotificationsInterface, Serializable {
 
@@ -141,41 +143,51 @@ public class AutomaticServlet {
 		}
 	}
 
-	private static final long serialVersionUID = 5795667604185475447L;
+	/** this servlet user name */
 	final String userName;
+	/** reference to an stm */
 	TableInterface singleTableManager;
+	/** initial table status */
 	InitialTableStatus initialTableStatus;
+	/** cards eventually owned by this */
 	ArrayList<Card> cards;
+	/** cards eventually playd in current trick */
 	Card[] playedCard = new Card[4];
+	/** number of trick played */
 	private int turn = 0;
+	/** number of cards played in current trick */
 	private int playedCardCount = 0;
-	private int firstDealer = -1;
+	/** position of first dealer in trick */
+	private int firstDealerInTrick = -1;
+	/** <tt>true</tt> if game is broken hearte; <tt>false</tt> otherwise */
 	private boolean brokenHearted = false;
+	/** <tt>true</tt> if this can play a card; <tt>false</tt>otherwise */
 	private boolean ableToPlay = false;
+	/** <tt>true</tt> if this can pass cards; <tt>false</tt>otherwise */
 	private boolean ableToPass = false;
-	// PrintWriter System.out;
+	/** this player current points */
 	private int points = 0;
-	public ObservedGameStatus observedGameStatus;
-
-	private ActionQueue actionQueue = new ActionQueue();
-
-	/**
-	 * This is notified after a bot is added.
-	 */
+	/** execute action */
+	ActionQueue actionQueue = new ActionQueue();
+	/** This is notified after a bot is added. */
 	private Object addBotSignal = new Object();
-
-	/**
-	 * This is notified after the cards have been passed.
-	 */
+	/** This is notified after the cards have been passed. */
 	private Object passCardsSignal = new Object();
-
-	/**
-	 * This is notified after a card has been played.
-	 */
+	/** This is notified after a card has been played. */
 	private Object playNextCardSignal = new Object();
-
+	/** list of pending commands to be executed */
 	List<Command> pendingCommands = new ArrayList<Command>();
 
+	/**
+	 * Create an automatic servlet
+	 * 
+	 * @param initialTableStatus
+	 *            status of table given by create or join
+	 * @param singleTableManager
+	 *            stm interface of the table
+	 * @param userName
+	 *            name of this player
+	 */
 	public AutomaticServlet(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, final String userName) {
 		if (initialTableStatus == null || userName == null)
@@ -185,17 +197,6 @@ public class AutomaticServlet {
 		this.singleTableManager = singleTableManager;
 		this.userName = userName;
 
-		/*
-		 * File System.outputFile = new File("cupidoBackendImpl/botlog/remote/"
-		 * + userName); System.outputFile.delete();
-		 * System.outputFile.createNewFile(); System.out = new PrintWriter(new
-		 * FileWriter(System.outputFile));
-		 * Runtime.getRuntime().addShutdownHook(new Thread() {
-		 * 
-		 * @Override public void run() {
-		 * System.err.println("shuting down remote user " + userName);
-		 * System.out.close(); } });
-		 */
 		actionQueue.start();
 	}
 
@@ -226,13 +227,17 @@ public class AutomaticServlet {
 			try {
 				addBotSignal.wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//
 			}
 		}
 	}
 
-	private ArrayList<Card> chooseValidCards() {
+	/**
+	 * Get all cards that are sound to play according to game rules
+	 * 
+	 * @return all cards that are sound to play according to game rules
+	 */
+	private ArrayList<Card> getAllSoundCards() {
 		ArrayList<Card> validCards = new ArrayList<Card>(13);
 		if (cards.contains(CardsManager.twoOfClubs)) {
 			validCards.add(CardsManager.twoOfClubs);
@@ -252,13 +257,13 @@ public class AutomaticServlet {
 			}
 			return validCards;
 		}
-		if (playedCard[firstDealer] == null) {
+		if (playedCard[firstDealerInTrick] == null) {
 			throw new Error("owned:" + cards.toString() + " first:"
-					+ firstDealer + " played:" + Arrays.toString(playedCard)
-					+ " count:" + playedCardCount);
+					+ firstDealerInTrick + " played:"
+					+ Arrays.toString(playedCard) + " count:" + playedCardCount);
 		}
 		for (int i = 0; i < cards.size(); i++) {
-			if (cards.get(i).suit == playedCard[firstDealer].suit) {
+			if (cards.get(i).suit == playedCard[firstDealerInTrick].suit) {
 				validCards.add(cards.get(i));
 			}
 		}
@@ -268,8 +273,13 @@ public class AutomaticServlet {
 		return validCards;
 	}
 
-	private Card choseCard() {
-		return chooseValidCards().get(0);
+	/**
+	 * Get a card that is sound to play according to game rules
+	 * 
+	 * @return a card that is sound to play according to game rules
+	 */
+	private Card getASoundCard() {
+		return getAllSoundCards().get(0);
 	}
 
 	/**
@@ -281,6 +291,14 @@ public class AutomaticServlet {
 		return this.new RemoteBotNotificationInterface();
 	}
 
+	/**
+	 * On game ended just log and exit.
+	 * 
+	 * @param matchPoints
+	 *            all players point in this match
+	 * @param playersTotalPoint
+	 *            new players score after this match
+	 */
 	private void onGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		System.out.println("\n" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
@@ -289,6 +307,12 @@ public class AutomaticServlet {
 		actionQueue.killConsumer();
 	}
 
+	/**
+	 * On game started take cards and eventually pass
+	 * 
+	 * @param cards
+	 *            the cards dealt to this player
+	 */
 	private void onGameStarted(Card[] cards) {
 		this.cards = new ArrayList<Card>(13);
 		for (int i = 0; i < cards.length; i++)
@@ -298,33 +322,67 @@ public class AutomaticServlet {
 		processPendingCommands();
 	}
 
+	/**
+	 * On local chat message just print the message
+	 * 
+	 * @param message
+	 *            the new local chat message
+	 */
 	private void onLocalChatMessage(ChatMessage message) {
 		System.out.println("\nlocal chat message: " + message);
 	}
 
+	/**
+	 * On passed cards, take cards and eventually play
+	 * 
+	 * @param cards
+	 *            the cards received from an other player
+	 */
 	private void onPassedCards(Card[] cards) {
 		for (int i = 0; i < cards.length; i++)
 			this.cards.add(cards[i]);
 		System.out.println("\npassed cards received. all cards:"
 				+ this.cards.toString());
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
-			firstDealer = 3;
+			firstDealerInTrick = 3;
 			ableToPlay = true;
 			processPendingCommands();
 		}
 	}
 
+	/**
+	 * On played card, change this bot game status accordingly and the
+	 * eventually play
+	 * 
+	 * @param card
+	 *            the card played
+	 * @param playerPosition
+	 *            position of played who played
+	 */
 	private void onPlayedCard(Card card, int playerPosition) {
 		System.out.println("\n" + userName + " player " + playerPosition
 				+ " played card " + card);
-
 		setCardPlayed(card, playerPosition);
 	}
 
-	private void onPlayerJoined(String name, boolean isBot, int point,
+	/**
+	 * On player joined, add specified player.
+	 * 
+	 * @param name
+	 *            name of player who joined
+	 * @param isBot
+	 *            <tt>true</tt> if joined player is a bot; <tt>false</tt>
+	 *            otherwise
+	 * @param score
+	 *            score of joined player, meaningfull if and only if
+	 *            <tt>isBot==true</tt>
+	 * @param position
+	 *            position of player who joined
+	 */
+	private void onPlayerJoined(String name, boolean isBot, int score,
 			int position) {
 		System.out.println("\n player joined(" + name + ", " + isBot + ", "
-				+ point + "," + position);
+				+ score + "," + position);
 		if (name == null || position < 0 || position > 2)
 			throw new IllegalArgumentException(name + " " + position);
 		if (initialTableStatus.opponents[position] != null)
@@ -337,6 +395,12 @@ public class AutomaticServlet {
 		initialTableStatus.whoIsBot[position] = isBot;
 	}
 
+	/**
+	 * On player left, remove specified player.
+	 * 
+	 * @param name
+	 *            name of player who left
+	 */
 	private void onPlayerLeft(String name) {
 		System.out.println("\n player left(" + name + ")");
 		int position = 0;
@@ -348,6 +412,15 @@ public class AutomaticServlet {
 		System.out.println(initialTableStatus);
 	}
 
+	/**
+	 * On player replaced, replace player specified by <tt>position</tt> with
+	 * bot <tt>botName</tt>
+	 * 
+	 * @param botName
+	 *            name of bot who replaces the left player
+	 * @param position
+	 *            position of player who left
+	 */
 	private void onPlayerReplaced(String botName, int position) {
 		System.out.print("\n" + botName + ": notifyPlayerReplaced(" + botName
 				+ ", " + position + ")");
@@ -377,7 +450,6 @@ public class AutomaticServlet {
 			try {
 				passCardsSignal.wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -400,12 +472,17 @@ public class AutomaticServlet {
 			try {
 				playNextCardSignal.wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				//
 				e.printStackTrace();
 			}
 		}
 	}
 
+	/**
+	 * Pass arbitrary cards
+	 * 
+	 * @return <tt>true</tt> if this passed cards; <tt>false</tt> otherwise.
+	 */
 	private boolean processPassCards() {
 
 		if (!ableToPass)
@@ -420,19 +497,14 @@ public class AutomaticServlet {
 				cardsToPass[i] = cards.remove(0);
 			singleTableManager.passCards(userName, cardsToPass);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchPlayerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (WrongGameStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -443,6 +515,9 @@ public class AutomaticServlet {
 		return true;
 	}
 
+	/**
+	 * Process pending commands.
+	 */
 	private void processPendingCommands() {
 		List<Command> pendingCommands = this.pendingCommands;
 		this.pendingCommands = new ArrayList<Command>();
@@ -451,12 +526,16 @@ public class AutomaticServlet {
 				tryProcessingPassCards();
 			} else if (command instanceof PlayNextCardCommand) {
 				tryProcessingPlayNextCard();
-			} else {
-				assert false;
 			}
 		}
 	}
 
+	/**
+	 * Play arbitrary cards.
+	 * 
+	 * @return <tt>true</tt> if this succeeded in playing a card; <tt>false</tt>
+	 *         otherwise, i.e. this was not able to play now.
+	 */
 	private boolean processPlayNextCard() {
 		if (!ableToPlay)
 			return false;
@@ -467,7 +546,7 @@ public class AutomaticServlet {
 			ableToPlay = false;
 
 			/** choose a valid card */
-			Card cardToPlay = choseCard();
+			Card cardToPlay = getASoundCard();
 
 			/** play chosen card */
 			singleTableManager.playCard(userName, cardToPlay);
@@ -475,7 +554,6 @@ public class AutomaticServlet {
 			/** update status */
 			setCardPlayed(cardToPlay, 3);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -486,15 +564,25 @@ public class AutomaticServlet {
 		return true;
 	}
 
+	/**
+	 * Change this bot game status after player in position
+	 * <tt>playerPosition</tt> played card <tt>card</tt>
+	 * 
+	 * @param card
+	 *            card played
+	 * @param playerPosition
+	 *            position of player who played
+	 */
 	private void setCardPlayed(Card card, int playerPosition) {
-		if (firstDealer == -1) {
-			firstDealer = playerPosition;
+		if (firstDealerInTrick == -1) {
+			firstDealerInTrick = playerPosition;
 		}
-		if (((firstDealer + playedCardCount + 4) % 4) != playerPosition) {
+		if (((firstDealerInTrick + playedCardCount + 4) % 4) != playerPosition) {
 			throw new IllegalStateException(" current player should be "
-					+ ((firstDealer + playedCardCount + 4) % 4)
+					+ ((firstDealerInTrick + playedCardCount + 4) % 4)
 					+ " instead is " + playerPosition + " " + userName
-					+ " first: " + firstDealer + " count: " + playedCardCount);
+					+ " first: " + firstDealerInTrick + " count: "
+					+ playedCardCount);
 		}
 		if (card.suit == Suit.HEARTS) {
 			brokenHearted = true;
@@ -505,10 +593,11 @@ public class AutomaticServlet {
 		playedCard[playerPosition] = card;
 		playedCardCount++;
 		if (playedCardCount == 4) {
-			firstDealer = CardsManager.whoWins(playedCard, firstDealer);
+			firstDealerInTrick = CardsManager.whoWins(playedCard,
+					firstDealerInTrick);
 			playedCardCount = 0;
 			turn++;
-			if (firstDealer == 3) {
+			if (firstDealerInTrick == 3) {
 				ableToPlay = true;
 				processPendingCommands();
 				for (Card c : playedCard) {
@@ -527,12 +616,20 @@ public class AutomaticServlet {
 		}
 	}
 
+	/**
+	 * Try to pass cards. If this is not able to pass rigth now, add a pass
+	 * cards command in pending commands that will be executed later
+	 */
 	private void tryProcessingPassCards() {
 		boolean executed = processPassCards();
 		if (!executed)
 			pendingCommands.add(new PassCardsCommand());
 	}
 
+	/**
+	 * Try to play a card. If this is not able to play rigth now, add a pass
+	 * cards command in pending commands that will be executed later
+	 */
 	private void tryProcessingPlayNextCard() {
 		boolean executed = processPlayNextCard();
 		if (!executed)

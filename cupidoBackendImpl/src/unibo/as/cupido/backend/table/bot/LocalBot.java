@@ -325,8 +325,7 @@ public class LocalBot implements LocalBotInterface {
 	}
 
 	/**
-	 * When action queue has a game ended notification, it stop itself after
-	 * processing remaining actions.
+	 * On game ended stop the action queue consumer.
 	 * 
 	 * @param matchPoints
 	 *            points made by every player in this game
@@ -338,8 +337,10 @@ public class LocalBot implements LocalBotInterface {
 	}
 
 	/**
+	 * On game started take cards and eventually pass cards
 	 * 
 	 * @param cards
+	 *            the card received by this bot
 	 */
 	private void onGameStarted(Card[] cards) {
 		System.out.println("\n" + botName + ": notifyGameStarted("
@@ -352,11 +353,24 @@ public class LocalBot implements LocalBotInterface {
 			passCards();
 	}
 
+	/**
+	 * On local chat message throw an exception because a bot should not be
+	 * notified of a new chat message
+	 * 
+	 * @param message
+	 *            the new local chat message
+	 */
 	private void onLocalChatMessage(ChatMessage message) {
 		throw new UnsupportedOperationException(
 				"a bot should not be notified of chat messages");
 	}
 
+	/**
+	 * On passed cards take cards and eventually play
+	 * 
+	 * @param cards
+	 *            the cards received form another player
+	 */
 	private void onPassedCards(final Card[] cards) {
 		System.out.println("\n" + botName + ": notifyPassedCards("
 				+ Arrays.toString(cards) + ")");
@@ -375,13 +389,34 @@ public class LocalBot implements LocalBotInterface {
 		}
 	}
 
+	/**
+	 * On played card, record card played and eventually play a card
+	 * 
+	 * @param card
+	 *            card played
+	 * @param playerPosition
+	 *            position of played who played
+	 */
 	private void onPlayedCard(Card card, int playerPosition) {
 		System.out.println("\n" + botName + ": notifyPlayedCard(" + card + ", "
 				+ playerPosition + ")");
 		setCardPlayed(card, playerPosition);
 	}
 
-	private void onPlayerJoined(String name, boolean isBot, int point,
+	/**
+	 * On player joined, add specified player in this bot game status
+	 * 
+	 * @param name
+	 *            name of player who joined
+	 * @param isBot
+	 *            <tt>true</tt> if player who joined is bot; <tt>false</tt>
+	 *            otherwise
+	 * @param score
+	 *            score of player who joined
+	 * @param position
+	 *            position of player who joined
+	 */
+	private void onPlayerJoined(String name, boolean isBot, int score,
 			int position) {
 		System.out.println("\n" + botName + ": notifyPlayerJoined(" + name
 				+ ", " + isBot + ")");
@@ -397,6 +432,12 @@ public class LocalBot implements LocalBotInterface {
 		initialTableStatus.whoIsBot[position] = isBot;
 	}
 
+	/**
+	 * On player left, remove specified player form this bot game status
+	 * 
+	 * @param name
+	 *            name of player who left
+	 */
 	private void onPlayerLeft(String name) {
 		System.out.print("\n" + botName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
@@ -410,6 +451,14 @@ public class LocalBot implements LocalBotInterface {
 		System.out.println(initialTableStatus);
 	}
 
+	/**
+	 * On player replaced, replace specified player in this bot game status
+	 * 
+	 * @param botName
+	 *            name of bot who replaced player in specified position
+	 * @param position
+	 *            position of player who left
+	 */
 	private void onPlayerReplaced(String botName, int position) {
 		System.out.print("\n" + botName + ": notifyPlayerReplaced(" + botName
 				+ ", " + position + ")");
@@ -425,6 +474,9 @@ public class LocalBot implements LocalBotInterface {
 		initialTableStatus.whoIsBot[position] = true;
 	}
 
+	/**
+	 * Pass arbitrary sound cards
+	 */
 	private void passCards() {
 		Card[] cardsToPass = new Card[3];
 		for (int i = 0; i < 3; i++)
@@ -442,6 +494,9 @@ public class LocalBot implements LocalBotInterface {
 		});
 	}
 
+	/**
+	 * Add a play card action in the queue
+	 */
 	private void playCard() {
 		actionQueue.enqueue(new Action() {
 			@Override
@@ -461,6 +516,12 @@ public class LocalBot implements LocalBotInterface {
 		});
 	}
 
+	/**
+	 * Pass specified cards
+	 * 
+	 * @param cardsToPass
+	 *            cards to pass
+	 */
 	private void processPassCards(Card[] cardsToPass) {
 		try {
 			System.out.println("\n" + botName + ": passCards("
@@ -482,6 +543,12 @@ public class LocalBot implements LocalBotInterface {
 		}
 	}
 
+	/**
+	 * Play specified card
+	 * 
+	 * @param card
+	 *            card to play
+	 */
 	private void processPlayCard(Card card) {
 		try {
 			System.out.println("\n" + botName + ": playCard(" + card + ")");
@@ -508,6 +575,14 @@ public class LocalBot implements LocalBotInterface {
 		}
 	}
 
+	/**
+	 * Change this bot status when specified player play specified card
+	 * 
+	 * @param card
+	 *            card played
+	 * @param playerPosition
+	 *            position of player who played
+	 */
 	private void setCardPlayed(Card card, int playerPosition) {
 		if (firstDealer == -1) {
 			firstDealer = playerPosition;
@@ -553,6 +628,12 @@ public class LocalBot implements LocalBotInterface {
 		}
 	}
 
+	/**
+	 * Change this bot status when this bot pass specified cards
+	 * 
+	 * @param cardsToPass
+	 *            card played
+	 */
 	private void setCardsPassed(Card[] cardsToPass) {
 		alreadyPassedCards = true;
 		if (cardsToPass.length != 3)

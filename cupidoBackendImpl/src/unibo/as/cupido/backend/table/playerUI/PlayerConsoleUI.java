@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.rmi.AccessException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -240,9 +241,11 @@ public class PlayerConsoleUI {
 	 * <tt>true</tt> after execution of command exit or end of input file;
 	 * <tt>false</tt> otherwise
 	 */
-	private boolean exit;
+	private boolean exit = false;
 	/** current input line */
 	private String currentInputLine;
+
+	private ServletNotificationsInterface servletNotificationsInterface;
 
 	/**
 	 * Creates a player command line user interface which reads from
@@ -406,8 +409,10 @@ public class PlayerConsoleUI {
 			remoteBot = new AutomaticServlet(new InitialTableStatus(
 					new String[3], new int[3], new boolean[3]), null,
 					playerName);
+			servletNotificationsInterface = remoteBot
+					.getServletNotificationsInterface();
 			botNotification = (ServletNotificationsInterface) UnicastRemoteObject
-					.exportObject(remoteBot.getServletNotificationsInterface());
+					.exportObject(servletNotificationsInterface);
 
 			remoteBot.singleTableManager = gtm.createTable(playerName,
 					botNotification);
@@ -428,22 +433,40 @@ public class PlayerConsoleUI {
 	 */
 	private void executeExit() {
 		exit = true;
-		try {
-			if (remoteBot != null) {
-				remoteBot.singleTableManager.leaveTable(playerName);
-			} else if (remoteViewer != null) {
-				remoteViewer.singleTableManager.leaveTable(playerName);
+
+		if (remoteBot != null) {
+			remoteBot.actionQueue.killConsumer();
+			try {
+				UnicastRemoteObject.unexportObject(servletNotificationsInterface, true);
+			} catch (NoSuchObjectException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-		} catch (Exception e) {
-			//
+			try {
+				remoteBot.singleTableManager.leaveTable(playerName);
+			} catch (Exception e) {
+				//
+			}
+		} else if (remoteViewer != null) {
+			remoteBot.actionQueue.killConsumer();
+			try {
+				UnicastRemoteObject.unexportObject(servletNotificationsInterface, true);
+			} catch (NoSuchObjectException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				remoteViewer.singleTableManager.leaveTable(playerName);
+			} catch (Exception e) {
+				//
+			}
 		}
 		try {
 			in.close();
 		} catch (IOException e) {
 			//
 		}
-		//FIXME why test1 does not work without the next line?
-		System.exit(-1);
+		System.out.println(">>>>>>>>> exiting ");
 	}
 
 	/**
@@ -760,10 +783,11 @@ public class PlayerConsoleUI {
 				prompt();
 				parseCommand();
 			} while (error);
-			
-			execute();
-			out.flush();
+			if (!exit) {
+				execute();
+				out.flush();
+			}
 		}
-		out.println("bye!");
+		System.out.println("bye!");
 	}
 }
