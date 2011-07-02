@@ -335,7 +335,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 					@Override
 					public void onSuccess(RankingEntry rankingEntry) {
 						screenManager.displayTableScreen(username, true,
-								initialTableStatus, rankingEntry.points);
+								initialTableStatus, rankingEntry.score);
 					}
 				});
 			}

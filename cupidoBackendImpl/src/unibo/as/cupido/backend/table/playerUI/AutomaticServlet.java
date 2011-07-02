@@ -165,7 +165,7 @@ public class AutomaticServlet {
 	private boolean ableToPlay = false;
 	/** <tt>true</tt> if this can pass cards; <tt>false</tt>otherwise */
 	private boolean ableToPass = false;
-	/** this player current points */
+	/** this player current score */
 	private int points = 0;
 	/** execute action */
 	ActionQueue actionQueue = new ActionQueue();

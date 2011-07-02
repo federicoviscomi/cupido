@@ -115,7 +115,7 @@ public interface CupidoInterface extends RemoteService {
 			throws UserNotAuthenticatedException, FatalException;
 
 	/**
-	 * @return The player's name, rank and points.
+	 * @return The player's name, rank and score.
 	 * @throws UserNotAuthenticatedException
 	 *             If the user is not logged in.
 	 * @throws FatalException

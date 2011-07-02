@@ -67,8 +67,8 @@ public class CometMessageListener {
 	 * This is called when a GameEnded notification is received
 	 * from the servlet.
 	 * 
-	 * @param matchPoints The points scored by the players during the current game.
-	 * @param playersTotalPoints The total points of the players, already updated
+	 * @param matchPoints The score scored by the players during the current game.
+	 * @param playersTotalPoints The total score of the players, already updated
 	 *                           with the results of the current game.
 	 * 
 	 * @see GameEnded
@@ -111,7 +111,7 @@ public class CometMessageListener {
 	 * 
 	 * @param name The name of the player who joined the game.
 	 * @param isBot Specifies whether the player is a user or a bot.
-	 * @param points The (global) points of the player.
+	 * @param score The (global) score of the player.
 	 * @param position The position of the player in the table.
 	 * 
 	 * @see NewPlayerJoined

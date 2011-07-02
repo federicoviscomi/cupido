@@ -19,17 +19,25 @@ package unibo.as.cupido.common.structures;
 
 import java.io.Serializable;
 
+/**
+ * Used to convey ranking information for a user.
+ */
 public class RankingEntry implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+	/**name of user*/
 	public String username;
+	/**rank of user*/
 	public int rank;
-	public int points;
-	public RankingEntry(){
+	/**score of user*/
+	public int score;
+
+	public RankingEntry() {
+		//
 	}
-	public RankingEntry(String username, int rank, int points){
-		this.username=username;
-		this.rank=rank;
-		this.points=points;
+
+	public RankingEntry(String username, int rank, int score) {
+		this.username = username;
+		this.rank = rank;
+		this.score = score;
 	}
 }

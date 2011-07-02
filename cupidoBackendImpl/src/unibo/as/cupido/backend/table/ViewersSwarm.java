@@ -87,7 +87,7 @@ public class ViewersSwarm {
 	 * Notify all viewers game ended.
 	 * 
 	 * @param matchPoints
-	 *            points of the match
+	 *            score of the match
 	 * @param playersTotalPoint
 	 *            score of players in the match
 	 */

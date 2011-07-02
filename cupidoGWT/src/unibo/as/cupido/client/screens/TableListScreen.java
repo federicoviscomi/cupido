@@ -239,7 +239,7 @@ public class TableListScreen extends VerticalPanel implements Screen {
 				final TableInfoForClient tableInfoForClient = selectionModel
 						.getSelectedObject();
 				freeze();
-				// Get the user's points *before* calling join, to avoid
+				// Get the user's score *before* calling join, to avoid
 				// losing comet notifications after the join.
 				cupidoService.getMyRank(new AsyncCallback<RankingEntry>() {
 					@Override
@@ -284,7 +284,7 @@ public class TableListScreen extends VerticalPanel implements Screen {
 										screenManager.displayTableScreen(
 												username, false,
 												initialTableStatus,
-												rankingEntry.points);
+												rankingEntry.score);
 									}
 								});
 					}

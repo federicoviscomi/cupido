@@ -122,8 +122,8 @@ public interface ViewerStateManager {
 	 * This is called when a GameEnded notification is received
 	 * from the servlet.
 	 * 
-	 * @param matchPoints The points scored by the players during the current game.
-	 * @param playersTotalPoints The total points of the players, already updated
+	 * @param matchPoints The score scored by the players during the current game.
+	 * @param playersTotalPoints The total score of the players, already updated
 	 *                           with the results of the current game.
 	 * 
 	 * @see GameEnded

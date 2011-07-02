@@ -34,9 +34,9 @@ public interface ServletNotificationsInterface extends Remote {
 	 * arguments are <code>null</code>.
 	 * 
 	 * @param matchPoints
-	 *            points the player has taken during this hand
+	 *            score the player has taken during this hand
 	 * @param playersTotalPoint
-	 *            points of the player updated after this match
+	 *            score of the player updated after this match
 	 */
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint)
 			throws RemoteException;

@@ -882,14 +882,14 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * Displays the points and the new users' scores.
+	 * Displays the score and the new users' scores.
 	 * 
 	 * Both parameters are arrays of size 4, containing information regarding
 	 * each player. The first elements contain information about the bottom
 	 * player, and other elements contain information about the other players,
 	 * in clockwise order.
 	 * 
-	 * @param matchPoints The points scored by players in the current game.
+	 * @param matchPoints The score scored by players in the current game.
 	 * @param totalScore The global scores. This array contains unspecified
 	 *                   values for bots.
 	 */

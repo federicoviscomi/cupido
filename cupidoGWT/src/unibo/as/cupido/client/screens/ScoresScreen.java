@@ -57,7 +57,7 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 		if (highlight)
 			builder.appendHtmlConstant("</b>");
 		builder.appendHtmlConstant(": ");
-		builder.append(entry.points);
+		builder.append(entry.score);
 		builder.appendHtmlConstant("<br />");
 		HTML row = new HTML(builder.toSafeHtml());
 		row.setWidth("290px");

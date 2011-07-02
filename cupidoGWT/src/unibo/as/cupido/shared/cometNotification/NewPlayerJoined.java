@@ -23,7 +23,7 @@ import java.io.Serializable;
  * This notification in sent when a player or a bot joins the table
  * before the game start.
  * 
- * If {@link isBot}==true, the variable {@link points} is meaningless.
+ * If {@link isBot}==true, the variable {@link score} is meaningless.
  */
 public class NewPlayerJoined implements Serializable {
 
@@ -37,7 +37,7 @@ public class NewPlayerJoined implements Serializable {
 	public boolean isBot;
 
 	/*
-	 * player total points
+	 * player total score
 	 */
 	public int points;
 

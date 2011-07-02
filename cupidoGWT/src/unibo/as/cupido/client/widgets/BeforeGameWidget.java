@@ -108,7 +108,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * Construct the text for a user's label.
 	 * 
 	 * @param username The name of the user.
-	 * @param points The global points of the specified user.
+	 * @param score The global score of the specified user.
 	 * 
 	 * @return The text for the user's label.
 	 */
@@ -369,7 +369,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * A helper method to add a player to the table.
 	 * 
 	 * @param username The name of the player.
-	 * @param points The global points of the specified player.
+	 * @param score The global score of the specified player.
 	 * @param position The position where the player has to be added.
 	 */
 	private void addPlayer(String username, int points, int position) {
@@ -410,8 +410,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * This is called when a GameEnded notification is received
 	 * from the servlet.
 	 * 
-	 * @param matchPoints The points scored by the players during the current game.
-	 * @param playersTotalPoints The total points of the players, already updated
+	 * @param matchPoints The score scored by the players during the current game.
+	 * @param playersTotalPoints The total score of the players, already updated
 	 *                           with the results of the current game.
 	 * 
 	 * @see GameEnded
@@ -431,7 +431,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * 
 	 * @param name The name of the player who joined the game.
 	 * @param isBot Specifies whether the player is a user or a bot.
-	 * @param points The (global) points of the player.
+	 * @param score The (global) score of the player.
 	 * @param position The position of the player in the table.
 	 * 
 	 * @see NewPlayerJoined

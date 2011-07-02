@@ -97,7 +97,7 @@ public class CardsManager {
 	private int firstDealerInTurn = -1;
 	/** the number of turn made in this hand */
 	private int turn = 0;
-	/** stores round points of every player */
+	/** stores round score of every player */
 	private int[] points = new int[4];
 	/**
 	 * <code>true</code> if some player correctly played an hearts at some point
@@ -248,10 +248,10 @@ public class CardsManager {
 	}
 
 	/**
-	 * Returns an array of four position which stores each player points in this
+	 * Returns an array of four position which stores each player score in this
 	 * match
 	 * 
-	 * @return an array of four position which stores each player points in this
+	 * @return an array of four position which stores each player score in this
 	 *         match
 	 */
 	public int[] getMatchPoints() {

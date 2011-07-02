@@ -31,14 +31,14 @@ public class GameEnded implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/*
-	 * matchPoint[0] are your points, if you have played matchPoint[0] are the
-	 * creator's points if you were viewing the others are in clockwise order
+	 * matchPoint[0] are your score, if you have played matchPoint[0] are the
+	 * creator's score if you were viewing the others are in clockwise order
 	 */
 	public int[] matchPoints;
 
 	/*
-	 * matchPoint[0] are your points, if you have played matchPoint[0] are the
-	 * creator's points if you were viewing the others are in clockwise order
+	 * matchPoint[0] are your score, if you have played matchPoint[0] are the
+	 * creator's score if you were viewing the others are in clockwise order
 	 */
 	public int[] playersTotalPoints;
 

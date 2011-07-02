@@ -75,7 +75,7 @@ public class LocalBot implements LocalBotInterface {
 	private boolean alreadyGotCards = false;
 	/** <tt>true</tt> if game is broken hearted; <tt>false</tt> otherwise */
 	private boolean brokenHearted = false;
-	/** this bot points in this match */
+	/** this bot score in this match */
 	private int points = 0;
 	/**
 	 * <tt>true</tt> if this bot is active; <tt>false</tt> otherwise, in this
@@ -328,7 +328,7 @@ public class LocalBot implements LocalBotInterface {
 	 * On game ended stop the action queue consumer.
 	 * 
 	 * @param matchPoints
-	 *            points made by every player in this game
+	 *            score made by every player in this game
 	 * @param playersTotalPoint
 	 *            new scores of every players
 	 */

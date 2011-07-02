@@ -22,6 +22,9 @@ package unibo.as.cupido.common.structures;
 
 import java.io.Serializable;
 
+/**
+ * A card.
+ */
 public class Card implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -30,11 +33,9 @@ public class Card implements Serializable {
 		DIAMONDS, SPADES, HEARTS, CLUBS
 	}
 
+	/** suit of this card */
 	public Suit suit;
-	/*
-	 * 
-	 * Cards value range is [1-13]
-	 */
+	/** value range is [1-13] */
 	public int value;
 
 	public Card(int value, Suit suit) {

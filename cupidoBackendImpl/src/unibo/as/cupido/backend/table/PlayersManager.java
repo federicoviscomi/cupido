@@ -52,7 +52,7 @@ public class PlayersManager {
 		final String name;
 
 		/**
-		 * player global score. Not points! This field is meaningful if and only
+		 * player global score. Not score! This field is meaningful if and only
 		 * if <code>isBot == false</code>
 		 */
 		int score;
@@ -456,7 +456,7 @@ public class PlayersManager {
 	 * Notify every player that game ended.
 	 * 
 	 * @param matchPoints
-	 *            points of every player in this match
+	 *            score of every player in this match
 	 * @param playersTotalPoint
 	 *            score of every player
 	 */
@@ -891,10 +891,10 @@ public class PlayersManager {
 
 	/**
 	 * After the game ends, score of every player are updated according to match
-	 * points.
+	 * score.
 	 * 
 	 * @param matchPoints
-	 *            points of every player in this match
+	 *            score of every player in this match
 	 * @return new score of every players
 	 */
 	public int[] updateScore(int[] matchPoints) {
