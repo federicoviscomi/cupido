@@ -58,7 +58,6 @@ public class ChatMessage implements Serializable {
 		return userName + ": " + message;
 	}
 
-	@Override
 	public ChatMessage clone() {
 		return new ChatMessage(userName, message);
 	}

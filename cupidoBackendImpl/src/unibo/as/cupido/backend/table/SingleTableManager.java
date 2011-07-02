@@ -379,7 +379,7 @@ public class SingleTableManager implements TableInterface {
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
 		if (!gameStatus.equals(GameStatus.PASSING_CARDS))
-			throw new WrongGameStateException(GameStatus.PASSING_CARDS);
+			throw new WrongGameStateException(GameStatus.PASSING_CARDS.toString());
 		/*
 		 * NOTE: playerName is name of the player who passes cards. Not name of
 		 * the player who receives the cards!
@@ -411,7 +411,7 @@ public class SingleTableManager implements TableInterface {
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
 		if (!gameStatus.equals(GameStatus.STARTED))
-			throw new WrongGameStateException(GameStatus.STARTED);
+			throw new WrongGameStateException(GameStatus.STARTED.toString());
 		if (userName == null || card == null)
 			throw new IllegalArgumentException("playerName " + userName
 					+ " card " + card);
@@ -445,7 +445,7 @@ public class SingleTableManager implements TableInterface {
 		if (gameStatus == GameStatus.INTERRUPTED)
 			throw new GameInterruptedException();
 		if (gameStatus == GameStatus.ENDED)
-			throw new WrongGameStateException(GameStatus.ENDED);
+			throw new WrongGameStateException(GameStatus.ENDED.toString());
 		if (viewerName == null || snf == null)
 			throw new IllegalArgumentException();
 		viewers.addViewer(viewerName, snf);

@@ -62,7 +62,6 @@ public class Card implements Serializable {
 		return this.value == otherCard.value && this.suit == otherCard.suit;
 	}
 
-	@Override
 	public Card clone() {
 		return new Card(value, suit);
 	}

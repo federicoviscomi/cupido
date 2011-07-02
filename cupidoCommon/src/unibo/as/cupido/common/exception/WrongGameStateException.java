@@ -19,8 +19,6 @@ package unibo.as.cupido.common.exception;
 
 import java.io.Serializable;
 
-import unibo.as.cupido.common.interfaces.TableInterface.GameStatus;
-
 /**
  * Signals that a method has been invoked at an illegal or inappropriate time.
  * In other words, the game is not in an appropriate state for the requested
@@ -29,10 +27,6 @@ import unibo.as.cupido.common.interfaces.TableInterface.GameStatus;
 public class WrongGameStateException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	public WrongGameStateException(GameStatus status) {
-		super(status.toString());
-	}
 
 	public WrongGameStateException(String message) {
 		super(message);
