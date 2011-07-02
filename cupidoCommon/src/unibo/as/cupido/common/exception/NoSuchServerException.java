@@ -28,4 +28,8 @@ public class NoSuchServerException extends Exception implements Serializable {
 	public NoSuchServerException(String serverName) {
 		super(serverName);
 	}
+	
+	public NoSuchServerException() {
+		//
+	}
 }

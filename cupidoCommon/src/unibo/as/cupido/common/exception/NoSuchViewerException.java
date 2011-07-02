@@ -9,5 +9,9 @@ public class NoSuchViewerException extends Exception {
 		super(viewerName);
 	}
 
+	public NoSuchViewerException() {
+		//
+	}
+	
 	private static final long serialVersionUID = 1L;
 }

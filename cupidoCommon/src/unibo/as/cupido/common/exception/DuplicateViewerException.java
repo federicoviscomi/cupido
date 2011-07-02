@@ -13,4 +13,8 @@ public class DuplicateViewerException extends Exception implements Serializable 
 	public DuplicateViewerException(String viewerName) {
 		super(viewerName);
 	}
+	
+	public DuplicateViewerException() {
+		//
+	}
 }

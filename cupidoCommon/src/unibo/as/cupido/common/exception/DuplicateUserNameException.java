@@ -35,5 +35,8 @@ public class DuplicateUserNameException extends Exception implements
 	public DuplicateUserNameException(String userName) {
 		super(userName);
 	}
-
+	
+	public DuplicateUserNameException() {
+		//
+	}
 }

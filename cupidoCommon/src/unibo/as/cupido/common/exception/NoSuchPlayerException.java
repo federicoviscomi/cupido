@@ -17,4 +17,7 @@ public class NoSuchPlayerException extends Exception implements Serializable {
 		super("there is no player in position: " + position);
 	}
 
+	public NoSuchPlayerException() {
+		//
+	}
 }

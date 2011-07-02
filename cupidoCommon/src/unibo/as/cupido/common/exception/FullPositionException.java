@@ -29,6 +29,10 @@ public class FullPositionException extends Exception implements Serializable {
 		super(Integer.toString(position));
 	}
 
+	public FullPositionException() {
+		//
+	}
+
 	private static final long serialVersionUID = 1L;
 
 }

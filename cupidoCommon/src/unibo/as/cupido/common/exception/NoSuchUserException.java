@@ -30,4 +30,7 @@ public class NoSuchUserException extends Exception implements Serializable {
 		super(userName);
 	}
 
+	public NoSuchUserException() {
+	//
+	}
 }

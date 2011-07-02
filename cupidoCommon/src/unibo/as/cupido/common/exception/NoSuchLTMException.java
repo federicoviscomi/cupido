@@ -26,7 +26,10 @@ public class NoSuchLTMException extends Exception implements Serializable {
 	public NoSuchLTMException(String ltmId) {
 		super(ltmId);
 	}
-
+	
+	public NoSuchLTMException() {
+		//
+	}
 	private static final long serialVersionUID = 1L;
 
 }

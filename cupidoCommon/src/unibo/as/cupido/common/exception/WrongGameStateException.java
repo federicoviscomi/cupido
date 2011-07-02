@@ -37,4 +37,8 @@ public class WrongGameStateException extends Exception implements Serializable {
 	public WrongGameStateException(String message) {
 		super(message);
 	}
+	
+	public WrongGameStateException() {
+		//
+	}
 }

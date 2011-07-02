@@ -30,4 +30,7 @@ public class EmptyTableException extends Exception implements Serializable {
 		super(string);
 	}
 
+	public EmptyTableException() {
+		//
+	}
 }

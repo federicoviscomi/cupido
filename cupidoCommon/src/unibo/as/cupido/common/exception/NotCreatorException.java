@@ -30,4 +30,7 @@ public class NotCreatorException extends Exception implements Serializable {
 		super(userName);
 	}
 
+	public NotCreatorException() {
+		//
+	}
 }
