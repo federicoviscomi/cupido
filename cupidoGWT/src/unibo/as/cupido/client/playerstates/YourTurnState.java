@@ -46,88 +46,25 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class YourTurnState implements PlayerState {
 
 	/**
-	 * Decides whether or not the user can play a specific card,
-	 * depending on its hand, on the card already played in the current
-	 * trick, and on whether or not the hearts have been broken yet.
-	 * 
-	 * @param card The card that the user is attempting to play.
-	 * @param playedCards The ordered list of the cards played in this trick.
-	 * @param hand The cards that the current player has in its hand.
-	 * @param areHeartsBroken Specifies whether or not the hearts have been broken yet.
-	 * @return true is the player can play the specified card. false otherwise.
-	 */
-	private static boolean canPlayCard(Card card, List<Card> playedCards,
-			List<Card> hand, boolean areHeartsBroken) {
-
-		if (playedCards.size() == 0) {
-			// This is the first card in the trick.
-
-			// If this was the first trick in the game, the active state
-			// would be FirstLeader.
-			assert hand.size() < 13;
-
-			if (areHeartsBroken)
-				// Any card will is ok.
-				return true;
-
-			// The player must not play hearts, if possible.
-			boolean hasOnlyHearts = true;
-
-			for (Card x : hand)
-				if (x.suit != Card.Suit.HEARTS) {
-					hasOnlyHearts = false;
-					break;
-				}
-
-			if (hasOnlyHearts)
-				return true;
-			else
-				return card.suit != Card.Suit.HEARTS;
-		}
-
-		// This is not the first card in a trick, so the player must play a card
-		// with the
-		// same suit, if possible.
-
-		Card.Suit suit = playedCards.get(0).suit;
-
-		boolean hasSameSuit = false;
-
-		for (Card handCard : hand)
-			if (handCard.suit == suit) {
-				hasSameSuit = true;
-				break;
-			}
-
-		if (hasSameSuit)
-			return card.suit == suit;
-
-		// The player has no card with that suit, so he is allowed to play any
-		// card.
-
-		return true;
-	}
-
-	/**
 	 * The widget that displays the game.
 	 */
 	private CardsGameWidget cardsGameWidget;
-	
+
 	/**
 	 * This is used to communicate with the servlet using RPC.
 	 */
 	private CupidoInterfaceAsync cupidoService;
-
+	
 	/**
 	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
 	 */
 	private boolean frozen = false;
-	
+
 	/**
 	 * The list of the cards that the current user has in his hand.
 	 */
 	private List<Card> hand;
-
+	
 	/**
 	 * The widget that displays the current message in the top-right corner
 	 * of the table.
@@ -321,5 +258,68 @@ public class YourTurnState implements PlayerState {
 		if (frozen)
 			return;
 		// Nothing to do.
+	}
+
+	/**
+	 * Decides whether or not the user can play a specific card,
+	 * depending on its hand, on the card already played in the current
+	 * trick, and on whether or not the hearts have been broken yet.
+	 * 
+	 * @param card The card that the user is attempting to play.
+	 * @param playedCards The ordered list of the cards played in this trick.
+	 * @param hand The cards that the current player has in its hand.
+	 * @param areHeartsBroken Specifies whether or not the hearts have been broken yet.
+	 * @return true is the player can play the specified card. false otherwise.
+	 */
+	private static boolean canPlayCard(Card card, List<Card> playedCards,
+			List<Card> hand, boolean areHeartsBroken) {
+
+		if (playedCards.size() == 0) {
+			// This is the first card in the trick.
+
+			// If this was the first trick in the game, the active state
+			// would be FirstLeader.
+			assert hand.size() < 13;
+
+			if (areHeartsBroken)
+				// Any card will is ok.
+				return true;
+
+			// The player must not play hearts, if possible.
+			boolean hasOnlyHearts = true;
+
+			for (Card x : hand)
+				if (x.suit != Card.Suit.HEARTS) {
+					hasOnlyHearts = false;
+					break;
+				}
+
+			if (hasOnlyHearts)
+				return true;
+			else
+				return card.suit != Card.Suit.HEARTS;
+		}
+
+		// This is not the first card in a trick, so the player must play a card
+		// with the
+		// same suit, if possible.
+
+		Card.Suit suit = playedCards.get(0).suit;
+
+		boolean hasSameSuit = false;
+
+		for (Card handCard : hand)
+			if (handCard.suit == suit) {
+				hasSameSuit = true;
+				break;
+			}
+
+		if (hasSameSuit)
+			return card.suit == suit;
+
+		// The player has no card with that suit, so he is allowed to play any
+		// card.
+
+		return true;
 	}
 }

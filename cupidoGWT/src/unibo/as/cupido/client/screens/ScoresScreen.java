@@ -40,36 +40,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class ScoresScreen extends VerticalPanel implements Screen {
 
 	/**
-	 * Constructs a widget that displays the rank and the score of
-	 * a user in a row.
-	 * 
-	 * @param entry The <code>RankingEntry</code> of the user.
-	 * @param highlight Whether or not to highlight this row.
-	 * @return The constructed widget.
-	 */
-	private static HTML constructRow(RankingEntry entry, boolean highlight) {
-		SafeHtmlBuilder builder = new SafeHtmlBuilder();
-		builder.append(entry.rank);
-		builder.appendHtmlConstant(". ");
-		if (highlight)
-			builder.appendHtmlConstant("<b>");
-		builder.appendEscaped(entry.username);
-		if (highlight)
-			builder.appendHtmlConstant("</b>");
-		builder.appendHtmlConstant(": ");
-		builder.append(entry.score);
-		builder.appendHtmlConstant("<br />");
-		HTML row = new HTML(builder.toSafeHtml());
-		row.setWidth("290px");
-		DOM.setStyleAttribute(row.getElement(), "padding", "2px");
-		if (highlight) {
-			DOM.setStyleAttribute(row.getElement(), "borderWidth", "1px");
-			DOM.setStyleAttribute(row.getElement(), "borderStyle", "solid");
-		}
-		return row;
-	}
-
-	/**
 	 * The button that takes back to the main menu.
 	 */
 	private PushButton exitButton;
@@ -146,6 +116,46 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 		add(exitButton);
 	}
 
+	@Override
+	public void freeze() {
+		exitButton.setEnabled(false);
+		frozen = true;
+	}
+
+	@Override
+	public void prepareRemoval() {
+	}
+
+	/**
+	 * Constructs a widget that displays the rank and the score of
+	 * a user in a row.
+	 * 
+	 * @param entry The <code>RankingEntry</code> of the user.
+	 * @param highlight Whether or not to highlight this row.
+	 * @return The constructed widget.
+	 */
+	private static HTML constructRow(RankingEntry entry, boolean highlight) {
+		SafeHtmlBuilder builder = new SafeHtmlBuilder();
+		builder.append(entry.rank);
+		builder.appendHtmlConstant(". ");
+		if (highlight)
+			builder.appendHtmlConstant("<b>");
+		builder.appendEscaped(entry.username);
+		if (highlight)
+			builder.appendHtmlConstant("</b>");
+		builder.appendHtmlConstant(": ");
+		builder.append(entry.score);
+		builder.appendHtmlConstant("<br />");
+		HTML row = new HTML(builder.toSafeHtml());
+		row.setWidth("290px");
+		DOM.setStyleAttribute(row.getElement(), "padding", "2px");
+		if (highlight) {
+			DOM.setStyleAttribute(row.getElement(), "borderWidth", "1px");
+			DOM.setStyleAttribute(row.getElement(), "borderStyle", "solid");
+		}
+		return row;
+	}
+
 	/**
 	 * @return Constructs a widget that displays a vertical column of black dots.
 	 */
@@ -162,15 +172,5 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 		DOM.setStyleAttribute(box.getElement(), "borderLeftWidth", "3px");
 		DOM.setStyleAttribute(box.getElement(), "borderLeftStyle", "dotted");
 		return boxContainer;
-	}
-
-	@Override
-	public void freeze() {
-		exitButton.setEnabled(false);
-		frozen = true;
-	}
-
-	@Override
-	public void prepareRemoval() {
 	}
 }

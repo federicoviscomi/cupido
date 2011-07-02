@@ -52,15 +52,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 	/**
+	 * The width of the chat sidebar.
+	 */
+	public static final int chatWidth = 300;
+
+	/**
 	 * The interval between subsequent polls to the (global) chat, in
 	 * milliseconds.
 	 */
 	private final static int chatRefreshInterval = 2000;
-
-	/**
-	 * The width of the chat sidebar.
-	 */
-	public static final int chatWidth = 300;
 
 	/**
 	 * A list containing all the buttons in the left column of the main menu.
@@ -298,6 +298,12 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 		frozen = true;
 	}
 
+	@Override
+	public void prepareRemoval() {
+		stoppedRefreshing = true;
+		chatTimer.cancel();
+	}
+
 	/**
 	 * This is called when the user clicks the "Create table" button.
 	 */
@@ -410,11 +416,5 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 				screenManager.displayLoginScreen();
 			}
 		});
-	}
-
-	@Override
-	public void prepareRemoval() {
-		stoppedRefreshing = true;
-		chatTimer.cancel();
 	}
 }

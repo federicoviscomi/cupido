@@ -215,6 +215,24 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 		bottomPanel.add(okButton);
 	}
 
+	@Override
+	public void freeze() {
+		usernameBox.setEnabled(false);
+		passwordBox.setEnabled(false);
+		passwordConfirmBox.setEnabled(false);
+
+		okButton.setEnabled(false);
+		abortButton.setEnabled(false);
+
+		checkUsernameAvailability.setEnabled(false);
+
+		frozen = true;
+	}
+
+	@Override
+	public void prepareRemoval() {
+	}
+
 	/**
 	 * Checks whether or not the entered username is still available.
 	 */
@@ -263,24 +281,6 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 						}
 					}
 				});
-	}
-
-	@Override
-	public void freeze() {
-		usernameBox.setEnabled(false);
-		passwordBox.setEnabled(false);
-		passwordConfirmBox.setEnabled(false);
-
-		okButton.setEnabled(false);
-		abortButton.setEnabled(false);
-
-		checkUsernameAvailability.setEnabled(false);
-
-		frozen = true;
-	}
-
-	@Override
-	public void prepareRemoval() {
 	}
 
 	/**

@@ -44,44 +44,6 @@ public class CardWidget extends Image {
 	public static final int cardWidth = 72;
 
 	/**
-	 * A helper method that constructs the file name of the correct
-	 * image from the provided arguments.
-	 * 
-	 * @param card The desired card.
-	 * @param rotation The desired rotation for the card, in degrees.
-	 * 
-	 * @return The filename of the desired image.
-	 */
-	private static String constructCardName(Card card, int rotation) {
-		final String path_prefix = "classic_cards/";
-		rotation = rotation % 360;
-		assert rotation % 90 == 0;
-		String result = path_prefix + "rotated_" + rotation + "/";
-		if (card == null)
-			return result + "back_blue.png";
-		Suit suit = card.suit;
-		int value = card.value;
-		assert value >= 1;
-		assert value <= 13;
-		result += value + "_";
-		switch (suit) {
-		case CLUBS:
-			result += "clubs";
-			break;
-		case DIAMONDS:
-			result += "diamonds";
-			break;
-		case HEARTS:
-			result += "hearts";
-			break;
-		case SPADES:
-			result += "spades";
-			break;
-		}
-		return result + ".png";
-	}
-
-	/**
 	 * The card currently displayed by this widget.
 	 */
 	private Card card;
@@ -147,18 +109,6 @@ public class CardWidget extends Image {
 	}
 
 	/**
-	 * A helper method to prevent the user from dragging the card.
-	 */
-	private void preventDrag() {
-		addMouseDownHandler(new MouseDownHandler() {
-			@Override
-			public void onMouseDown(MouseDownEvent event) {
-				event.preventDefault();
-			}
-		});
-	}
-
-	/**
 	 * Changes the displayed card to <code>newCard</code>.
 	 * 
 	 * @param newCard The desired card.
@@ -183,5 +133,55 @@ public class CardWidget extends Image {
 			return;
 		this.rotation = newRotation;
 		setUrl(constructCardName(card, rotation));
+	}
+
+	/**
+	 * A helper method to prevent the user from dragging the card.
+	 */
+	private void preventDrag() {
+		addMouseDownHandler(new MouseDownHandler() {
+			@Override
+			public void onMouseDown(MouseDownEvent event) {
+				event.preventDefault();
+			}
+		});
+	}
+
+	/**
+	 * A helper method that constructs the file name of the correct
+	 * image from the provided arguments.
+	 * 
+	 * @param card The desired card.
+	 * @param rotation The desired rotation for the card, in degrees.
+	 * 
+	 * @return The filename of the desired image.
+	 */
+	private static String constructCardName(Card card, int rotation) {
+		final String path_prefix = "classic_cards/";
+		rotation = rotation % 360;
+		assert rotation % 90 == 0;
+		String result = path_prefix + "rotated_" + rotation + "/";
+		if (card == null)
+			return result + "back_blue.png";
+		Suit suit = card.suit;
+		int value = card.value;
+		assert value >= 1;
+		assert value <= 13;
+		result += value + "_";
+		switch (suit) {
+		case CLUBS:
+			result += "clubs";
+			break;
+		case DIAMONDS:
+			result += "diamonds";
+			break;
+		case HEARTS:
+			result += "hearts";
+			break;
+		case SPADES:
+			result += "spades";
+			break;
+		}
+		return result + ".png";
 	}
 }

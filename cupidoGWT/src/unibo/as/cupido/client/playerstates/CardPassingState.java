@@ -204,6 +204,36 @@ public class CardPassingState implements PlayerState {
 		return false;
 	}
 
+	@Override
+	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
+		if (frozen)
+			return false;
+
+		if (confirmed)
+			// Let the next state handle this.
+			return false;
+
+		stateManager.exit();
+		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
+		return true;
+	}
+
+	@Override
+	public boolean handleGameStarted(Card[] myCards) {
+		if (frozen)
+			return false;
+
+		// Let the next state handle this.
+		return false;
+	}
+
+	@Override
+	public void handlePlayerReplaced(String name, int position) {
+		if (frozen)
+			return;
+		// Nothing to do.
+	}
+
 	/**
 	 * This is called when the user confirms the selected cards.
 	 */
@@ -275,35 +305,5 @@ public class CardPassingState implements PlayerState {
 						stateManager.transitionToCardPassingWaiting(hand);
 					}
 				});
-	}
-
-	@Override
-	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints) {
-		if (frozen)
-			return false;
-
-		if (confirmed)
-			// Let the next state handle this.
-			return false;
-
-		stateManager.exit();
-		Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
-		return true;
-	}
-
-	@Override
-	public boolean handleGameStarted(Card[] myCards) {
-		if (frozen)
-			return false;
-
-		// Let the next state handle this.
-		return false;
-	}
-
-	@Override
-	public void handlePlayerReplaced(String name, int position) {
-		if (frozen)
-			return;
-		// Nothing to do.
 	}
 }

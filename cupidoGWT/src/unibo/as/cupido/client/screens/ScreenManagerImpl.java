@@ -339,6 +339,11 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 		switchingScreen = false;
 	}
 
+	@Override
+	public void setListener(CometMessageListener listener) {
+		cometMessageListener = listener;
+	}
+
 	/**
 	 * A helper method used to remove the current screen.
 	 */
@@ -347,10 +352,5 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 			return;
 		currentScreen.prepareRemoval();
 		remove(currentScreenWidget);
-	}
-
-	@Override
-	public void setListener(CometMessageListener listener) {
-		cometMessageListener = listener;
 	}
 }
