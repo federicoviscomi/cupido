@@ -149,7 +149,7 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 
 	/**
 	 * Initialize the state manager. The current user is a player, and his hand
-	 * cards are `cards'.
+	 * cards are <code>cards</code>.
 	 * 
 	 * @param tableSize The size of the table widget (width and height), in pixels.
 	 * @param screenManager The global screen manager.

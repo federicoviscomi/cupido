@@ -22,7 +22,7 @@ import java.io.Serializable;
 /**
  * This class is used for comet notifications.
  * 
- * A NewLocalChatMessage notification is sent when another user
+ * A <code>NewLocalChatMessage</code> notification is sent when another user
  * (either a player or a viewer) sends a message to a table's
  * chat.
  * 

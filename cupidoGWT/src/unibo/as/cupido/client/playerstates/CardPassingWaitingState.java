@@ -45,7 +45,7 @@ public class CardPassingWaitingState implements PlayerState {
 	private CardsGameWidget cardsGameWidget;
 	
 	/**
-	 * This specifies whether or not the PassedCards event has already been
+	 * This specifies whether or not the <code>CardPassed</code> event has already been
 	 * received.
 	 */
 	private boolean eventReceived = false;

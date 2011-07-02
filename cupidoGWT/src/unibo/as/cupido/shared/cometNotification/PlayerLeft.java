@@ -22,7 +22,7 @@ import java.io.Serializable;
 /**
  * This class is used for comet notifications.
  * 
- * A PlayerLeft notification is sent when a player leaves and
+ * A <code>PlayerLeft</code> notification is sent when a player leaves and
  * the game is not started yet, so that position becomes free.
  */
 public class PlayerLeft implements Serializable {

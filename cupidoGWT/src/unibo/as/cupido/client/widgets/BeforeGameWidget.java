@@ -130,8 +130,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 	/**
 	 * A list containing the displayed "Add bot" buttons (if any).
-	 * buttons.get(0) is the left button, and other buttons follow in clockwise
-	 * order. This list has always 3 elements. Each element may be null if there
+	 * <code>buttons.get(0)</code> is the left button, and other buttons follow in clockwise
+	 * order. This list has always 3 elements. Each element may be <code>null</code> if there
 	 * is no button displayed in that position.
 	 */
 	private List<PushButton> buttons = new ArrayList<PushButton>();
@@ -152,7 +152,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	private boolean isOwner;
 
 	/**
-	 * labels.get(0) is the left label, and other labels follow in clockwise
+	 * <code>labels.get(0)</code> is the left label, and other labels follow in clockwise
 	 * order. This list has always 3 elements.
 	 */
 	private List<HTML> labels = new ArrayList<HTML>();
@@ -186,7 +186,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * @param tableStatus This contains some information about the table status.
 	 * @param scores
 	 *            The global scores of existing players. The scores contained in
-	 *            tableStatus are ignored.
+	 *            <code>tableStatus</code> are ignored.
 	 * @param cupidoService This is used to communicate with the servlet using RPC.
 	 * @param listener The listener used to notify the client code about various events.
 	 */
@@ -294,7 +294,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * A helper method to add an 'Add bot' button in the specified position.
+	 * A helper method to add an "Add bot" button in the specified position.
 	 * 
 	 * @param position The position where the button has to be added.
 	 */
@@ -407,7 +407,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a GameEnded notification is received
+	 * This is called when a <code>GameEnded</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param matchPoints The score scored by the players during the current game.
@@ -426,7 +426,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a NewPlayerJoined notification is received
+	 * This is called when a <code>NewPlayerJoined</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param name The name of the player who joined the game.
@@ -450,7 +450,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a PlayerLeft notification is received
+	 * This is called when a <code>PlayerLeft</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param player The player that left the game.
@@ -478,7 +478,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * @return true if the table has no free seats.
+	 * @return <code>true</code> if the table has no free seats.
 	 */
 	private boolean isTableFull() {
 		return tableStatus.opponents[0] != null

@@ -43,7 +43,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
  * users that are viewing a game. The game may or may not
  * be started.
  * 
- * If the current user is a player, HeartsTableWidget
+ * If the current user is a player, <code>HeartsTableWidget</code>
  * is used instead.
  * 
  * @see HeartsTableWidget
@@ -52,13 +52,13 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 
 	/**
 	 * The widget used to display the table before the game start.
-	 * If the game is already started, this is null.
+	 * If the game is already started, this is <code>null</code>.
 	 */
 	private BeforeGameWidget beforeGameWidget;
 	
 	/**
 	 * The widget used to display the table after the game start.
-	 * If the game isn't started yet, this is null.
+	 * If the game isn't started yet, this is <code>null</code>.
 	 */
 	private CardsGameWidget cardsGameWidget = null;
 
@@ -242,7 +242,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a CardPlayed notification is received
+	 * This is called when a <code>CardPlayed</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param card The card that has been played.
@@ -266,7 +266,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a GameEnded notification is received
+	 * This is called when a <code>GameEnded</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param matchPoints The score scored by the players during the current game.
@@ -289,7 +289,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a NewPlayerJoined notification is received
+	 * This is called when a <code>NewPlayerJoined</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param name The name of the player who joined the game.
@@ -319,7 +319,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a Playerleft notification is received
+	 * This is called when a <code>PlayerLeft</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param player The player that left the game.
@@ -342,7 +342,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a PlayerReplaced notification is received
+	 * This is called when a <code>PlayerReplaced</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param name The name of the bot that replaced the player.

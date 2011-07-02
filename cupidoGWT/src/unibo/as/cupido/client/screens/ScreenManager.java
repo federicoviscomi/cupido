@@ -93,8 +93,8 @@ public interface ScreenManager {
 	 * Shows the scores' screen instead of the current one.
 	 * 
 	 * @param username The username of the current user.
-	 * @param topRanks The RankingEntry objects referring to the top 10 users.
-	 * @param localRanks The RankingEntry objects referring to the current user
+	 * @param topRanks The <code>RankingEntry</code> objects referring to the top 10 users.
+	 * @param localRanks The <code>RankingEntry</code> objects referring to the current user
 	 *             and to users with similar ranks.
 	 * 
 	 * @see ScoresScreen

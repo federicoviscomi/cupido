@@ -39,7 +39,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * player has to play a card.
  * 
  * Note that if no-one has played a card yet, the current state
- * is FirstLeaderState instead.
+ * is <code>FirstLeaderState</code> instead.
  * 
  * @see FirstLeaderState
  */

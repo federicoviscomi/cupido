@@ -88,7 +88,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	private boolean frozen = false;
 
 	/**
-	 * This is true if the user sent a message and no refresh request has yet
+	 * This is <code>true</code> if the user sent a message and no refresh request has yet
 	 * been sent to the servlet after that.
 	 */
 	private boolean needRefresh = false;
@@ -109,7 +109,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	private String username;
 
 	/**
-	 * This is true when the chat has sent a request to the servlet
+	 * This is <code>true</code> when the chat has sent a request to the servlet
 	 * and has not yet received a response.
 	 */
 	private boolean waitingServletResponse = false;
@@ -299,7 +299,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	}
 
 	/**
-	 * This is called when the user clicks the 'Create table' button.
+	 * This is called when the user clicks the "Create table" button.
 	 */
 	private void handleCreateTable() {
 		freeze();
@@ -343,7 +343,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	}
 
 	/**
-	 * This is called when the user clicks the 'Display scores' button.
+	 * This is called when the user clicks the "Display scores" button.
 	 */
 	private void handleDisplayScores() {
 		freeze();
@@ -376,7 +376,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	}
 
 	/**
-	 * This is called when the user clicks the 'Display table list' button.
+	 * This is called when the user clicks the "Display table list" button.
 	 */
 	private void handleDisplayTableList() {
 		freeze();
@@ -395,7 +395,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	}
 
 	/**
-	 * This is called when the user clicks the 'logout' button.
+	 * This is called when the user clicks the "Logout" button.
 	 */
 	private void handleLogout() {
 		freeze();

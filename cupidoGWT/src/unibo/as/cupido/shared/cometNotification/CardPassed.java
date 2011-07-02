@@ -24,7 +24,7 @@ import unibo.as.cupido.common.structures.Card;
 /**
  * This class is used for comet notifications.
  * 
- * A CardPassed notification is sent when the user
+ * A <code>CardPassed</code> notification is sent when the user
  * is playing a game and receives some cards from another player.
  */
 public class CardPassed implements Serializable {
@@ -45,7 +45,7 @@ public class CardPassed implements Serializable {
 	}
 	
 	/**
-	 * A constructor that initializes the field with the dspecified value.
+	 * A constructor that initializes the field with the specified value.
 	 * 
 	 * @param cards The desired value for the corresponding field.
 	 */

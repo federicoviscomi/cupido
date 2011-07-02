@@ -15,9 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * 
- */
 package unibo.as.cupido.client;
 
 import java.util.ArrayList;
@@ -71,7 +68,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 * @throws GameInterruptedException
-	 *             If the creator left the table, and so the game was interrupted.
+	 *             If the table creator left, and so the game was interrupted.
 	 * @return The name of the bot.
 	 */
 	public String addBot(int position) throws FullPositionException,
@@ -82,8 +79,8 @@ public interface CupidoInterface extends RemoteService {
 	/**
 	 * Creates a new table.
 	 * 
-	 * @return InitialTableStatus.playerPoints[0] is the only meaningful field
-	 *         in the return value, other values aren't because this table has
+	 * @return <code>InitialTableStatus.playerPoints[0]</code> is the only meaningful field
+	 *         in the return value, because this table has
 	 *         no players or bots yet.
 	 * @throws MaxNumTableReachedException
 	 *             If a table can't be created right now, because the maximum
@@ -135,7 +132,7 @@ public interface CupidoInterface extends RemoteService {
 			throws UserNotAuthenticatedException, FatalException;
 
 	/**
-	 * @return RankingEntry of the top 10 players in the global ranking.
+	 * @return <code>RankingEntry</code> of the top 10 players in the global ranking.
 	 * @throws UserNotAuthenticatedException
 	 *             If the user is not logged in.
 	 * @throws FatalException
@@ -149,9 +146,9 @@ public interface CupidoInterface extends RemoteService {
 	 * 
 	 * @param username The name that has to be checked.
 	 * 
-	 * @return true if the username is already used. false otherwise.
+	 * @return <code>true</code> if the username is already used. <code>false</code> otherwise.
 	 * @throws IllegalArgumentException
-	 *             If the parameter is null.
+	 *             If the parameter is <code>null</code>.
 	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 */
@@ -210,7 +207,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @param username The username specified by the user.
 	 * @param password The password specified by the user.
 	 * 
-	 * @return This returns true if the login is successful, false otherwise.
+	 * @return This returns <code>true</code> if the login is successful, <code>false</code> otherwise.
 	 * @throws FatalException 
 	 *             If a fatal error occurs.
 	 */
@@ -229,9 +226,10 @@ public interface CupidoInterface extends RemoteService {
 	public void openCometConnection();
 
 	/**
+	 * The current user passes the specified cards.
 	 * 
-	 * @param cards
-	 *            cards.length must be 3
+	 * @param cards <code>cards.length</code> must be 3.
+	 * 
 	 * @throws IllegalStateException
 	 *             If the user was not expected to pass cards now.
 	 * @throws IllegalArgumentException
@@ -264,7 +262,7 @@ public interface CupidoInterface extends RemoteService {
 	 *             If user is not at a table.
 	 * @throws IllegalArgumentException
 	 *             If the current user does not own the specified card, or if
-	 *             card==null.
+	 *             <code>card==null</code>.
 	 * @throws UserNotAuthenticatedException
 	 *             If the user is not logged in.
 	 * @throws FatalException 

@@ -39,7 +39,7 @@ public class WaitingFirstLeadState implements ViewerState {
 	private CardsGameWidget cardsGameWidget;
 
 	/**
-	 * This specifies whether or not the PlayedCard event has already been
+	 * This specifies whether or not the <code>PlayedCard</code> event has already been
 	 * received.
 	 */
 	private boolean eventReceived = false;

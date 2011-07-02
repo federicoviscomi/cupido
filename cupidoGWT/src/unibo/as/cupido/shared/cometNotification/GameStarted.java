@@ -24,7 +24,7 @@ import unibo.as.cupido.common.structures.Card;
 /**
  * This class is used for comet notifications.
  * 
- * A GameStarted notification is sent when all the
+ * A <code>GameStarted</code> notification is sent when all the
  * four seats of the table are occupied, and the players
  * receive their cards.
  * 

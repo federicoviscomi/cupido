@@ -270,8 +270,8 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	/**
 	 * Computes the positions of a list of cards as if they belong to the bottom
-	 * player, centered horizontally and with the center `offset' pixels above
-	 * the bottom edge. The z values are *not* computed.
+	 * player, centered horizontally and with the center <code>offset</code> pixels
+	 * above the bottom edge. The <code>z</code> values are *not* computed.
 	 * 
 	 * @param cards The player's cards (either hand cards or played cards).
 	 * @param state The state of these cards.
@@ -313,7 +313,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	/**
 	 * 
 	 * This is public to help callers satisfying the preconditions for
-	 * revealCoveredCard().
+	 * <code>revealCoveredCard()</code>.
 	 * 
 	 * @return A comparator that uses the same ordering that is used for
 	 *         displaying cards.
@@ -376,16 +376,16 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * Calculates an interpolated position between startPosition and
-	 * endPosition, with the specified progress.
+	 * Calculates an interpolated position between <code>startPosition</code> and
+	 * <code>endPosition</code>, with the specified progress.
 	 * 
 	 * @param startPosition The starting position.
 	 * @param endPosition The final position.
-	 * @param progress The progress (a number between 0.0 and 1.0, inclusive)
+	 * @param progress The progress (a number between <code>0.0</code> and <code>1.0</code>, inclusive)
 	 *                 that specifies where the desidered value lies in the
-	 *                 segment between startPosition and endPosition.
-	 *                 If this is 0.0, startPosition is returned; if it is
-	 *                 1.0, endPosition is returned.
+	 *                 segment between <code>startPosition</code> and <code>endPosition</code>.
+	 *                 If this is <code>0.0</code>, <code>startPosition</code> is returned; if it is
+	 *                 <code>1.0</code>, <code>endPosition</code> is returned.
 	 * 
 	 * @return The computed position.
 	 */
@@ -463,7 +463,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	private Widget cornerWidget = null;
 
 	/**
-	 * The currently running animation (if any). If this is not null, the table
+	 * The currently running animation (if any). If this is not <code>null</code>, the table
 	 * must not react to commands.
 	 */
 	private Animation currentAnimation = null;
@@ -496,15 +496,15 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	/**
 	 * The layout that the widgets on the table had the last time
-	 * runPendingAnimations() was called, or the initial layout if
-	 * runPendingAnimations() has never been called.
+	 * <code>runPendingAnimations()</code> was called, or the initial layout if
+	 * <code>runPendingAnimations()</code> has never been called.
 	 */
 	private TableLayout previousTableLayout;
 
 	/**
-	 * This is `true' when there are some animations pending, that can be
-	 * executed with runPendingAnimations(). This is reset to `false' when such
-	 * animations complete.
+	 * This is <code>true</code> when there are some animations pending, that can be
+	 * executed with <code>runPendingAnimations()</code>. This is reset to
+	 * <code>false</code> when such animations complete.
 	 */
 	private boolean someAnimationsPending = false;
 
@@ -520,7 +520,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	 *            The game status, except the cards of the bottom player (if
 	 *            they are shown).
 	 * @param bottomPlayerCards
-	 *            The cards of the bottom player. If this is null, the cards are
+	 *            The cards of the bottom player. If this is <code>null</code>, the cards are
 	 *            covered, and their number is extracted from gameStatus.
 	 * @param cornerWidget
 	 *            An arbitrary 200x150 pixel widget placed in the bottom-right
@@ -674,7 +674,8 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	/**
 	 * Runs an animation that moves the widgets on the table from
-	 * previousTableLayout to targetTableLayout, with the specified duration.
+	 * <code>previousTableLayout</code> to <code>targetTableLayout</code>,
+	 * with the specified duration.
 	 * 
 	 * @param duration The duration of the animation, in milliseconds.
 	 * @param targetTableLayout The final layout of widgets on the table.
@@ -728,9 +729,9 @@ public class CardsGameWidget extends AbsolutePanel {
 	 * 
 	 * Note: there must be no pending animation when calling this method. Note:
 	 * the initial waiting and the following card move are considered two
-	 * different animations. So the GameEventListener receives the
-	 * onAnimationEnd() and onAnimationStart() notifications between the two
-	 * animations.
+	 * different animations. So the <code>GameEventListener</code> receives the
+	 * <code>onAnimationEnd()</code> and <code>onAnimationStart()</code>
+	 * notifications between the two animations.
 	 * 
 	 * @param player The player that takes the current trick.
 	 * @param waitTime The time to wait before moving the cards towards the
@@ -989,11 +990,11 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * The player `player' lowers the previously-raised the card `card'. The
-	 * card must be in the specified player's hand.
+	 * The <code>player</code> player lowers the previously-raised the <code>card</code>
+	 * card. This card must be in the specified player's hand.
 	 * 
 	 * The corresponding animation will be executed at the next call to
-	 * runPendingAnimations().
+	 * <code>runPendingAnimations()</code>.
 	 * 
 	 * @param player The player that owns the specified card.
 	 * @param card The card that has to be lowered.
@@ -1036,11 +1037,12 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * The player `player' picks up the card `card' that was previously in the
-	 * PLAYED state in front of him. The card must not be covered.
+	 * The <code>player</code> player picks up the <code>card</code> card that was
+	 * previously in the <code>PLAYED</code> state in front of him.
+	 * The card must not be covered.
 	 * 
 	 * The corresponding animation will be executed at the next call to
-	 * runPendingAnimations().
+	 * <code>runPendingAnimations()</code>.
 	 * 
 	 * @param player The player that owns the specified card.
 	 * @param card The card that has to be picked up.
@@ -1083,11 +1085,11 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * The player `player' plays the card `card'. The card must be an uncovered
-	 * card in the specified player's hand.
+	 * The <code>player</code> player plays the <code>card</code> card. This card must
+	 * be an uncovered card in the specified player's hand.
 	 * 
 	 * The corresponding animation will be executed at the next call to
-	 * runPendingAnimations().
+	 * <code>runPendingAnimations()</code>.
 	 * 
 	 * @param player The player that owns the specified card.
 	 * @param card The card that has to be played.
@@ -1129,11 +1131,11 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * The player `player' raises the card `card'. The card must be in the
-	 * specified player's hand, and must not be covered.
+	 * The <code>player</code> player raises the <code>card</code> card.
+	 * This card must be in the specified player's hand, and must not be covered.
 	 * 
 	 * The corresponding animation will be executed at the next call to
-	 * runPendingAnimations().
+	 * <code>runPendingAnimations()</code>.
 	 * 
 	 * @param player The player that owns the specified card.
 	 * @param card The card that has to be raised.
@@ -1176,9 +1178,10 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * Reveal a covered card of the specified player as `card'. The card must
-	 * not be raised. If the player has multiple covered cards, the one with
-	 * higher z index is chosen.
+	 * Reveal a covered card of the specified player as <code>card</code>.
+	 * This card must not be raised.
+	 * If the player has multiple covered cards, the one with higher
+	 * z index is chosen.
 	 * 
 	 * The card is *not* moved to the correct position. Instead, the caller must
 	 * ensure that it will be at the right position even when uncovered.
@@ -1233,11 +1236,12 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	/**
 	 * Starts an animation that moves the widgets from the layout computed from
-	 * previousCardRoles to the layout computed from cardRoles. Calls
-	 * GameEventListener.onAnimationStart() and
-	 * GameEventListener.onAnimationEnd().
-	 * animationCompletedListener.onComplete() is called after the animation
-	 * completes, but before calling GameEventListener.onAnimationEnd().
+	 * <code>previousCardRoles</code> to the layout computed from <code>cardRoles</code>.
+	 * Calls <code>GameEventListener.onAnimationStart()</code> and
+	 * <code>GameEventListener.onAnimationEnd()</code>.
+	 * <code>animationCompletedListener.onComplete()</code> is called after the
+	 * animation completes, but before calling
+	 * <code>GameEventListener.onAnimationEnd()</code>.
 	 * 
 	 * @param duration
 	 *            The duration of the animation, in milliseconds.
@@ -1261,7 +1265,7 @@ public class CardsGameWidget extends AbsolutePanel {
 
 	/**
 	 * @param position
-	 *            The position where the bot should be inserted. 0 means at the
+	 *            The position where the bot should be inserted. <code>0</code> means at the
 	 *            bottom, and other positions follow in clockwise order.
 	 * @param name
 	 *            The name of the bot.
@@ -1273,7 +1277,7 @@ public class CardsGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * A helper method to set the position of a CardWidget on the table.
+	 * A helper method to set the position of a <code>CardWidget</code> on the table.
 	 * 
 	 * @param x The card widget.
 	 * @param position The desired position.

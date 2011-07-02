@@ -37,7 +37,7 @@ public class GameEndedState implements ViewerState {
 	private CardsGameWidget cardsGameWidget;
 
 	/**
-	 * This specifies whether or not the GameEnded event has already been
+	 * This specifies whether or not the <code>GameEnded</code> event has already been
 	 * received.
 	 */
 	private boolean eventReceived = false;

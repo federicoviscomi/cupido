@@ -67,7 +67,7 @@ public class FirstLeaderState implements PlayerState {
 	private HTML message;
 
 	/**
-	 * This specifies whether or not the PlayedCard event has already been
+	 * This specifies whether or not the <code>PlayedCard</code> event has already been
 	 * received.
 	 */
 	private boolean playedCard = false;

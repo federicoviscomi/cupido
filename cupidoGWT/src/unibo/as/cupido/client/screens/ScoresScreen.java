@@ -43,7 +43,7 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 	 * Constructs a widget that displays the rank and the score of
 	 * a user in a row.
 	 * 
-	 * @param entry The RankingEntry of the user.
+	 * @param entry The <code>RankingEntry</code> of the user.
 	 * @param highlight Whether or not to highlight this row.
 	 * @return The constructed widget.
 	 */
@@ -82,8 +82,8 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 	/**
 	 * @param screenManager The global screen manager.
 	 * @param username The username of the current user.
-	 * @param topRanks The RankingEntry objects referring to the top 10 users.
-	 * @param localRanks The RankingEntry objects referring to the current user
+	 * @param topRanks The <code>RankingEntry</code> objects referring to the top 10 users.
+	 * @param localRanks The <code>RankingEntry</code> objects referring to the current user
 	 *             and to users with similar ranks.
 	 */
 	public ScoresScreen(final ScreenManager screenManager,

@@ -18,7 +18,7 @@
 package unibo.as.cupido.client.widgets.cardsgame;
 
 /**
- * This contains the the data about a player needed by CardsGameWidget.
+ * This contains the the data about a player needed by <code>CardsGameWidget</code>.
  */
 public class PlayerData {
 	/**

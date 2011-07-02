@@ -59,7 +59,7 @@ public class ScreenManagerImpl extends AbsolutePanel implements ScreenManager {
 	/**
 	 * The listener that handles comet messages.
 	 * 
-	 * This can be modified with the setListener() method.
+	 * This can be modified with the <code>setListener()</code> method.
 	 * Each screen changes this when it's displayed.
 	 */
 	private CometMessageListener cometMessageListener;

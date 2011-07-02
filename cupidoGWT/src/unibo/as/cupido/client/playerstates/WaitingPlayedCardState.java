@@ -37,7 +37,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * player is waiting another player to play a card.
  * 
  * Note that if no card has been played since the game start,
- * the current state is WaitingFirstLeadState instead.
+ * the current state is <code>WaitingFirstLeadState</code> instead.
  * 
  * @see WaitingFirstLeadState
  */
@@ -54,7 +54,7 @@ public class WaitingPlayedCardState implements PlayerState {
 	private final int currentPlayer;
 
 	/**
-	 * This specifies whether or not the PlayedCard event has already been
+	 * This specifies whether or not the <code>PlayedCard</code> event has already been
 	 * received.
 	 */
 	private boolean eventReceived = false;

@@ -65,7 +65,7 @@ public interface ViewerStateManager {
 
 	/**
 	 * When this is called, the state manager stops responding to events
-	 * and disables all user controls, including the CardsGameWidget.
+	 * and disables all user controls, including the <code>CardsGameWidget</code>.
 	 */
 	public void freeze();
 
@@ -108,7 +108,7 @@ public interface ViewerStateManager {
 	public void goToNextTrick();
 
 	/**
-	 * This is called when a CardPlayed notification is received
+	 * This is called when a <code>CardPlayed</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param card The card that has been played.
@@ -119,7 +119,7 @@ public interface ViewerStateManager {
 	public void handleCardPlayed(Card card, int playerPosition);
 
 	/**
-	 * This is called when a GameEnded notification is received
+	 * This is called when a <code>GameEnded</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param matchPoints The score scored by the players during the current game.
@@ -131,7 +131,7 @@ public interface ViewerStateManager {
 	public void handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
 
 	/**
-	 * This is called when a PlayerReplaced notification is received
+	 * This is called when a <code>PlayerReplaced</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param name The name of the bot that replaced the player.
@@ -149,22 +149,22 @@ public interface ViewerStateManager {
 	public void onFatalException(Throwable e);
 
 	/**
-	 * Changes the current state to EndOfTrickState.
+	 * Changes the current state to <code>EndOfTrickState</code>.
 	 */
 	public void transitionToEndOfTrick();
 
 	/**
-	 * Changes the current state to GameEndedState.
+	 * Changes the current state to <code>GameEndedState</code>.
 	 */
 	public void transitionToGameEnded();
 
 	/**
-	 * Changes the current state to WaitingFirstLeadState.
+	 * Changes the current state to <code>WaitingFirstLeadState</code>.
 	 */
 	public void transitionToWaitingFirstLead();
 
 	/**
-	 * Changes the current state to WaitingPlayedCardState.
+	 * Changes the current state to <code>WaitingPlayedCardState</code>.
 	 */
 	public void transitionToWaitingPlayedCard();
 }

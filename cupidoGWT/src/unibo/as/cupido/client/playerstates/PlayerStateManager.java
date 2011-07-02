@@ -46,7 +46,7 @@ public interface PlayerStateManager {
 		public boolean isBot;
 		
 		/**
-		 * This is relevant only when `isBot' is false.
+		 * This is relevant only when <code>isBot</code> is <code>false</code>.
 		 */
 		public String name;
 	}
@@ -61,7 +61,7 @@ public interface PlayerStateManager {
 	public void addPlayedCard(int player, Card card);
 
 	/**
-	 * @return true if the hearts have already been broken, false otherwise.
+	 * @return <code>true</code> if the hearts have already been broken, false otherwise.
 	 */
 	public boolean areHeartsBroken();
 
@@ -72,7 +72,7 @@ public interface PlayerStateManager {
 
 	/**
 	 * When this is called, the state manager stops responding to events
-	 * and disables all user controls, including the CardsGameWidget.
+	 * and disables all user controls, including the <code>CardsGameWidget</code>.
 	 */
 	public void freeze();
 
@@ -98,7 +98,7 @@ public interface PlayerStateManager {
 	public List<PlayerInfo> getPlayerInfo();
 
 	/**
-	 * @return The CardsGameWidget that is managed by this class.
+	 * @return The <code>CardsGameWidget</code> that is managed by this class.
 	 */
 	public CardsGameWidget getWidget();
 
@@ -109,7 +109,7 @@ public interface PlayerStateManager {
 	public void goToNextTrick();
 
 	/**
-	 * This is called when a PassedCards notification is received
+	 * This is called when a <code>CardPassed</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param cards The cards that were passed to the user.
@@ -119,7 +119,7 @@ public interface PlayerStateManager {
 	public void handleCardPassed(Card[] cards);
 
 	/**
-	 * This is called when a CardPlayed notification is received
+	 * This is called when a <code>CardPlayed</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param card The card that has been played.
@@ -130,7 +130,7 @@ public interface PlayerStateManager {
 	public void handleCardPlayed(Card card, int playerPosition);
 
 	/**
-	 * This is called when a GameEnded notification is received
+	 * This is called when a <code>GameEnded</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param matchPoints The score scored by the players during the current game.
@@ -152,7 +152,7 @@ public interface PlayerStateManager {
 	public void handleGameStarted(Card[] myCards);
 
 	/**
-	 * This is called when a PlayerReplaced notification is received
+	 * This is called when a <code>PlayerReplaced</code> notification is received
 	 * from the servlet.
 	 * 
 	 * @param name The name of the bot that replaced the player.
@@ -170,54 +170,54 @@ public interface PlayerStateManager {
 	public void onFatalException(Throwable e);
 
 	/**
-	 * Changes the current state to CardPassingState.
+	 * Changes the current state to <code>CardPassingState</code>.
 	 * 
 	 * @param hand The cards in the user's hand.
 	 */
 	public void transitionToCardPassing(List<Card> hand);
 
 	/**
-	 * Changes the current state to CardPassingWaitingState.
+	 * Changes the current state to <code>CardPassingWaitingState</code>.
 	 * 
 	 * @param hand The cards in the user's hand.
 	 */
 	public void transitionToCardPassingWaiting(List<Card> hand);
 
 	/**
-	 * Changes the current state to EndOfTrickState.
+	 * Changes the current state to <code>EndOfTrickState</code>.
 	 * 
 	 * @param hand The cards in the user's hand.
 	 */
 	public void transitionToEndOfTrick(List<Card> hand);
 
 	/**
-	 * Changes the current state to FirstLeaderState.
+	 * Changes the current state to <code>FirstLeaderState</code>.
 	 * 
 	 * @param hand The cards in the user's hand.
 	 */
 	public void transitionToFirstLeader(List<Card> hand);
 
 	/**
-	 * Changes the current state to GameEndedState.
+	 * Changes the current state to <code>GameEndedState</code>.
 	 */
 	public void transitionToGameEnded();
 
 	/**
-	 * Changes the current state to WaitingFirstLeadState.
+	 * Changes the current state to <code>WaitingFirstLeadState</code>.
 	 * 
 	 * @param hand The cards in the user's hand.
 	 */
 	public void transitionToWaitingFirstLead(List<Card> hand);
 
 	/**
-	 * Changes the current state to CardPassingWaitingState.
+	 * Changes the current state to <code>CardPassingWaitingState</code>.
 	 * 
 	 * @param hand The cards in the user's hand.
 	 */
 	public void transitionToWaitingPlayedCard(List<Card> hand);
 
 	/**
-	 * Changes the current state to YourTurnState.
+	 * Changes the current state to <code>YourTurnState</code>.
 	 * 
 	 * @param hand The cards in the user's hand.
 	 */

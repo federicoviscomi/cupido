@@ -22,7 +22,7 @@ import java.io.Serializable;
 /**
  * This class is used for comet notifications.
  * 
- * A GameEnded notification is sent when a game ends
+ * A <code>GameEnded</code> notification is sent when a game ends
  * 
  * The game can end either because all players have no more
  * cards in their hands, or because the table creator has

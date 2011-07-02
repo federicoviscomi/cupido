@@ -24,7 +24,7 @@ import unibo.as.cupido.common.structures.Card;
 /**
  * This class is used for comet notifications.
  * 
- * A CardPlayed notification is sent when another user (or a bot)
+ * A <code>CardPlayed</code> notification is sent when another user (or a bot)
  * that is at the same table as the current user plays a card.
  */
 public class CardPlayed implements Serializable {

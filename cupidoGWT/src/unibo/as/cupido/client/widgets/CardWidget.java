@@ -92,7 +92,7 @@ public class CardWidget extends Image {
 	private int rotation;
 
 	/**
-	 * Constructs a CardWidget that displays the back of a card.
+	 * Constructs a <code>CardWidget</code> that displays the back of a card.
 	 */
 	public CardWidget() {
 		super(constructCardName(null, 0));
@@ -102,7 +102,7 @@ public class CardWidget extends Image {
 	}
 
 	/**
-	 * Constructs a CardWidget that displays the specified card.
+	 * Constructs a <code>CardWidget</code> that displays the specified card.
 	 * 
 	 * @param card The desired card.
 	 */
@@ -114,7 +114,7 @@ public class CardWidget extends Image {
 	}
 
 	/**
-	 * Constructs a CardWidget that displays the specified card.
+	 * Constructs a <code>CardWidget</code> that displays the specified card.
 	 * 
 	 * @param card The desired card.
 	 * @param rotation The desired rotation for the card, in degrees.
@@ -127,7 +127,7 @@ public class CardWidget extends Image {
 	}
 
 	/**
-	 * Constructs a CardWidget that displays the back of a card.
+	 * Constructs a <code>CardWidget</code> that displays the back of a card.
 	 * 
 	 * @param rotation
 	 *            This is the rotation of the card, in degrees.
@@ -159,7 +159,7 @@ public class CardWidget extends Image {
 	}
 
 	/**
-	 * Changes the displayed card to newCard.
+	 * Changes the displayed card to <code>newCard</code>.
 	 * 
 	 * @param newCard The desired card.
 	 */
@@ -174,7 +174,7 @@ public class CardWidget extends Image {
 	}
 
 	/**
-	 * Changes the displayed card to newRotation.
+	 * Changes the displayed card to <code>newRotation</code>.
 	 * 
 	 * @param newRotation The desired rotation.
 	 */

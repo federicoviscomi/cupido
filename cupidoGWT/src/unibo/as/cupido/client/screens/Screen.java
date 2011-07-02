@@ -28,7 +28,7 @@ public interface Screen {
 	public void freeze();
 
 	/**
-	 * This is called by the ScreenSwitcher implementation just before switching
+	 * This is called by the <code>ScreenSwitcher</code> implementation just before switching
 	 * to another screen.
 	 */
 	public void prepareRemoval();

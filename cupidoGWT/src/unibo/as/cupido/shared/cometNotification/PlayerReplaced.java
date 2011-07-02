@@ -22,7 +22,7 @@ import java.io.Serializable;
 /**
  * This class is used for comet notifications.
  * 
- * A PlayerReplaced notification is sent when a player
+ * A <code>PlayerReplaced</code> notification is sent when a player
  * leaves the table during the game, and he is not the
  * creator, so it is replaced with a bot.
  */
@@ -39,10 +39,10 @@ public class PlayerReplaced implements Serializable {
 	/**
 	 * The position in the table of the player that is being replaced.
 	 * 
-	 * For viewers, position=1 means the player at the creator's left, and so
+	 * For viewers, <code>position==1</code> means the player at the creator's left, and so
 	 * the position range is [1-3].
 	 * 
-	 * For players, position=0 means the player at the user's left, and so
+	 * For players, <code>position==0</code> means the player at the user's left, and so
 	 * the position range is [0-2].
 	 */
 	public int position;

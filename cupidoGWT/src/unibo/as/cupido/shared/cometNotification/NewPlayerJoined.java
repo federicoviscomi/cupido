@@ -22,10 +22,10 @@ import java.io.Serializable;
 /**
  * This class is used for comet notifications.
  * 
- * A NewPlayerJoined notification is sent when a player or
+ * A <code>NewPlayerJoined</code> notification is sent when a player or
  * a bot joins the table before the game start.
  * 
- * If isBot==true, the value of the score field is meaningless.
+ * If <code>isBot==true</code>, the value of the score field is meaningless.
  */
 public class NewPlayerJoined implements Serializable {
 
@@ -46,17 +46,17 @@ public class NewPlayerJoined implements Serializable {
 	/**
 	 * The global score of the player.
 	 * 
-	 * If isBot==true, the value of this field is meaningless.
+	 * If <code>isBot==true</code>, the value of this field is meaningless.
 	 */
 	public int points;
 
 	/**
 	 * The position in the table of the new player.
 	 * 
-	 * For viewers, position=1 means the player at the creator's left, and so
+	 * For viewers, <code>position==1</code> means the player at the creator's left, and so
 	 * the position range is [1-3].
 	 * 
-	 * For players, position=0 means the player at the user's left, and so
+	 * For players, <code>position==0</code> means the player at the user's left, and so
 	 * the position range is [0-2].
 	 */
 	public int position;
