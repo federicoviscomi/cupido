@@ -19,15 +19,11 @@ package unibo.as.cupido.common.exception;
 
 import java.io.Serializable;
 
+/**
+ * Signal that specified user is not autenticated in Cupido.
+ */
 public class UserNotAuthenticatedException extends Exception implements
 		Serializable {
-
-	public UserNotAuthenticatedException(){
-	}
-
-	public UserNotAuthenticatedException(String m){
-		super(m);
-	}
-
+	
 	private static final long serialVersionUID = 1L;
 }

@@ -121,7 +121,7 @@ public class DatabaseManager implements DatabaseInterface {
 						+ userName + "' LIMIT 1;");
 		if (res.next())
 			return res.getInt(1);
-		throw new NoSuchUserException();
+		throw new NoSuchUserException(userName);
 	}
 
 	@Override

@@ -20,16 +20,14 @@ package unibo.as.cupido.common.exception;
 import java.io.Serializable;
 
 /**
- * Thrown by the TableManager when a user attemps to add a bot in a table he is
- * not the creator of.
- * 
+ * Thrown by the STM when a user attemps to add a bot in a table he is not the
+ * creator of.
  */
 public class NotCreatorException extends Exception implements Serializable {
 	private static final long serialVersionUID = 1L;
-	public NotCreatorException(){
-	}
-	public NotCreatorException(String string) {
-		super(string);
+
+	public NotCreatorException(String userName) {
+		super(userName);
 	}
 
 }

@@ -19,14 +19,18 @@ package unibo.as.cupido.common.exception;
 
 import java.io.Serializable;
 
+import unibo.as.cupido.common.interfaces.TableInterface.GameStatus;
+
+/**
+ * Used to signal that some operation on a table cannot be executed after game
+ * has been interrupted, i.e game status is {@link GameStatus#INTERRUPTED}.
+ */
 public class GameInterruptedException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	public GameInterruptedException() {
+		//
 	}
-	
-	public GameInterruptedException(String string) {
-		super(string);
-	}
+
 }

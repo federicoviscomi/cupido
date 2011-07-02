@@ -172,7 +172,6 @@ public class CardsManager {
 	 * <p>
 	 * Specified player cannot play specified card if:
 	 * <ul>
-	 * <li>player does not own the card</li>
 	 * <li>if card is the first card played in the game and is not two of clubs</li>
 	 * <li>if card is the first card played in this trick and the game is not
 	 * broken hearted and the player owns at least a non heart card</li>
@@ -186,7 +185,10 @@ public class CardsManager {
 	 * @param card
 	 *            the card played
 	 * @throws IllegalMoveException
-	 *             if specified player cannot play specified card.
+	 *             if specified player cannot play specified card according to
+	 *             game rules.
+	 * @throws IllegalArgumentException
+	 *             if specified player does not own specified card
 	 */
 	private void checkMoveSoundness(int playerPosition, Card card)
 			throws IllegalMoveException {

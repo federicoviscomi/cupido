@@ -35,7 +35,6 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.EmptyPositionException;
 import unibo.as.cupido.common.exception.WrongGameStateException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
@@ -101,7 +100,7 @@ public class SingleTableManager implements TableInterface {
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
 		if (!gameStatus.equals(GameStatus.INIT))
-			throw new FullPositionException();
+			throw new FullPositionException(position);
 
 		if (userName == null || position < 0 || position > 3) {
 			throw new IllegalArgumentException();
@@ -137,7 +136,7 @@ public class SingleTableManager implements TableInterface {
 			score = databaseManager.getPlayerScore(userName);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new NoSuchUserException();
+			throw new NoSuchUserException(userName);
 		}
 		int position = playersManager.addPlayer(userName, snf, score);
 
@@ -339,9 +338,6 @@ public class SingleTableManager implements TableInterface {
 		try {
 			playersManager.notifyPlayerReplaced(playerName, position);
 			viewers.notifyPlayerReplaced(playerName, position);
-		} catch (EmptyPositionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (NoSuchPlayerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -382,7 +378,7 @@ public class SingleTableManager implements TableInterface {
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
 		if (!gameStatus.equals(GameStatus.PASSING_CARDS))
-			throw new WrongGameStateException();
+			throw new WrongGameStateException(GameStatus.PASSING_CARDS);
 		/*
 		 * NOTE: playerName is name of the player who passes cards. Not name of
 		 * the player who receives the cards!
@@ -414,7 +410,7 @@ public class SingleTableManager implements TableInterface {
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
 		if (!gameStatus.equals(GameStatus.STARTED))
-			throw new WrongGameStateException();
+			throw new WrongGameStateException(GameStatus.STARTED);
 		if (userName == null || card == null)
 			throw new IllegalArgumentException("playerName " + userName
 					+ " card " + card);
@@ -448,7 +444,7 @@ public class SingleTableManager implements TableInterface {
 		if (gameStatus == GameStatus.INTERRUPTED)
 			throw new GameInterruptedException();
 		if (gameStatus == GameStatus.ENDED)
-			throw new WrongGameStateException();
+			throw new WrongGameStateException(GameStatus.ENDED);
 		if (viewerName == null || snf == null)
 			throw new IllegalArgumentException();
 		viewers.addViewer(viewerName, snf);

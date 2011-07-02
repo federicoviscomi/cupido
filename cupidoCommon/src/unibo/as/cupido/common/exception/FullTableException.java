@@ -22,7 +22,7 @@ import java.io.Serializable;
 import unibo.as.cupido.common.structures.TableDescriptor;
 
 /**
- * Thrown wheter a table cannot host more players.
+ * Thrown when a table cannot host more players.
  */
 public class FullTableException extends Exception implements Serializable {
 

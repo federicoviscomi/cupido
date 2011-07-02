@@ -429,7 +429,7 @@ public class AutomaticServlet {
 			throw new IllegalArgumentException(position + " " + botName);
 
 		if (initialTableStatus.opponents[position] == null) {
-			(new NoSuchPlayerException()).printStackTrace();
+			(new NoSuchPlayerException(position)).printStackTrace();
 			return;
 		}
 		initialTableStatus.opponents[position] = botName;

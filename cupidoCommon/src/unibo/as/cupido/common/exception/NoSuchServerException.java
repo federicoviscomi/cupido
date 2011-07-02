@@ -19,9 +19,13 @@ package unibo.as.cupido.common.exception;
 
 import java.io.Serializable;
 
+/**
+ * Used to signal that specified server cannot be found
+ */
 public class NoSuchServerException extends Exception implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	public NoSuchServerException() {
+	public NoSuchServerException(String serverName) {
+		super(serverName);
 	}
 }

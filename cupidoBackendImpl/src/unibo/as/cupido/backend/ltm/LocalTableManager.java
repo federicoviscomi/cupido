@@ -212,7 +212,7 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	public synchronized void notifyTableDestruction(int tableId)
 			throws NoSuchTableException {
 		if (allTables.remove(tableId) == null)
-			throw new NoSuchTableException();
+			throw new NoSuchTableException("table identifier: " + tableId);
 	}
 
 	/**

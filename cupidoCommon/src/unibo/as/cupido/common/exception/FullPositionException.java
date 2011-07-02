@@ -19,14 +19,14 @@ package unibo.as.cupido.common.exception;
 
 import java.io.Serializable;
 
+/**
+ * Used to signal that an operation cannot be executed normally if specified
+ * position in a table is already used.
+ */
 public class FullPositionException extends Exception implements Serializable {
 
-	public FullPositionException(String string) {
-		super(string);
-	}
-
-	public FullPositionException() {
-		// 
+	public FullPositionException(int position) {
+		super(Integer.toString(position));
 	}
 
 	private static final long serialVersionUID = 1L;

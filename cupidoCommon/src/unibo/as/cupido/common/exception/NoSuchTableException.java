@@ -19,10 +19,12 @@ package unibo.as.cupido.common.exception;
 
 import java.io.Serializable;
 
+/**
+ * Used to signal that a given table cannot be found in the GTM or in the LTM
+ */
 public class NoSuchTableException extends Exception implements Serializable {
-
-	public NoSuchTableException(String string) {
-		super(string);
+	public NoSuchTableException(String message) {
+		super(message);
 	}
 
 	public NoSuchTableException() {

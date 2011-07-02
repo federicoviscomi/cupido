@@ -19,14 +19,17 @@ package unibo.as.cupido.common.exception;
 
 import java.io.Serializable;
 
+import unibo.as.cupido.common.interfaces.TableInterface.GameStatus;
+
+/**
+ * Used to signal that some operation on a table cannot be executed after game
+ * ends, i.e game status is {@link GameStatus#ENDED}.
+ */
 public class GameEndedException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	public GameEndedException() {
-	}
-	
-	public GameEndedException(String string) {
-		super(string);
+		//
 	}
 }

@@ -19,6 +19,10 @@ package unibo.as.cupido.common.exception;
 
 import java.io.Serializable;
 
+/**
+ * Thrown by GTM when there is no LTM that can handle more tables or there is no
+ * LTM at all.
+ */
 public class AllLTMBusyException extends Exception implements Serializable {
 
 	public AllLTMBusyException(String string) {
@@ -30,5 +34,4 @@ public class AllLTMBusyException extends Exception implements Serializable {
 	}
 
 	private static final long serialVersionUID = 1L;
-
 }

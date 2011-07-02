@@ -30,7 +30,6 @@ import unibo.as.cupido.common.exception.NoSuchPlayerException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 
 import unibo.as.cupido.common.exception.NotCreatorException;
-import unibo.as.cupido.common.exception.EmptyPositionException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
 import unibo.as.cupido.common.interfaces.TableInterface;
@@ -251,7 +250,7 @@ public class PlayersManager {
 				|| tableInterface == null)
 			throw new IllegalArgumentException();
 		if (players[position] != null)
-			throw new FullPositionException();
+			throw new FullPositionException(position);
 		if (!userName.equals(players[Positions.OWNER.ordinal()].name))
 			throw new NotCreatorException("Creator: "
 					+ players[Positions.OWNER.ordinal()] + ". Current user: "
@@ -368,7 +367,7 @@ public class PlayersManager {
 	public String getPlayerName(int position) throws NoSuchPlayerException {
 		if (players[position] != null)
 			return players[position].name;
-		throw new NoSuchPlayerException();
+		throw new NoSuchPlayerException(position);
 	}
 
 	/**
@@ -730,7 +729,7 @@ public class PlayersManager {
 	 *             if there is no player with name <tt>playerLeftName</tt>
 	 */
 	public void notifyPlayerReplaced(final String playerLeftName, int position)
-			throws EmptyPositionException, NoSuchPlayerException {
+			throws NoSuchPlayerException {
 		for (int i = 0; i < 4; i++) {
 			if (i != position) {
 				final PlayerInfo player = players[i];
@@ -771,7 +770,7 @@ public class PlayersManager {
 	public void removePlayer(String playerName) throws NoSuchPlayerException {
 		int position = getPlayerPosition(playerName);
 		if (position == -1)
-			throw new NoSuchPlayerException();
+			throw new NoSuchPlayerException(playerName);
 		if (playersCount < 1)
 			throw new IllegalStateException();
 		playersCount--;

@@ -20,13 +20,11 @@ package unibo.as.cupido.common.exception;
 import java.io.Serializable;
 
 /**
- * Throw by the database manager
+ * Used to signal that specified user cannot be found in the database or in a
+ * table
  */
 public class NoSuchUserException extends Exception implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	public NoSuchUserException() {
-	}
 
 	public NoSuchUserException(String userName) {
 		super(userName);

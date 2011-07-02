@@ -19,12 +19,12 @@ package unibo.as.cupido.common.exception;
 
 import java.io.Serializable;
 
+/**
+ * Used to indicate that something cannot be done when table is empty.
+ */
 public class EmptyTableException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	public EmptyTableException() {
-	}
 
 	public EmptyTableException(String string) {
 		super(string);

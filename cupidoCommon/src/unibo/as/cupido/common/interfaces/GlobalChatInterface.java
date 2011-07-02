@@ -27,8 +27,6 @@ import unibo.as.cupido.common.structures.ChatMessage;
  * message is sent to the global chat. Instead the Servlet pools the global chat
  * component.
  * <p>
- * TODO how do we justify this choice?
- * <p>
  * The global chat component is a remote RMI object who is registered in the
  * same remote registry of the GTM and is bounded to name
  * <code>DEFAULT_GLOBAL_CHAT_NAME</code>

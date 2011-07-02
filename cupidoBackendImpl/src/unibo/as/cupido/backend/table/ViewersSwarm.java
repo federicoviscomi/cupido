@@ -59,8 +59,9 @@ public class ViewersSwarm {
 			throws DuplicateViewerException, IllegalArgumentException {
 		if (viewerName == null || snf == null)
 			throw new IllegalArgumentException();
-		if (snfs.put(viewerName, snf) != null)
-			throw new DuplicateViewerException();
+		if (snfs.containsKey(viewerName)) 
+			throw new DuplicateViewerException(viewerName);
+		snfs.put(viewerName, snf);
 	}
 
 	/**
@@ -254,7 +255,7 @@ public class ViewersSwarm {
 		if (viewerName == null)
 			throw new IllegalArgumentException();
 		if (snfs.remove(viewerName) == null)
-			throw new NoSuchViewerException();
+			throw new NoSuchViewerException(viewerName);
 	}
 
 	/**

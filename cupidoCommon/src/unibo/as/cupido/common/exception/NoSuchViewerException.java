@@ -1,11 +1,13 @@
 package unibo.as.cupido.common.exception;
 
-import java.io.Serializable;
+/**
+ * Used to signal that specified viewer is missing from a table
+ */
+public class NoSuchViewerException extends Exception {
 
-public class NoSuchViewerException extends Exception implements Serializable {
+	public NoSuchViewerException(String viewerName) {
+		super(viewerName);
+	}
 
 	private static final long serialVersionUID = 1L;
-
-	public NoSuchViewerException() {
-	}
 }

@@ -20,16 +20,11 @@ package unibo.as.cupido.common.exception;
 import java.io.Serializable;
 
 /**
- * Thrown only by GTM if it cannot find a given LTM
- * 
+ * Used to signal that specified LTM cannot be found
  */
 public class NoSuchLTMException extends Exception implements Serializable {
 	public NoSuchLTMException(String ltmId) {
 		super(ltmId);
-	}
-	
-	public NoSuchLTMException() {
-		//
 	}
 
 	private static final long serialVersionUID = 1L;

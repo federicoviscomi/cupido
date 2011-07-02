@@ -716,7 +716,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					.println("Servlet: on joinTable() catched NoSuchLTMException-> "
 							+ e.getMessage());
 			// e.printStackTrace();
-			throw new NoSuchServerException();
+			throw new NoSuchServerException(ltmId);
 		} catch (IllegalArgumentException e) {
 			System.out
 					.println("Servlet: on joinTable() catched IllegalArgumentException-> "
@@ -772,7 +772,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			// e.printStackTrace();
 			throw new FatalException();
 		} catch (NoSuchLTMException e) {
-			throw new NoSuchServerException();
+			throw new NoSuchServerException(server);
 		}
 
 		try {

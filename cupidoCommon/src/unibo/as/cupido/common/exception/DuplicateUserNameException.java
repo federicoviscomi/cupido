@@ -19,10 +19,19 @@ package unibo.as.cupido.common.exception;
 
 import java.io.Serializable;
 
-public class DuplicateUserNameException extends Exception implements Serializable {
+/**
+ * Used when:
+ * <ul>
+ * <li>trying to add a new user in the database but the database already
+ * contains a user with same name</li>
+ * <li>trying to add a new player in a table but the table already contains a
+ * player with same name</li>
+ * </ul>
+ */
+public class DuplicateUserNameException extends Exception implements
+		Serializable {
 	private static final long serialVersionUID = 1L;
-	public DuplicateUserNameException(){
-	}
+
 	public DuplicateUserNameException(String userName) {
 		super(userName);
 	}
