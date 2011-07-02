@@ -66,7 +66,8 @@ public class CardWidget extends Image {
 	/**
 	 * Constructs a <code>CardWidget</code> that displays the specified card.
 	 * 
-	 * @param card The desired card.
+	 * @param card
+	 *            The desired card.
 	 */
 	public CardWidget(Card card) {
 		super(constructCardName(card, 0));
@@ -78,8 +79,10 @@ public class CardWidget extends Image {
 	/**
 	 * Constructs a <code>CardWidget</code> that displays the specified card.
 	 * 
-	 * @param card The desired card.
-	 * @param rotation The desired rotation for the card, in degrees.
+	 * @param card
+	 *            The desired card.
+	 * @param rotation
+	 *            The desired rotation for the card, in degrees.
 	 */
 	public CardWidget(Card card, int rotation) {
 		super(constructCardName(card, rotation));
@@ -102,7 +105,8 @@ public class CardWidget extends Image {
 	}
 
 	/**
-	 * @return The currently displayed card, or null if a covered card is displayed.
+	 * @return The currently displayed card, or null if a covered card is
+	 *         displayed.
 	 */
 	public Card getCard() {
 		return card;
@@ -111,7 +115,8 @@ public class CardWidget extends Image {
 	/**
 	 * Changes the displayed card to <code>newCard</code>.
 	 * 
-	 * @param newCard The desired card.
+	 * @param newCard
+	 *            The desired card.
 	 */
 	public void setCard(Card newCard) {
 		if (card == null && newCard == null)
@@ -126,7 +131,8 @@ public class CardWidget extends Image {
 	/**
 	 * Changes the displayed card to <code>newRotation</code>.
 	 * 
-	 * @param newRotation The desired rotation.
+	 * @param newRotation
+	 *            The desired rotation.
 	 */
 	public void setRotation(int newRotation) {
 		if (rotation == newRotation)
@@ -148,11 +154,13 @@ public class CardWidget extends Image {
 	}
 
 	/**
-	 * A helper method that constructs the file name of the correct
-	 * image from the provided arguments.
+	 * A helper method that constructs the file name of the correct image from
+	 * the provided arguments.
 	 * 
-	 * @param card The desired card.
-	 * @param rotation The desired rotation for the card, in degrees.
+	 * @param card
+	 *            The desired card.
+	 * @param rotation
+	 *            The desired rotation for the card, in degrees.
 	 * 
 	 * @return The filename of the desired image.
 	 */

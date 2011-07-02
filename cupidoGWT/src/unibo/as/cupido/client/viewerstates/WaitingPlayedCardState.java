@@ -29,8 +29,8 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * This class handles the state of the game in which the
- * viewer is waiting for a player to play a card.
+ * This class handles the state of the game in which the viewer is waiting for a
+ * player to play a card.
  */
 public class WaitingPlayedCardState implements ViewerState {
 
@@ -45,19 +45,20 @@ public class WaitingPlayedCardState implements ViewerState {
 	private int currentPlayer;
 
 	/**
-	 * This specifies whether or not the <code>PlayedCard</code> event has already been
-	 * received.
+	 * This specifies whether or not the <code>PlayedCard</code> event has
+	 * already been received.
 	 */
 	private boolean eventReceived = false;
-	
+
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
 	/**
-	 * The widget that displays the current message in the top-right corner
-	 * of the table.
+	 * The widget that displays the current message in the top-right corner of
+	 * the table.
 	 */
 	private HTML message;
 
@@ -67,8 +68,10 @@ public class WaitingPlayedCardState implements ViewerState {
 	private ViewerStateManager stateManager;
 
 	/**
-	 * @param cardsGameWidget The widget that displays the game.
-	 * @param stateManager The manager of game states.
+	 * @param cardsGameWidget
+	 *            The widget that displays the game.
+	 * @param stateManager
+	 *            The manager of game states.
 	 */
 	public WaitingPlayedCardState(final CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {

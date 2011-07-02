@@ -22,9 +22,9 @@ import unibo.as.cupido.client.widgets.cardsgame.CardRole;
 import unibo.as.cupido.common.structures.Card;
 
 /**
- * The interface implemented by all game states in which the current
- * user is a player.
- *
+ * The interface implemented by all game states in which the current user is a
+ * player.
+ * 
  * @see ViewerState
  */
 public interface PlayerState {
@@ -37,9 +37,9 @@ public interface PlayerState {
 	public void activate();
 
 	/**
-	 * When this is called, the state stops responding to events
-	 * and disables all user controls, except the <code>CardsGameWidget</code>,
-	 * that is not affected by this call.
+	 * When this is called, the state stops responding to events and disables
+	 * all user controls, except the <code>CardsGameWidget</code>, that is not
+	 * affected by this call.
 	 */
 	public void freeze();
 
@@ -57,12 +57,16 @@ public interface PlayerState {
 	 * This is called when the user clicks on a card, except during animations
 	 * and when the <code>CardsGameWidget</code>'s controls are disabled.
 	 * 
-	 * @param player The player to whom the card belongs
-	 * @param card The card that was clicked, or <code>null</code> if a covered card was
-	 *            clicked.
-	 * @param state The state of the card that was clicked.
-	 * @param isRaised This is <code>true</code> only if <code>state==HAND</code> and this card
-	 *  is currently raised.
+	 * @param player
+	 *            The player to whom the card belongs
+	 * @param card
+	 *            The card that was clicked, or <code>null</code> if a covered
+	 *            card was clicked.
+	 * @param state
+	 *            The state of the card that was clicked.
+	 * @param isRaised
+	 *            This is <code>true</code> only if <code>state==HAND</code> and
+	 *            this card is currently raised.
 	 */
 	public void handleCardClicked(int player, Card card, CardRole.State state,
 			boolean isRaised);
@@ -70,55 +74,65 @@ public interface PlayerState {
 	/**
 	 * Handles a <code>CardPassed</code> notification received from the servlet.
 	 * 
-	 * @param cards The cards that were passed to the user.
+	 * @param cards
+	 *            The cards that were passed to the user.
 	 * 
-	 * @return <code>false</code> if this event can't be handled right now, but it can be
-	 *         handled in a later state. It will be notified again at each state
-	 *         transition, until it is handled.
+	 * @return <code>false</code> if this event can't be handled right now, but
+	 *         it can be handled in a later state. It will be notified again at
+	 *         each state transition, until it is handled.
 	 */
 	public boolean handleCardPassed(Card[] cards);
 
 	/**
 	 * Handles a <code>CardPlayed</code> notification received from the servlet.
 	 * 
-	 * @param card The card that has been played.
-	 * @param playerPosition The position of the player that played this card.
+	 * @param card
+	 *            The card that has been played.
+	 * @param playerPosition
+	 *            The position of the player that played this card.
 	 * 
-	 * @return <code>false</code> if this event can't be handled right now, but it can be
-	 *         handled in a later state. It will be notified again at each state
-	 *         transition, until it is handled.
+	 * @return <code>false</code> if this event can't be handled right now, but
+	 *         it can be handled in a later state. It will be notified again at
+	 *         each state transition, until it is handled.
 	 */
 	public boolean handleCardPlayed(Card card, int playerPosition);
 
 	/**
 	 * Handles a <code>GameEnded</code> notification received from the servlet.
 	 * 
-	 * @param matchPoints The score scored by the players during the current game.
-	 * @param playersTotalPoints The total score of the players, already updated
-	 *                           with the results of the current game.
+	 * @param matchPoints
+	 *            The score scored by the players during the current game.
+	 * @param playersTotalPoints
+	 *            The total score of the players, already updated with the
+	 *            results of the current game.
 	 * 
-	 * @return <code>false</code> if this event can't be handled right now, but it can be
-	 *         handled in a later state. It will be notified again at each state
-	 *         transition, until it is handled.
+	 * @return <code>false</code> if this event can't be handled right now, but
+	 *         it can be handled in a later state. It will be notified again at
+	 *         each state transition, until it is handled.
 	 */
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
 
 	/**
-	 * Handles a <code>GameStarted</code> notification received from the servlet.
+	 * Handles a <code>GameStarted</code> notification received from the
+	 * servlet.
 	 * 
-	 * @param myCards The cards that the player received from the dealer.
+	 * @param myCards
+	 *            The cards that the player received from the dealer.
 	 * 
-	 * @return <code>false</code> if this event can't be handled right now, but it can be
-	 *         handled in a later state. It will be notified again at each state
-	 *         transition, until it is handled.
+	 * @return <code>false</code> if this event can't be handled right now, but
+	 *         it can be handled in a later state. It will be notified again at
+	 *         each state transition, until it is handled.
 	 */
 	public boolean handleGameStarted(Card[] myCards);
 
 	/**
-	 * Handles a <code>PlayerReplaced</code> notification received from the servlet.
+	 * Handles a <code>PlayerReplaced</code> notification received from the
+	 * servlet.
 	 * 
-	 * @param name The name of the bot that replaced the player.
-	 * @param position The position in the table where the player resided.
+	 * @param name
+	 *            The name of the bot that replaced the player.
+	 * @param position
+	 *            The position in the table where the player resided.
 	 */
 	public void handlePlayerReplaced(String name, int position);
 }

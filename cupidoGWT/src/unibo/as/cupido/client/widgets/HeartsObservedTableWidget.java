@@ -39,26 +39,25 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 /**
- * This class displays the table for a Hearts game, for
- * users that are viewing a game. The game may or may not
- * be started.
+ * This class displays the table for a Hearts game, for users that are viewing a
+ * game. The game may or may not be started.
  * 
- * If the current user is a player, <code>HeartsTableWidget</code>
- * is used instead.
+ * If the current user is a player, <code>HeartsTableWidget</code> is used
+ * instead.
  * 
  * @see HeartsTableWidget
  */
 public class HeartsObservedTableWidget extends AbsolutePanel {
 
 	/**
-	 * The widget used to display the table before the game start.
-	 * If the game is already started, this is <code>null</code>.
+	 * The widget used to display the table before the game start. If the game
+	 * is already started, this is <code>null</code>.
 	 */
 	private BeforeGameWidget beforeGameWidget;
-	
+
 	/**
-	 * The widget used to display the table after the game start.
-	 * If the game isn't started yet, this is <code>null</code>.
+	 * The widget used to display the table after the game start. If the game
+	 * isn't started yet, this is <code>null</code>.
 	 */
 	private CardsGameWidget cardsGameWidget = null;
 
@@ -68,15 +67,16 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	private CupidoInterfaceAsync cupidoService;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
 	/**
 	 * This contains some information about the game status.
 	 * 
-	 * It is only updated once, when the game starts (if it is not
-	 * already started).
+	 * It is only updated once, when the game starts (if it is not already
+	 * started).
 	 */
 	private ObservedGameStatus observedGameStatus;
 
@@ -84,7 +84,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	 * The global screen manager.
 	 */
 	private ScreenManager screenManager;
-	
+
 	/**
 	 * The manager of the game states.
 	 * 
@@ -92,23 +92,28 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	 * @see ViewerStateManagerImpl
 	 */
 	private ViewerStateManager stateManager;
-	
+
 	/**
 	 * The size of the table (both width and height), in pixels.
 	 */
 	private int tableSize;
-	
+
 	/**
 	 * The username of the current user.
 	 */
 	private String username;
 
 	/**
-	 * @param tableSize The size of the table (both width and height) in pixels.
-	 * @param username The username of the current user.
-	 * @param screenManager The global screen manager.
-	 * @param observedGameStatus The current game status.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param tableSize
+	 *            The size of the table (both width and height) in pixels.
+	 * @param username
+	 *            The username of the current user.
+	 * @param screenManager
+	 *            The global screen manager.
+	 * @param observedGameStatus
+	 *            The current game status.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public HeartsObservedTableWidget(int tableSize, final String username,
 			final ScreenManager screenManager,
@@ -120,7 +125,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 		this.cupidoService = cupidoService;
 		this.observedGameStatus = observedGameStatus;
 		this.username = username;
-		
+
 		setWidth(tableSize + "px");
 		setHeight(tableSize + "px");
 
@@ -228,8 +233,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * When this is called, the widget stops responding to events
-	 * and disables all user controls.
+	 * When this is called, the widget stops responding to events and disables
+	 * all user controls.
 	 */
 	public void freeze() {
 		if (beforeGameWidget != null)
@@ -245,8 +250,10 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	 * This is called when a <code>CardPlayed</code> notification is received
 	 * from the servlet.
 	 * 
-	 * @param card The card that has been played.
-	 * @param playerPosition The position of the player that played this card.
+	 * @param card
+	 *            The card that has been played.
+	 * @param playerPosition
+	 *            The position of the player that played this card.
 	 * 
 	 * @see CardPlayed
 	 */
@@ -269,9 +276,11 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	 * This is called when a <code>GameEnded</code> notification is received
 	 * from the servlet.
 	 * 
-	 * @param matchPoints The score scored by the players during the current game.
-	 * @param playersTotalPoints The total score of the players, already updated
-	 *                           with the results of the current game.
+	 * @param matchPoints
+	 *            The score scored by the players during the current game.
+	 * @param playersTotalPoints
+	 *            The total score of the players, already updated with the
+	 *            results of the current game.
 	 * 
 	 * @see GameEnded
 	 */
@@ -289,13 +298,17 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a <code>NewPlayerJoined</code> notification is received
-	 * from the servlet.
+	 * This is called when a <code>NewPlayerJoined</code> notification is
+	 * received from the servlet.
 	 * 
-	 * @param name The name of the player who joined the game.
-	 * @param isBot Specifies whether the player is a user or a bot.
-	 * @param points The (global) score of the player.
-	 * @param position The position of the player in the table.
+	 * @param name
+	 *            The name of the player who joined the game.
+	 * @param isBot
+	 *            Specifies whether the player is a user or a bot.
+	 * @param points
+	 *            The (global) score of the player.
+	 * @param position
+	 *            The position of the player in the table.
 	 * 
 	 * @see NewPlayerJoined
 	 */
@@ -322,7 +335,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	 * This is called when a <code>PlayerLeft</code> notification is received
 	 * from the servlet.
 	 * 
-	 * @param player The player that left the game.
+	 * @param player
+	 *            The player that left the game.
 	 * 
 	 * @see PlayerLeft
 	 */
@@ -342,11 +356,13 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a <code>PlayerReplaced</code> notification is received
-	 * from the servlet.
+	 * This is called when a <code>PlayerReplaced</code> notification is
+	 * received from the servlet.
 	 * 
-	 * @param name The name of the bot that replaced the player.
-	 * @param position The position in the table where the player resided.
+	 * @param name
+	 *            The name of the bot that replaced the player.
+	 * @param position
+	 *            The position in the table where the player resided.
 	 * 
 	 * @see PlayerReplaced
 	 */
@@ -369,7 +385,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	 * This is called when the game is started, but only if it wasn't yet
 	 * started when this widget was constructed.
 	 * 
-	 * @param initialTableStatus The current table status.
+	 * @param initialTableStatus
+	 *            The current table status.
 	 */
 	private void startGame(InitialTableStatus initialTableStatus) {
 
@@ -402,7 +419,8 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 	/**
 	 * This is called when the game is started.
 	 * 
-	 * @param observedGameStatus The current game status.
+	 * @param observedGameStatus
+	 *            The current game status.
 	 */
 	private void startGame(ObservedGameStatus observedGameStatus) {
 

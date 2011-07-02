@@ -21,9 +21,9 @@ import unibo.as.cupido.client.playerstates.PlayerState;
 import unibo.as.cupido.common.structures.Card;
 
 /**
- * The interface implemented by all game states in which the current
- * user is a viewer.
- *
+ * The interface implemented by all game states in which the current user is a
+ * viewer.
+ * 
  * @see PlayerState
  */
 public interface ViewerState {
@@ -36,9 +36,9 @@ public interface ViewerState {
 	public void activate();
 
 	/**
-	 * When this is called, the state stops responding to events
-	 * and disables all user controls, except the <code>CardsGameWidget</code>,
-	 * that is not affected by this call.
+	 * When this is called, the state stops responding to events and disables
+	 * all user controls, except the <code>CardsGameWidget</code>, that is not
+	 * affected by this call.
 	 */
 	public void freeze();
 
@@ -55,32 +55,40 @@ public interface ViewerState {
 	/**
 	 * Handles a <code>CardPlayed</code> notification received from the servlet.
 	 * 
-	 * @param card The card that was played.
-	 * @param playerPosition The position of the player (or bot) that played the specified card.
+	 * @param card
+	 *            The card that was played.
+	 * @param playerPosition
+	 *            The position of the player (or bot) that played the specified
+	 *            card.
 	 * 
-	 * @return <code>false</code> if this event can't be handled right now, but it can be
-	 *         handled in a later state. It will be notified again at each state
-	 *         transition, until it is handled.
+	 * @return <code>false</code> if this event can't be handled right now, but
+	 *         it can be handled in a later state. It will be notified again at
+	 *         each state transition, until it is handled.
 	 */
 	public boolean handleCardPlayed(Card card, int playerPosition);
 
 	/**
 	 * Handles a <code>GameEnded</code> notification received from the servlet.
 	 * 
-	 * @param matchPoints The score scored by the players during the current game.
-	 * @param playersTotalPoints The total score of the players, already updated
-	 *                           with the results of the current game.
-	 * @return <code>false</code> if this event can't be handled right now, but it can be
-	 *         handled in a later state. It will be notified again at each state
-	 *         transition, until it is handled.
+	 * @param matchPoints
+	 *            The score scored by the players during the current game.
+	 * @param playersTotalPoints
+	 *            The total score of the players, already updated with the
+	 *            results of the current game.
+	 * @return <code>false</code> if this event can't be handled right now, but
+	 *         it can be handled in a later state. It will be notified again at
+	 *         each state transition, until it is handled.
 	 */
 	public boolean handleGameEnded(int[] matchPoints, int[] playersTotalPoints);
 
 	/**
-	 * Handles a <code>PlayerReplaced</code> notification received from the servlet.
+	 * Handles a <code>PlayerReplaced</code> notification received from the
+	 * servlet.
 	 * 
-	 * @param name The name of the bot that replaced the player.
-	 * @param position The position in the table where the player resided.
+	 * @param name
+	 *            The name of the bot that replaced the player.
+	 * @param position
+	 *            The position in the table where the player resided.
 	 */
 	public void handlePlayerReplaced(String name, int position);
 

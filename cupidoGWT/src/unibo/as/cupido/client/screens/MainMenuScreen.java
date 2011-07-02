@@ -71,7 +71,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	 * A timer used to poll the servlet about updates to the global chat.
 	 */
 	private Timer chatTimer;
-	
+
 	/**
 	 * The widget that displays the global chat on the right.
 	 */
@@ -83,13 +83,14 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	private CupidoInterfaceAsync cupidoService;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
 	/**
-	 * This is <code>true</code> if the user sent a message and no refresh request has yet
-	 * been sent to the servlet after that.
+	 * This is <code>true</code> if the user sent a message and no refresh
+	 * request has yet been sent to the servlet after that.
 	 */
 	private boolean needRefresh = false;
 
@@ -115,9 +116,12 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 	private boolean waitingServletResponse = false;
 
 	/**
-	 * @param screenManager The global screen manager.
-	 * @param username The username of the current user.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param screenManager
+	 *            The global screen manager.
+	 * @param username
+	 *            The username of the current user.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public MainMenuScreen(final ScreenManager screenManager,
 			final String username, final CupidoInterfaceAsync cupidoService) {

@@ -35,8 +35,8 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * This class handles the state of the game in which the
- * player has to play the two of clubs.
+ * This class handles the state of the game in which the player has to play the
+ * two of clubs.
  */
 public class FirstLeaderState implements PlayerState {
 
@@ -51,7 +51,8 @@ public class FirstLeaderState implements PlayerState {
 	private CupidoInterfaceAsync cupidoService;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -61,14 +62,14 @@ public class FirstLeaderState implements PlayerState {
 	private List<Card> hand;
 
 	/**
-	 * The widget that displays the current message in the top-right corner
-	 * of the table.
+	 * The widget that displays the current message in the top-right corner of
+	 * the table.
 	 */
 	private HTML message;
 
 	/**
-	 * This specifies whether or not the <code>PlayedCard</code> event has already been
-	 * received.
+	 * This specifies whether or not the <code>PlayedCard</code> event has
+	 * already been received.
 	 */
 	private boolean playedCard = false;
 
@@ -78,10 +79,14 @@ public class FirstLeaderState implements PlayerState {
 	private PlayerStateManager stateManager;
 
 	/**
-	 * @param cardsGameWidget The widget that displays the game.
-	 * @param stateManager The manager of game states.
-	 * @param hand The list of the cards that the current user has in his hand.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param cardsGameWidget
+	 *            The widget that displays the game.
+	 * @param stateManager
+	 *            The manager of game states.
+	 * @param hand
+	 *            The list of the cards that the current user has in his hand.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public FirstLeaderState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,

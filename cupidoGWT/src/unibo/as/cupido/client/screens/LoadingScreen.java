@@ -25,15 +25,16 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * This class manages the Loading screen, that is displayed
- * during startup. Note that the user has no means to change
- * the screen during the loading. The screen manager itself
- * will display the login screen when the application is loaded.
+ * This class manages the Loading screen, that is displayed during startup. Note
+ * that the user has no means to change the screen during the loading. The
+ * screen manager itself will display the login screen when the application is
+ * loaded.
  */
 public class LoadingScreen extends VerticalPanel implements Screen {
 
 	/**
-	 * @param screenManager The global screen manager.
+	 * @param screenManager
+	 *            The global screen manager.
 	 */
 	public LoadingScreen(ScreenManager screenManager) {
 		setHeight(Cupido.height + "px");

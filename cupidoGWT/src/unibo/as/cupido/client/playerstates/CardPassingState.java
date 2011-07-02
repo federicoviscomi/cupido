@@ -41,8 +41,8 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * This class handles the state of the game in which the current
- * user has to choose the cards to be passed.
+ * This class handles the state of the game in which the current user has to
+ * choose the cards to be passed.
  */
 public class CardPassingState implements PlayerState {
 
@@ -50,7 +50,7 @@ public class CardPassingState implements PlayerState {
 	 * The widget that displays the game.
 	 */
 	private CardsGameWidget cardsGameWidget;
-	
+
 	/**
 	 * Whether the user has already confirmed to pass the selected cards.
 	 */
@@ -62,7 +62,8 @@ public class CardPassingState implements PlayerState {
 	private CupidoInterfaceAsync cupidoService;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -72,8 +73,8 @@ public class CardPassingState implements PlayerState {
 	private List<Card> hand;
 
 	/**
-	 * The widget that displays the current message in the top-right corner
-	 * of the table.
+	 * The widget that displays the current message in the top-right corner of
+	 * the table.
 	 */
 	private HTML message;
 
@@ -86,17 +87,21 @@ public class CardPassingState implements PlayerState {
 	 * The currently selected cards.
 	 */
 	private List<Card> raisedCards = new ArrayList<Card>();
-	
+
 	/**
 	 * The manager of game states.
 	 */
 	private PlayerStateManager stateManager;
 
 	/**
-	 * @param cardsGameWidget The widget that displays the game.
-	 * @param stateManager The manager of game states.
-	 * @param hand The list of the cards that the current user has in his hand.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param cardsGameWidget
+	 *            The widget that displays the game.
+	 * @param stateManager
+	 *            The manager of game states.
+	 * @param hand
+	 *            The list of the cards that the current user has in his hand.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public CardPassingState(final CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, final List<Card> hand,

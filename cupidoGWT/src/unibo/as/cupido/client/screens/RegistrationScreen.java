@@ -45,11 +45,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class RegistrationScreen extends VerticalPanel implements Screen {
 
 	/**
-	 * The button used to abort the registration and go back to
-	 * the login screen.
+	 * The button used to abort the registration and go back to the login
+	 * screen.
 	 */
 	private PushButton abortButton;
-	
+
 	/**
 	 * The button used to check that the specified username is available.
 	 */
@@ -66,7 +66,8 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 	private CupidoInterfaceAsync cupidoService;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -74,18 +75,18 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 	 * The button used to confirm the data entered in the various fields.
 	 */
 	private PushButton okButton;
-	
+
 	/**
 	 * The field in which the user types the desired password.
 	 */
 	private PasswordTextBox passwordBox;
 
 	/**
-	 * The field in which the user has to type the desired password
-	 * again, to avoid typing errors.
+	 * The field in which the user has to type the desired password again, to
+	 * avoid typing errors.
 	 */
 	private PasswordTextBox passwordConfirmBox;
-	
+
 	/**
 	 * The global screen manager.
 	 */
@@ -97,8 +98,10 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 	private TextBox usernameBox;
 
 	/**
-	 * @param screenManager The global screen manager.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param screenManager
+	 *            The global screen manager.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public RegistrationScreen(final ScreenManager screenManager,
 			final CupidoInterfaceAsync cupidoService) {
@@ -284,8 +287,8 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 	}
 
 	/**
-	 * Attempts to register a new user with the data contained
-	 * in the various fields.
+	 * Attempts to register a new user with the data contained in the various
+	 * fields.
 	 */
 	private void tryRegistering() {
 		if (usernameBox.getText().isEmpty()) {

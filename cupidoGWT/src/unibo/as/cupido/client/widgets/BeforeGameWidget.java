@@ -50,8 +50,7 @@ import com.google.gwt.user.client.ui.PushButton;
 public class BeforeGameWidget extends AbsolutePanel {
 
 	/**
-	 * An interface used by client code to be notified of
-	 * various events.
+	 * An interface used by client code to be notified of various events.
 	 */
 	public interface Listener {
 		/**
@@ -62,7 +61,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 		/**
 		 * This is called if a fatal exception occurs.
 		 * 
-		 * @param e The exception that was caught.
+		 * @param e
+		 *            The exception that was caught.
 		 */
 		public void onFatalException(Throwable e);
 
@@ -79,12 +79,12 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 *  The height of the players' labels that contain usernames and scores.
+	 * The height of the players' labels that contain usernames and scores.
 	 */
 	private static final int playerLabelHeight = 20;
 
 	/**
-	 *  The width of the players' labels that contain usernames and scores.
+	 * The width of the players' labels that contain usernames and scores.
 	 */
 	private static final int playerLabelWidth = 200;
 
@@ -95,9 +95,9 @@ public class BeforeGameWidget extends AbsolutePanel {
 
 	/**
 	 * A list containing the displayed "Add bot" buttons (if any).
-	 * <code>buttons.get(0)</code> is the left button, and other buttons follow in clockwise
-	 * order. This list has always 3 elements. Each element may be <code>null</code> if there
-	 * is no button displayed in that position.
+	 * <code>buttons.get(0)</code> is the left button, and other buttons follow
+	 * in clockwise order. This list has always 3 elements. Each element may be
+	 * <code>null</code> if there is no button displayed in that position.
 	 */
 	private List<PushButton> buttons = new ArrayList<PushButton>();
 
@@ -107,7 +107,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 	private CupidoInterfaceAsync cupidoService;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -117,8 +118,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 	private boolean isOwner;
 
 	/**
-	 * <code>labels.get(0)</code> is the left label, and other labels follow in clockwise
-	 * order. This list has always 3 elements.
+	 * <code>labels.get(0)</code> is the left label, and other labels follow in
+	 * clockwise order. This list has always 3 elements.
 	 */
 	private List<HTML> labels = new ArrayList<HTML>();
 
@@ -140,20 +141,26 @@ public class BeforeGameWidget extends AbsolutePanel {
 	/**
 	 * The widget that represents the table before the actual game.
 	 * 
-	 * @param tableSize The size of the widget (both width and height), in pixels.
-	 * @param username The username of the current user.
+	 * @param tableSize
+	 *            The size of the widget (both width and height), in pixels.
+	 * @param username
+	 *            The username of the current user.
 	 * @param bottomUserName
 	 *            Is the bottom player's username (it may be the current user or
 	 *            not, depending whether the user is a player or just a viewer).
 	 * @param isOwner
-	 *            Specifies whether or not the current user is the creator of the
-	 *            table.
-	 * @param tableStatus This contains some information about the table status.
+	 *            Specifies whether or not the current user is the creator of
+	 *            the table.
+	 * @param tableStatus
+	 *            This contains some information about the table status.
 	 * @param scores
 	 *            The global scores of existing players. The scores contained in
 	 *            <code>tableStatus</code> are ignored.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
-	 * @param listener The listener used to notify the client code about various events.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
+	 * @param listener
+	 *            The listener used to notify the client code about various
+	 *            events.
 	 */
 	public BeforeGameWidget(int tableSize, String username,
 			String bottomUserName, boolean isOwner,
@@ -235,8 +242,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * When this is called, the widget stops responding to events
-	 * and disables all user controls.
+	 * When this is called, the widget stops responding to events and disables
+	 * all user controls.
 	 */
 	public void freeze() {
 		for (PushButton button : buttons)
@@ -256,9 +263,11 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * This is called when a <code>GameEnded</code> notification is received
 	 * from the servlet.
 	 * 
-	 * @param matchPoints The score scored by the players during the current game.
-	 * @param playersTotalPoints The total score of the players, already updated
-	 *                           with the results of the current game.
+	 * @param matchPoints
+	 *            The score scored by the players during the current game.
+	 * @param playersTotalPoints
+	 *            The total score of the players, already updated with the
+	 *            results of the current game.
 	 * 
 	 * @see GameEnded
 	 */
@@ -272,13 +281,17 @@ public class BeforeGameWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * This is called when a <code>NewPlayerJoined</code> notification is received
-	 * from the servlet.
+	 * This is called when a <code>NewPlayerJoined</code> notification is
+	 * received from the servlet.
 	 * 
-	 * @param name The name of the player who joined the game.
-	 * @param isBot Specifies whether the player is a user or a bot.
-	 * @param points The (global) points of the player.
-	 * @param position The position of the player in the table.
+	 * @param name
+	 *            The name of the player who joined the game.
+	 * @param isBot
+	 *            Specifies whether the player is a user or a bot.
+	 * @param points
+	 *            The (global) points of the player.
+	 * @param position
+	 *            The position of the player in the table.
 	 * 
 	 * @see NewPlayerJoined
 	 */
@@ -299,7 +312,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 	 * This is called when a <code>PlayerLeft</code> notification is received
 	 * from the servlet.
 	 * 
-	 * @param player The player that left the game.
+	 * @param player
+	 *            The player that left the game.
 	 * 
 	 * @see PlayerLeft
 	 */
@@ -326,8 +340,10 @@ public class BeforeGameWidget extends AbsolutePanel {
 	/**
 	 * A helper method to add a bot to the table.
 	 * 
-	 * @param position The position where the bot has to be added.
-	 * @param name The name of the bot.
+	 * @param position
+	 *            The position where the bot has to be added.
+	 * @param name
+	 *            The name of the bot.
 	 */
 	private void addBot(int position, String name) {
 		tableStatus.opponents[position] = name;
@@ -350,7 +366,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 	/**
 	 * A helper method to add an "Add bot" button in the specified position.
 	 * 
-	 * @param position The position where the button has to be added.
+	 * @param position
+	 *            The position where the button has to be added.
 	 */
 	private void addBotButton(final int position) {
 		final int buttonWidth = 95;
@@ -422,9 +439,12 @@ public class BeforeGameWidget extends AbsolutePanel {
 	/**
 	 * A helper method to add a player to the table.
 	 * 
-	 * @param username The name of the player.
-	 * @param points The global points of the specified player.
-	 * @param position The position where the player has to be added.
+	 * @param username
+	 *            The name of the player.
+	 * @param points
+	 *            The global points of the specified player.
+	 * @param position
+	 *            The position where the player has to be added.
 	 */
 	private void addPlayer(String username, int points, int position) {
 
@@ -454,7 +474,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 	/**
 	 * Removes the specified player from the table.
 	 * 
-	 * @param player The position of the player that has to be removed.
+	 * @param player
+	 *            The position of the player that has to be removed.
 	 */
 	private void removePlayer(int player) {
 		tableStatus.opponents[player] = null;
@@ -467,7 +488,8 @@ public class BeforeGameWidget extends AbsolutePanel {
 	/**
 	 * Construct the text for a bot's label.
 	 * 
-	 * @param name The name of the bot.
+	 * @param name
+	 *            The name of the bot.
 	 * 
 	 * @return The text for the bot's label.
 	 */
@@ -483,8 +505,10 @@ public class BeforeGameWidget extends AbsolutePanel {
 	/**
 	 * Construct the text for a user's label.
 	 * 
-	 * @param username The name of the user.
-	 * @param points The global points of the specified user.
+	 * @param username
+	 *            The name of the user.
+	 * @param points
+	 *            The global points of the specified user.
 	 * 
 	 * @return The text for the user's label.
 	 */

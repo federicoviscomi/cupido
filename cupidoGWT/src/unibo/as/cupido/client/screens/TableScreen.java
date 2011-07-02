@@ -30,8 +30,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 /**
- * This class manages the table screen for players (both creators and
- * players who join an existing table).
+ * This class manages the table screen for players (both creators and players
+ * who join an existing table).
  * 
  * @see ObservedTableScreen
  */
@@ -41,14 +41,15 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	 * The width of the chat sidebar.
 	 */
 	public static final int chatWidth = Cupido.width - Cupido.height;
-	
+
 	/**
 	 * The widget that displays the local chat in the right side of the screen.
 	 */
 	private ChatWidget chatWidget;
-	
+
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -58,12 +59,19 @@ public class TableScreen extends AbsolutePanel implements Screen {
 	private HeartsTableWidget tableWidget;
 
 	/**
-	 * @param screenManager The global screen manager.
-	 * @param username The username of the current user.
-	 * @param isOwner Specifies whether or not the current user is the creator of this table.
-	 * @param initialTableStatus Contains information about the current state of the table.
-	 * @param userScore The global score of the current user.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param screenManager
+	 *            The global screen manager.
+	 * @param username
+	 *            The username of the current user.
+	 * @param isOwner
+	 *            Specifies whether or not the current user is the creator of
+	 *            this table.
+	 * @param initialTableStatus
+	 *            Contains information about the current state of the table.
+	 * @param userScore
+	 *            The global score of the current user.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public TableScreen(ScreenManager screenManager, final String username,
 			boolean isOwner, InitialTableStatus initialTableStatus,

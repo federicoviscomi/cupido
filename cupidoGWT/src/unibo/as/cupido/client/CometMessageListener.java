@@ -31,16 +31,17 @@ import unibo.as.cupido.shared.cometNotification.PlayerReplaced;
  * This is meant as a base class for classes that handle messages received
  * through comet.
  * 
- * Derived classes must override the relevant methods, without
- * calling the base class' methods. This is needed because the
- * base class methods assume that the notification can't be handled.
+ * Derived classes must override the relevant methods, without calling the base
+ * class' methods. This is needed because the base class methods assume that the
+ * notification can't be handled.
  */
 public class CometMessageListener {
 	/**
 	 * This is called when a <code>CardPassed</code> notification is received
 	 * from the servlet.
 	 * 
-	 * @param cards The cards that were passed to the user.
+	 * @param cards
+	 *            The cards that were passed to the user.
 	 * 
 	 * @see CardPassed
 	 */
@@ -53,8 +54,10 @@ public class CometMessageListener {
 	 * This is called when a <code>CardPlayed</code> notification is received
 	 * from the servlet.
 	 * 
-	 * @param card The card that has been played.
-	 * @param playerPosition The position of the player that played this card.
+	 * @param card
+	 *            The card that has been played.
+	 * @param playerPosition
+	 *            The position of the player that played this card.
 	 * 
 	 * @see CardPlayed
 	 */
@@ -67,9 +70,11 @@ public class CometMessageListener {
 	 * This is called when a <code>GameEnded</code> notification is received
 	 * from the servlet.
 	 * 
-	 * @param matchPoints The score scored by the players during the current game.
-	 * @param playersTotalPoints The total score of the players, already updated
-	 *                           with the results of the current game.
+	 * @param matchPoints
+	 *            The score scored by the players during the current game.
+	 * @param playersTotalPoints
+	 *            The total score of the players, already updated with the
+	 *            results of the current game.
 	 * 
 	 * @see GameEnded
 	 */
@@ -82,7 +87,8 @@ public class CometMessageListener {
 	 * This is called when a <code>GameStarted</code> notification is received
 	 * from the servlet.
 	 * 
-	 * @param myCards The cards that the player received from the dealer.
+	 * @param myCards
+	 *            The cards that the player received from the dealer.
 	 * 
 	 * @see GameStarted
 	 */
@@ -92,11 +98,13 @@ public class CometMessageListener {
 	}
 
 	/**
-	 * This is called when a <code>NewLocalChatMessage</code> notification is received
-	 * from the servlet.
+	 * This is called when a <code>NewLocalChatMessage</code> notification is
+	 * received from the servlet.
 	 * 
-	 * @param user The user that sent the specified message.
-	 * @param message The actual message.
+	 * @param user
+	 *            The user that sent the specified message.
+	 * @param message
+	 *            The actual message.
 	 * 
 	 * @see NewLocalChatMessage
 	 */
@@ -106,13 +114,17 @@ public class CometMessageListener {
 	}
 
 	/**
-	 * This is called when a <code>NewPlayerJoined</code> notification is received
-	 * from the servlet.
+	 * This is called when a <code>NewPlayerJoined</code> notification is
+	 * received from the servlet.
 	 * 
-	 * @param name The name of the player who joined the game.
-	 * @param isBot Specifies whether the player is a user or a bot.
-	 * @param points The (global) score of the player.
-	 * @param position The position of the player in the table.
+	 * @param name
+	 *            The name of the player who joined the game.
+	 * @param isBot
+	 *            Specifies whether the player is a user or a bot.
+	 * @param points
+	 *            The (global) score of the player.
+	 * @param position
+	 *            The position of the player in the table.
 	 * 
 	 * @see NewPlayerJoined
 	 */
@@ -126,7 +138,8 @@ public class CometMessageListener {
 	 * This is called when a <code>Playerleft</code> notification is received
 	 * from the servlet.
 	 * 
-	 * @param player The player that left the game.
+	 * @param player
+	 *            The player that left the game.
 	 * 
 	 * @see PlayerLeft
 	 */
@@ -136,11 +149,13 @@ public class CometMessageListener {
 	}
 
 	/**
-	 * This is called when a <code>PlayerReplaced</code> notification is received
-	 * from the servlet.
+	 * This is called when a <code>PlayerReplaced</code> notification is
+	 * received from the servlet.
 	 * 
-	 * @param name The name of the bot that replaced the player.
-	 * @param position The position in the table where the player resided.
+	 * @param name
+	 *            The name of the bot that replaced the player.
+	 * @param position
+	 *            The position in the table where the player resided.
 	 * 
 	 * @see PlayerReplaced
 	 */

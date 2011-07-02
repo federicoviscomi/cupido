@@ -38,9 +38,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * The class that manages the login screen.
- * This class allows the user to log in and to go to register
- * screen if needed.
+ * The class that manages the login screen. This class allows the user to log in
+ * and to go to register screen if needed.
  */
 public class LoginScreen extends VerticalPanel implements Screen {
 
@@ -48,9 +47,10 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	 * This is used to communicate with the servlet using RPC.
 	 */
 	private CupidoInterfaceAsync cupidoService;
-	
+
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -58,7 +58,7 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	 * The button used to confirm the entered username and password.
 	 */
 	private PushButton okButton;
-	
+
 	/**
 	 * The field in which the user can enter his password.
 	 */
@@ -70,7 +70,7 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	 * @see RegistrationScreen
 	 */
 	private PushButton registerButton;
-	
+
 	/**
 	 * The global screen manager.
 	 */
@@ -82,8 +82,10 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	private TextBox usernameBox;
 
 	/**
-	 * @param screenManager The global screen manager.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param screenManager
+	 *            The global screen manager.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public LoginScreen(final ScreenManager screenManager,
 			CupidoInterfaceAsync cupidoService) {
@@ -181,8 +183,8 @@ public class LoginScreen extends VerticalPanel implements Screen {
 	}
 
 	/**
-	 * Attempts to log in using the username and password in the
-	 * respective fields.
+	 * Attempts to log in using the username and password in the respective
+	 * fields.
 	 */
 	private void tryLogin() {
 		final String username = usernameBox.getText();

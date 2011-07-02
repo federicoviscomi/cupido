@@ -66,15 +66,16 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 * The current state.
 	 */
 	private PlayerState currentState = null;
-	
+
 	/**
-	 * The position of the first player in the next trick, or -1 if
-	 * this information is unknown or if the game hasn't started yet.
+	 * The position of the first player in the next trick, or -1 if this
+	 * information is unknown or if the game hasn't started yet.
 	 */
 	private int firstPlayerInTrick = -1;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -114,15 +115,21 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	 * Initialize the state manager. The current user is a player, and his hand
 	 * cards are <code>cards</code>.
 	 * 
-	 * @param tableSize The size of the table widget (width and height), in pixels.
-	 * @param screenManager The global screen manager.
-	 * @param initialTableStatus Contains information about the current state of the table.
+	 * @param tableSize
+	 *            The size of the table widget (width and height), in pixels.
+	 * @param screenManager
+	 *            The global screen manager.
+	 * @param initialTableStatus
+	 *            Contains information about the current state of the table.
 	 * @param scores
 	 *            The four users' scores, starting from the bottom player and in
 	 *            clockwise order. The scores in initialTableStatus are ignored.
-	 * @param cards The card in the user's hand.
-	 * @param username The username of the current user.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param cards
+	 *            The card in the user's hand.
+	 * @param username
+	 *            The username of the current user.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public PlayerStateManagerImpl(int tableSize, ScreenManager screenManager,
 			InitialTableStatus initialTableStatus, int[] scores, Card[] cards,
@@ -535,7 +542,8 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	/**
 	 * A helper method that transitions to the specified state.
 	 * 
-	 * @param newState The desired state.
+	 * @param newState
+	 *            The desired state.
 	 */
 	private void transitionTo(PlayerState newState) {
 		currentState = newState;
@@ -546,8 +554,10 @@ public class PlayerStateManagerImpl implements PlayerStateManager {
 	/**
 	 * Decides whether a candidate card takes the previous one in Hearts.
 	 * 
-	 * @param candidate The candidate card.
-	 * @param previous The previous card.
+	 * @param candidate
+	 *            The candidate card.
+	 * @param previous
+	 *            The previous card.
 	 * @return true if candidate takes previous, false otherwise.
 	 */
 	private static boolean cardTakes(Card candidate, Card previous) {

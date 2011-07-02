@@ -41,26 +41,28 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class ChatWidget extends AbsolutePanel {
 
 	/**
-	 * A listener used by this class to notify the user code
-	 * when the user sends a message.
+	 * A listener used by this class to notify the user code when the user sends
+	 * a message.
 	 */
 	public interface ChatListener {
 		/**
 		 * This is called when the user sends a message.
 		 * 
-		 * @param message The message entered by the user.
+		 * @param message
+		 *            The message entered by the user.
 		 */
 		public void sendMessage(String message);
 	}
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
 	/**
-	 * This listener is used to notify the client code
-	 * when the user sends a new message.
+	 * This listener is used to notify the client code when the user sends a new
+	 * message.
 	 */
 	private ChatListener listener;
 
@@ -68,15 +70,15 @@ public class ChatWidget extends AbsolutePanel {
 	 * The widget that allows the user to enter a new message.
 	 */
 	private TextBox messageField;
-	
+
 	/**
 	 * The list of displayed messages.
 	 */
 	private HTML messageList;
-	
+
 	/**
-	 * A panel that contains the messageList and displays
-	 * horizontal and/or vertical scrollbars if needed.
+	 * A panel that contains the messageList and displays horizontal and/or
+	 * vertical scrollbars if needed.
 	 */
 	private ScrollPanel scrollPanel;
 
@@ -86,10 +88,13 @@ public class ChatWidget extends AbsolutePanel {
 	private PushButton sendButton;
 
 	/**
-	 * @param width The width of the widget, in pixels.
-	 * @param height The height of the widget, in pixels.
-	 * @param listener This listener is used to notify the client
-	 *                 code when the user sends a new message.
+	 * @param width
+	 *            The width of the widget, in pixels.
+	 * @param height
+	 *            The height of the widget, in pixels.
+	 * @param listener
+	 *            This listener is used to notify the client code when the user
+	 *            sends a new message.
 	 */
 	public ChatWidget(int width, int height, ChatListener listener) {
 
@@ -149,8 +154,10 @@ public class ChatWidget extends AbsolutePanel {
 	/**
 	 * Adds the specified message to the list of the displayed messages.
 	 * 
-	 * @param username The user who sent the message.
-	 * @param message The actual message.
+	 * @param username
+	 *            The user who sent the message.
+	 * @param message
+	 *            The actual message.
 	 */
 	public void displayMessage(String username, String message) {
 		if (frozen) {
@@ -168,8 +175,8 @@ public class ChatWidget extends AbsolutePanel {
 	}
 
 	/**
-	 * When this is called, the widget stops responding to events
-	 * and disables all user controls.
+	 * When this is called, the widget stops responding to events and disables
+	 * all user controls.
 	 */
 	public void freeze() {
 		messageField.setEnabled(false);
@@ -180,7 +187,8 @@ public class ChatWidget extends AbsolutePanel {
 	/**
 	 * Replaces the displayed messages with those in the provided list.
 	 * 
-	 * @param list The list containing the messages to be displayed.
+	 * @param list
+	 *            The list containing the messages to be displayed.
 	 */
 	public void setLastMessages(ChatMessage[] list) {
 		if (frozen) {
@@ -214,8 +222,10 @@ public class ChatWidget extends AbsolutePanel {
 	/**
 	 * A helper method to generate the HTML for a chat message.
 	 * 
-	 * @param username The user that posted the message.
-	 * @param message The actual message.
+	 * @param username
+	 *            The user that posted the message.
+	 * @param message
+	 *            The actual message.
 	 * 
 	 * @return A string containing the HTML for the message.
 	 */

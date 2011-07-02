@@ -45,16 +45,22 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 	private PushButton exitButton;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
 	/**
-	 * @param screenManager The global screen manager.
-	 * @param username The username of the current user.
-	 * @param topRanks The <code>RankingEntry</code> objects referring to the top 10 users.
-	 * @param localRanks The <code>RankingEntry</code> objects referring to the current user
-	 *             and to users with similar ranks.
+	 * @param screenManager
+	 *            The global screen manager.
+	 * @param username
+	 *            The username of the current user.
+	 * @param topRanks
+	 *            The <code>RankingEntry</code> objects referring to the top 10
+	 *            users.
+	 * @param localRanks
+	 *            The <code>RankingEntry</code> objects referring to the current
+	 *            user and to users with similar ranks.
 	 */
 	public ScoresScreen(final ScreenManager screenManager,
 			final String username, ArrayList<RankingEntry> topRanks,
@@ -127,11 +133,13 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 	}
 
 	/**
-	 * Constructs a widget that displays the rank and the score of
-	 * a user in a row.
+	 * Constructs a widget that displays the rank and the score of a user in a
+	 * row.
 	 * 
-	 * @param entry The <code>RankingEntry</code> of the user.
-	 * @param highlight Whether or not to highlight this row.
+	 * @param entry
+	 *            The <code>RankingEntry</code> of the user.
+	 * @param highlight
+	 *            Whether or not to highlight this row.
 	 * @return The constructed widget.
 	 */
 	private static HTML constructRow(RankingEntry entry, boolean highlight) {
@@ -157,7 +165,8 @@ public class ScoresScreen extends VerticalPanel implements Screen {
 	}
 
 	/**
-	 * @return Constructs a widget that displays a vertical column of black dots.
+	 * @return Constructs a widget that displays a vertical column of black
+	 *         dots.
 	 */
 	private static Widget constructVerticalDots() {
 		VerticalPanel boxContainer = new VerticalPanel();

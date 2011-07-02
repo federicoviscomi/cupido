@@ -52,8 +52,9 @@ public interface CupidoInterface extends RemoteService {
 	/**
 	 * Add a bot to the table.
 	 * 
-	 * @param position The position where the bot should be added.
-	 *             The valid range is [1-3].
+	 * @param position
+	 *            The position where the bot should be added. The valid range is
+	 *            [1-3].
 	 * @throws FullPositionException
 	 *             If the specified position is already occupied by either a
 	 *             player or a bot.
@@ -79,9 +80,9 @@ public interface CupidoInterface extends RemoteService {
 	/**
 	 * Creates a new table.
 	 * 
-	 * @return <code>InitialTableStatus.playerPoints[0]</code> is the only meaningful field
-	 *         in the return value, because this table has
-	 *         no players or bots yet.
+	 * @return <code>InitialTableStatus.playerPoints[0]</code> is the only
+	 *         meaningful field in the return value, because this table has no
+	 *         players or bots yet.
 	 * @throws MaxNumTableReachedException
 	 *             If a table can't be created right now, because the maximum
 	 *             number of tables has been reached.
@@ -132,7 +133,8 @@ public interface CupidoInterface extends RemoteService {
 			throws UserNotAuthenticatedException, FatalException;
 
 	/**
-	 * @return <code>RankingEntry</code> of the top 10 players in the global ranking.
+	 * @return <code>RankingEntry</code> of the top 10 players in the global
+	 *         ranking.
 	 * @throws UserNotAuthenticatedException
 	 *             If the user is not logged in.
 	 * @throws FatalException
@@ -144,9 +146,11 @@ public interface CupidoInterface extends RemoteService {
 	/**
 	 * Checks if the specified username is already registered or not.
 	 * 
-	 * @param username The name that has to be checked.
+	 * @param username
+	 *            The name that has to be checked.
 	 * 
-	 * @return <code>true</code> if the username is already used. <code>false</code> otherwise.
+	 * @return <code>true</code> if the username is already used.
+	 *         <code>false</code> otherwise.
 	 * @throws IllegalArgumentException
 	 *             If the parameter is <code>null</code>.
 	 * @throws FatalException
@@ -158,8 +162,10 @@ public interface CupidoInterface extends RemoteService {
 	/**
 	 * Joins the table identified by server and tableId.
 	 * 
-	 * @param server The game server that contains the desired table.
-	 * @param tableId The ID of the desired table in the game server.
+	 * @param server
+	 *            The game server that contains the desired table.
+	 * @param tableId
+	 *            The ID of the desired table in the game server.
 	 * 
 	 * @return InitialTableStatus state of the match not yet started
 	 * @throws FullTableException
@@ -178,7 +184,8 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 * @throws GameInterruptedException
-	 *             If the creator left the table, and so the game was interrupted.
+	 *             If the creator left the table, and so the game was
+	 *             interrupted.
 	 */
 	public InitialTableStatus joinTable(String server, int tableId)
 			throws FullTableException, NoSuchTableException,
@@ -196,7 +203,8 @@ public interface CupidoInterface extends RemoteService {
 	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 * @throws GameInterruptedException
-	 *             If the creator left the table, and so the game was interrupted.
+	 *             If the creator left the table, and so the game was
+	 *             interrupted.
 	 */
 	public void leaveTable() throws UserNotAuthenticatedException,
 			NoSuchTableException, FatalException, GameInterruptedException;
@@ -204,11 +212,14 @@ public interface CupidoInterface extends RemoteService {
 	/**
 	 * Attempts to login, with the specified username and password.
 	 * 
-	 * @param username The username specified by the user.
-	 * @param password The password specified by the user.
+	 * @param username
+	 *            The username specified by the user.
+	 * @param password
+	 *            The password specified by the user.
 	 * 
-	 * @return This returns <code>true</code> if the login is successful, <code>false</code> otherwise.
-	 * @throws FatalException 
+	 * @return This returns <code>true</code> if the login is successful,
+	 *         <code>false</code> otherwise.
+	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 */
 	public boolean login(String username, String password)
@@ -228,7 +239,8 @@ public interface CupidoInterface extends RemoteService {
 	/**
 	 * The current user passes the specified cards.
 	 * 
-	 * @param cards <code>cards.length</code> must be 3.
+	 * @param cards
+	 *            <code>cards.length</code> must be 3.
 	 * 
 	 * @throws IllegalStateException
 	 *             If the user was not expected to pass cards now.
@@ -239,12 +251,13 @@ public interface CupidoInterface extends RemoteService {
 	 *             If the current user is not at a table.
 	 * @throws UserNotAuthenticatedException
 	 *             If the user is not logged in.
-	 * @throws FatalException 
+	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 * @throws WrongGameStateException
 	 *             If the user is not expected to pass cards now.
 	 * @throws GameInterruptedException
-	 *             If the creator left the table, and so the game was interrupted.
+	 *             If the creator left the table, and so the game was
+	 *             interrupted.
 	 */
 	public void passCards(Card[] cards) throws IllegalStateException,
 			IllegalArgumentException, NoSuchTableException,
@@ -265,12 +278,13 @@ public interface CupidoInterface extends RemoteService {
 	 *             <code>card==null</code>.
 	 * @throws UserNotAuthenticatedException
 	 *             If the user is not logged in.
-	 * @throws FatalException 
+	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 * @throws WrongGameStateException
 	 *             If the user is not expected to play a card now.
 	 * @throws GameInterruptedException
-	 *             If the creator left the table, and so the game was interrupted.
+	 *             If the creator left the table, and so the game was
+	 *             interrupted.
 	 */
 	public void playCard(Card card) throws IllegalMoveException,
 			FatalException, NoSuchTableException, IllegalArgumentException,
@@ -280,12 +294,14 @@ public interface CupidoInterface extends RemoteService {
 	/**
 	 * Adds a new user with the specified username and password.
 	 * 
-	 * @param username The name of the new user.
-	 * @param password The password of the new user.
+	 * @param username
+	 *            The name of the new user.
+	 * @param password
+	 *            The password of the new user.
 	 * 
 	 * @throws DuplicateUserNameException
 	 *             If this username was already used.
-	 * @throws FatalException 
+	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 */
 	public void registerUser(String username, String password)
@@ -301,7 +317,7 @@ public interface CupidoInterface extends RemoteService {
 	 *             means.
 	 * @throws UserNotAuthenticatedException
 	 *             If the user is not logged in.
-	 * @throws FatalException 
+	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 */
 	public void sendGlobalChatMessage(String message)
@@ -319,10 +335,11 @@ public interface CupidoInterface extends RemoteService {
 	 *             If the current user is neither playing nor viewing a game.
 	 * @throws UserNotAuthenticatedException
 	 *             If the user is not logged in.
-	 * @throws FatalException 
+	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 * @throws GameInterruptedException
-	 *             If the creator left the table, and so the game was interrupted.
+	 *             If the creator left the table, and so the game was
+	 *             interrupted.
 	 */
 	public void sendLocalChatMessage(String message)
 			throws IllegalArgumentException, NoSuchTableException,
@@ -336,7 +353,7 @@ public interface CupidoInterface extends RemoteService {
 	 * 
 	 * @throws UserNotAuthenticatedException
 	 *             If the user is not logged in.
-	 * @throws FatalException 
+	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 */
 	public ChatMessage[] viewLastMessages()
@@ -347,8 +364,10 @@ public interface CupidoInterface extends RemoteService {
 	 * 
 	 * The actual game may or may not already be started.
 	 * 
-	 * @param server The game server that contains the desired table.
-	 * @param tableId The ID of the desired table in the specified server.
+	 * @param server
+	 *            The game server that contains the desired table.
+	 * @param tableId
+	 *            The ID of the desired table in the specified server.
 	 * 
 	 * @return The current status of the game.
 	 * @throws NoSuchTableException
@@ -362,7 +381,8 @@ public interface CupidoInterface extends RemoteService {
 	 *             When a fatal error occurs, or if the user is already viewing
 	 *             or playing at a table.
 	 * @throws GameInterruptedException
-	 *             If the creator left the table, and so the game was interrupted.
+	 *             If the creator left the table, and so the game was
+	 *             interrupted.
 	 * @throws WrongGameStateException
 	 *             If the game in the specified table is already finished.
 	 */

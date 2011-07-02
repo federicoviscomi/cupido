@@ -35,11 +35,11 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * This class handles the state of the game in which the
- * player has to play a card.
+ * This class handles the state of the game in which the player has to play a
+ * card.
  * 
- * Note that if no-one has played a card yet, the current state
- * is <code>FirstLeaderState</code> instead.
+ * Note that if no-one has played a card yet, the current state is
+ * <code>FirstLeaderState</code> instead.
  * 
  * @see FirstLeaderState
  */
@@ -54,9 +54,10 @@ public class YourTurnState implements PlayerState {
 	 * This is used to communicate with the servlet using RPC.
 	 */
 	private CupidoInterfaceAsync cupidoService;
-	
+
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -64,16 +65,16 @@ public class YourTurnState implements PlayerState {
 	 * The list of the cards that the current user has in his hand.
 	 */
 	private List<Card> hand;
-	
+
 	/**
-	 * The widget that displays the current message in the top-right corner
-	 * of the table.
+	 * The widget that displays the current message in the top-right corner of
+	 * the table.
 	 */
 	private HTML message;
 
 	/**
-	 * This specifies whether or not the user has already played a card
-	 * in this state.
+	 * This specifies whether or not the user has already played a card in this
+	 * state.
 	 */
 	private boolean playedCard = false;
 
@@ -83,10 +84,14 @@ public class YourTurnState implements PlayerState {
 	private PlayerStateManager stateManager;
 
 	/**
-	 * @param cardsGameWidget The widget that displays the game.
-	 * @param stateManager The manager of game states.
-	 * @param hand The list of the cards that the current user has in his hand.
-	 * @param cupidoService This is used to communicate with the servlet using RPC.
+	 * @param cardsGameWidget
+	 *            The widget that displays the game.
+	 * @param stateManager
+	 *            The manager of game states.
+	 * @param hand
+	 *            The list of the cards that the current user has in his hand.
+	 * @param cupidoService
+	 *            This is used to communicate with the servlet using RPC.
 	 */
 	public YourTurnState(CardsGameWidget cardsGameWidget,
 			final PlayerStateManager stateManager, List<Card> hand,
@@ -261,14 +266,18 @@ public class YourTurnState implements PlayerState {
 	}
 
 	/**
-	 * Decides whether or not the user can play a specific card,
-	 * depending on its hand, on the card already played in the current
-	 * trick, and on whether or not the hearts have been broken yet.
+	 * Decides whether or not the user can play a specific card, depending on
+	 * its hand, on the card already played in the current trick, and on whether
+	 * or not the hearts have been broken yet.
 	 * 
-	 * @param card The card that the user is attempting to play.
-	 * @param playedCards The ordered list of the cards played in this trick.
-	 * @param hand The cards that the current player has in its hand.
-	 * @param areHeartsBroken Specifies whether or not the hearts have been broken yet.
+	 * @param card
+	 *            The card that the user is attempting to play.
+	 * @param playedCards
+	 *            The ordered list of the cards played in this trick.
+	 * @param hand
+	 *            The cards that the current player has in its hand.
+	 * @param areHeartsBroken
+	 *            Specifies whether or not the hearts have been broken yet.
 	 * @return true is the player can play the specified card. false otherwise.
 	 */
 	private static boolean canPlayCard(Card card, List<Card> playedCards,

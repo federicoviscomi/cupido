@@ -24,9 +24,8 @@ import unibo.as.cupido.common.structures.Card;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
- * This class handles the state of the game in which all
- * four players have played a card, so the current trick
- * is over.
+ * This class handles the state of the game in which all four players have
+ * played a card, so the current trick is over.
  */
 public class EndOfTrickState implements ViewerState {
 
@@ -36,7 +35,8 @@ public class EndOfTrickState implements ViewerState {
 	private CardsGameWidget cardsGameWidget;
 
 	/**
-	 * Specifies whether the UI is frozen (i.e. does no longer react to events) or not.
+	 * Specifies whether the UI is frozen (i.e. does no longer react to events)
+	 * or not.
 	 */
 	private boolean frozen = false;
 
@@ -46,8 +46,10 @@ public class EndOfTrickState implements ViewerState {
 	private ViewerStateManager stateManager;
 
 	/**
-	 * @param cardsGameWidget The widget that displays the game.
-	 * @param stateManager The manager of game states.
+	 * @param cardsGameWidget
+	 *            The widget that displays the game.
+	 * @param stateManager
+	 *            The manager of game states.
 	 */
 	public EndOfTrickState(CardsGameWidget cardsGameWidget,
 			final ViewerStateManager stateManager) {
