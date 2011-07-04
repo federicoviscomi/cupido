@@ -19,8 +19,12 @@ package unibo.as.cupido.backend.gtm;
 
 import java.io.Serializable;
 import java.util.AbstractCollection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import unibo.as.cupido.common.exception.EmptyTableException;
@@ -36,12 +40,15 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
 public class AllTables extends AbstractCollection<TableInfoForClient> implements
 		Serializable {
 
-	/** auto generated serial version id */
-	private static final long serialVersionUID = 3007618011128012678L;
+	/** auto generated serial version uid */
+	private static final long serialVersionUID = 3079835750202226475L;
 	/** stores association between table descriptors and table infos */
-	private Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
+	private transient final Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
 	/** stores association between ltm names and ltm interfaces */
 	private transient final Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
+
+	/** This is the only serialized field of this class. */
+	ArrayList<TableInfoForClient> getTableListReturnedObject = null;
 
 	/**
 	 * Adds a table.
@@ -133,14 +140,53 @@ public class AllTables extends AbstractCollection<TableInfoForClient> implements
 			throw new NoSuchTableException(tableDescriptor.toString());
 	}
 
+	/**
+	 * Save a portion of the state of this <tt>AllTables</tt> instance to a
+	 * stream (that is, serialize it). Serialize only tables information needed
+	 * by a client issuing a {@link GlobalTableManager#getTableList()}, i.e.
+	 * {@link #getTableListReturnedObject}. This is done in attempt to send the
+	 * least amount of data to the client.
+	 * 
+	 * @serialData The number of tables in this instance and every tables
+	 *             information.
+	 */
+	private void writeObject(java.io.ObjectOutputStream s)
+			throws java.io.IOException {
+		System.out.println("writing tables");
+		/* write out tables number */
+		s.writeInt(tifc.size());
+
+		/* write out all tables informations */
+		for (TableInfoForClient tableInfo : tifc.values()) {
+			s.writeObject(tableInfo);
+		}
+	}
+
+	/**
+	 * Reconstitute a part of the <tt>AllTables</tt> instance from a stream
+	 * (that is, deserialize it). Specificly deserialization is done only for
+	 * {@link #getTableListReturnedObject}.
+	 */
+	private void readObject(java.io.ObjectInputStream s)
+			throws java.io.IOException, ClassNotFoundException {
+		System.out.println("reading tables");
+		int tableNumber = s.readInt();
+		getTableListReturnedObject = new ArrayList<TableInfoForClient>(
+				tableNumber);
+		/* Read in all tables informations */
+		for (int i = 0; i < tableNumber; i++) {
+			getTableListReturnedObject.add((TableInfoForClient) s.readObject());
+		}
+	}
+
 	@Override
 	public Iterator<TableInfoForClient> iterator() {
-		return tifc.values().iterator();
+		return getTableListReturnedObject.iterator();
 	}
 
 	@Override
 	public int size() {
-		return tifc.size();
+		return getTableListReturnedObject.size();
 	}
 
 }

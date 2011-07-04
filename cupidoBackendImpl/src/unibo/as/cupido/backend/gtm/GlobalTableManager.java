@@ -25,6 +25,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
+import java.util.Collections;
 
 import unibo.as.cupido.backend.table.LTMSwarm;
 import unibo.as.cupido.backend.table.LTMSwarm.Triple;
@@ -44,8 +45,7 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
 
 /**
  * 
- * Implements the global table manager server.
- * This has various feature:
+ * Implements the global table manager server. This has various feature:
  * <ul>
  * <li>Manage a set of local table manager(LTM). This includes:
  * <ul>
@@ -173,7 +173,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public Collection<TableInfoForClient> getTableList() throws RemoteException {
+	public AllTables getTableList() throws RemoteException {
 		return allTables;
 	}
 
