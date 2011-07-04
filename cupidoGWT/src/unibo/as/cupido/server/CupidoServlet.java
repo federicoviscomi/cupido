@@ -52,7 +52,6 @@ import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.FatalException;
 import unibo.as.cupido.common.exception.FullTableException;
-import unibo.as.cupido.common.exception.GameEndedException;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.MaxNumTableReachedException;
@@ -81,8 +80,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 /**
  * Before calling other component's, CupidoServlet must check:
  * <ul>
- * <li>if users are authenticated
- * <li>if users are at a table or not
+ * <li>if user is authenticated
+ * <li>if user is at a table or not
  * </ul>
  * 
  * @author Lorenzo Belli
@@ -117,6 +116,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	private static final String DBI = "databaseInterface";
 	private static final String SCL = "sessionClosedListener";
 
+	/**
+	 * Number of entry to show in top rank list.
+	 */
 	private static final int NUMTOPRANKENTRIES = 10;
 
 	/**
@@ -143,26 +145,27 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			System.out.println("Servlet: on init() catched RemoteException->"
 					+ e.getMessage());
 			e.printStackTrace();
+			System.exit(1);
 		} catch (NotBoundException e) {
 			System.out.println("Servlet: on init() catched NotBoundException->"
 					+ e.getMessage());
 			e.printStackTrace();
+			System.exit(1);
 		}
 		getServletContext().setAttribute(GCI, gci);
 		getServletContext().setAttribute(GTMI, gtmi);
-		DatabaseInterface dbi;
+		DatabaseInterface dbi = null;
 		try {
 			dbi = new DatabaseManager();
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
+			System.out.println("Servlet: on init() catched SQLException ->");
 			e1.printStackTrace();
-			return;
+			System.exit(1);
 		}
 		getServletContext().setAttribute(DBI, dbi);
 		getServletContext().setAttribute(SCL, new SessionClosedListener() {
 			@Override
 			public void onSessionClosed(HttpSession hSession) {
-				// System.out.println("Servlet: onSessionClosed() was called.");
 				// Notify player left at the table
 				TableInterface ti = (TableInterface) hSession.getAttribute(TI);
 				try {
@@ -203,7 +206,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 * @param ctSession
 	 *            CometSession of the bounded client
 	 * 
-	 * @return a ServletNotificationsInterface object
+	 * @return a ServletNotificationsInterface object bounded with the given
+	 *         HttpSession and CometSession
 	 */
 	private ServletNotificationsInterface getServletNotificationsInterface(
 			final HttpSession hSession, final CometSession cSession) {
@@ -349,18 +353,20 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		};
 	}
 
-	/*
-	 * HttpListener use this interface to perform action
+	/**
+	 * CupidoSessionListener use this interface.
+	 * 
+	 * @see CupidoSessionListener
 	 */
 	public interface SessionClosedListener {
 		/**
-		 * HttpListener must call this method when httpSession is closing
+		 * HttpListener call this method when httpSession is closing
 		 */
 		public void onSessionClosed(HttpSession httpSession);
 	}
 
 	/**
-	 * Show the last NUMTOPRANKENTRIES messages of the global chat. Client poll
+	 * Show the last FIXME{@link NUMTOPRANKENTRIES} messages of the global chat. Client poll
 	 * this method
 	 */
 	@Override
@@ -387,8 +393,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * FIXME: IllegalArgumentException in never thrown because input is never
-	 * checked. TODO: choose legal messages
+	 * Send a message in global chat. FIXME: IllegalArgumentException in never
+	 * thrown because input is never checked. TODO: choose legal messages
+	 * 
+	 * @see GlobalChatInterface
 	 */
 	@Override
 	public void sendGlobalChatMessage(String message)
@@ -454,19 +462,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * Login errors must be non-informative.
+	 * Login user into system. Errors must be non-informative.
 	 */
 	@Override
 	public boolean login(String username, String password)
 			throws FatalException {
-		/*
-		 * FAKE LOGIN if (true){ HttpSession httpSession =
-		 * getThreadLocalRequest().getSession(false); if (httpSession != null){
-		 * httpSession.setAttribute(ISAUTHENTICATED, true);
-		 * httpSession.setAttribute(USERNAME, username); return true; } } return
-		 * false;
-		 */
-		// comment lines down here to NOT check login with db
 		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
 				.getAttribute(DBI);
 		Boolean authenticated;
@@ -514,7 +514,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			e.printStackTrace();
 			throw new FatalException();
 		}
-
 	}
 
 	/**
@@ -538,6 +537,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
+	/**
+	 * Perform logout operation.
+	 */
 	@Override
 	public void logout() {
 		HttpSession httpSession = getThreadLocalRequest().getSession(false);
@@ -642,28 +644,18 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new FatalException();
 			// e.printStackTrace();
 		}
-
 		return its;
 	}
 
 	/**
+	 * Join a table. Binds httpSession with its
+	 * {@link ServletNotificationInterface} and {@link TableInterface}
 	 * 
 	 * @param ltmId
+	 *            identifier of LTM
 	 * @param tableId
+	 *            table identifier
 	 * @return InitialTableStatus state of the match not yet started
-	 * @throws FullTableException
-	 *             if game already have 4 players
-	 * @throws NoSuchTableException
-	 *             if table is no more available, but user can join other table
-	 * @throws DuplicateUserNameException
-	 *             if player is already playing or viewing the selected table
-	 * @throws NoSuchServerException
-	 *             if server does not exist
-	 * @throws UserNotAuthenticatedException
-	 * @throws FatalException
-	 *             in case of internal serious error while joining the table,
-	 *             probably future action will not be performed
-	 * @throws GameInterruptedException
 	 */
 	@Override
 	public InitialTableStatus joinTable(String ltmId, int tableId)
@@ -730,8 +722,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			// e.printStackTrace();
 			throw new FatalException();
 		} catch (NoSuchUserException e) {
-			// In questo caso lo username non è registrato nel DB
-			// vedi TableInterface.joinTable
 			System.out
 					.println("Servlet: on joinTable() catched NoSuchUserException-> "
 							+ e.getMessage());
@@ -740,6 +730,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
+	/**
+	 * User enter a table as a viewer.
+	 */
 	@Override
 	public ObservedGameStatus viewTable(String server, int tableId)
 			throws NoSuchTableException, UserNotAuthenticatedException,
@@ -799,9 +792,17 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
+	/**
+	 * User leaves a table. Unbounds httpSession with its
+	 * {@link ServletNotificationInterface} and {@link TableInterface}. Calls
+	 * {@link TableInterface#leaveTable(String)}
+	 * 
+	 * @throws FatalException
+	 *             if catch RemoteException
+	 */
 	@Override
 	public void leaveTable() throws UserNotAuthenticatedException,
-			NoSuchTableException, FatalException, IllegalArgumentException,
+			NoSuchTableException, FatalException,
 			GameInterruptedException {
 		HttpSession httpSession = getThreadLocalRequest().getSession();
 		if (httpSession == null) {
@@ -840,6 +841,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		httpSession.removeAttribute(SNI);
 	}
 
+	/**
+	 * User play a card. Call {@link TableInterface#playCard()}
+	 * 
+	 * @throws FatalException
+	 *             when catch NoSuchPlayerException
+	 */
 	@Override
 	public void playCard(Card card) throws IllegalMoveException,
 			FatalException, IllegalArgumentException, NoSuchTableException,
@@ -855,7 +862,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		TableInterface ti = (TableInterface) httpSession.getAttribute(TI);
 		if (ti == null) {
 			System.out.println("Servlet: on playCard() ti == null");
-			// player is not at table
 			throw new NoSuchTableException();
 		}
 
@@ -876,6 +882,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
+	/**
+	 * Player pass three cards. Call
+	 * {@link TableInterface#passCards(String, Card[])}
+	 * 
+	 * @throws FatalException
+	 *             if catch NoSuchPlayerException or RemoteException
+	 */
 	@Override
 	public void passCards(Card[] cards) throws IllegalStateException,
 			IllegalArgumentException, NoSuchTableException,
@@ -910,6 +923,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
+	/**
+	 * Add a bot. Calls {@link TableInterface#addBot(String, int)}}
+	 * 
+	 * @throws FatalException if catch RemoteException
+	 */
 	@Override
 	public String addBot(int position) throws FullPositionException,
 			NotCreatorException, IllegalArgumentException,
@@ -956,6 +974,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		CometServlet.getCometSession(httpSession);
 	}
 
+	/**
+	 * Calls {@link DatabaseInterface#getMyRank(int)}
+	 * 
+	 * @throws FatalException
+	 *             if catch IllegalArgumentException or SQLException or
+	 *             NoSuchUserException
+	 */
 	@Override
 	public RankingEntry getMyRank() throws FatalException,
 			UserNotAuthenticatedException {
@@ -973,7 +998,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			return dbi.getUserRank(name);
 		} catch (IllegalArgumentException e) {
 			System.out
-					.println("Servlet: on getMyRank() catched RemoteException-> "
+					.println("Servlet: on getMyRank() catched IllegalArgumentException-> "
 							+ e.getMessage());
 			// e.printStackTrace();
 			throw new FatalException();
@@ -981,7 +1006,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			System.out
 					.println("Servlet: on getMyRank() catched SQLException-> "
 							+ e.getMessage());
-			// e.printStackTrace();
+			e.printStackTrace();
 			throw new FatalException();
 		} catch (NoSuchUserException e) {
 			System.out
@@ -992,6 +1017,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
+	/**
+	 * RankingEntry of top {@link NUMTOPRANKENTRIES} players in the global
+	 * ranking. Calls {@link DatabaseInterface#getTopRank(int)}
+	 * 
+	 * @throws FatalException
+	 *             if catch SQLException or IllegalArgumentException
+	 */
 	@Override
 	public ArrayList<RankingEntry> getTopRank()
 			throws UserNotAuthenticatedException, FatalException {
@@ -1021,6 +1053,13 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 	}
 
+	/**
+	 * Calls {@link DatabaseInterface#getLocalRank(String)}
+	 * 
+	 * @throws FatalException
+	 *             when catch IllegalArgumentException or SQLException or
+	 *             NoSuchUserException
+	 */
 	@Override
 	public ArrayList<RankingEntry> getLocalRank()
 			throws UserNotAuthenticatedException, FatalException {
@@ -1033,7 +1072,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
 				.getAttribute(DBI);
-		ArrayList<RankingEntry> ret = null;
 		try {
 			return dbi
 					.getLocalRank((String) httpSession.getAttribute(USERNAME));
@@ -1047,15 +1085,16 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			System.out
 					.println("Servlet: on getLocalRank() catched SQLException-> "
 							+ e.getMessage());
-			// e.printStackTrace();
+			e.printStackTrace();
 			throw new FatalException();
 		} catch (NoSuchUserException e) {
+			//DEAD CODE
 			System.out
 					.println("Servlet: on getLocalRank() catched NoSuchUserException-> "
 							+ e.getMessage());
-			// e.printStackTrace();
+			e.printStackTrace();
+			throw new FatalException();
 		}
-		return ret;
 	}
 
 	/**

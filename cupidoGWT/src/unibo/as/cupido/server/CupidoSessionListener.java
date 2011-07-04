@@ -23,7 +23,7 @@ import javax.servlet.http.HttpSessionListener;
 import unibo.as.cupido.server.CupidoServlet.SessionClosedListener;
 
 /**
- * Listen to event oh httpSession.
+ * Listen to destoy event oh httpSession.
  *
  */
 public class CupidoSessionListener implements HttpSessionListener {
