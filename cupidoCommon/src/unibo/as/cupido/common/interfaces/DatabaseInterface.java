@@ -78,6 +78,7 @@ public interface DatabaseInterface {
 
 	/** default database name */
 	public static final String database = "cupido";
+	public static final String DEFAULT_DATABASE_ADDRESS = "localhost";
 
 	/**
 	 * Add a new user with name <code>userName</code>, password
@@ -158,7 +159,7 @@ public interface DatabaseInterface {
 	public ArrayList<RankingEntry> getTopRank(int size) throws SQLException,
 			IllegalArgumentException;
 
-	/** Number of entries returned from {@link DatabseInterface#getLocalRank()}.*/
+	/** Number of entries returned from {@link DatabseInterface#getLocalRank()}. */
 	public final int LOCAL_RANK_ENTRIES_NUM = 7;
 
 	/**
@@ -211,10 +212,7 @@ public interface DatabaseInterface {
 	 * Close the connection with database.
 	 * 
 	 * @throws SQLException
-<<<<<<< HEAD
-	 *             in case of errors.
-=======
->>>>>>> master
+	 *             <<<<<<< HEAD in case of errors. ======= >>>>>>> master
 	 */
 	void close() throws SQLException;
 }

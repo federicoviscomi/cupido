@@ -34,9 +34,11 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import unibo.as.cupido.backend.table.SingleTableManager;
+import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
+import unibo.as.cupido.common.interfaces.DatabaseInterface;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
@@ -62,6 +64,8 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
  * <tt>LocalTableManagerInterface.DEFAULT_MAX_TABLE</tt></li>
  * <li>RMI_REGISTRY_ADDRESS: specifies the rmi registry address, default value
  * is <tt>LocalTableManagerInterface.DEFAULT_RMI_REGISTRY_ADDRESS</tt></li>
+ * <li>DATABASE_ADDRESS: specifies the database address, default value is
+ * <tt>DatabaseInterface.DEFAULT_DATABASE_ADDRESS</tt></li>
  * </ul>
  */
 public class LocalTableManager implements LocalTableManagerInterface {
@@ -106,11 +110,12 @@ public class LocalTableManager implements LocalTableManagerInterface {
 	private final Map<Integer, TableInterface> allTables;
 	/** this LTM local host address */
 	private final String localAddress;
-
 	/** <tt>false</tt> if GTM or this LTM are down; <tt>true</tt> otherwise */
 	private boolean acceptMoreRequest;
-
+	/** calls ltm shutdown method at exit if necessary */
 	private ShutdownHook shutdownHook;
+	/** database address */
+	private String databaseAddress = DatabaseManager.DEFAULT_DATABASE_ADDRESS;
 
 	public LocalTableManager() throws NotBoundException, RemoteException,
 			UnknownHostException {
@@ -129,6 +134,8 @@ public class LocalTableManager implements LocalTableManagerInterface {
 					} else if (configurationVariable
 							.equals("RMI_REGISTRY_ADDRESS")) {
 						rmiRegistryAddress = tokenizer.nextToken();
+					} else if (configurationVariable.equals("DATABASE_ADDRESS")) {
+						databaseAddress = tokenizer.nextToken();
 					}
 				}
 			}
