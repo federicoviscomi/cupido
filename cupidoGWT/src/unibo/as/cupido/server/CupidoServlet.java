@@ -136,6 +136,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			InputStream is = new FileInputStream("servlet.config");
 			Properties prop = new Properties();
 			prop.load(is);
+			System.out.println(prop.getProperty("servlet.registryHost"));
+			System.out.println(prop.getProperty("servlet.registryPort"));
+			System.out.println(prop.getProperty("servlet.DBhostname"));
 			CupidoServlet.registryHost = prop
 					.getProperty("servlet.registryHost",registryHost);
 			CupidoServlet.registryPort = Integer.parseInt(prop
@@ -542,14 +545,14 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	@Override
 	public void registerUser(String username, String password)
-			throws FatalException, DuplicateUserNameException {
+			throws FatalException, DuplicateUserNameException, IllegalArgumentException {
 
 		DatabaseInterface dbi = (DatabaseInterface) getServletContext()
 				.getAttribute(DBI);
 		try {
 			dbi.addNewUser(username, password);
 		} catch (IllegalArgumentException e) {
-			throw new FatalException();
+			throw e;
 		} catch (SQLException e) {
 			System.out
 					.println("Servlet: on registerUser() catched SQLException ->");

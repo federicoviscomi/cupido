@@ -355,6 +355,15 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 							abortButton.setEnabled(true);
 							usernameBox.setFocus(true);
 							checkUsernameAvailabilityLabel.setText("");
+						} catch (IllegalArgumentException e) {
+							Window.alert("Password deve essere lunga da 3 a 8 caratteri. Username da 1 a 16 caratteri.");
+							usernameBox.setEnabled(true);
+							passwordBox.setEnabled(true);
+							passwordConfirmBox.setEnabled(true);
+							okButton.setEnabled(false);
+							abortButton.setEnabled(true);
+							usernameBox.setFocus(true);
+							checkUsernameAvailabilityLabel.setText("");
 						} catch (Throwable e) {
 							screenManager.displayGeneralErrorScreen(e);
 						}

@@ -301,11 +301,13 @@ public interface CupidoInterface extends RemoteService {
 	 * 
 	 * @throws DuplicateUserNameException
 	 *             If this username was already used.
+	 * @throws IllegalArgumentException
+	 *             If username or password are in bad format.
 	 * @throws FatalException
 	 *             If a fatal error occurs.
 	 */
 	public void registerUser(String username, String password)
-			throws DuplicateUserNameException, FatalException;
+			throws DuplicateUserNameException, FatalException, IllegalArgumentException;
 
 	/**
 	 * Sends a message to the global chat.

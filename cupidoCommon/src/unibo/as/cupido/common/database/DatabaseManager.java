@@ -65,7 +65,7 @@ public class DatabaseManager implements DatabaseInterface {
 		if (!userName.matches("\\w{1,16}"))
 			throw new IllegalArgumentException("user name not valid: "
 					+ userName);
-		if (!password.matches("\\w{8}"))
+		if (!password.matches("\\w{3,8}"))
 			throw new IllegalArgumentException("password not valid: "
 					+ password);
 		statement.executeUpdate("INSERT INTO User VALUE ('" + userName + "', '"
