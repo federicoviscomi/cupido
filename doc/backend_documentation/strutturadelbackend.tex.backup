@@ -42,17 +42,7 @@
 \tableofcontents
 
 \chapter{Introduzione}
-Questo documento descrive:
-\begin{itemize}
-  \item 
-    La struttura composita della parte del backend che gestisce una singola partita. Per una descrizione del resto del backend si faccia riferimento al documento architettura\_e\_design.pdf
-  \item
-    Le varie iterazioni del processo di sviluppo che ha portato all'implementazione del backend.
-  \item
-    Come e' stato testato il backend.
-\end{itemize}
-
-
+Questo documento descrive la struttura composita del backend e il modo in cui viene implementato
 \chapter{Struttura del backend}\input{struttura}
 \chapter{Iterazioni nel provesso di sviluppo}\input{iterazioni}
 

@@ -36,6 +36,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -573,7 +574,8 @@ public class PlayerConsoleUI {
 				: true);
 		if (listTables) {
 			out.println("tables list follows:");
-			Iterator<TableInfoForClient> list = gtm.getTableList().iterator();
+			Collection<TableInfoForClient> tableList = gtm.getTableList();
+			Iterator<TableInfoForClient> list = tableList.iterator();
 			while (list.hasNext()) {
 				out.println(list.next());
 			}
