@@ -36,6 +36,7 @@ import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NoSuchViewerException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.WrongGameStateException;
+import unibo.as.cupido.common.interfaces.DatabaseInterface;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
@@ -85,7 +86,7 @@ public class SingleTableManager implements TableInterface {
 		this.creator = table.creator;
 		this.gameStatus = GameStatus.INIT;
 		//FIXME
-		this.databaseManager = new DatabaseManager("localhost");
+		this.databaseManager = new DatabaseManager(DatabaseInterface.DEFAULT_DATABASE_ADDRESS);
 		this.actionQueue = new ActionQueue();
 		this.actionQueue.start();
 		this.viewers = new ViewersSwarm(actionQueue);
