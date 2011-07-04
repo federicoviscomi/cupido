@@ -29,7 +29,7 @@ import unibo.as.cupido.common.structures.ChatMessage;
  * <p>
  * The global chat component is a remote RMI object who is registered in the
  * same remote registry of the GTM and is bounded to name
- * <code>DEFAULT_GLOBAL_CHAT_NAME</code>
+ * <code>GLOBAL_CHAT_RMI_NAME</code>
  * 
  */
 public interface GlobalChatInterface extends Remote {
@@ -38,7 +38,7 @@ public interface GlobalChatInterface extends Remote {
 	public static int MESSAGE_NUMBER = 10;
 
 	/** rmi name for global chat remote object */
-	public static final String DEFAULT_GLOBAL_CHAT_NAME = "globalChat";
+	public static final String GLOBAL_CHAT_RMI_NAME = "globalChat";
 
 	/**
 	 * Return the last MESSAGE_NUMBER messages

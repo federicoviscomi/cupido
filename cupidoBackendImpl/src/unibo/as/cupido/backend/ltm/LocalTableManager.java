@@ -60,8 +60,8 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
  * <li>MAX_TABLE: specifies the maximum number of table that this LTM can
  * handle, default value is
  * <tt>LocalTableManagerInterface.DEFAULT_MAX_TABLE</tt></li>
- * <li>GTM_ADDRESS: specifies the GTM address, default value is
- * <tt>LocalTableManagerInterface.DEFAULT_RMI_REGISTRY_ADDRESS</tt></li>
+ * <li>RMI_REGISTRY_ADDRESS: specifies the rmi registry address, default value
+ * is <tt>LocalTableManagerInterface.DEFAULT_RMI_REGISTRY_ADDRESS</tt></li>
  * </ul>
  */
 public class LocalTableManager implements LocalTableManagerInterface {
@@ -126,7 +126,8 @@ public class LocalTableManager implements LocalTableManagerInterface {
 					String configurationVariable = tokenizer.nextToken();
 					if (configurationVariable.equals("MAX_TABLE")) {
 						MAX_TABLE = Integer.parseInt(tokenizer.nextToken());
-					} else if (configurationVariable.equals("GTM_ADDRESS")) {
+					} else if (configurationVariable
+							.equals("RMI_REGISTRY_ADDRESS")) {
 						rmiRegistryAddress = tokenizer.nextToken();
 					}
 				}
@@ -138,9 +139,10 @@ public class LocalTableManager implements LocalTableManagerInterface {
 			System.exit(-1);
 		}
 
-		Registry remoteServerRegistry = LocateRegistry.getRegistry(rmiRegistryAddress);
+		Registry remoteServerRegistry = LocateRegistry
+				.getRegistry(rmiRegistryAddress);
 		gtmRemote = (GlobalTableManagerInterface) remoteServerRegistry
-				.lookup(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
+				.lookup(GlobalTableManagerInterface.GTM_RMI_NAME);
 
 		gtmRemote.notifyLocalTableManagerStartup(
 				(LocalTableManagerInterface) UnicastRemoteObject

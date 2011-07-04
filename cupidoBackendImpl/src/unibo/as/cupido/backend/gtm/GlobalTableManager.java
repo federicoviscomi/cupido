@@ -107,9 +107,9 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 	/**
 	 * Creates a <tt>GlobalTableManager</tt> and tries to bind it in rmi
-	 * registry with name <tt>GlobalTableManagerInterface.DEFAULT_GTM_NAME</tt>.
+	 * registry with name <tt>GlobalTableManagerInterface.GTM_RMI_NAME</tt>.
 	 * Creates also the global chat and tries to bind it in rmi registry with
-	 * name <tt>GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME</tt>
+	 * name <tt>GlobalChatInterface.GLOBAL_CHAT_RMI_NAME</tt>
 	 * 
 	 * @throws RemoteException
 	 * @throws UnknownHostException
@@ -121,9 +121,9 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 		ltmSwarm = new LTMSwarm();
 		registry = LocateRegistry.getRegistry();
 
-		registry.bind(GlobalTableManagerInterface.DEFAULT_GTM_NAME,
+		registry.bind(GlobalTableManagerInterface.GTM_RMI_NAME,
 				UnicastRemoteObject.exportObject(this));
-		registry.bind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME,
+		registry.bind(GlobalChatInterface.GLOBAL_CHAT_RMI_NAME,
 				UnicastRemoteObject.exportObject(new GlobalChatImpl()));
 
 		shutdownHook = new ShutdownHook(this);
@@ -222,12 +222,12 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	 */
 	public void shutDown() {
 		try {
-			registry.unbind(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
+			registry.unbind(GlobalTableManagerInterface.GTM_RMI_NAME);
 		} catch (Exception e) {
 			//
 		}
 		try {
-			registry.unbind(GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME);
+			registry.unbind(GlobalChatInterface.GLOBAL_CHAT_RMI_NAME);
 		} catch (Exception e) {
 			//
 		}
