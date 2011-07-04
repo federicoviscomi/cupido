@@ -6,6 +6,8 @@ Bug noti:
 TODO:
 - istruzioni di deployment
 - javadoc
+- parte del documento master (vedi sezione successiva)
+- verificare che il software rispetti tutto l'srs (ultima parte del process di sviluppo).
 
 documento master deve contenere:
 -scelta del processo di sviluppo (già fatto, è il file processo_di_sviluppo.odt)
@@ -14,11 +16,11 @@ documento master deve contenere:
 -parlare del testing ffettuato, in particolare come abbiamo svolto(?) le ultime
  due parti del processo di sviluppo; dire quali test abbiamo scelto, come si realizzano
  e come abbiamo trattato gli errori trovati. Il file testcases per capirci.
--log del processo di sviluppo, cioè ognuno di noi spiega come ha sviluppato. Le parti
- di Marco e Lorenzo sono fatte. Fede vorebbe finire il 5 luglio.
+-log del processo di sviluppo, cioè ognuno di noi spiega come ha sviluppato 
+le sue parti nelle sue iterazioni. Le parti
+ di Marco e Lorenzo sono fatte. Fede dorebbe finire il 5 luglio.
 
 Cose che forse faremo:
-- verificare che il software rispetti tutto l'srs.
 - deployment e testing vero su più macchine.
 Per questo ultimo punto sarebbe bene scoprire coem rossi vuole che glielo mostraimo.
 A lezione disse di approntare due pc, opprue di usare il lab. Noi come lo presenteremo?
