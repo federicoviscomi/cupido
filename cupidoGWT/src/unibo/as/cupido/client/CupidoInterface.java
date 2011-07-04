@@ -360,7 +360,7 @@ public interface CupidoInterface extends RemoteService {
 			throws UserNotAuthenticatedException, FatalException;
 
 	/**
-	 * Joins (as a viewer) the table identified by server and tableId.
+	 * Joins (as a viewer) the table identified by {@link server} and {@link tableId}.
 	 * 
 	 * The actual game may or may not already be started.
 	 * 
