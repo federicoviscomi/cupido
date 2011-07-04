@@ -96,7 +96,7 @@ public interface DatabaseInterface {
 	 *             <li>any of the arguments contain a character which is not a
 	 *             letter(upper or lower case) or a number or the underscore
 	 *             character</li>
-	 *             <li><tt>password</tt> is not more then 8 or less then 3 characters long</li>
+	 *             <li><tt>password</tt> is not from three to eigth characters long</li>
 	 *             <li><tt>username</tt> is not from one to sixteen characters
 	 *             long</li>
 	 *             </ul>
