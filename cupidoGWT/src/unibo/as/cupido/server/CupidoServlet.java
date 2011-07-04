@@ -18,6 +18,7 @@
 package unibo.as.cupido.server;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.rmi.AccessException;
 import java.rmi.NoSuchObjectException;
@@ -132,6 +133,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		} catch (ServletException e) {
 			System.out.println("Servlet: on init() catched ServletException->"
 					+ e.getMessage());
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

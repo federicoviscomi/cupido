@@ -27,7 +27,6 @@ import unibo.as.cupido.common.exception.DuplicateViewerException;
 import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullPositionException;
 import unibo.as.cupido.common.exception.FullTableException;
-import unibo.as.cupido.common.exception.GameEndedException;
 import unibo.as.cupido.common.exception.GameInterruptedException;
 import unibo.as.cupido.common.exception.IllegalMoveException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
@@ -85,7 +84,8 @@ public class SingleTableManager implements TableInterface {
 		this.gtm = gtm;
 		this.creator = table.creator;
 		this.gameStatus = GameStatus.INIT;
-		this.databaseManager = new DatabaseManager();
+		//FIXME
+		this.databaseManager = new DatabaseManager("localhost");
 		this.actionQueue = new ActionQueue();
 		this.actionQueue.start();
 		this.viewers = new ViewersSwarm(actionQueue);

@@ -35,12 +35,11 @@ public class DatabaseManager implements DatabaseInterface {
 	// TODO take this from a configuration file?
 	private final String userDB = "root";
 	private final String passDB = "cupido";
-	private final String host = "localhost";
 
 	private Statement statement;
 	private Connection connection;
 
-	public DatabaseManager() throws SQLException {
+	public DatabaseManager(String host) throws SQLException {
 		try {
 			Class.forName("org.gjt.mm.mysql.Driver");
 			String url = "jdbc:mysql://" + host + "/" + database;
