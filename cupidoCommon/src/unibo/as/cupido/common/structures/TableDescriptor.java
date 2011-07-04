@@ -27,7 +27,7 @@ public class TableDescriptor implements Serializable {
 	public String ltmId;
 	
 	public TableDescriptor() {
-		
+		//
 	}
 
 	public TableDescriptor(String server, int id) {

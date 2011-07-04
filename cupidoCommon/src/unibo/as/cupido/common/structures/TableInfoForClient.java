@@ -28,15 +28,14 @@ import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 public class TableInfoForClient implements Serializable {
 	private static final long serialVersionUID = -3002842357423083821L;
 	/** name of table creator */
-	public final String creator;
+	public String creator;
 	/** number of free position in this table */
 	public int freePosition;
 	/** identifier of the table */
-	public final TableDescriptor tableDescriptor;
+	public TableDescriptor tableDescriptor;
 
 	public TableInfoForClient() {
-		creator = null;
-		tableDescriptor = null;
+		//
 	}
 
 	public TableInfoForClient(String owner, int freePosition,

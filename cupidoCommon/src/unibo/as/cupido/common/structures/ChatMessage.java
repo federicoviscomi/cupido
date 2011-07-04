@@ -27,9 +27,9 @@ public class ChatMessage implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** name of user who creates this chat message */
-	public final String userName;
+	public String userName;
 	/** actual content of chat message */
-	public final String message;
+	public String message;
 
 	/**
 	 * Create a chat message with specified user name and message

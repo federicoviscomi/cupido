@@ -32,9 +32,9 @@ public class Pair<T1, T2> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** first component of this pair */
-	public final T1 first;
+	public T1 first;
 	/** second component of this pair */
-	public final T2 second;
+	public T2 second;
 
 	/**
 	 * Create a new pair with null components
