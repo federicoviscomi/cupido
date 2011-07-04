@@ -89,7 +89,16 @@ public interface DatabaseInterface {
 	 *             if a user named <code>userName</code> already exists in the
 	 *             database
 	 * @throws IllegalArgumentException
-	 *             if any of the arguments is <code>null</code>
+	 *             if:
+	 *             <ul>
+	 *             <li>any of the arguments are <code>null</code></li>
+	 *             <li>any of the arguments contain a character which is not a
+	 *             letter(upper or lower case) or a number or the underscore
+	 *             character</li>
+	 *             <li><tt>password</tt> is not eigth characters long</li>
+	 *             <li><tt>username</tt> is not from one to sixteen characters
+	 *             long</li>
+	 *             </ul>
 	 */
 	public void addNewUser(String userName, String password)
 			throws SQLException, DuplicateUserNameException,
@@ -114,12 +123,13 @@ public interface DatabaseInterface {
 
 	/**
 	 * Return true if userName is in the database
+	 * 
 	 * @param userName
 	 * @return
 	 * @throws SQLException
 	 */
 	public boolean contains(String userName) throws SQLException;
-	
+
 	/**
 	 * Update score of user <code>userName</code>
 	 * 
@@ -145,8 +155,8 @@ public interface DatabaseInterface {
 	 * @throws IllegalArgumentException
 	 *             if <code>size</code> is not positive
 	 */
-	public ArrayList<RankingEntry> getTopRank(int size)
-			throws SQLException, IllegalArgumentException;
+	public ArrayList<RankingEntry> getTopRank(int size) throws SQLException,
+			IllegalArgumentException;
 
 	/** Number of entries returned from {@link DatabseInterface#getLocalRank()}.*/
 	public final int LOCAL_RANK_ENTRIES_NUM = 7;
@@ -201,7 +211,10 @@ public interface DatabaseInterface {
 	 * Close the connection with database.
 	 * 
 	 * @throws SQLException
+<<<<<<< HEAD
 	 *             in case of errors.
+=======
+>>>>>>> master
 	 */
 	void close() throws SQLException;
 }

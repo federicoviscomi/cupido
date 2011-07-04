@@ -36,7 +36,7 @@ public class DatabaseManager implements DatabaseInterface {
 	private final String userDB = "root";
 	private final String passDB = "cupido";
 	private final String host = "localhost";
-	
+
 	private Statement statement;
 	private Connection connection;
 
@@ -63,6 +63,12 @@ public class DatabaseManager implements DatabaseInterface {
 			throw new IllegalArgumentException();
 		if (this.contains(userName))
 			throw new DuplicateUserNameException(userName);
+		if (!userName.matches("\\w{1,16}"))
+			throw new IllegalArgumentException("user name not valid: "
+					+ userName);
+		if (!password.matches("\\w{8}"))
+			throw new IllegalArgumentException("password not valid: "
+					+ password);
 		statement.executeUpdate("INSERT INTO User VALUE ('" + userName + "', '"
 				+ password + "', 0);");
 	}
