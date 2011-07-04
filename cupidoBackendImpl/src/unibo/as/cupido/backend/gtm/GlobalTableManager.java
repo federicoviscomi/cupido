@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -173,8 +174,10 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public AllTables getTableList() throws RemoteException {
-		return allTables;
+	public Collection<TableInfoForClient> getTableList() throws RemoteException {
+		ArrayList<TableInfoForClient> tableList = new ArrayList<TableInfoForClient>();
+		tableList.addAll(allTables.getTableList());
+		return tableList;
 	}
 
 	@Override
