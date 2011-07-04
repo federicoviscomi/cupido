@@ -58,12 +58,6 @@ import unibo.as.cupido.common.exception.NoSuchUserException;
  * 
  * 
  * 
- * 
- * 
- * 
- * TODO should be added a field logged BOOLEAN which stores if the user is
- * logged in or not?
- * 
  * <code>
 CREATE TABLE `cupido`.`User` (
   `name` VARCHAR(16)  NOT NULL,
@@ -102,13 +96,14 @@ public interface DatabaseInterface {
 			IllegalArgumentException;
 
 	/**
-	 * TODO ?Log <code>userName</code> in the database.?
+	 * Check if the user can be logged in with the provided {@link password}.
 	 * 
 	 * @param userName
 	 * @param password
 	 * @return <code>true</code> if <code>userName</code> is in the database and
 	 *         his password is <code>password</code>; otherwise return false.
 	 * @throws SQLException
+	 *             in case of communication problem with database
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>
 	 * @throws NoSuchUserException
@@ -153,19 +148,19 @@ public interface DatabaseInterface {
 	public ArrayList<RankingEntry> getTopRank(int size)
 			throws SQLException, IllegalArgumentException;
 
-	
+	/** Number of entries returned from {@link DatabseInterface#getLocalRank()}.*/
 	public final int LOCAL_RANK_ENTRIES_NUM = 7;
 
 	/**
-	 * Returns one chunk the global rank that contains from four position before
-	 * <code>userName</code> to five position after the <code>userName</code>.
-	 * 
+	 * Returns {@link LOCAL_RANK_ENTRIES_NUM} from the global rank list
+	 * containing in the middle <code>userName</code>.
 	 * 
 	 * @param userName
 	 *            the user who wants the rank
 	 * @return a list of size {@link LOCAL_RANK_ENTRIES_NUM} with user
 	 *         {@link userName} in the middle.
 	 * @throws SQLException
+	 *             in case of database error
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>
 	 * @throws NoSuchUserException
@@ -178,7 +173,7 @@ public interface DatabaseInterface {
 	 * Get player position in the global rank.
 	 * 
 	 * @param userName
-	 * @return
+	 * @return rank of {@link userName}.
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>
@@ -189,11 +184,10 @@ public interface DatabaseInterface {
 			IllegalArgumentException, NoSuchUserException;
 
 	/**
-	 * Get the player total score which is TODO ?the number of total wins minus
-	 * the number of total losses?
+	 * Get the player total score.
 	 * 
 	 * @param userName
-	 * @return
+	 * @return player score.
 	 * @throws SQLException
 	 * @throws IllegalArgumentException
 	 *             if argument is <code>null</code>
@@ -205,8 +199,9 @@ public interface DatabaseInterface {
 
 	/**
 	 * Close the connection with database.
-	 * @throws SQLException 
+	 * 
+	 * @throws SQLException
+	 *             in case of errors.
 	 */
 	void close() throws SQLException;
-
 }
