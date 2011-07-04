@@ -1,11 +1,4 @@
 
-echo "Removing the old war/ directory..."
-rm -rf war/
-
-echo "Creating an updated war/ directory..."
-cp -R cupidoGWT/war/ .
-cp -R cupidoCommon/bin/unibo/as/cupido/common/ war/WEB-INF/classes/unibo/as/cupido/
-
 echo Removing stubs...
 find . -name '*_Stub.class' -delete
 
@@ -22,6 +15,13 @@ rmic -d cupidoGWT/war/WEB-INF/classes -classpath "$CLASSPATH" 'unibo.as.cupido.b
 rmic -d cupidoGWT/war/WEB-INF/classes -classpath "$CLASSPATH" 'unibo.as.cupido.backend.ltm.LocalTableManager'
 rmic -d cupidoGWT/war/WEB-INF/classes -classpath "$CLASSPATH" 'unibo.as.cupido.backend.table.SingleTableManager'
 
+echo "Removing the old war/ directory..."
+rm -rf war/
+
+echo "Creating an updated war/ directory..."
+cp -R cupidoGWT/war/ .
+cp -R cupidoCommon/bin/unibo/as/cupido/common/ war/WEB-INF/classes/unibo/as/cupido/
+cp -R cupidoGWT/war/WEB-INF/classes/unibo/as/cupido/backend war/WEB-INF/classes/unibo/as/cupido/
 
 echo Running rmiregistry...
 rmiregistry -J-classpath -J"$CLASSPATH" &
