@@ -160,7 +160,7 @@ public class YourTurnState implements PlayerState {
 		stateManager.addPlayedCard(player, card);
 
 		cardsGameWidget.playCard(player, card);
-		cardsGameWidget.runPendingAnimations(2000,
+		cardsGameWidget.runPendingAnimations(500,
 				new AnimationCompletedListener() {
 					@Override
 					public void onComplete() {
