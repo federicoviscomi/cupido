@@ -19,6 +19,7 @@ package unibo.as.cupido.server;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.AccessException;
 import java.rmi.NoSuchObjectException;
@@ -30,6 +31,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Properties;
 
 import unibo.as.cupido.common.interfaces.DatabaseInterface;
 import unibo.as.cupido.common.interfaces.GlobalChatInterface;
@@ -126,17 +128,30 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 */
 	@Override
 	public void init(ServletConfig config) {
+		String DBHostname = null;
 		try {
 			super.init(config);
-			InputStream is = new FileInputStream("d");
-			
+			InputStream is = new FileInputStream("servlet.config");
+			Properties prop = new Properties();
+			prop.load(is);
+			CupidoServlet.registryHost = prop
+					.getProperty("servlet.registryHost",registryHost);
+			CupidoServlet.registryPort = Integer.parseInt(prop
+					.getProperty("servlet.registryPort", String.valueOf(registryPort)));
+			DBHostname = prop.getProperty("servlet.DBhostname");
+
 		} catch (ServletException e) {
 			System.out.println("Servlet: on init() catched ServletException->"
 					+ e.getMessage());
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Servlet: on init() catched FileNotFoundException");
 			e.printStackTrace();
+			System.exit(1);
+		} catch (IOException e) {
+			System.out.println("Servlet: on init() catched IOException");
+			e.printStackTrace();
+			System.exit(1);
 		}
 
 		Registry registry;
@@ -161,7 +176,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		getServletContext().setAttribute(GTMI, gtmi);
 		DatabaseInterface dbi = null;
 		try {
-			dbi = new DatabaseManager();
+			dbi = new DatabaseManager(DBHostname);
 		} catch (SQLException e1) {
 			System.out.println("Servlet: on init() catched SQLException ->");
 			e1.printStackTrace();
@@ -200,6 +215,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				}
 			}
 		});
+		System.out.println("Servlet inited");
 	}
 
 	/**
