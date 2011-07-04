@@ -17,8 +17,10 @@
 
 package unibo.as.cupido.backend.gtm;
 
-import java.util.Collection;
+import java.io.Serializable;
+import java.util.AbstractCollection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import unibo.as.cupido.common.exception.EmptyTableException;
@@ -31,12 +33,15 @@ import unibo.as.cupido.common.structures.TableInfoForClient;
 /**
  * Manages table information for a GTM.
  */
-public class AllTables {
+public class AllTables extends AbstractCollection<TableInfoForClient> implements
+		Serializable {
 
+	/** auto generated serial version id */
+	private static final long serialVersionUID = 3007618011128012678L;
 	/** stores association between table descriptors and table infos */
-	private final Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
+	private Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
 	/** stores association between ltm names and ltm interfaces */
-	private final Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
+	private transient final Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
 
 	/**
 	 * Adds a table.
@@ -75,15 +80,6 @@ public class AllTables {
 		} else {
 			tableInfoForClient.freePosition--;
 		}
-	}
-
-	/**
-	 * Returns all table infos.
-	 * 
-	 * @return all table infos.
-	 */
-	public Collection<TableInfoForClient> getAllTables() {
-		return tifc.values();
 	}
 
 	/**
@@ -135,6 +131,16 @@ public class AllTables {
 			throws NoSuchTableException {
 		if (tifc.remove(tableDescriptor) == null)
 			throw new NoSuchTableException(tableDescriptor.toString());
+	}
+
+	@Override
+	public Iterator<TableInfoForClient> iterator() {
+		return tifc.values().iterator();
+	}
+
+	@Override
+	public int size() {
+		return tifc.size();
 	}
 
 }

@@ -174,7 +174,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 	@Override
 	public Collection<TableInfoForClient> getTableList() throws RemoteException {
-		return allTables.getAllTables();
+		return allTables;
 	}
 
 	@Override
