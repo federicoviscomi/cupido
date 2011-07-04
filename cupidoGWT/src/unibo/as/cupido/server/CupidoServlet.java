@@ -78,12 +78,7 @@ import unibo.as.cupido.shared.cometNotification.PlayerReplaced;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
- * Before calling other component's, CupidoServlet must check:
- * <ul>
- * <li>if user is authenticated
- * <li>if user is at a table or not
- * </ul>
- * 
+ * Servlet implementation for Cupido Game.
  * @author Lorenzo Belli
  * 
  */
