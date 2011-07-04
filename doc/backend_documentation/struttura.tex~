@@ -1,0 +1,8 @@
+
+Il backend consta di 4 parti principali:
+\begin{description}
+  \item[global table manager]
+  \item[local table manager]
+  \item[single table manager]
+  \item[database manager]
+\end{description}
