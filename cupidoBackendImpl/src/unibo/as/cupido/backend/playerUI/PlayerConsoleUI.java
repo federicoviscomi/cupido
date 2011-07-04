@@ -273,7 +273,7 @@ public class PlayerConsoleUI {
 
 		try {
 			gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
-					.lookup(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
+					.lookup(GlobalTableManagerInterface.GTM_RMI_NAME);
 		} catch (AccessException e) {
 			out.println("cannot connect to gtm");
 		} catch (RemoteException e) {
@@ -609,7 +609,7 @@ public class PlayerConsoleUI {
 				try {
 					gtm = (GlobalTableManagerInterface) LocateRegistry
 							.getRegistry()
-							.lookup(GlobalTableManagerInterface.DEFAULT_GTM_NAME);
+							.lookup(GlobalTableManagerInterface.GTM_RMI_NAME);
 				} catch (AccessException e) {
 					out.println("cannot connect to gtm");
 				} catch (RemoteException e) {

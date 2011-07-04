@@ -99,10 +99,12 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 * 
 	 * TODO read there from config file
 	 */
+
 	private static String registryHost = "127.0.0.1";
 	private static int registryPort = 1099;
-	private static final String GTMLookupName = GlobalTableManagerInterface.DEFAULT_GTM_NAME;
-	private static final String GCLookupName = GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME;
+	private static final String GTMLookupName = GlobalTableManagerInterface.GTM_RMI_NAME;
+	private static final String GCLookupName = GlobalChatInterface.GLOBAL_CHAT_RMI_NAME;
+
 	/*
 	 * Names used in httpSession attributes
 	 */
