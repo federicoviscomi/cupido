@@ -313,8 +313,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @param message
 	 *            The message sent by the user.
 	 * @throws IllegalArgumentException
-	 *             If the specified message is invalid. TODO: explain what this
-	 *             means.
+	 *             If the message has a bad format and can't be sent
 	 * @throws UserNotAuthenticatedException
 	 *             If the user is not logged in.
 	 * @throws FatalException
@@ -330,7 +329,7 @@ public interface CupidoInterface extends RemoteService {
 	 * @param message
 	 *            The message sent by the user.
 	 * @throws IllegalArgumentException
-	 *             if message has bad format TODO: explain what this means.
+	 *             if message has bad format and can't be send
 	 * @throws NoSuchTableException
 	 *             If the current user is neither playing nor viewing a game.
 	 * @throws UserNotAuthenticatedException

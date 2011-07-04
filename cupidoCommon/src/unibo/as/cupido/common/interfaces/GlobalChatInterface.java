@@ -39,6 +39,9 @@ public interface GlobalChatInterface extends Remote {
 
 	/** rmi name for global chat remote object */
 	public static final String DEFAULT_GLOBAL_CHAT_NAME = "globalChat";
+	
+	/** Max number of character in a message */
+	public static final int MAX_CHAT_MESSAGE_LENGTH = 200;
 
 	/**
 	 * Return the last MESSAGE_NUMBER messages
@@ -54,6 +57,7 @@ public interface GlobalChatInterface extends Remote {
 	 *            contains user name of the user who wants to send a message to
 	 *            the global chat and the message he wants to send
 	 */
-	public void sendMessage(ChatMessage message) throws RemoteException;
+	public void sendMessage(ChatMessage message)
+			throws IllegalArgumentException, RemoteException;
 
 }

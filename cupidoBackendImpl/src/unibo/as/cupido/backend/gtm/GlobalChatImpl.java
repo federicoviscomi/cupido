@@ -44,7 +44,10 @@ public class GlobalChatImpl implements GlobalChatInterface {
 	}
 
 	@Override
-	public void sendMessage(ChatMessage message) throws RemoteException {
+	public void sendMessage(ChatMessage message)
+			throws IllegalArgumentException, RemoteException {
+		if (message.message.length() > GlobalChatInterface.MAX_CHAT_MESSAGE_LENGTH)
+			throw new IllegalArgumentException();
 		if (messages.size() == MESSAGE_NUMBER) {
 			messages.remove();
 		}

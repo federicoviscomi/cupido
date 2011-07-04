@@ -17,6 +17,8 @@
 
 package unibo.as.cupido.server;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.rmi.AccessException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
@@ -91,9 +93,11 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 * and GCLookupName are name for registry lookup Values of GTMLookupName is
 	 * defined in GlobalTableManagerInterface Values of GCLookupName is defined
 	 * in GlobalChatInterface
+	 * 
+	 * TODO read there from config file
 	 */
-	private static final String registryHost = "127.0.0.1";
-	private static final int registryPort = 1099;
+	private static String registryHost = "127.0.0.1";
+	private static int registryPort = 1099;
 	private static final String GTMLookupName = GlobalTableManagerInterface.DEFAULT_GTM_NAME;
 	private static final String GCLookupName = GlobalChatInterface.DEFAULT_GLOBAL_CHAT_NAME;
 	/*
@@ -123,6 +127,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	public void init(ServletConfig config) {
 		try {
 			super.init(config);
+			InputStream is = new FileInputStream("d");
+			
 		} catch (ServletException e) {
 			System.out.println("Servlet: on init() catched ServletException->"
 					+ e.getMessage());
@@ -361,7 +367,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	}
 
 	/**
-	 * Show the last FIXME{@link NUMTOPRANKENTRIES} messages of the global chat. Client poll
+	 * Show the last {@link GlobalChatInterface#MESSAGE_NUMBER} messages of the global chat. Client poll
 	 * this method
 	 */
 	@Override
@@ -382,16 +388,16 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			System.out
 					.println("Servlet: on viewLastMessages() catched RemoteException-> "
 							+ e.getMessage());
-			// e.printStackTrace();
+			e.printStackTrace();
 			throw new FatalException();
 		}
 	}
 
 	/**
-	 * Send a message in global chat. FIXME: IllegalArgumentException in never
-	 * thrown because input is never checked. TODO: choose legal messages
+	 * Send a message in global chat.
 	 * 
-	 * @see GlobalChatInterface
+	 * @throw FatalException if catch {@link RemoteException}
+	 * @see GlobalChatInterface#sendMessage(ChatMessage)
 	 */
 	@Override
 	public void sendGlobalChatMessage(String message)
@@ -404,6 +410,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 			throw new UserNotAuthenticatedException();
 		}
+		//Case added for performance
+		if (message.length() > GlobalChatInterface.MAX_CHAT_MESSAGE_LENGTH)
+			throw new IllegalArgumentException();
+		
 		GlobalChatInterface gci = (GlobalChatInterface) getServletContext()
 				.getAttribute(GCI);
 		try {
@@ -414,16 +424,17 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			System.out
 					.println("Servlet: on sendGlobalChatMessage() catched RemoteException-> "
 							+ e.getMessage());
-			// e.printStackTrace();
+			e.printStackTrace();
 			throw new FatalException();
 		}
 	}
 
 	/**
-	 * Send Message in Local chat. TODO: IllegalArgumentExceptions never thrown.
-	 * TODO: choose legal messages
+	 * Send Message in Local chat.
 	 * 
-	 * @throws GameInterruptedException
+	 * @throws FatalException
+	 *             if catch {@link RemoteException}
+	 * @see TableInterface#sendMessage(ChatMessage)
 	 */
 	@Override
 	public void sendLocalChatMessage(String message)
@@ -437,6 +448,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		if (!(Boolean) httpSession.getAttribute(ISAUTHENTICATED)) {
 			throw new UserNotAuthenticatedException();
 		}
+		//Case added for performance
+		if (message.length() > GlobalChatInterface.MAX_CHAT_MESSAGE_LENGTH)
+			throw new IllegalArgumentException();
+		
 		TableInterface ti = (TableInterface) httpSession.getAttribute(TI);
 		if (ti == null) {
 			System.out.println("Servlet: on sendLocalChatMessage() ti == null");
@@ -451,7 +466,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			System.out
 					.println("Servlet: on sendLocalChatMessage() catched RemoteException-> "
 							+ e.getMessage());
-			// e.printStackTrace();
+			e.printStackTrace();
 			throw new FatalException();
 		}
 	}
@@ -459,7 +474,10 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	/**
 	 * Binds httpSession with attribute {@link USERNAME} and
 	 * {@link ISAUTHENTICATED}. Errors must be non-informative.
-	 * @throws FatalException if catch a {@link SQLException}
+	 * 
+	 * @throws FatalException
+	 *             if catch a {@link SQLException}
+	 * @see DatabaseInterface#login(String, String)
 	 */
 	@Override
 	public boolean login(String username, String password)
@@ -498,6 +516,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	 * @throws FatalException
 	 *             if catch {@link SQLException} or
 	 *             {@link IllegalArgumentException}
+	 * @see DatabaseInterface#addNewUser(String, String)
 	 */
 	@Override
 	public void registerUser(String username, String password)
