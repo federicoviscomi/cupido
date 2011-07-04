@@ -91,15 +91,14 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		CupidoInterface {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final String CONFIGURATION_FILE = "servlet.config";
 	/*
 	 * hostname and port of registry, default is 127.0.0.1:1099 GTMLookupName
 	 * and GCLookupName are name for registry lookup Values of GTMLookupName is
 	 * defined in GlobalTableManagerInterface Values of GCLookupName is defined
 	 * in GlobalChatInterface
-	 * 
-	 * TODO read there from config file
 	 */
-
 	private static String registryHost = "127.0.0.1";
 	private static int registryPort = 1099;
 	private static final String GTMLookupName = GlobalTableManagerInterface.GTM_RMI_NAME;
@@ -127,22 +126,20 @@ public class CupidoServlet extends RemoteServiceServlet implements
 
 	/**
 	 * Saves registry lookups in servlet context, and initialize DBmanager.
+	 * Read configuration file
 	 */
 	@Override
 	public void init(ServletConfig config) {
 		String DBHostname = null;
 		try {
 			super.init(config);
-			InputStream is = new FileInputStream("servlet.config");
+			InputStream is = new FileInputStream(CONFIGURATION_FILE);
 			Properties prop = new Properties();
 			prop.load(is);
-			System.out.println(prop.getProperty("servlet.registryHost"));
-			System.out.println(prop.getProperty("servlet.registryPort"));
-			System.out.println(prop.getProperty("servlet.DBhostname"));
-			CupidoServlet.registryHost = prop
-					.getProperty("servlet.registryHost",registryHost);
-			CupidoServlet.registryPort = Integer.parseInt(prop
-					.getProperty("servlet.registryPort", String.valueOf(registryPort)));
+			CupidoServlet.registryHost = prop.getProperty(
+					"servlet.registryHost", registryHost);
+			CupidoServlet.registryPort = Integer.parseInt(prop.getProperty(
+					"servlet.registryPort", String.valueOf(registryPort)));
 			DBHostname = prop.getProperty("servlet.DBhostname");
 
 		} catch (ServletException e) {
@@ -150,7 +147,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 					+ e.getMessage());
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			System.out.println("Servlet: on init() catched FileNotFoundException");
+			System.out
+					.println("Servlet: on init() catched FileNotFoundException");
 			e.printStackTrace();
 			System.exit(1);
 		} catch (IOException e) {
