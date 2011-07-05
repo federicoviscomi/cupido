@@ -48,6 +48,8 @@ Questo documento descrive:
     La struttura composita della parte del backend che gestisce una singola partita. Per una descrizione del resto del backend si faccia riferimento al documento architettura\_e\_design.pdf
   \item
     Le varie iterazioni del processo di sviluppo che ha portato all'implementazione del backend.
+  \item
+    Come e' stato testato il backend.
 \end{itemize}
 
 
