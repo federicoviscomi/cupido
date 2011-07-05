@@ -1,6 +1,7 @@
-\documentclass[10pt, draft]{book}
+\documentclass[10pt]{article}
 
 
+\usepackage{graphicx}
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[italian]{babel}
@@ -41,11 +42,11 @@
 
 \tableofcontents
 
-\chapter{Introduzione}
+\section{Introduzione}
 Questo documento descrive:
 \begin{itemize}
   \item 
-    La struttura composita della parte del backend che gestisce una singola partita. Per una descrizione del resto del backend si faccia riferimento al documento architettura\_e\_design.pdf
+    La struttura composita di una parte di Cupido. Per una descrizione del resto del backend si faccia riferimento al documento architettura\_e\_design.pdf
   \item
     Le varie iterazioni del processo di sviluppo che ha portato all'implementazione del backend.
   \item
@@ -53,8 +54,9 @@ Questo documento descrive:
 \end{itemize}
 
 
-\chapter{Struttura del backend}\input{struttura}
-\chapter{Iterazioni nel provesso di sviluppo}\input{iterazioni}
+\section{Struttura del backend}\input{struttura}
+\section{Iterazioni nel provesso di sviluppo}\input{iterazioni}
+\section{Test del backend}\input{test}
 
 \printindex
 
