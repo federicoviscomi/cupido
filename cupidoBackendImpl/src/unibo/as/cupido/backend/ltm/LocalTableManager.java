@@ -38,7 +38,6 @@ import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
-import unibo.as.cupido.common.interfaces.DatabaseInterface;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;

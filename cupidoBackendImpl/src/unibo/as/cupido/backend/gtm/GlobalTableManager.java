@@ -26,8 +26,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-
 import unibo.as.cupido.backend.table.LTMSwarm;
 import unibo.as.cupido.backend.table.LTMSwarm.Triple;
 import unibo.as.cupido.common.exception.AllLTMBusyException;

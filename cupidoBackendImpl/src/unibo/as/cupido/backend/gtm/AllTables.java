@@ -17,7 +17,6 @@
 
 package unibo.as.cupido.backend.gtm;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,9 +39,6 @@ public class AllTables {
 	private transient final Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
 	/** stores association between ltm names and ltm interfaces */
 	private transient final Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
-
-	/** This is the only serialized field of this class. */
-	ArrayList<TableInfoForClient> getTableListReturnedObject = null;
 
 	/**
 	 * Adds a table.
@@ -74,8 +70,9 @@ public class AllTables {
 	public void decreaseFreePosition(TableDescriptor tableDescriptor)
 			throws FullTableException, NoSuchTableException {
 		TableInfoForClient tableInfoForClient = tifc.get(tableDescriptor);
-		if (tableInfoForClient == null)
+		if (tableInfoForClient == null) {
 			throw new NoSuchTableException(tableDescriptor.toString());
+		}
 		if (tableInfoForClient.freePosition == 0) {
 			throw new FullTableException(tableDescriptor.toString());
 		} else {
@@ -110,8 +107,9 @@ public class AllTables {
 	public void increaseFreePosition(TableDescriptor tableDescriptor)
 			throws EmptyTableException, NoSuchTableException {
 		TableInfoForClient tableInfoForClient = tifc.get(tableDescriptor);
-		if (tifc == null)
+		if (tifc == null) {
 			throw new NoSuchTableException(tableDescriptor.toString());
+		}
 		if (tableInfoForClient.freePosition == 3) {
 			throw new EmptyTableException(tableDescriptor.toString());
 		} else {
@@ -130,10 +128,16 @@ public class AllTables {
 	 */
 	public void removeTable(TableDescriptor tableDescriptor)
 			throws NoSuchTableException {
-		if (tifc.remove(tableDescriptor) == null)
+		if (tifc.remove(tableDescriptor) == null) {
 			throw new NoSuchTableException(tableDescriptor.toString());
+		}
 	}
 
+	/**
+	 * Returns all tables infos.
+	 * 
+	 * @return all tables infos in a serializable object.
+	 */
 	public Collection<TableInfoForClient> getTableList() {
 		return tifc.values();
 	}

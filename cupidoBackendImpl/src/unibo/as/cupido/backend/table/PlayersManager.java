@@ -900,7 +900,7 @@ public class PlayersManager {
 	public int[] updateScore(int[] matchPoints) {
 		int min = matchPoints[0];
 		for (int i = 1; i < 4; i++) {
-			if (min < matchPoints[i])
+			if (matchPoints[i] < min)
 				min = matchPoints[i];
 		}
 		int[] newScore = new int[4];

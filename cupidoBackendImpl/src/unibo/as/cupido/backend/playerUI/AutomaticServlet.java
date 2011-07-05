@@ -190,8 +190,9 @@ public class AutomaticServlet {
 	 */
 	public AutomaticServlet(InitialTableStatus initialTableStatus,
 			TableInterface singleTableManager, final String userName) {
-		if (initialTableStatus == null || userName == null)
+		if (initialTableStatus == null || userName == null) {
 			throw new IllegalArgumentException();
+		}
 
 		this.initialTableStatus = initialTableStatus;
 		this.singleTableManager = singleTableManager;
@@ -212,10 +213,11 @@ public class AutomaticServlet {
 				@Override
 				public void execute() {
 					if (position < 0 || position > 2
-							|| initialTableStatus.opponents[position] != null)
+							|| initialTableStatus.opponents[position] != null) {
 						throw new IllegalArgumentException("illegal position "
 								+ position + " "
 								+ initialTableStatus.opponents[position]);
+					}
 					initialTableStatus.opponents[position] = "_bot." + userName
 							+ "." + position;
 					initialTableStatus.whoIsBot[position] = true;
@@ -299,7 +301,7 @@ public class AutomaticServlet {
 	 * @param playersTotalPoint
 	 *            new players score after this match
 	 */
-	private void onGameEnded(int[] matchPoints, int[] playersTotalPoint) {
+	void onGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		System.out.println("\n" + userName + ": "
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + Arrays.toString(matchPoints) + ", "
@@ -313,10 +315,11 @@ public class AutomaticServlet {
 	 * @param cards
 	 *            the cards dealt to this player
 	 */
-	private void onGameStarted(Card[] cards) {
+	void onGameStarted(Card[] cards) {
 		this.cards = new ArrayList<Card>(13);
-		for (int i = 0; i < cards.length; i++)
+		for (int i = 0; i < cards.length; i++) {
 			this.cards.add(cards[i]);
+		}
 		System.out.println("\n game started: " + Arrays.toString(cards));
 		ableToPass = true;
 		processPendingCommands();
@@ -328,7 +331,7 @@ public class AutomaticServlet {
 	 * @param message
 	 *            the new local chat message
 	 */
-	private void onLocalChatMessage(ChatMessage message) {
+	void onLocalChatMessage(ChatMessage message) {
 		System.out.println("\nlocal chat message: " + message);
 	}
 
@@ -338,9 +341,10 @@ public class AutomaticServlet {
 	 * @param cards
 	 *            the cards received from an other player
 	 */
-	private void onPassedCards(Card[] cards) {
-		for (int i = 0; i < cards.length; i++)
+	void onPassedCards(Card[] cards) {
+		for (int i = 0; i < cards.length; i++) {
 			this.cards.add(cards[i]);
+		}
 		System.out.println("\npassed cards received. all cards:"
 				+ this.cards.toString());
 		if (this.cards.contains(CardsManager.twoOfClubs)) {
@@ -359,7 +363,7 @@ public class AutomaticServlet {
 	 * @param playerPosition
 	 *            position of played who played
 	 */
-	private void onPlayedCard(Card card, int playerPosition) {
+	void onPlayedCard(Card card, int playerPosition) {
 		System.out.println("\n" + userName + " player " + playerPosition
 				+ " played card " + card);
 		setCardPlayed(card, playerPosition);
@@ -379,17 +383,18 @@ public class AutomaticServlet {
 	 * @param position
 	 *            position of player who joined
 	 */
-	private void onPlayerJoined(String name, boolean isBot, int score,
-			int position) {
+	void onPlayerJoined(String name, boolean isBot, int score, int position) {
 		System.out.println("\n player joined(" + name + ", " + isBot + ", "
 				+ score + "," + position);
-		if (name == null || position < 0 || position > 2)
+		if (name == null || position < 0 || position > 2) {
 			throw new IllegalArgumentException(name + " " + position);
-		if (initialTableStatus.opponents[position] != null)
+		}
+		if (initialTableStatus.opponents[position] != null) {
 			throw new IllegalArgumentException("Unable to add player " + name
 					+ " in player " + userName + " beacuse ITS: "
 					+ initialTableStatus
 					+ " already contains a player in position " + position);
+		}
 		initialTableStatus.opponents[position] = name;
 		initialTableStatus.playerScores[position] = position;
 		initialTableStatus.whoIsBot[position] = isBot;
@@ -401,13 +406,14 @@ public class AutomaticServlet {
 	 * @param name
 	 *            name of player who left
 	 */
-	private void onPlayerLeft(String name) {
+	void onPlayerLeft(String name) {
 		System.out.println("\n player left(" + name + ")");
 		int position = 0;
 		while (!name.equals(initialTableStatus.opponents[position]))
 			position++;
-		if (position == 3)
+		if (position == 3) {
 			throw new IllegalArgumentException("Player not found " + name);
+		}
 		initialTableStatus.opponents[position] = null;
 		System.out.println(initialTableStatus);
 	}
@@ -421,12 +427,13 @@ public class AutomaticServlet {
 	 * @param position
 	 *            position of player who left
 	 */
-	private void onPlayerReplaced(String botName, int position) {
+	void onPlayerReplaced(String botName, int position) {
 		System.out.print("\n" + botName + ": notifyPlayerReplaced(" + botName
 				+ ", " + position + ")");
 
-		if (botName == null || position < 0 || position > 2)
+		if (botName == null || position < 0 || position > 2) {
 			throw new IllegalArgumentException(position + " " + botName);
+		}
 
 		if (initialTableStatus.opponents[position] == null) {
 			(new NoSuchPlayerException(position)).printStackTrace();
@@ -485,16 +492,18 @@ public class AutomaticServlet {
 	 */
 	private boolean processPassCards() {
 
-		if (!ableToPass)
+		if (!ableToPass) {
 			return false;
+		}
 
 		try {
 			if (turn != 0) {
 				throw new IllegalStateException();
 			}
 			Card[] cardsToPass = new Card[3];
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < 3; i++) {
 				cardsToPass[i] = cards.remove(0);
+			}
 			singleTableManager.passCards(userName, cardsToPass);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -537,8 +546,9 @@ public class AutomaticServlet {
 	 *         otherwise, i.e. this was not able to play now.
 	 */
 	private boolean processPlayNextCard() {
-		if (!ableToPlay)
+		if (!ableToPlay) {
 			return false;
+		}
 
 		try {
 			assert turn != 13;
@@ -601,10 +611,11 @@ public class AutomaticServlet {
 				ableToPlay = true;
 				processPendingCommands();
 				for (Card c : playedCard) {
-					if (c.suit == Suit.HEARTS)
+					if (c.suit == Suit.HEARTS) {
 						points++;
-					else if (c.equals(CardsManager.queenOfSpades))
+					} else if (c.equals(CardsManager.queenOfSpades)) {
 						points += 5;
+					}
 				}
 			}
 			Arrays.fill(playedCard, null);
@@ -620,20 +631,22 @@ public class AutomaticServlet {
 	 * Try to pass cards. If this is not able to pass rigth now, add a pass
 	 * cards command in pending commands that will be executed later
 	 */
-	private void tryProcessingPassCards() {
+	void tryProcessingPassCards() {
 		boolean executed = processPassCards();
-		if (!executed)
+		if (!executed) {
 			pendingCommands.add(new PassCardsCommand());
+		}
 	}
 
 	/**
 	 * Try to play a card. If this is not able to play rigth now, add a pass
 	 * cards command in pending commands that will be executed later
 	 */
-	private void tryProcessingPlayNextCard() {
+	void tryProcessingPlayNextCard() {
 		boolean executed = processPlayNextCard();
-		if (!executed)
+		if (!executed) {
 			pendingCommands.add(new PlayNextCardCommand());
+		}
 	}
 
 }
