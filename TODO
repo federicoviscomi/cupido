@@ -2,6 +2,7 @@ LAST UPDATE 5 Luglio 20:56 by Lorenzo
 
 Bug noti:
 - ho finito una partita con 14 punti, ho perso, ma ho avuto +4 punti invece di -1.
+credo di averlo fixato: c'era un bug in updateScore in PlayersManager
 
 TODO:
 - istruzioni di deployment
