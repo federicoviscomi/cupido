@@ -72,7 +72,6 @@
   In questa iterazione sono state implementate due interpreti di comandi da console minimali per gtm ed ltm. I comandi forniti permettono di vedere lo stato interno dei gtm e degli ltm. Quindi questi interpreti hanno una valenza per lo piu' in fase di debug/test.
 
 \section{Global chat}
-  In questa iterazione e' stata implementata
 
 \section{Single table manager and game logic}
 

@@ -1,0 +1,54 @@
+\documentclass[10pt]{article}
+
+
+\usepackage{graphicx}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{a4wide}
+\usepackage{makeidx}
+\usepackage{url}
+\usepackage{multicol}
+\usepackage{amsthm}
+\usepackage{colortbl}
+\usepackage{amssymb}
+\usepackage{synttree}
+\usepackage{proof}
+
+
+\newtheorem{teorema}{Teorema}
+\newtheorem{proposizione}{Proposizione}
+\newtheorem{corollario}{Corollario}
+\newtheorem{definizione}{Definizione}
+\newtheorem{osservazione}{Osservazione}
+\newtheorem{notazione}{Notazione}
+\newtheorem{lemma}{Lemma}
+\newtheorem{esempio}{Esempio}
+\newtheorem{dimostrazione}{Dimostrazione}
+
+\title{Backend\\[2mm]{\small\emph{Anno Accademico 2010-2011}}\\[4mm]}
+\author{\Nome\ \Cognome}
+
+\newcommand{\Cognome}{Viscomi}
+\newcommand{\Nome}{Federico}
+
+
+
+\makeindex
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduzione}
+Questo documento descrive quali sono state le varie iterazioni che hanno portato all'implementazione del backend e che alcuni dettagli di quanto e' stato sviluppato in ogni i.
+
+% \section{Struttura del backend}\input{struttura}
+\input{iterazioni}
+% \section{Test del backend}\input{test}
+
+\printindex
+
+\end{document}

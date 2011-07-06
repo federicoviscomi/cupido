@@ -69,10 +69,9 @@
   Per quanto riguarda il multithreading e la mutua eclusione valgono le stesse cose dette per il gtm.
 
 \section{Console gtm and ltm UI}
-  In questa iterazione sono state implementate due interpreti di comandi da console minimali per gtm ed ltm. I comandi forniti permettono di vedere lo stato interno dei gtm e degli ltm. Quindi questi interpreti hanno una valenza per lo piu' in fase di debug/test.
+  In questa iterazione sono state implementate due interpreti di comandi minimali per gtm ed ltm. 
 
 \section{Global chat}
-  In questa iterazione e' stata implementata
 
 \section{Single table manager and game logic}
 
