@@ -85,7 +85,7 @@ public class LocalBot implements LocalBotInterface {
 
 	/**
 	 * <tt>Arrays.sort(cards, higherFirstCardsComparator)</tt> sorts cards
-	 * higher first
+	 * higher first and then by suit.
 	 */
 	private static final Comparator<Card> higherFirstCardsComparator = new Comparator<Card>() {
 		@Override

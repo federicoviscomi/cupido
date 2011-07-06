@@ -36,9 +36,9 @@ public class AllTables {
 	/** auto generated serial version uid */
 	private static final long serialVersionUID = 3079835750202226475L;
 	/** stores association between table descriptors and table infos */
-	private transient final Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
+	private final Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
 	/** stores association between ltm names and ltm interfaces */
-	private transient final Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
+	private final Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
 
 	/**
 	 * Adds a table.

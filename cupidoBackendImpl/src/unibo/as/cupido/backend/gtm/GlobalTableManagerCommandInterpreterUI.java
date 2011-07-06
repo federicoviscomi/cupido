@@ -30,7 +30,7 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import unibo.as.cupido.backend.table.LTMSwarm.Triple;
+import unibo.as.cupido.backend.gtm.LTMSwarm.Triple;
 import unibo.as.cupido.common.structures.TableInfoForClient;
 
 /**

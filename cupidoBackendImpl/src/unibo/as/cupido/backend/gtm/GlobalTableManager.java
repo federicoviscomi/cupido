@@ -26,8 +26,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
-import unibo.as.cupido.backend.table.LTMSwarm;
-import unibo.as.cupido.backend.table.LTMSwarm.Triple;
+
+import unibo.as.cupido.backend.gtm.LTMSwarm.Triple;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullTableException;
@@ -133,7 +133,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public TableInterface createTable(String creator,
+	public synchronized TableInterface createTable(String creator,
 			ServletNotificationsInterface snf) throws RemoteException,
 			AllLTMBusyException {
 		System.out.println("\n"
@@ -157,12 +157,12 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	 * 
 	 * @return all LTMs managed by this GTM.
 	 */
-	public Triple[] getAllLTM() {
+	public synchronized Triple[] getAllLTM() {
 		return ltmSwarm.getAllLTM();
 	}
 
 	@Override
-	public LocalTableManagerInterface getLTMInterface(String ltmId)
+	public synchronized LocalTableManagerInterface getLTMInterface(String ltmId)
 			throws RemoteException, NoSuchLTMException {
 		LocalTableManagerInterface ltmInterface = allTables
 				.getLTMInterface(ltmId);
@@ -172,20 +172,23 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public Collection<TableInfoForClient> getTableList() throws RemoteException {
+	public synchronized Collection<TableInfoForClient> getTableList()
+			throws RemoteException {
 		ArrayList<TableInfoForClient> tableList = new ArrayList<TableInfoForClient>();
 		tableList.addAll(allTables.getTableList());
 		return tableList;
 	}
 
 	@Override
-	public void notifyLocalTableManagerShutdown(LocalTableManagerInterface ltm) {
+	public synchronized void notifyLocalTableManagerShutdown(
+			LocalTableManagerInterface ltm) {
 		ltmSwarm.remove(ltm);
 	}
 
 	@Override
-	public void notifyLocalTableManagerStartup(LocalTableManagerInterface ltmi,
-			int maxTable) throws RemoteException {
+	public synchronized void notifyLocalTableManagerStartup(
+			LocalTableManagerInterface ltmi, int maxTable)
+			throws RemoteException {
 		System.out.println("\n GlobalTableManager."
 				+ Thread.currentThread().getStackTrace()[1].getMethodName()
 				+ "(" + ltmi + ", " + maxTable + ")");
@@ -193,23 +196,23 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	}
 
 	@Override
-	public void notifyTableDestruction(TableDescriptor tableDescriptor,
-			LocalTableManagerInterface ltm) throws RemoteException,
-			NoSuchLTMException, NoSuchTableException {
+	public synchronized void notifyTableDestruction(
+			TableDescriptor tableDescriptor, LocalTableManagerInterface ltm)
+			throws RemoteException, NoSuchLTMException, NoSuchTableException {
 		System.out.println("gtm. destroying table " + tableDescriptor);
 		allTables.removeTable(tableDescriptor);
 		ltmSwarm.decreaseTableCount(ltm);
 	}
 
 	@Override
-	public void notifyTableJoin(TableDescriptor tableDescriptor)
+	public synchronized void notifyTableJoin(TableDescriptor tableDescriptor)
 			throws RemoteException, NoSuchTableException, FullTableException {
 		System.out.println("gtm. a player joined " + tableDescriptor);
 		allTables.decreaseFreePosition(tableDescriptor);
 	}
 
 	@Override
-	public void notifyTableLeft(TableDescriptor tableDescriptor)
+	public synchronized void notifyTableLeft(TableDescriptor tableDescriptor)
 			throws RemoteException, NoSuchTableException, EmptyTableException {
 		System.out.println("gtm. a player left " + tableDescriptor);
 		allTables.increaseFreePosition(tableDescriptor);
