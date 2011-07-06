@@ -1,4 +1,3 @@
-
 echo Removing stubs...
 find . -name '*_Stub.class' -delete
 
@@ -23,39 +22,5 @@ cp -R cupidoGWT/war/ .
 cp -R cupidoCommon/bin/unibo/as/cupido/common/ war/WEB-INF/classes/unibo/as/cupido/
 cp -R cupidoGWT/war/WEB-INF/classes/unibo/as/cupido/backend war/WEB-INF/classes/unibo/as/cupido/
 mv war/ cupido
-
-echo Running rmiregistry...
-rmiregistry -J-classpath -J"$CLASSPATH" &
-
-RMIREGISTRY_PID="$!"
-PIDS="$!"
-
-sleep 1
-
-java -classpath "$CLASSPATH" unibo.as.cupido.backend.gtm.GlobalTableManager &
-
-PIDS="$PIDS $!"
-
-sleep 2
-
-java -classpath "$CLASSPATH" unibo.as.cupido.backend.ltm.LocalTableManager &
-
-PIDS="$PIDS $!"
-
-sleep 1
-
-echo "*****************************"
-echo "* All processes started.    *"
-echo "* Press Enter to kill them. *"
-echo "*****************************"
-
-read
-
-echo "Terminating child processes, please wait..."
-
-for pid in $PIDS
-do
-  kill "$pid"
-done
 
 sleep 1

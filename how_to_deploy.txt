@@ -1,0 +1,66 @@
+NOTE: these instruction suppose that you have already created the 
+database. If not first read HOW TO INSTALL THE DATABASE.
+
+---------------------------------------------------------------------
+If you want to deploy everything on localhost (fast&easy way) 
+just execute:
+	./deploy.sh
+
+then deploy the servlet, and you have done.
+Cupio
+do can be reached at address http://localhost:8080/cupido
+
+---------------------------------------------------------------------
+HOT TO DEPLOY SERVLET
+To deploy servlet on apache-tomcat 6.0.32:
+
+copy directory cupido/ in apache-tomcat-6.0.32/webapps/
+
+then execute 
+	sudo ./bin/startup.sh 
+from the directory apache-tomcat-6.0.32/
+
+To stop apache-tomcat execute:
+	sudo ./bin/shutdown.sh 
+from the directory apache-tomcat-6.0.32/
+
+---------------------------------------------------------------------
+HOW TO DEPLOY EVERYTHING
+For more fine-grained deployment follows these instruction.
+
+First of all execute
+	./build.sh
+then
+
+- To deploy the RMI registry execute:
+	./rmi_registry.sh
+
+- To deploy the GlobalTableManager execute:
+	./deploy_gtm.sh
+
+- To deploy a LocalTableManager execute:
+	./deploy_ltm.sh
+
+Check configuration files to specify hostnames before executing ltm 
+and gtm.
+You can check also servlet configuration files 
+(cupidoGWT/war/servlet.config).
+
+Executing order:
+deploy_gtm.sh must be executed after rmi_registry.sh
+deploy_ltm.sh must be executed after deploy_gtm.sh
+
+---------------------------------------------------------------------
+HOW TO INSTALL THE DATABASE
+install MySQL 5.5 then execute
+	./recreate_db.sh
+
+This should be executed exactly one time on the machine which host
+the database.
+
+---------------------------------------------------------------------
+DOWNLOAD
+you can find apache-tomcat 6.0.32 here:
+http://tomcat.apache.org/download-60.cgi
+and MySQL 5.5 from
+http://www.mysql.com/
