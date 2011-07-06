@@ -93,6 +93,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	private static final long serialVersionUID = 1L;
 
 	private static final String CONFIGURATION_FILE = "servlet.config";
+	private static final String CONFIGURATION_FILE2 = "webapps/cupido/servlet.config";
 	/*
 	 * hostname and port of registry, default is 127.0.0.1:1099 GTMLookupName
 	 * and GCLookupName are name for registry lookup Values of GTMLookupName is
@@ -131,9 +132,18 @@ public class CupidoServlet extends RemoteServiceServlet implements
 	@Override
 	public void init(ServletConfig config) {
 		String DBHostname = null;
+		InputStream is=null, is1 =null, is2 = null;
+		try{
+		is1 = new FileInputStream(CONFIGURATION_FILE);
+		}catch(FileNotFoundException e){
+		}
+		try{
+			is2 = new FileInputStream(CONFIGURATION_FILE2);
+			}catch(FileNotFoundException e){
+		}
+		is = (is1!=null?is1:is2);
 		try {
-			super.init(config);
-			InputStream is = new FileInputStream(CONFIGURATION_FILE);
+			super.init(config);	
 			Properties prop = new Properties();
 			prop.load(is);
 			CupidoServlet.registryHost = prop.getProperty(
