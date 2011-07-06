@@ -80,27 +80,27 @@
 \section{Database Manager}
   In questa iterazione e' stata implementata la classe DatabaseManager che fornisce le operazioni descritte in SRS.
 
+
 \section{Single table manager and game logic}
+  \begin{center}
+    \includegraphics{backend_composit_structure.png}  
+    % backend_composit_structure.png: 719x864 pixel, 96dpi, 19.02x22.86 cm, bb=0 0 539 648
+  \end{center}
   In questa iterazione e' stato implementato stm. Stm si occupa di una singola partita. In particolare stm:
   \begin{itemize}
     \item 
-      gestisce i giocatori 
+      gestisce giocatori e bot: permette ad un giocatore di unirsi alla partita  di lasciare la partita e di giocare, permette al creatore del tavolo di aggiungere bot, sostituisce un giocatore con un bot se questo lascia la partita dopo l'inizio, notifica i giocatori di quello che succede nella partita.
     \item
-      gestisce i visitatori
+      gestisce i visitatori: permette ad un visitatore di aggiungersi alla partita o di lasciare la partita, invia ai visitatori le notifiche di quello che succede nella partita.
     \item
-      gestisce le carte
+      gestisce le carte: da le carte e controlla che le mosse dei giocatori siano valide.
     \item
-      gestisce i bot
-    \item
-      controlla che le mosse dei giocatori siano valide
-    \item 
-      da le carte
-    \item
-      aggiorna i punteggi dei giocatori.
+      gestisce i punteggi dei giocatori.
   \end{itemize}
+  Per il multithreading e la mutua esclusione dell'stm valgono le stesse considerazioni fatte per il gtm ma ci sono alcune considerazione da aggiungere:
 
 \section{Bot}
-  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha.
+  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha. L'stm tratta i bot come se fossero delle servlet
 
-\section{Console player UI}
+\section{Command line player}
   In questa iterazione e' stato implementato un interprete di comandi testuale per un utente di Cupido. L'interprete fornisce una ampia gamma di comandi: creare un tavolo, ottenere la lista di tutti i tavoli, unirsi ad una partita, vedere una partita, giocare una carta qualsiasi o una carta specifica, passare delle carte qualsiasi o delle carte specifiche. I comandi possono essere presi da console o da un file di input. Usando un file di input si puo' far giocare una partita a degli utenti in modo completamente automatico.
