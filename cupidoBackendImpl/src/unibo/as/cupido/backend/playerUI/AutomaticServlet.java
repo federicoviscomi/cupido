@@ -45,7 +45,7 @@ public class AutomaticServlet {
 	/**
 	 * This automatic servelet notification interface
 	 */
-	public class RemoteBotNotificationInterface implements
+	public class AutomaticServletNotificationInterface implements
 			ServletNotificationsInterface, Serializable {
 
 		/**
@@ -290,7 +290,7 @@ public class AutomaticServlet {
 	 * @return an objects who handles notification from the stm to this
 	 */
 	public ServletNotificationsInterface getServletNotificationsInterface() {
-		return this.new RemoteBotNotificationInterface();
+		return this.new AutomaticServletNotificationInterface();
 	}
 
 	/**
