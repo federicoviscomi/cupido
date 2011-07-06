@@ -207,24 +207,31 @@ public class LocalBot implements LocalBotInterface {
 		}
 
 		if (playedCardCount == 0) {
-			if (!brokenHearted) {
-				for (int i = 0; i < cards.size(); i++) {
-					if (cards.get(i).suit != Card.Suit.HEARTS) {
-						validCards.add(cards.get(i));
-					}
+			// first player in trick
+			if (brokenHearted) {
+				validCards.addAll(cards);
+				return validCards;
+			}
+			// not broken hearted
+			for (int i = 0; i < cards.size(); i++) {
+				if (cards.get(i).suit != Card.Suit.HEARTS) {
+					validCards.add(cards.get(i));
 				}
 			}
 			if (validCards.size() == 0) {
+				// not broken hearted but does not own non-heart cards
 				validCards.addAll(cards);
 			}
 			return validCards;
 		}
+		// not first player in trick
 		for (int i = 0; i < cards.size(); i++) {
 			if (cards.get(i).suit == playedCard[firstDealer].suit) {
 				validCards.add(cards.get(i));
 			}
 		}
 		if (validCards.size() == 0) {
+			// does not own cards of same suit as first card played
 			validCards.addAll(cards);
 		}
 		return validCards;
@@ -343,9 +350,9 @@ public class LocalBot implements LocalBotInterface {
 	 *            the card received by this bot
 	 */
 	private void onGameStarted(Card[] cards) {
+		Arrays.sort(cards, higherFirstCardsComparator);
 		System.out.println("\n" + botName + ": notifyGameStarted("
 				+ Arrays.toString(cards) + ")");
-		Arrays.sort(cards, higherFirstCardsComparator);
 		this.cards = new ArrayList<Card>(13);
 		for (int i = 0; i < cards.length; i++)
 			this.cards.add(cards[i]);
