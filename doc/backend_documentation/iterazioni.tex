@@ -72,13 +72,14 @@
   In questa iterazione sono state implementate due interpreti di comandi da console minimali per gtm ed ltm. I comandi forniti permettono di vedere lo stato interno dei gtm e degli ltm. Quindi questi interpreti hanno una valenza per lo piu' in fase di debug/test.
 
 \section{Global chat}
-  In questa iterazione e' stata implementata
+  In questa iterazione e' stata implementata la chat globale lato backend. La chat globale e' un buffer di dimensione fissa di messaggi. Gli utenti di Cupido possono solo scrivere messaggi o reperire un certo numero di ultimi messaggi. Quindi i client fanno polling della chat globale e non ricevono notifiche quando un client invia un messaggio nella chat globale. Questo perche' si prevede la possibilita' di avere un numero elevato di utenti e quindi non conviene che la chat globale memorizzi un interfaccia di notifica per ognuno di essi e che invii notifiche a questa interfaccia ogni volta che arriva un nuovo messaggio nella chat globale.
+
+\section{Database Manager}
+  In questa iterazione e' stata implementata la classe DatabaseManager che fornisce le operazioni descritte in SRS.
 
 \section{Single table manager and game logic}
 
 \section{Bot}
-
-\section{Database Manager}
 
 \section{Console player UI}
 
