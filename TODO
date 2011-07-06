@@ -4,23 +4,24 @@ Bug noti:
 - ho finito una partita con 14 punti, ho perso, ma ho avuto +4 punti invece di -1.
 credo di averlo fixato: c'era un bug in updateScore in PlayersManager
 
-TODO:
-- istruzioni di deployment
-- javadoc
-- parte del documento master cioè:
- -come siamo arrivati alla nostra arch ed al nostro design; parlare anche
- delle architetture scartate e delle motivazioni. DA FARE!! Fatto solo parzialmente.
- -parlare del testing effettuato, in particolare come abbiamo svolto(?) le ultime
- due parti del processo di sviluppo; dire quali test abbiamo scelto, come si realizzano
- e come abbiamo trattato gli errori trovati. Il file testcases per capirci. Parzialmente fatto ma da controllare.
--log del backend. manca il backend che è quasi finito.
--ricontrollare il master_document perché non sono sicuro di come lo ho scritto (by Lorenzo)
+TODO: 
+- istruzioni di deployment 
+- javadoc 
+- parte del documento master cioè: 
+  - come siamo arrivati alla nostra arch ed al nostro design
+  - parlare anche delle architetture scartate e delle motivazioni. DA FARE!! Fatto solo parzialmente.
+  - parlare del testing effettuato, in particolare come abbiamo svolto(?) le ultime due parti 
+    del processo di sviluppo; dire quali test abbiamo scelto, come si realizzano e come abbiamo 
+    trattato gli errori trovati. Il file testcases per capirci. Parzialmente fatto ma da controllare.
+- log del backend. manca il backend che è quasi finito.
+- ricontrollare il master_document perché non sono sicuro di come lo ho scritto (by Lorenzo)
 
 Cose che forse faremo:
 - deployment e testing vero su più macchine.
-Per questo ultimo punto sarebbe bene scoprire coem rossi vuole che glielo mostraimo.
+Per questo ultimo punto sarebbe bene scoprire come rossi vuole che glielo mostraimo.
 A lezione disse di approntare due pc, opprue di usare il lab. Noi come lo presenteremo?
 - le password sono in chiaro. Possiamo criptarle o meno.
+
 
 Cose che non faremo:
 * Add a timer in the GUI (and maybe also in the backend) to prevent an user
@@ -36,5 +37,5 @@ Cose già fatte e pronte da essere consegnate:
 - Servlet_documentation: ovvero la parte di lorenzo
 - i diagrammi sono fatti completi ed utilizzati nei vari file
 - Requirement Testing
--log del processo di sviluppo, cioè ognuno di noi spiega come ha sviluppato 
-le sue parti nelle sue iterazioni. servlet e client ok.
+- log del processo di sviluppo, cioè ognuno di noi spiega come ha sviluppato 
+  le sue parti nelle sue iterazioni. servlet e client ok.
