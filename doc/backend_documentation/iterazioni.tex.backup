@@ -52,7 +52,10 @@
 	\end{verbatim}
 	Il gtm deve memorizzare associazioni tra descrittori di tavolo e informazioni del tavolo, inoltre deve avere a disposizione le operazioni di: aggiunta, ricerca e rimozione usando come chiave un descrittore di tavolo. Si e' scelto di memorizzare le informazioni dei tavoli in una tabella hash. L'hash e' calcolato sui campi del descrittore del tavolo. In particolare il descrittore del tavolo contiene: una stringa che identifica un ltm, un intero che identifica il tavolo all'interno dell'ltm. In questo modo le operazioni richiedono tempo costante.
     \end{description}
-  Gtm e' usato attraverso RMI quindi il multithreading e' gestito in automatico dalla JVM. La mutua eclusione sul ltm e' gestita semplicemente usando metodi synchronized. E' stata presa in considerazione un'altra strategia di mutua eclusione meno restrittiva cioe': tutte le operazioni hanno accesso esclusivo all'ltm con l'eccezione che si permettono piu' operazioni in lettura allo stesso tempo. Tuttavia questa soluzione presenta il problema della starvation delle operazioni di scrittura quindi si e' deciso di non adottarla.
+  Gtm e' usato attraverso RMI quindi il multithreading e' gestito in automatico dalla JVM. La mutua eclusione sul gtm e' gestita semplicemente usando metodi \begin{verbatim}
+    synchronized
+  \end{verbatim} 
+  E' stata presa in considerazione un'altra strategia di mutua eclusione meno restrittiva cioe': tutte le operazioni hanno accesso esclusivo all gtm con l'eccezione che si permettono piu' operazioni in lettura allo stesso tempo. Tuttavia questa soluzione presenta il problema della starvation delle operazioni di scrittura quindi si e' deciso di non adottarla.
 
 
 \section{Local table manager}
@@ -68,22 +71,36 @@
   Ltm mantiene in una tabella hash gli stm indicizzati da un intero che identifica l'stm in modo univoco nell'ltm. In questo modo le operazioni dell'ltm hanno complessita' in tempo costante.
   Per quanto riguarda il multithreading e la mutua eclusione valgono le stesse cose dette per il gtm.
 
-\section{Console gtm and ltm UI}
-  In questa iterazione sono state implementate due interpreti di comandi minimali per gtm ed ltm. 
+\section{Gtm and ltm console UI}
+  In questa iterazione sono state implementati due interpreti di comandi da console minimali per gtm ed ltm. I comandi forniti permettono di vedere lo stato interno del gtm e degli ltm. Quindi questi interpreti hanno una valenza per lo piu' in fase di debug e test. Potrebbero essere usati anche in un deploy reale per operazioni di manutenzione ma si e' scelto di non farlo perche' non serve: in particolare non ci sono requisiti che vietano di riavviare il gtm o gli ltm in fase di esecuzione.
 
 \section{Global chat}
-
-\section{Single table manager and game logic}
-
-\section{Bot}
+  In questa iterazione e' stata implementata la chat globale lato backend. La chat globale e' un buffer di dimensione fissa di messaggi. Gli utenti di Cupido possono solo scrivere messaggi o reperire un certo numero di ultimi messaggi. Quindi i client fanno polling della chat globale e non ricevono notifiche quando un client invia un messaggio nella chat globale. Questo perche' si prevede la possibilita' di avere un numero elevato di utenti e quindi non conviene che la chat globale memorizzi un interfaccia di notifica per ognuno di essi e che invii notifiche a questa interfaccia ogni volta che arriva un nuovo messaggio nella chat globale.
 
 \section{Database Manager}
+  In questa iterazione e' stata implementata la classe DatabaseManager che fornisce le operazioni descritte in SRS.
+
+\section{Single table manager and game logic}
+  In questa iterazione e' stato implementato stm. Stm si occupa di una singola partita. In particolare stm:
+  \begin{itemize}
+    \item 
+      gestisce i giocatori 
+    \item
+      gestisce i visitatori
+    \item
+      gestisce le carte
+    \item
+      gestisce i bot
+    \item
+      controlla che le mosse dei giocatori siano valide
+    \item 
+      da le carte
+    \item
+      aggiorna i punteggi dei giocatori.
+  \end{itemize}
+
+\section{Bot}
+  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha.
 
 \section{Console player UI}
-
-\section{Changed communication, control flow and mutual exclusion}
-major changes in control flow, mutual exclusion and communication:
-    using action queue for: local bot, stm and automatic servlet.
-    automatic servlet queue commands received from the UI, and execute them later if they can't be executed rigth now. AutomaticServlet enqueue all incoming messages in an action queue and process them sequentially.
-    ViewersSwarm: all notifications to servlets are now enqueued in an action queue.
-    STM: Use an action queue to avoid deadlocks. completely changed communication between stm, local bot and player ui.
+  In questa iterazione e' stato implementato un interprete di comandi testuale per un utente di Cupido. L'interprete fornisce una ampia gamma di comandi: creare un tavolo, ottenere la lista di tutti i tavoli, unirsi ad una partita, vedere una partita, giocare una carta qualsiasi o una carta specifica, passare delle carte qualsiasi o delle carte specifiche. I comandi possono essere presi da console o da un file di input. Usando un file di input si puo' far giocare una partita a degli utenti in modo completamente automatico.
