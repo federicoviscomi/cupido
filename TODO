@@ -1,20 +1,24 @@
-LAST UPDATE 5 Luglio 20:56 by Lorenzo
+LAST UPDATE 6 Luglio 23:15 by Lorenzo
 
 Bug noti:
-- ho finito una partita con 14 punti, ho perso, ma ho avuto +4 punti invece di -1.
-credo di averlo fixato: c'era un bug in updateScore in PlayersManager
+1) come riprodurre: (Lorenzo)
+- deployato tutto sul mio pc con un vero server apache-tomcat 6.0.32. Ho creato due partite con 2 pc nella mia Lan locale.
+un terzo giocatore è entrato da un pc remoto, si è loggato (la chat funzionava) ha creato un tavolo, ma dopo aver aggiunto
+i tre bot non gli apparso nient'altro (in 10 secondi).; non gli sono apparse le carte. Nessun errore rilevato, nessuna eccezione.
+_non ancora riprodotto_
 
-TODO: 
-- istruzioni di deployment 
+TODO:  
 - javadoc 
-- parte del documento master cioè: 
+- parte del documento master (controllare TODO all'interno del documento): 
   - come siamo arrivati alla nostra arch ed al nostro design
   - parlare anche delle architetture scartate e delle motivazioni. DA FARE!! Fatto solo parzialmente.
   - parlare del testing effettuato, in particolare come abbiamo svolto(?) le ultime due parti 
     del processo di sviluppo; dire quali test abbiamo scelto, come si realizzano e come abbiamo 
-    trattato gli errori trovati. Il file testcases per capirci. Parzialmente fatto ma da controllare.
-- log del backend. manca il backend che è quasi finito.
+    trattato gli errori trovati. Il file testcases per capirci. Parzialmente fatto ma da controllare ed eventualmente ampliare.
+- log del backend che è quasi finito.
 - ricontrollare il master_document perché non sono sicuro di come lo ho scritto (by Lorenzo)
+- Ci sono ancora molti TODO e FIXME nel backend.
+- Ripulire il codice da eventuali println di debug, commenti ignobili ed insulti alle variabili.
 
 Cose che forse faremo:
 - deployment e testing vero su più macchine.
@@ -30,6 +34,7 @@ Cose che non faremo:
   let others know when a user joins the chat or leaves it.
 
 Cose già fatte e pronte da essere consegnate:
+- istruzioni di deployment
 - SRS
 - processo di sviluppo (integrato nel documento master)
 - architettura e design
