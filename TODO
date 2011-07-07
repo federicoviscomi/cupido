@@ -1,4 +1,4 @@
-LAST UPDATE 6 Luglio 23:15 by Lorenzo
+LAST UPDATE 7 Luglio 23:34 by Lorenzo
 
 Bug noti:
 1) come riprodurre: (Lorenzo)
@@ -8,6 +8,7 @@ i tre bot non gli apparso nient'altro (in 10 secondi).; non gli sono apparse le 
 _non ancora riprodotto_
 
 TODO:  
+- rendere GlobalChat delpoyabile a parte
 - javadoc 
 - parte del documento master (controllare TODO all'interno del documento): 
   - come siamo arrivati alla nostra arch ed al nostro design
@@ -17,7 +18,6 @@ TODO:
     trattato gli errori trovati. Il file testcases per capirci. Parzialmente fatto ma da controllare ed eventualmente ampliare.
 - log del backend che è quasi finito.
 - ricontrollare il master_document perché non sono sicuro di come lo ho scritto (by Lorenzo)
-- Ci sono ancora molti TODO e FIXME nel backend.
 - Ripulire il codice da eventuali println di debug, commenti ignobili ed insulti alle variabili.
 
 Cose che forse faremo:
