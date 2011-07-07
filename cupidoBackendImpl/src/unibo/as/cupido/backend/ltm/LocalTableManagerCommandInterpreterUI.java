@@ -28,6 +28,10 @@ import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Collections;
+import java.util.Map.Entry;
+
+import unibo.as.cupido.common.interfaces.TableInterface;
 
 /**
  * A command interpreter console interface for an LTM.
@@ -70,23 +74,12 @@ public class LocalTableManagerCommandInterpreterUI {
 			+ String.format(FORMAT, "create", "-c", "--creator",
 					"create a new table with specified creator");
 
-	public static void main(String[] args) throws UnknownHostException {
+	public static void main(String[] args) throws UnknownHostException,
+			RemoteException, NotBoundException {
 		if (args.length > 1 && "start".equals(args[1])) {
-			try {
-				new LocalTableManagerCommandInterpreterUI(true)
-						.runInterpreter();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			new LocalTableManagerCommandInterpreterUI(true).runInterpreter();
 		} else {
-			try {
-				new LocalTableManagerCommandInterpreterUI(false)
-						.runInterpreter();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			new LocalTableManagerCommandInterpreterUI(false).runInterpreter();
 		}
 	}
 
@@ -116,18 +109,13 @@ public class LocalTableManagerCommandInterpreterUI {
 			"create" };
 
 	public LocalTableManagerCommandInterpreterUI(boolean startLTM)
-			throws RemoteException, UnknownHostException {
+			throws RemoteException, UnknownHostException, NotBoundException {
 		parser = new CmdLineParser();
 		tableCreatorOption = parser.addStringOption('c', "creator");
 		listTablesOption = parser.addBooleanOption('t', "tables");
 		input = new BufferedReader(new InputStreamReader(System.in));
 		if (startLTM) {
-			try {
-				localTableManager = new LocalTableManager();
-			} catch (NotBoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			localTableManager = new LocalTableManager();
 		}
 	}
 
@@ -139,13 +127,10 @@ public class LocalTableManagerCommandInterpreterUI {
 			try {
 				executeStart();
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NotBoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else if (command[0].equals("exit")) {
@@ -157,7 +142,6 @@ public class LocalTableManagerCommandInterpreterUI {
 			try {
 				executeCreate();
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else if (command[0].equals("list")) {
@@ -194,9 +178,15 @@ public class LocalTableManagerCommandInterpreterUI {
 	private void executeList() {
 		boolean listTables = (parser.getOptionValue(listTablesOption) == null ? false
 				: true);
-		if (listTables) {
-			// TODO
+		if (!listTables) {
+			System.out.println("nothing to list?");
+			return;
 		}
+		for (Entry<Integer, TableInterface> entry : localTableManager
+				.getTableList()) {
+			System.out.println(entry.getKey() + " " + entry.getValue());
+		}
+
 	}
 
 	/**

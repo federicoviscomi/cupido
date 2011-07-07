@@ -29,4 +29,4 @@ play -a
 sleep 1000
 play -a
 sleep 1000
-create
+exit

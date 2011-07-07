@@ -20,3 +20,4 @@ sleep 1000
 play -a
 leave
 sleep 1000
+exit

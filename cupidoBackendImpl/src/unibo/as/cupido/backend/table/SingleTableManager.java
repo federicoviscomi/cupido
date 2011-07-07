@@ -74,8 +74,9 @@ public class SingleTableManager implements TableInterface {
 	public static final String[] botNames = { "", "cupido", "marte", "venere" };
 
 	public SingleTableManager(ServletNotificationsInterface snf,
-			TableInfoForClient table, GlobalTableManagerInterface gtm)
-			throws SQLException, NoSuchUserException, NoSuchLTMException {
+			TableInfoForClient table, GlobalTableManagerInterface gtm,
+			String databaseAddress) throws SQLException, NoSuchUserException,
+			NoSuchLTMException {
 
 		if (snf == null || table == null || gtm == null) {
 			throw new IllegalArgumentException(snf + " " + table + " " + gtm);
@@ -85,8 +86,7 @@ public class SingleTableManager implements TableInterface {
 		this.gtm = gtm;
 		this.creator = table.creator;
 		this.gameStatus = GameStatus.INIT;
-		//FIXME
-		this.databaseManager = new DatabaseManager(DatabaseInterface.DEFAULT_DATABASE_ADDRESS);
+		this.databaseManager = new DatabaseManager(databaseAddress);
 		this.actionQueue = new ActionQueue();
 		this.actionQueue.start();
 		this.viewers = new ViewersSwarm(actionQueue);
@@ -258,10 +258,8 @@ public class SingleTableManager implements TableInterface {
 				try {
 					gtm.notifyTableJoin(table.tableDescriptor);
 				} catch (NoSuchTableException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (FullTableException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -283,10 +281,8 @@ public class SingleTableManager implements TableInterface {
 				try {
 					gtm.notifyTableLeft(table.tableDescriptor);
 				} catch (NoSuchTableException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (EmptyTableException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -322,7 +318,6 @@ public class SingleTableManager implements TableInterface {
 		try {
 			playersManager.notifyPlayedCard(playerName, card);
 		} catch (NoSuchPlayerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		viewers.notifyPlayedCard(position, card);
@@ -341,7 +336,6 @@ public class SingleTableManager implements TableInterface {
 			playersManager.notifyPlayerReplaced(playerName, position);
 			viewers.notifyPlayerReplaced(playerName, position);
 		} catch (NoSuchPlayerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -360,10 +354,8 @@ public class SingleTableManager implements TableInterface {
 					gtm.notifyTableDestruction(table.tableDescriptor, ltm);
 					ltm.notifyTableDestruction(table.tableDescriptor.id);
 				} catch (NoSuchLTMException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (NoSuchTableException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -380,7 +372,8 @@ public class SingleTableManager implements TableInterface {
 		if (gameStatus.equals(GameStatus.INTERRUPTED))
 			throw new GameInterruptedException();
 		if (!gameStatus.equals(GameStatus.PASSING_CARDS))
-			throw new WrongGameStateException(GameStatus.PASSING_CARDS.toString());
+			throw new WrongGameStateException(
+					GameStatus.PASSING_CARDS.toString());
 		/*
 		 * NOTE: playerName is name of the player who passes cards. Not name of
 		 * the player who receives the cards!

@@ -29,8 +29,12 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import unibo.as.cupido.backend.table.SingleTableManager;
@@ -181,19 +185,16 @@ public class LocalTableManager implements LocalTableManagerInterface {
 					new TableDescriptor(localAddress + this.toString(), nextId));
 			TableInterface tableRemote = (TableInterface) UnicastRemoteObject
 					.exportObject(new SingleTableManager(snf, newTable,
-							gtmRemote));
+							gtmRemote, databaseAddress));
 			allTables.put(nextId, tableRemote);
 			nextId++;
 			return new Pair<TableInterface, TableInfoForClient>(tableRemote,
 					newTable);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchUserException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchLTMException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -231,16 +232,23 @@ public class LocalTableManager implements LocalTableManagerInterface {
 			gtmRemote.notifyLocalTableManagerShutdown(this);
 			acceptMoreRequest = false;
 		} catch (AccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//
 		}
 		try {
 			Runtime.getRuntime().removeShutdownHook(shutdownHook);
 		} catch (IllegalStateException e) {
 			//
 		}
+	}
+
+	/**
+	 * Just for debug or test purposes.
+	 * 
+	 * @return all tables in this ltm.
+	 */
+	public Set<Entry<Integer, TableInterface>> getTableList() {
+		return allTables.entrySet();
 	}
 }

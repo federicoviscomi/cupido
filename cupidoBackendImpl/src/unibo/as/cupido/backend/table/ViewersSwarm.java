@@ -224,25 +224,6 @@ public class ViewersSwarm {
 	}
 
 	/**
-	 * Notify all viewers that a viewer joined the table.
-	 * 
-	 * @param viewerName
-	 *            name of viewer who joined
-	 */
-	public void notifyViewerJoined(final String viewerName) {
-		for (final ServletNotificationsInterface snf : snfs.values()) {
-			actionQueue.enqueue(new RemoteAction() {
-				@Override
-				public void onExecute() throws RemoteException {
-					// FIXME: Is this correct?
-					snf.notifyLocalChatMessage(new ChatMessage(viewerName,
-							"joined"));
-				}
-			});
-		}
-	}
-
-	/**
 	 * Removes specified viewer.
 	 * 
 	 * @param viewerName

@@ -103,7 +103,10 @@ public class GlobalTableManagerCommandInterpreterUI {
 	private Option listTableOption;
 	/** the input is read from this */
 	private BufferedReader in;
-	/** <tt>true</tt> after execution of command exit or end of input file; <tt>false</tt> otherwise */
+	/**
+	 * <tt>true</tt> after execution of command exit or end of input file;
+	 * <tt>false</tt> otherwise
+	 */
 	private boolean exit;
 	/** stores all known commands */
 	private static final String[] allCommands = { "start", "exit", "list" };
@@ -137,13 +140,10 @@ public class GlobalTableManagerCommandInterpreterUI {
 			try {
 				executeStart();
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (AlreadyBoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else if (command[0].equals("exit")) {
@@ -155,7 +155,6 @@ public class GlobalTableManagerCommandInterpreterUI {
 			try {
 				executeList();
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

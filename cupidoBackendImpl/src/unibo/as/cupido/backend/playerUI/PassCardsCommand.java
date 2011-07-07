@@ -17,9 +17,17 @@
 
 package unibo.as.cupido.backend.playerUI;
 
+import unibo.as.cupido.common.structures.Card;
+
 /**
  * This command tells the automatic servlet to pass arbitrary sound cards
  */
 public class PassCardsCommand implements Command {
-	//
+
+	final Card[] cardsToPass;
+
+	public PassCardsCommand(Card[] cardsToPass) {
+		this.cardsToPass = cardsToPass;
+	}
+
 }

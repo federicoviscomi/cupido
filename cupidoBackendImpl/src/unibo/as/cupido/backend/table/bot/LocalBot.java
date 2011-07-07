@@ -536,16 +536,12 @@ public class LocalBot implements LocalBotInterface {
 			setCardsPassed(cardsToPass);
 			tableInterface.passCards(botName, cardsToPass);
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchPlayerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (WrongGameStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -562,22 +558,16 @@ public class LocalBot implements LocalBotInterface {
 			setCardPlayed(card, 3);
 			tableInterface.playCard(botName, card);
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalMoveException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchPlayerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (WrongGameStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -620,7 +610,6 @@ public class LocalBot implements LocalBotInterface {
 						points += 5;
 				}
 				if (active && !cards.isEmpty()) {
-					// TODO: Check this.
 					playCard();
 				}
 			}
@@ -628,7 +617,6 @@ public class LocalBot implements LocalBotInterface {
 		} else {
 			if (playerPosition == 2) {
 				if (active && !cards.isEmpty()) {
-					// TODO: Check this.
 					playCard();
 				}
 			}

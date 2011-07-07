@@ -444,25 +444,6 @@ public class AutomaticServlet {
 	}
 
 	/**
-	 * Pass arbitrary sound cards.
-	 */
-	public void passCards() {
-		synchronized (passCardsSignal) {
-			actionQueue.enqueue(new Action() {
-				@Override
-				public void execute() {
-					tryProcessingPassCards();
-				}
-			});
-			try {
-				passCardsSignal.wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
 	 * Play arbitrary sound card.
 	 * 
 	 * @throws GameEndedException
@@ -473,7 +454,7 @@ public class AutomaticServlet {
 			actionQueue.enqueue(new Action() {
 				@Override
 				public void execute() {
-					tryProcessingPlayNextCard();
+					tryProcessingPlayNextCard(null);
 				}
 			});
 			try {
@@ -486,11 +467,14 @@ public class AutomaticServlet {
 	}
 
 	/**
-	 * Pass arbitrary cards
+	 * If argument is <tt>null</tt> pass arbitrary cards; otherwise pass
+	 * specified cards.
+	 * 
+	 * @param cardsToPass
 	 * 
 	 * @return <tt>true</tt> if this passed cards; <tt>false</tt> otherwise.
 	 */
-	private boolean processPassCards() {
+	private boolean processPassCards(Card[] cardsToPass) {
 
 		if (!ableToPass) {
 			return false;
@@ -500,9 +484,11 @@ public class AutomaticServlet {
 			if (turn != 0) {
 				throw new IllegalStateException();
 			}
-			Card[] cardsToPass = new Card[3];
-			for (int i = 0; i < 3; i++) {
-				cardsToPass[i] = cards.remove(0);
+			if (cardsToPass == null) {
+				cardsToPass = new Card[3];
+				for (int i = 0; i < 3; i++) {
+					cardsToPass[i] = cards.remove(0);
+				}
 			}
 			singleTableManager.passCards(userName, cardsToPass);
 		} catch (IllegalArgumentException e) {
@@ -532,20 +518,39 @@ public class AutomaticServlet {
 		this.pendingCommands = new ArrayList<Command>();
 		for (Command command : pendingCommands) {
 			if (command instanceof PassCardsCommand) {
-				tryProcessingPassCards();
+				PassCardsCommand commandInstance = (PassCardsCommand) command;
+				tryProcessingPassCards(commandInstance.cardsToPass);
 			} else if (command instanceof PlayNextCardCommand) {
-				tryProcessingPlayNextCard();
+				PlayNextCardCommand commandInstance = ((PlayNextCardCommand) command);
+				tryProcessingPlayNextCard(commandInstance.card);
 			}
 		}
 	}
 
 	/**
-	 * Play arbitrary cards.
+	 * If <tt>card</tt> is not <tt>null</tt> tries to play specified card;
+	 * otherwise tries to play an arbitrary sound card. If this is not able to
+	 * play right now, add a play card command in pending commands that will be
+	 * executed later
+	 */
+	private void tryProcessingPlayNextCard(Card card) {
+		boolean executed = processPlayNextCard(card);
+		if (!executed) {
+			pendingCommands.add(new PlayNextCardCommand(card));
+		}
+	}
+
+	/**
+	 * Play specified card or an arbitrary card.
+	 * 
+	 * @param cardToPlay
+	 *            if <tt>card==null</tt> play an arbitrary card; otherwise play
+	 *            a specified card.
 	 * 
 	 * @return <tt>true</tt> if this succeeded in playing a card; <tt>false</tt>
 	 *         otherwise, i.e. this was not able to play now.
 	 */
-	private boolean processPlayNextCard() {
+	private boolean processPlayNextCard(Card cardToPlay) {
 		if (!ableToPlay) {
 			return false;
 		}
@@ -555,9 +560,10 @@ public class AutomaticServlet {
 
 			ableToPlay = false;
 
-			/** choose a valid card */
-			Card cardToPlay = getASoundCard();
-
+			/** choose a card */
+			if (cardToPlay == null) {
+				cardToPlay = getASoundCard();
+			}
 			/** play chosen card */
 			singleTableManager.playCard(userName, cardToPlay);
 
@@ -628,25 +634,66 @@ public class AutomaticServlet {
 	}
 
 	/**
-	 * Try to pass cards. If this is not able to pass rigth now, add a pass
-	 * cards command in pending commands that will be executed later
+	 * Try to pass cards. If argument is <tt>null</tt> pass arbitrary cards;
+	 * otherwise pass specified cards. If this is not able to pass rigth now,
+	 * add a pass cards command in pending commands that will be executed later
+	 * 
+	 * @param cardsToPass
 	 */
-	void tryProcessingPassCards() {
-		boolean executed = processPassCards();
+	void tryProcessingPassCards(Card[] cardsToPass) {
+		boolean executed = processPassCards(cardsToPass);
 		if (!executed) {
-			pendingCommands.add(new PassCardsCommand());
+			pendingCommands.add(new PassCardsCommand(cardsToPass));
 		}
 	}
 
 	/**
-	 * Try to play a card. If this is not able to play rigth now, add a pass
-	 * cards command in pending commands that will be executed later
+	 * Try to play specified card. If this is not able to play right now, add a
+	 * play card command in pending commands that will be executed later
 	 */
-	void tryProcessingPlayNextCard() {
-		boolean executed = processPlayNextCard();
+	void tryProcessingPlayCard(Card card) {
+		boolean executed = processPlayNextCard(card);
 		if (!executed) {
-			pendingCommands.add(new PlayNextCardCommand());
+			pendingCommands.add(new PlayNextCardCommand(card));
 		}
+	}
+
+	public void playCard(final Card card) {
+		synchronized (playNextCardSignal) {
+			actionQueue.enqueue(new Action() {
+				@Override
+				public void execute() {
+					tryProcessingPlayCard(card);
+				}
+			});
+			try {
+				playNextCardSignal.wait();
+			} catch (InterruptedException e) {
+				//
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * If argument is <tt>null</tt> then pass arbitrary sound cards; otherwise
+	 * pass specified cards.
+	 */
+	public void passCards(final Card[] cardsToPass) {
+		synchronized (passCardsSignal) {
+			actionQueue.enqueue(new Action() {
+				@Override
+				public void execute() {
+					tryProcessingPassCards(cardsToPass);
+				}
+			});
+			try {
+				passCardsSignal.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 }

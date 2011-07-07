@@ -35,11 +35,13 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import unibo.as.cupido.common.database.DatabaseManager;
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.DuplicateViewerException;
@@ -53,9 +55,12 @@ import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.exception.NotCreatorException;
 import unibo.as.cupido.common.exception.WrongGameStateException;
+import unibo.as.cupido.common.interfaces.DatabaseInterface;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.structures.Card;
+import unibo.as.cupido.common.structures.Card.Suit;
 import unibo.as.cupido.common.structures.ChatMessage;
 import unibo.as.cupido.common.structures.InitialTableStatus;
 import unibo.as.cupido.common.structures.TableInfoForClient;
@@ -153,8 +158,8 @@ public class PlayerConsoleUI {
 			+ String.format(FORMAT, "login NAME PASSWORD", "", "", "")
 			+ String.format(FORMAT, "pass", "-a", "--arbitrary",
 					"pass arbitrary cards")
-			+ String.format(FORMAT, "passTODO s1 v1 s2 v2 s3 v3", "-c",
-					"--card", "pass specified cards cards ")
+			+ String.format(FORMAT, "pass s1 v1 s2 v2 s3 v3", "-c", "--card",
+					"pass specified cards cards ")
 			+ String.format(FORMAT, "play", "-a", "--arbitrary",
 					"play an arbitrary card")
 			+ String.format(FORMAT, "play suit value", "", "",
@@ -166,9 +171,9 @@ public class PlayerConsoleUI {
 			+ String.format(FORMAT, "leave", "", "", "leave the table(if any)")
 			+ String.format(FORMAT, "view", "", "",
 					"view an arbitrary table in the GTM")
-			+ String.format(FORMAT, "TODOjoin TABLE", "", "",
-					"joins specified table")
-			+ String.format(FORMAT, "TODOview TABLE", "", "",
+			+ String.format(FORMAT, "join TABLE_POS", "", "",
+					"join the table listed in specified position")
+			+ String.format(FORMAT, "view TABLE_POS", "", "",
 					"views specified table")
 			+ String.format(FORMAT, "chat MESSAGE", "", "",
 					"send specified message to the local chat");
@@ -185,8 +190,9 @@ public class PlayerConsoleUI {
 	 * 
 	 * @param args
 	 * @throws IOException
+	 * @throws SQLException
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, SQLException {
 		if (args.length == 0) {
 			new PlayerConsoleUI().runInterpreter();
 		} else if (args.length == 1) {
@@ -248,11 +254,15 @@ public class PlayerConsoleUI {
 
 	private ServletNotificationsInterface servletNotificationsInterface;
 
+	private DatabaseManager databaseManager;
+
 	/**
 	 * Creates a player command line user interface which reads from
 	 * <tt>System.in</tt> and writes to <tt>System.out</tt>
+	 * 
+	 * @throws SQLException
 	 */
-	public PlayerConsoleUI() {
+	public PlayerConsoleUI() throws SQLException {
 		this(new BufferedReader(new InputStreamReader(System.in)),
 				new PrintWriter(System.out));
 	}
@@ -260,8 +270,11 @@ public class PlayerConsoleUI {
 	/**
 	 * Creates a player command line user interface which reads from <tt>in</tt>
 	 * and writes to file <tt>out</tt>
+	 * 
+	 * @throws SQLException
 	 */
-	public PlayerConsoleUI(BufferedReader in, PrintWriter out) {
+	public PlayerConsoleUI(BufferedReader in, PrintWriter out)
+			throws SQLException {
 		this.in = in;
 		this.out = out;
 
@@ -270,6 +283,9 @@ public class PlayerConsoleUI {
 		listPlayersOption = parser.addBooleanOption('p', "players");
 		listTablesOption = parser.addBooleanOption('t', "tables");
 		arbitraryCardsOption = parser.addBooleanOption('a', "arbitrary");
+
+		// databaseManager = new
+		// DatabaseManager(DatabaseInterface.DEFAULT_DATABASE_ADDRESS);
 
 		try {
 			gtm = (GlobalTableManagerInterface) LocateRegistry.getRegistry()
@@ -286,8 +302,11 @@ public class PlayerConsoleUI {
 	/**
 	 * Creates a player command line user interface which reads from file named
 	 * <tt>inputFileName</tt> and writes to <tt>System.out</tt>
+	 * 
+	 * @throws SQLException
 	 */
-	public PlayerConsoleUI(String inputFileName) throws FileNotFoundException {
+	public PlayerConsoleUI(String inputFileName) throws FileNotFoundException,
+			SQLException {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				inputFileName))), new PrintWriter(System.out));
 	}
@@ -295,9 +314,11 @@ public class PlayerConsoleUI {
 	/**
 	 * Creates a player command line user interface which reads from file named
 	 * <tt>inputFileName</tt> and writes to file named <tt>outputFileName</tt>
+	 * 
+	 * @throws SQLException
 	 */
 	public PlayerConsoleUI(String inputFileName, String outputFileName)
-			throws FileNotFoundException {
+			throws FileNotFoundException, SQLException {
 		this(new BufferedReader(new InputStreamReader(new FileInputStream(
 				inputFileName))), new PrintWriter(new FileOutputStream(
 				outputFileName)));
@@ -404,9 +425,7 @@ public class PlayerConsoleUI {
 	 */
 	private void executeCreate() {
 		try {
-			// TODO really check the database
-			// TODO is really necessary AutomaticServlet or can be used instead
-			// LocalBot
+
 			remoteBot = new AutomaticServlet(new InitialTableStatus(
 					new String[3], new int[3], new boolean[3]), null,
 					playerName);
@@ -438,10 +457,10 @@ public class PlayerConsoleUI {
 		if (remoteBot != null) {
 			remoteBot.actionQueue.killConsumer();
 			try {
-				UnicastRemoteObject.unexportObject(servletNotificationsInterface, true);
-			} catch (NoSuchObjectException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				UnicastRemoteObject.unexportObject(
+						servletNotificationsInterface, true);
+			} catch (NoSuchObjectException e) {
+				//
 			}
 			try {
 				remoteBot.singleTableManager.leaveTable(playerName);
@@ -451,10 +470,10 @@ public class PlayerConsoleUI {
 		} else if (remoteViewer != null) {
 			remoteBot.actionQueue.killConsumer();
 			try {
-				UnicastRemoteObject.unexportObject(servletNotificationsInterface, true);
-			} catch (NoSuchObjectException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				UnicastRemoteObject.unexportObject(
+						servletNotificationsInterface, true);
+			} catch (NoSuchObjectException e) {
+				//
 			}
 			try {
 				remoteViewer.singleTableManager.leaveTable(playerName);
@@ -467,7 +486,6 @@ public class PlayerConsoleUI {
 		} catch (IOException e) {
 			//
 		}
-		System.out.println(">>>>>>>>> exiting ");
 	}
 
 	/**
@@ -483,14 +501,27 @@ public class PlayerConsoleUI {
 	 */
 	private void executeJoin() {
 		try {
-			// TODO really check the database
 			remoteBot = new AutomaticServlet(new InitialTableStatus(
 					new String[3], new int[3], new boolean[3]), null,
 					playerName);
 			botNotification = (ServletNotificationsInterface) UnicastRemoteObject
 					.exportObject(remoteBot.getServletNotificationsInterface());
 
-			TableInfoForClient tableInfo = gtm.getTableList().iterator().next();
+			Iterator<TableInfoForClient> iterator = gtm.getTableList()
+					.iterator();
+			TableInfoForClient tableInfo = null;
+			if (command.length < 2) {
+				tableInfo = iterator.next();
+			} else {
+				int tableNumber = Integer.parseInt(command[1]);
+				if (tableNumber <= 0) {
+					out.println("wrong table number " + tableNumber);
+					return;
+				}
+				for (int i = 0; i < tableNumber; i++) {
+					tableInfo = iterator.next();
+				}
+			}
 			remoteBot.singleTableManager = gtm.getLTMInterface(
 					tableInfo.tableDescriptor.ltmId).getTable(
 					tableInfo.tableDescriptor.id);
@@ -498,33 +529,24 @@ public class PlayerConsoleUI {
 					.joinTable(playerName, botNotification);
 			joiningATable = true;
 			out.println("successfully joined "
-					+ tableInfo
-					+ ".\nnote that this does not really communicate with the database");
+					+ tableInfo);
 		} catch (NoSuchElementException e) {
-			out.println("no table to join!");
+			e.printStackTrace();
 		} catch (NoSuchTableException e) {
-
 			e.printStackTrace();
 		} catch (NoSuchLTMException e) {
-
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-
 			e.printStackTrace();
 		} catch (FullTableException e) {
-
 			e.printStackTrace();
 		} catch (DuplicateUserNameException e) {
-
 			e.printStackTrace();
 		} catch (NoSuchUserException e) {
-
 			e.printStackTrace();
 		} catch (GameInterruptedException e) {
-
 			e.printStackTrace();
 		} catch (RemoteException e) {
-
 			e.printStackTrace();
 		}
 	}
@@ -603,26 +625,32 @@ public class PlayerConsoleUI {
 		if (command.length < 2) {
 			out.println("missing user name");
 			out.flush();
-		} else {
-			playerName = command[1];
-			if (gtm == null) {
-				try {
-					gtm = (GlobalTableManagerInterface) LocateRegistry
-							.getRegistry()
-							.lookup(GlobalTableManagerInterface.GTM_RMI_NAME);
-				} catch (AccessException e) {
-					out.println("cannot connect to gtm");
-				} catch (RemoteException e) {
-					out.println("cannot connect to gtm");
-				} catch (NotBoundException e) {
-					out.println("cannot connect to gtm");
-				}
-			}
-			if (gtm != null) {
-				logged = true;
-				out.println("successfully logged in " + playerName);
+			return;
+		}
+		playerName = command[1];
+		// try {
+		// databaseManager.login(playerName, command[2]);
+		if (gtm == null) {
+			try {
+				gtm = (GlobalTableManagerInterface) LocateRegistry
+						.getRegistry().lookup(
+								GlobalTableManagerInterface.GTM_RMI_NAME);
+			} catch (AccessException e) {
+				out.println("cannot connect to gtm");
+			} catch (RemoteException e) {
+				out.println("cannot connect to gtm");
+			} catch (NotBoundException e) {
+				out.println("cannot connect to gtm");
 			}
 		}
+		if (gtm != null) {
+			logged = true;
+			out.println("successfully logged in " + playerName);
+		}
+		// } catch (NoSuchUserException e1) {
+		// out.println("inavlid user name or password: " + playerName + " "
+		// + command[2]);
+		// }
 	}
 
 	/**
@@ -634,14 +662,40 @@ public class PlayerConsoleUI {
 		boolean arbitraryCards = (parser.getOptionValue(arbitraryCardsOption) == null ? false
 				: true);
 		if (arbitraryCards) {
-			remoteBot.passCards();
+			remoteBot.passCards(null);
 		} else if (specifiedCards) {
-			// TODO
-			throw new UnsupportedOperationException();
+			if (command.length < 8) {
+				out.println("some argument is missing ");
+			} else {
+				Card[] cardsToPass = new Card[3];
+				cardsToPass[1] = parseCard(command[2], command[3]);
+				cardsToPass[2] = parseCard(command[4], command[5]);
+				cardsToPass[3] = parseCard(command[6], command[7]);
+				remoteBot.passCards(cardsToPass);
+			}
 		} else {
 			out.println("\nmissing option");
 			out.flush();
 		}
+	}
+
+	private Card parseCard(String suit, String value) {
+		Card.Suit parsedSuit = null;
+		for (int i = 0; i < 4; i++) {
+			if (Card.Suit.values()[i].toString().equals(suit)) {
+				parsedSuit = Card.Suit.values()[i];
+			}
+		}
+		if (parsedSuit == null) {
+			out.println("wrong suit " + suit);
+			return null;
+		}
+		int parsedValue = Integer.parseInt(value);
+		if (parsedValue < 1 || parsedValue > 13) {
+			out.println("value out of range " + value);
+			return null;
+		}
+		return new Card(parsedValue, parsedSuit);
 	}
 
 	/**
@@ -656,9 +710,28 @@ public class PlayerConsoleUI {
 			} catch (GameEndedException e) {
 				out.println("cannot play a card: game ended");
 			}
-		} else {
-			throw new UnsupportedOperationException();
+			return;
 		}
+		if (command.length < 3) {
+			out.println("missing suit or value");
+			return;
+		}
+		Card.Suit suit = null;
+		for (int i = 0; i < 4; i++) {
+			if (Card.Suit.values()[i].toString().equals(command[1])) {
+				suit = Card.Suit.values()[i];
+			}
+		}
+		if (suit == null) {
+			out.println("wrong suit " + command[1]);
+			return;
+		}
+		int value = Integer.parseInt(command[2]);
+		if (value < 1 || value > 13) {
+			out.println("value out of range " + value);
+			return;
+		}
+		remoteBot.playCard(new Card(value, suit));
 	}
 
 	/**
@@ -683,9 +756,21 @@ public class PlayerConsoleUI {
 	 */
 	private void executeView() {
 		try {
-			// TODO really check the database
-
-			TableInfoForClient tableInfo = gtm.getTableList().iterator().next();
+			Iterator<TableInfoForClient> iterator = gtm.getTableList()
+					.iterator();
+			TableInfoForClient tableInfo = null;
+			if (command.length > 1) {
+				int tablePosition = Integer.parseInt(command[1]);
+				if (tablePosition <= 0) {
+					out.println("wrong table number " + tablePosition);
+					return;
+				}
+				for (int i = 0; i < tablePosition; i++) {
+					tableInfo = iterator.next();
+				}
+			} else {
+				tableInfo = iterator.next();
+			}
 			LocalTableManagerInterface ltmInterface = gtm
 					.getLTMInterface(tableInfo.tableDescriptor.ltmId);
 
@@ -696,7 +781,7 @@ public class PlayerConsoleUI {
 			Thread.sleep(200);
 			System.in.read();
 		} catch (NoSuchElementException e) {
-			out.println("there is no table to view");
+			out.println("wrong table number or no table");
 			out.flush();
 		} catch (NoSuchLTMException e) {
 			e.printStackTrace();

@@ -236,7 +236,7 @@ public class PlayersManager {
 	 *            the name of the bot to add
 	 * @param tableInterface
 	 *            the interface of the table associated with this players
-	 *            manager //TODO use a field instead of a parameter
+	 *            manager
 	 * @throws FullPositionException
 	 *             if table already has four players
 	 * @throws NotCreatorException
@@ -919,10 +919,8 @@ public class PlayersManager {
 					databaseManager.updateScore(players[i].name,
 							players[i].score);
 				} catch (NoSuchUserException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

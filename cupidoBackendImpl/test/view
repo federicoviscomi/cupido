@@ -1,4 +1,4 @@
 login viewer
 view
-sleep 1000
+sleep 100
 exit

@@ -17,9 +17,17 @@
 
 package unibo.as.cupido.backend.playerUI;
 
+import unibo.as.cupido.common.structures.Card;
+
 /**
  * This command tell the automatic servlet to play an arbitrary sound card
  */
 public class PlayNextCardCommand implements Command {
-//
+
+	final Card card;
+
+	public PlayNextCardCommand(Card card) {
+		this.card = card;
+	}
+
 }
