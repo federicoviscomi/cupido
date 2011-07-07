@@ -58,9 +58,7 @@ public interface TableInterface extends Remote {
 		INIT, PASSING_CARDS, STARTED, ENDED, INTERRUPTED
 	}
 
-	/**
-	 * TODO ?Use this enum in all method instead of an int?
-	 */
+	/** absolute positions of players in the table */
 	public static enum Positions {
 		OWNER, LEFT, RIGHT, UP
 	}
@@ -149,9 +147,7 @@ public interface TableInterface extends Remote {
 
 	/**
 	 * The user <code>userName</code> passes cards <code>cards</code> to the
-	 * player next to him. TODO The next player is the next element in
-	 * {@link Positions} or the next player is chosen by the method {@link
-	 * PasscardsPolicy.getNext(position)}?
+	 * player next to him.
 	 * 
 	 * @param userName
 	 *            name of player

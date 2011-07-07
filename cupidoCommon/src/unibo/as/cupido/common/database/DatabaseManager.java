@@ -32,7 +32,6 @@ import com.mysql.jdbc.Statement;
 
 public class DatabaseManager implements DatabaseInterface {
 
-	// TODO take this from a configuration file?
 	private final String userDB = "root";
 	private final String passDB = "cupido";
 
