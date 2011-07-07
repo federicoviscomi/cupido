@@ -174,9 +174,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	@Override
 	public synchronized Collection<TableInfoForClient> getTableList()
 			throws RemoteException {
-		ArrayList<TableInfoForClient> tableList = new ArrayList<TableInfoForClient>();
-		tableList.addAll(allTables.getTableList());
-		return tableList;
+		return allTables.getTableList();
 	}
 
 	@Override
