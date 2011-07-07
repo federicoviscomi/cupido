@@ -22,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.AccessException;
-import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -202,8 +201,9 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				// Notify player left at the table
 				TableInterface ti = (TableInterface) hSession.getAttribute(TI);
 				try {
-					if (ti != null)
+					if (ti != null){
 						ti.leaveTable((String) hSession.getAttribute(USERNAME));
+					}
 				} catch (RemoteException e) {
 					System.out
 							.println("Servlet: in SessionClosedListener catched RemoteException ->");
@@ -213,19 +213,8 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				} catch (GameInterruptedException e) {
 					// Nothing to do.
 				}
-				try {
-					Object sni = hSession.getAttribute(SNI);
-					if (sni != null) {
-						UnicastRemoteObject.unexportObject(
-								(ServletNotificationsInterface) sni, true);
-						hSession.removeAttribute(SNI);
-					}
-				} catch (NoSuchObjectException e) {
-					System.out
-							.println("Servlet: on leavetable() catched NoSuchObjectException while unexporting obj ->"
-									+ e.getMessage());
-					e.printStackTrace();
-				}
+				hSession.removeAttribute(TI);
+				hSession.removeAttribute(SNI);
 			}
 		});
 		System.out.println("Servlet inited");
@@ -297,6 +286,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 				PlayerReplaced x = new PlayerReplaced();
 				x.name = botName;
 				x.position = position;
+				System.out.println("Servlet: on notifyPlayerReplaced() sending  PlayerReplaced");
 				cometSession.enqueue(x);
 			}
 
@@ -899,16 +889,6 @@ public class CupidoServlet extends RemoteServiceServlet implements
 			throw new NoSuchTableException();
 		}
 		httpSession.removeAttribute(TI);
-		try {
-			UnicastRemoteObject.unexportObject(
-					(ServletNotificationsInterface) httpSession
-							.getAttribute(SNI), true);
-		} catch (NoSuchObjectException e) {
-			System.out
-					.println("Servlet: on leavetable() catched NoSuchObjectException while unexporting obj ->"
-							+ e.getMessage());
-			//e.printStackTrace();
-		}
 		httpSession.removeAttribute(SNI);
 	}
 
