@@ -17,6 +17,7 @@ cupidoCommon/
 
 cupido/
 serve per il deploy della servlet
+if this directory is not present don't worry, just run ./build.sh
 
 localTableManager.config
 è un file di configurazione usato dal progetto cupidoBackendImpl
