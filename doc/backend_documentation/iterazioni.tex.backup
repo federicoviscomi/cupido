@@ -97,10 +97,17 @@
     \item
       gestisce i punteggi dei giocatori.
   \end{itemize}
-  Per il multithreading e la mutua esclusione dell'stm valgono le stesse considerazioni fatte per il gtm ma ci sono alcune considerazione da aggiungere:
+  Per il multithreading e la mutua esclusione dell'stm valgono le stesse considerazioni fatte per il gtm. Inoltre
 
-\section{Bot}
-  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha. L'stm tratta i bot come se fossero delle servlet
+\section{Local Bot}
+  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte, le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha. L'stm tratta i bot quasi esattamente come se fossero delle servlet. Come si vede dalla figura 1 un bot ha un proprio flusso di esecuzione nella componente LocalBotConsumer
+
+come sono implementati i tavoli (a livello di thread come sono gestiti ecc); 
+come GTM conosce il carico di lavoro degli LTM; 
+come sceglie LTM giusto ogni volta;
+e poi come si fà il deploy di tutto
+
+
 
 \section{Command line player}
   In questa iterazione e' stato implementato un interprete di comandi testuale per un utente di Cupido. L'interprete fornisce una ampia gamma di comandi: creare un tavolo, ottenere la lista di tutti i tavoli, unirsi ad una partita, vedere una partita, giocare una carta qualsiasi o una carta specifica, passare delle carte qualsiasi o delle carte specifiche. I comandi possono essere presi da console o da un file di input. Usando un file di input si puo' far giocare una partita a degli utenti in modo completamente automatico.

@@ -32,7 +32,7 @@
 	\begin{center}
 	  interfaccia ltm, numero di tavoli gestiti, numero di tavoli gestibili
 	\end{center}
-	Tale lista viene mantenuta ordinata con workload crescente. Questa struttura dati minimizza il tempo di esecuzione dell'operazione piu' frequente e cioe' la scelta di un ltm.  Sia n il numero di ltm allora le complessita' in tempo al caso pessimo delle operazioni dello swarm sono:
+	Tale lista viene mantenuta ordinata con workload crescente. Questa struttura dati minimizza il tempo di esecuzione dell'operazione piu' frequente cioe' la scelta di un ltm.  Sia n il numero di ltm allora le complessita' in tempo al caso pessimo delle operazioni dello swarm sono:
 	\begin{description}
 	  \item[aggiunta]: 
 	    O(log(n)) in particolare si tratta di una ricerca binaria.
@@ -72,7 +72,7 @@
   Per quanto riguarda il multithreading e la mutua eclusione valgono le stesse cose dette per il gtm.
 
 \section{Gtm and ltm console UI}
-  In questa iterazione sono state implementati due interpreti di comandi da console minimali per gtm ed ltm. I comandi forniti permettono di vedere lo stato interno del gtm e degli ltm. Quindi questi interpreti hanno una valenza per lo piu' in fase di debug e test. Potrebbero essere usati anche in un deploy reale per operazioni di manutenzione ma si e' scelto di non farlo perche' non serve: in particolare non ci sono requisiti che vietano di riavviare il gtm o gli ltm in fase di esecuzione.
+  In questa iterazione sono stati implementati due interpreti di comandi da console minimali per gtm ed ltm. I comandi forniti permettono di vedere lo stato interno del gtm e degli ltm. Quindi questi interpreti hanno una valenza per lo piu' in fase di debug e test. Potrebbero essere usati anche in un deploy reale per operazioni di manutenzione ma si e' scelto di non farlo perche' non serve: in particolare non ci sono requisiti che vietano di riavviare il gtm o gli ltm in fase di esecuzione.
 
 \section{Global chat}
   In questa iterazione e' stata implementata la chat globale lato backend. La chat globale e' un buffer di dimensione fissa di messaggi. Gli utenti di Cupido possono solo scrivere messaggi o reperire un certo numero di ultimi messaggi. Quindi i client fanno polling della chat globale e non ricevono notifiche quando un client invia un messaggio nella chat globale. Questo perche' si prevede la possibilita' di avere un numero elevato di utenti e quindi non conviene che la chat globale memorizzi un interfaccia di notifica per ognuno di essi e che invii notifiche a questa interfaccia ogni volta che arriva un nuovo messaggio nella chat globale.
@@ -97,10 +97,25 @@
     \item
       gestisce i punteggi dei giocatori.
   \end{itemize}
-  Per il multithreading e la mutua esclusione dell'stm valgono le stesse considerazioni fatte per il gtm ma ci sono alcune considerazione da aggiungere:
+  Per il multithreading e la mutua esclusione dell'stm valgono le stesse considerazioni fatte per il gtm. Inoltre
 
 \section{Local Bot}
-  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha. L'stm tratta i bot quasi esattamente come se fossero delle servlet. Come si vede dalla figura 1 i 
+  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte, le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha. L'stm tratta i bot quasi come se fossero delle servlet. Come si vede dalla figura 1 la  componente LocalBotConsumer ha un proprio flusso di esecuzione. 
+
 
 \section{Command line player}
-  In questa iterazione e' stato implementato un interprete di comandi testuale per un utente di Cupido. L'interprete fornisce una ampia gamma di comandi: creare un tavolo, ottenere la lista di tutti i tavoli, unirsi ad una partita, vedere una partita, giocare una carta qualsiasi o una carta specifica, passare delle carte qualsiasi o delle carte specifiche. I comandi possono essere presi da console o da un file di input. Usando un file di input si puo' far giocare una partita a degli utenti in modo completamente automatico.
+  In questa iterazione e' stato implementato un interprete di comandi testuale per un utente di Cupido. L'interprete fornisce una ampia gamma di comandi: creare un tavolo, ottenere la lista di tutti i tavoli, unirsi ad una partita, vedere una partita e giocare una partita. Per una descrizione dei comandi si veda la documentazione della classe
+  \begin{verbatim}
+    PlayerConsoleUI
+  \end{verbatim}
+  I comandi possono essere presi da console o da un file di input. Usando un file di input si puo' far giocare una partita a degli utenti in modo completamente automatico.
+
+\section{Test}
+  Sono stati eseguiti i seguenti cinque test automatici sul backend
+  \begin{itemize}
+    \item 
+      Un giocatore da solo con 
+  \end{itemize}
+
+
+
