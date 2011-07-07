@@ -120,11 +120,10 @@
     \item
       gestisce i punteggi dei giocatori.
   \end{itemize}
-  Per il multithreading e la mutua esclusione dell'stm valgono le stesse considerazioni fatte per il gtm. Inoltre
+  
 
 \section{Local Bot}
-  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte, le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha. L'stm tratta i bot quasi come se fossero delle servlet. Come si vede dalla figura 1 la  componente LocalBotConsumer ha un proprio flusso di esecuzione.  
-
+  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte, le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha.
 
 \section{Command line player}
   In questa iterazione e' stato implementato un interprete di comandi testuale per un utente di Cupido. L'interprete fornisce una ampia gamma di comandi: creare un tavolo, ottenere la lista di tutti i tavoli, unirsi ad una partita, vedere una partita e giocare una partita. Per una descrizione dei comandi si veda la documentazione della classe
@@ -132,6 +131,9 @@
     PlayerConsoleUI
   \end{verbatim}
   I comandi possono essere presi da console o da un file di input. Usando un file di input si puo' far giocare una partita a degli utenti in modo completamente automatico.
+
+\section{Ristrutturazione della comunicazione e della mutua esclusione}
+
 
 \section{Test del solo backend}
   La cartella cupiboBackendImpl/test contiene i file per i test automatici del backend. Sono stati eseguiti i seguenti cinque test automatici sul backend:
