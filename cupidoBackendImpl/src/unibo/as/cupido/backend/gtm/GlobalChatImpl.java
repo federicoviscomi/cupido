@@ -80,7 +80,7 @@ public class GlobalChatImpl implements GlobalChatInterface {
 		registry = LocateRegistry.getRegistry();
 
 		registry.bind(GlobalChatInterface.GLOBAL_CHAT_RMI_NAME,
-				UnicastRemoteObject.exportObject(new GlobalChatImpl()));
+				UnicastRemoteObject.exportObject(this));
 
 		shutdownHook = new ShutdownHook(this);
 		Runtime.getRuntime().addShutdownHook(shutdownHook);

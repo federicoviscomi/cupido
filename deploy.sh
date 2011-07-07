@@ -33,6 +33,7 @@ PIDS="$!"
 sleep 1
 
 java -classpath "$CLASSPATH" unibo.as.cupido.backend.gtm.GlobalTableManager &
+java -classpath "$CLASSPATH" unibo.as.cupido.backend.gtm.GlobalChatImpl &
 
 PIDS="$PIDS $!"
 
