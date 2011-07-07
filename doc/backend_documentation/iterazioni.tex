@@ -29,9 +29,9 @@
 	      Scelta di un ltm con workload minimo.
 	\end{itemize}
 	Si e' deciso di usare un ArrayList di record:
-	\begin{center}
+	\begin{verbatim}
 	  interfaccia ltm, numero di tavoli gestiti, numero di tavoli gestibili
-	\end{center}
+	\end{verbatim}
 	Tale lista viene mantenuta ordinata con workload crescente. Questa struttura dati minimizza il tempo di esecuzione dell'operazione piu' frequente cioe' la scelta di un ltm.  Sia n il numero di ltm allora le complessita' in tempo al caso pessimo delle operazioni dello swarm sono:
 	\begin{description}
 	  \item[aggiunta]: 
@@ -50,7 +50,26 @@
 	\begin{verbatim}
 	  TableDescriptor
 	\end{verbatim}
-	Il gtm deve memorizzare associazioni tra descrittori di tavolo e informazioni del tavolo, inoltre deve avere a disposizione le operazioni di: aggiunta, ricerca e rimozione usando come chiave un descrittore di tavolo. Si e' scelto di memorizzare le informazioni dei tavoli in una tabella hash. L'hash e' calcolato sui campi del descrittore del tavolo. In particolare il descrittore del tavolo contiene: una stringa che identifica un ltm, un intero che identifica il tavolo all'interno dell'ltm. In questo modo le operazioni richiedono tempo costante.
+	Il gtm deve memorizzare associazioni tra descrittori di tavolo e informazioni del tavolo, inoltre deve avere a disposizione le operazioni di:
+	\begin{itemize}
+	  \item 
+	    Aggiunta usando come chiave un descrittore di tavolo.
+	  \item
+	    Ricerca usando come chiave un descrittore di tavolo.
+	  \item
+	    Rimozione usando come chiave un descrittore di tavolo.
+	  \item
+	    Reperire una parte dei tavoli.
+	\end{itemize}
+	Si e' scelto di memorizzare le informazioni dei tavoli in una tabella hash. L'hash e' calcolato sui campi del descrittore del tavolo. In particolare il descrittore del tavolo contiene: una stringa che identifica un ltm, un intero che identifica il tavolo all'interno dell'ltm. In questo modo le prime tre operazioni richiedono tempo costante. La quarta operazione restituisce una quantita' di tavoli non superiore a
+	\begin{verbatim}
+	  GlobalTableManagerInterface.MAX_TABLE_LIST_SIZE
+	\end{verbatim}
+	I tavoli da restituire vengono copiati in una istanza di
+	\begin{verbatim}
+	  ArrayList<TableInfoForClient>
+	\end{verbatim}
+	e vengono scelti in modo casuale. In questo modo la dimensione dei dati inviati al client e' costante. Al caso pessimo la complessita' in tempo di questa operazione e' lineare nel numero di tavoli perche' per scegliere una parte dei valori di una HashMap in modo uniformemente distribuito bisogna eventualmente iterare su tutti essi. Si e' scelto di non fornire una operazione per reperire tutti i tavoli perche' il numero dei tavoli potrebbe essere troppo grande e quindi anche il traffico di rete conseguente. Un'altra strategia presa in considerazione e' quella di un iteratore remoto ma e' stata scartata perche' genera troppe chiamate remote e perche' la lista dei tavoli puo' cambiare tra due chiamate.
     \end{description}
   Gtm e' usato attraverso RMI quindi il multithreading e' gestito in automatico dalla JVM. La mutua eclusione sul gtm e' gestita semplicemente usando metodi \begin{verbatim}
     synchronized
@@ -71,17 +90,21 @@
   Ltm mantiene in una tabella hash gli stm indicizzati da un intero che identifica l'stm in modo univoco nell'ltm. In questo modo le operazioni dell'ltm hanno complessita' in tempo costante.
   Per quanto riguarda il multithreading e la mutua eclusione valgono le stesse cose dette per il gtm.
 
-\section{Gtm and ltm console UI}
+\section{Gtm ed ltm console UI}
   In questa iterazione sono stati implementati due interpreti di comandi da console minimali per gtm ed ltm. I comandi forniti permettono di vedere lo stato interno del gtm e degli ltm. Quindi questi interpreti hanno una valenza per lo piu' in fase di debug e test. Potrebbero essere usati anche in un deploy reale per operazioni di manutenzione ma si e' scelto di non farlo perche' non serve: in particolare non ci sono requisiti che vietano di riavviare il gtm o gli ltm in fase di esecuzione.
 
 \section{Global chat}
-  In questa iterazione e' stata implementata la chat globale lato backend. La chat globale e' un buffer di dimensione fissa di messaggi. Gli utenti di Cupido possono solo scrivere messaggi o reperire un certo numero di ultimi messaggi. Quindi i client fanno polling della chat globale e non ricevono notifiche quando un client invia un messaggio nella chat globale. Questo perche' si prevede la possibilita' di avere un numero elevato di utenti e quindi non conviene che la chat globale memorizzi un interfaccia di notifica per ognuno di essi e che invii notifiche a questa interfaccia ogni volta che arriva un nuovo messaggio nella chat globale.
+  In questa iterazione e' stata implementata la chat globale lato backend. La chat globale e' un buffer di messaggi di dimensione 
+  \begin{verbatim}
+    GlobalChatInterface.MESSAGE_NUMBER
+  \end{verbatim}
+  Gli utenti di Cupido possono solo scrivere messaggi o reperire un certo numero di ultimi messaggi. Quindi i client fanno polling della chat globale e non ricevono notifiche quando un client invia un messaggio nella chat globale. Questo perche' si prevede la possibilita' di avere un numero elevato di utenti e quindi non conviene che la chat globale memorizzi un interfaccia di notifica per ognuno di essi e che invii notifiche a questa interfaccia ogni volta che arriva un nuovo messaggio nella chat globale.
 
 \section{Database Manager}
   In questa iterazione e' stata implementata la classe DatabaseManager che fornisce le operazioni descritte in SRS.
 
 
-\section{Single table manager and game logic}
+\section{Single table manager e logica del gioco}
   \begin{center}
     \includegraphics{backend_composit_structure.png}  
     % backend_composit_structure.png: 719x864 pixel, 96dpi, 19.02x22.86 cm, bb=0 0 539 648
@@ -100,7 +123,11 @@
   Per il multithreading e la mutua esclusione dell'stm valgono le stesse considerazioni fatte per il gtm. Inoltre
 
 \section{Local Bot}
-  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte, le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha. L'stm tratta i bot quasi come se fossero delle servlet. Come si vede dalla figura 1 la  componente LocalBotConsumer ha un proprio flusso di esecuzione. 
+  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte, le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha. L'stm tratta i bot quasi come se fossero delle servlet. Come si vede dalla figura 1 la componente
+  \begin{verbatim}
+    LocalBotConsumer
+  \end{verbatim} 
+  ha un proprio flusso di esecuzione. Questa 
 
 
 \section{Command line player}
@@ -110,12 +137,49 @@
   \end{verbatim}
   I comandi possono essere presi da console o da un file di input. Usando un file di input si puo' far giocare una partita a degli utenti in modo completamente automatico.
 
-\section{Test}
-  Sono stati eseguiti i seguenti cinque test automatici sul backend
+\section{Test del solo backend}
+  La cartella cupiboBackendImpl/test contiene i file per i test automatici del backend. Sono stati eseguiti i seguenti cinque test automatici sul backend:
   \begin{itemize}
     \item 
-      Un giocatore da solo con 
+      Un giocatore crea un tavolo, aggiunge tre bot e gioca. Questo test si esegue con il comando
+      \begin{verbatim}
+	./cupidoBackendImpl/test/test1
+      \end{verbatim}
+      il quale esegue un giocatore a riga di comando che legge i comandi dal file 
+      \begin{verbatim}
+	./cupidoBackendImpl/test/createTableAndAddThreeBot
+      \end{verbatim}
+    \item
+      Un giocatore crae un tavolo e aggiungie due bot, in seguito un altro giocatore si unisce alla partita. Questo test si esegue con il comando
+      \begin{verbatim}
+	./cupidoBackendImpl/test/test2
+      \end{verbatim}
+      il quale esegue due giocatori a riga di comando che leggono i comandi dai file:
+      \begin{verbatim}
+	./cupidoBackendImpl/test/createTableAndAddTwoBot, ./cupidoBackendImpl/test/joinATable
+      \end{verbatim}
+    \item
+      Un giocatore crea un tavolo, aggiunge tre bot e gioca, nel frattempo un visitatore guarda la partita. Questo test si esegue con il comando
+      \begin{verbatim}
+	./cupidoBackendImpl/test/test3
+      \end{verbatim}
+      il quale esegue un giocatore come nel primo test e in piu' esegue un visitatore da riga di comando che legge i comandi dal file
+      \begin{verbatim}
+	./cupidoBackendImpl/test/view
+      \end{verbatim}
+    \item
+      Un giocatore crea un tavolo, aggiunge tre bot, gioca per un po e poi abbanona la partita. Questo test si esegue con il comando
+      \begin{verbatim}
+	./cupidoBackendImpl/test/test4
+      \end{verbatim}
+      il quale esegue un visitatore ed un giocatore da riga di comandi che legge i comandi dal file 
+      \begin{verbatim}
+	./cupidoBackendImpl/test/createTableAndAddThreeBotLeave
+      \end{verbatim}
+    \item
+      Un giocatore crea un tavolo e aggiunge due bot, nel frattempo un altro giocatore si unisce alla partita e in seguito i due giocatori giocano. Dopo qualche turno il giocatore non creatore lascia la partita e viene rimpiazzato da un bot. Questo test si esegue con il comando
+      \begin{verbatim}
+	./cupidoBackendImpl/test/test5
+      \end{verbatim}
   \end{itemize}
-
-
-
+  Tutti i test sono andati a buon fine.
