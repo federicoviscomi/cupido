@@ -456,12 +456,11 @@ public class PlayerConsoleUI {
 
 		if (remoteBot != null) {
 			remoteBot.actionQueue.killConsumer();
-			try {
-				UnicastRemoteObject.unexportObject(
-						servletNotificationsInterface, true);
-			} catch (NoSuchObjectException e) {
+			//try {
+				//UnicastRemoteObject.unexportObject(servletNotificationsInterface, true);
+			//} catch (NoSuchObjectException e) {
 				//
-			}
+			//}
 			try {
 				remoteBot.singleTableManager.leaveTable(playerName);
 			} catch (Exception e) {
@@ -469,12 +468,11 @@ public class PlayerConsoleUI {
 			}
 		} else if (remoteViewer != null) {
 			remoteBot.actionQueue.killConsumer();
-			try {
-				UnicastRemoteObject.unexportObject(
-						servletNotificationsInterface, true);
-			} catch (NoSuchObjectException e) {
+			//try {
+				//UnicastRemoteObject.unexportObject(servletNotificationsInterface, true);
+			//} catch (NoSuchObjectException e) {
 				//
-			}
+			//}
 			try {
 				remoteViewer.singleTableManager.leaveTable(playerName);
 			} catch (Exception e) {

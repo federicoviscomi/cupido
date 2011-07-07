@@ -463,11 +463,17 @@ public class PlayersManager {
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		if (matchPoints == null || playersTotalPoint == null)
 			throw new IllegalArgumentException();
-		for (final PlayerInfo player : players) {
-			final int[] matchPointsClone = matchPoints.clone();
-			final int[] playersTotalPointClone = playersTotalPoint.clone();
-			if (player == null)
+		for (int i = 0; i < 4; i++) {
+			final PlayerInfo player = players[i];
+			final int[] matchPointsClone = new int[4];
+			final int[] playersTotalPointClone = new int[4];
+			for (int j = 0; j < 4; j++) {
+				matchPointsClone[j] = matchPoints[(i + j + 4) % 4];
+				playersTotalPointClone[j] = playersTotalPoint[(i + j + 4) % 4];
+			}
+			if (player == null) {
 				throw new IllegalStateException();
+			}
 			controller.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {
@@ -899,9 +905,14 @@ public class PlayersManager {
 	 */
 	public int[] updateScore(int[] matchPoints) {
 		int min = matchPoints[0];
+		int zeroCount = 0;
 		for (int i = 1; i < 4; i++) {
-			if (matchPoints[i] < min)
+			if (matchPoints[i] < min) {
 				min = matchPoints[i];
+			}
+			if (matchPoints[i] == 0) {
+				zeroCount++;
+			}
 		}
 		int[] newScore = new int[4];
 		for (int i = 0; i < 4; i++) {
@@ -909,10 +920,18 @@ public class PlayersManager {
 				throw new IllegalStateException("missing player " + i);
 			}
 			if (!players[i].isBot) {
-				if (matchPoints[i] == min) {
-					players[i].score += 4;
+				if (zeroCount == 3) {
+					if (matchPoints[i] == 0) {
+						players[i].score -= 1;
+					} else {
+						players[i].score += 4;
+					}
 				} else {
-					players[i].score -= 1;
+					if (matchPoints[i] == min) {
+						players[i].score += 4;
+					} else {
+						players[i].score -= 1;
+					}
 				}
 				newScore[i] = players[i].score;
 				try {

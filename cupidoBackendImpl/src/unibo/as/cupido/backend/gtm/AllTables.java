@@ -17,13 +17,19 @@
 
 package unibo.as.cupido.backend.gtm;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
 import unibo.as.cupido.common.exception.EmptyTableException;
 import unibo.as.cupido.common.exception.FullTableException;
 import unibo.as.cupido.common.exception.NoSuchTableException;
+import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
 import unibo.as.cupido.common.structures.TableDescriptor;
 import unibo.as.cupido.common.structures.TableInfoForClient;
@@ -39,6 +45,8 @@ public class AllTables {
 	private final Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
 	/** stores association between ltm names and ltm interfaces */
 	private final Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
+
+	private final Random random = new Random(System.currentTimeMillis());
 
 	/**
 	 * Adds a table.
@@ -134,12 +142,27 @@ public class AllTables {
 	}
 
 	/**
-	 * Returns all tables infos.
+	 * Returns a chunck of all tables infos. The chunck is chosen at random.
 	 * 
-	 * @return all tables infos in a serializable object.
+	 * @return a chunck of all tables infos in a serializable object.
 	 */
 	public Collection<TableInfoForClient> getTableList() {
-		return tifc.values();
+		ArrayList<TableInfoForClient> tableList = new ArrayList<TableInfoForClient>(
+				GlobalTableManagerInterface.MAX_TABLE_LIST_SIZE);
+		Iterator<TableInfoForClient> iterator = tifc.values().iterator();
+		if (tifc.size() > GlobalTableManagerInterface.MAX_TABLE_LIST_SIZE) {
+			int jump = random.nextInt(tifc.size()
+					- GlobalTableManagerInterface.MAX_TABLE_LIST_SIZE);
+			for (int i = 0; i < jump; i++) {
+				iterator.next();
+			}
+		}
+		tifc.entrySet();
+		for (int i = 0; iterator.hasNext()
+				&& i < GlobalTableManagerInterface.MAX_TABLE_LIST_SIZE; i++) {
+			tableList.add(iterator.next());
+		}
+		return tableList;
 	}
 
 }

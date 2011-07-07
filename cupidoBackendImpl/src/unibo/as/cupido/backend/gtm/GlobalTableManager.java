@@ -121,8 +121,6 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 
 		registry.bind(GlobalTableManagerInterface.GTM_RMI_NAME,
 				UnicastRemoteObject.exportObject(this));
-		registry.bind(GlobalChatInterface.GLOBAL_CHAT_RMI_NAME,
-				UnicastRemoteObject.exportObject(new GlobalChatImpl()));
 
 		shutdownHook = new ShutdownHook(this);
 		Runtime.getRuntime().addShutdownHook(shutdownHook);
@@ -174,9 +172,7 @@ public class GlobalTableManager implements GlobalTableManagerInterface {
 	@Override
 	public synchronized Collection<TableInfoForClient> getTableList()
 			throws RemoteException {
-		ArrayList<TableInfoForClient> tableList = new ArrayList<TableInfoForClient>();
-		tableList.addAll(allTables.getTableList());
-		return tableList;
+		return allTables.getTableList();
 	}
 
 	@Override

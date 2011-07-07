@@ -43,6 +43,8 @@ public interface GlobalTableManagerInterface extends Remote {
 	/** delay of milliseconds that takes between each polling */
 	public static final long POLLING_DELAY = (long) 1e5;
 
+	public static final int MAX_TABLE_LIST_SIZE = 30;
+
 	/**
 	 * This method is used by the Servlet to create a new Table
 	 * 
@@ -61,9 +63,9 @@ public interface GlobalTableManagerInterface extends Remote {
 			AllLTMBusyException;
 
 	/**
-	 * Return a list of all tables managed by this GTM.
+	 * Return a chunck of tables managed by this GTM.
 	 * 
-	 * @return a list of all tables managed by this GTM.
+	 * @return a chunck of tables managed by this GTM.
 	 * @throws RemoteException
 	 */
 	public Collection<TableInfoForClient> getTableList() throws RemoteException;
