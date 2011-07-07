@@ -463,11 +463,17 @@ public class PlayersManager {
 	public void notifyGameEnded(int[] matchPoints, int[] playersTotalPoint) {
 		if (matchPoints == null || playersTotalPoint == null)
 			throw new IllegalArgumentException();
-		for (final PlayerInfo player : players) {
-			final int[] matchPointsClone = matchPoints.clone();
-			final int[] playersTotalPointClone = playersTotalPoint.clone();
-			if (player == null)
+		for (int i = 0; i < 4; i++) {
+			final PlayerInfo player = players[i];
+			final int[] matchPointsClone = new int[4];
+			final int[] playersTotalPointClone = new int[4];
+			for (int j = 0; j < 4; j++) {
+				matchPointsClone[j] = matchPoints[(i + j + 4) % 4];
+				playersTotalPointClone[j] = playersTotalPoint[(i + j + 4) % 4];
+			}
+			if (player == null) {
 				throw new IllegalStateException();
+			}
 			controller.enqueue(new RemoteAction() {
 				@Override
 				public void onExecute() throws RemoteException {

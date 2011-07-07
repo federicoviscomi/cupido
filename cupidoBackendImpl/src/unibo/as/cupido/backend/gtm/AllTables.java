@@ -19,9 +19,11 @@ package unibo.as.cupido.backend.gtm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 import unibo.as.cupido.common.exception.EmptyTableException;
@@ -142,7 +144,7 @@ public class AllTables {
 	/**
 	 * Returns a chunck of all tables infos. The chunck is chosen at random.
 	 * 
-	 * @return  a chunck of all tables infos in a serializable object.
+	 * @return a chunck of all tables infos in a serializable object.
 	 */
 	public Collection<TableInfoForClient> getTableList() {
 		ArrayList<TableInfoForClient> tableList = new ArrayList<TableInfoForClient>(
@@ -162,4 +164,5 @@ public class AllTables {
 		}
 		return tableList;
 	}
+
 }
