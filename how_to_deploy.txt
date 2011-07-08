@@ -58,6 +58,34 @@ install MySQL 5.5 then execute
 This should be executed exactly one time on the machine which host
 the database.
 
+If the various components are deployed to different hosts, MySQL will deny
+access to those hosts.
+To allow such access, open the mysql command line with:
+
+mysql -u root -p
+
+And type commands similar to this one:
+
+GRANT ALL ON cupido.* TO root@'192.168.1.17' IDENTIFIED BY 'cupido';
+
+The command grants access to the DB to the host with IP 192.168.1.17.
+You should execute this command repeatedly, with the various IPs *and*
+hostnames of the hosts where cupido is deployed (including the host
+that contains the DB).
+At the end, type "exit" and press Enter.
+
+---------------------------------------------------------------------
+TROUBLESHOOTING
+
+The /etc/hosts files of the various hosts must *not* contain lines
+like the following:
+
+127.0.0.2       tablet.site tablet
+
+Those lines must be replaced with the correct IP, like this:
+
+192.168.1.17       tablet.site tablet
+
 ---------------------------------------------------------------------
 DOWNLOAD
 you can find apache-tomcat 6.0.32 here:
