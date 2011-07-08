@@ -130,10 +130,10 @@ public class LTMSwarm {
 
 		@Override
 		public int compareTo(Triple o) {
-			return (o.tableCount / o.maximumTable)
-					- (this.tableCount / this.maximumTable);
+			return (this.tableCount / this.maximumTable)
+					- (o.tableCount / o.maximumTable);
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
 			return this.ltmi.equals(((Triple) obj).ltmi);
@@ -150,7 +150,7 @@ public class LTMSwarm {
 		}
 	}
 
-	/** a sequence of <tt>Triple</tt> kept sorted low workload first */
+	/** a sequence of <tt>Triple</tt> kept sorted high workload first */
 	private final ArrayList<Triple> swarm;
 	/** thread that polls ltms */
 	private final LTMPollingThread ltmPollingThread;
@@ -184,14 +184,19 @@ public class LTMSwarm {
 				throw new IllegalArgumentException(
 						"duplicate local table manager");
 			}
-			// works with compareTo
-			int index = Collections.binarySearch(swarm, triple);
-			if (index < 0) {
-				swarm.add(-index - 1, triple);
-			} else {
-				swarm.add(index, triple);
-			}
+			
+			addTriple(triple);
 		}
+	}
+
+	private void addTriple(Triple triple) {
+		// works with compareTo
+		int index = Collections.binarySearch(swarm, triple);
+		if (index < 0) {
+			swarm.add(-index - 1, triple);
+		} else {
+			swarm.add(index, triple);
+		}		
 	}
 
 	/**
@@ -205,11 +210,13 @@ public class LTMSwarm {
 			if (swarm.size() == 0)
 				throw new AllLTMBusyException(
 						"There are no LTMs associated with GTM");
-			Triple triple = swarm.get(0);
+			
+			Triple triple = swarm.remove(swarm.size());
 			if (triple.tableCount == triple.maximumTable) {
 				throw new AllLTMBusyException();
 			}
 			triple.tableCount++;
+			addTriple(triple);
 			return triple.ltmi;
 		}
 	}
@@ -223,7 +230,7 @@ public class LTMSwarm {
 	public void decreaseTableCount(LocalTableManagerInterface ltmi)
 			throws NoSuchLTMException, NoSuchLTMException {
 		synchronized (swarm) {
-			// works with equal
+			// works with equals
 			int index = swarm.indexOf(Triple.getDefault(ltmi));
 			if (index < 0)
 				throw new NoSuchLTMException(ltmi.toString());
@@ -250,6 +257,7 @@ public class LTMSwarm {
 	 */
 	public void remove(LocalTableManagerInterface ltmi) {
 		synchronized (swarm) {
+			// works with equals
 			swarm.remove(Triple.getDefault(ltmi));
 		}
 	}
