@@ -190,9 +190,9 @@ public class SingleTableManager implements TableInterface {
 
 		} else if (!gameStatus.equals(GameStatus.INIT)) {
 			int position = playersManager.getPlayerPosition(userName);
-			playersManager.replacePlayer(userName, position, this);
+			playersManager.replacePlayer(botNames[position], position, this);
 
-			notifyPlayerReplaced(userName, position);
+			notifyPlayerReplaced(botNames[position], position);
 
 		} else {
 			playersManager.removePlayer(userName);
@@ -324,17 +324,18 @@ public class SingleTableManager implements TableInterface {
 	}
 
 	/**
-	 * Notify every players and viewers that specified player has been replaced
+	 * Notify every players and viewers that player in specified position has
+	 * been replaced by a bot with specified name
 	 * 
-	 * @param playerName
-	 *            name of player who has been replaced
+	 * @param botName
+	 *            name of bot who replaces the player
 	 * @param position
 	 *            position of player who has been replaced
 	 */
-	private void notifyPlayerReplaced(String playerName, int position) {
+	private void notifyPlayerReplaced(String botName, int position) {
 		try {
-			playersManager.notifyPlayerReplaced(playerName, position);
-			viewers.notifyPlayerReplaced(playerName, position);
+			playersManager.notifyPlayerReplaced(botName, position);
+			viewers.notifyPlayerReplaced(botName, position);
 		} catch (NoSuchPlayerException e) {
 			e.printStackTrace();
 		}

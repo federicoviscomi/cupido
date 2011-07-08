@@ -1,34 +1,18 @@
-LAST UPDATE 7 Luglio 23:34 by Lorenzo
+LAST UPDATE 8 Luglio 23:34 by Federico
 
 Bug noti:
 - Problemi con PlayerReplaced
 
 TODO:  
-- rendere GlobalChat delpoyabile a parte
-- Scegliere come delpoyare davanti al prof e testarlo in anticipo
 - javadoc 
 - parte del documento master (controllare TODO all'interno del documento): 
   - come siamo arrivati alla nostra arch ed al nostro design
   - parlare anche delle architetture scartate e delle motivazioni. DA FARE!! Fatto solo parzialmente.
   - parlare del testing effettuato, in particolare come abbiamo svolto(?) le ultime due parti 
     del processo di sviluppo; dire quali test abbiamo scelto, come si realizzano e come abbiamo 
-    trattato gli errori trovati. Il file testcases per capirci. Parzialmente fatto ma da controllare ed eventualmente ampliare.
-- log del backend che è quasi finito.
+    trattato gli errori trovati. Il file testcases per capirci. Parzialmente fatto ma da controllare 
+    ed eventualmente ampliare.
 - ricontrollare il master_document perché non sono sicuro di come lo ho scritto (by Lorenzo)
-- Ripulire il codice da eventuali println di debug, commenti ignobili ed insulti alle variabili.
-
-Cose che forse faremo:
-- deployment e testing vero su più macchine.
-Per questo ultimo punto sarebbe bene scoprire come rossi vuole che glielo mostraimo.
-A lezione disse di approntare due pc, opprue di usare il lab. Noi come lo presenteremo?
-- le password sono in chiaro. Possiamo criptarle o meno.
-
-
-Cose che non faremo:
-* Add a timer in the GUI (and maybe also in the backend) to prevent an user
-  from waiting endlessly instead of dealing a card.
-* Add to the local (and maybe also the global) chat some notifications to
-  let others know when a user joins the chat or leaves it.
 
 Cose già fatte e pronte da essere consegnate:
 - istruzioni di deployment
@@ -39,5 +23,4 @@ Cose già fatte e pronte da essere consegnate:
 - Servlet_documentation: ovvero la parte di lorenzo
 - i diagrammi sono fatti completi ed utilizzati nei vari file
 - Requirement Testing
-- log del processo di sviluppo, cioè ognuno di noi spiega come ha sviluppato 
-  le sue parti nelle sue iterazioni. servlet e client ok.
+- log del processo di sviluppo di ognuno

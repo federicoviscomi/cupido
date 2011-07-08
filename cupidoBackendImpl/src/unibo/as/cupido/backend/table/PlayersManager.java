@@ -49,7 +49,7 @@ public class PlayersManager {
 	private static class PlayerInfo {
 
 		/** this player name */
-		final String name;
+		String name;
 
 		/**
 		 * player global score. Not score! This field is meaningful if and only
@@ -844,8 +844,8 @@ public class PlayersManager {
 	 * Replace specified player. This is accomplished by removing specified
 	 * player and then activating his replacement bot.
 	 * 
-	 * @param playerName
-	 *            name of player to be replaced
+	 * @param botName
+	 *            name of bot who replaces the player.
 	 * @param position
 	 *            position of player to be replaced
 	 * @param tableInterface
@@ -853,14 +853,15 @@ public class PlayersManager {
 	 * @throws NoSuchPlayerException
 	 *             if there is no player named <tt>playerName</tt>
 	 */
-	public void replacePlayer(String playerName, int position,
+	public void replacePlayer(String botName, int position,
 			final TableInterface tableInterface) throws NoSuchPlayerException {
-		if (playerName == null || tableInterface == null || position < 1
+		if (botName == null || tableInterface == null || position < 1
 				|| position > 3)
 			throw new IllegalArgumentException();
 		if (players[position].isBot)
 			throw new IllegalStateException("attemp to replace a bot!");
 
+		players[position].name = botName;
 		players[position].isBot = true;
 		players[position].replaced = true;
 		players[position].playerNotificationInterface = players[position].inactiveReplacementBotSNI;
