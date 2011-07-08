@@ -114,9 +114,9 @@ public class LTMSwarm {
 		/** the LTM interface of this triple */
 		public LocalTableManagerInterface ltmi;
 		/** the maximum number of tables that <tt>ltmi</tt> can handle */
-		public int maximumTable;
+		public double maximumTable;
 		/** the number of tables that <tt>ltmi</tt> is currently handling */
-		public int tableCount;
+		public double tableCount;
 
 		/**
 		 * Create a new triple with specified LTM interfaces, current table
@@ -138,8 +138,7 @@ public class LTMSwarm {
 
 		@Override
 		public int compareTo(Triple o) {
-			return (this.tableCount / this.maximumTable)
-					- (o.tableCount / o.maximumTable);
+			return (int) (((o.tableCount / o.maximumTable)-(this.tableCount / this.maximumTable)) * 1e5);
 		}
 
 		@Override
@@ -159,7 +158,7 @@ public class LTMSwarm {
 	}
 
 	// just for test
-	public static final class LTM implements LocalTableManagerInterface {
+	private static final class LTM implements LocalTableManagerInterface {
 		public final String name;
 
 		public LTM(String name) {
@@ -218,6 +217,12 @@ public class LTMSwarm {
 			System.out.println(ltmSwarm.swarm.toString());
 			ltmSwarm.chooseLTM();
 		}
+		System.out.println(ltmSwarm.swarm.toString());
+		ltmSwarm.decreaseTableCount(mucca);
+		System.out.println(ltmSwarm.swarm.toString());
+		ltmSwarm.decreaseTableCount(mucca);
+		System.out.println(ltmSwarm.swarm.toString());
+		ltmSwarm.decreaseTableCount(mucca);
 		System.out.println(ltmSwarm.swarm.toString());
 		ltmSwarm.decreaseTableCount(mucca);
 		System.out.println(ltmSwarm.swarm.toString());
@@ -305,10 +310,13 @@ public class LTMSwarm {
 		synchronized (swarm) {
 			// works with equals
 			int index = swarm.indexOf(Triple.getDefault(ltmi));
-			if (index < 0)
+			if (index < 0) {
 				throw new NoSuchLTMException(ltmi.toString());
-
+			}
 			Triple triple = swarm.remove(index);
+			if (triple.tableCount == 0) {
+				throw new IllegalArgumentException();
+			}
 			triple.tableCount--;
 			addTriple(triple);
 		}
