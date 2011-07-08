@@ -133,7 +133,40 @@
   I comandi possono essere presi da console o da un file di input. Usando un file di input si puo' far giocare una partita a degli utenti in modo completamente automatico.
 
 \section{Ristrutturazione della comunicazione e della mutua esclusione}
-  
+  In questa iterazione \`e stata re-implementata la comunicazione fra le varie
+  componenti del backend per evitare deadlock.
+
+  In particolare, all'inizio di questa iterazione tutte le notifiche venivano
+  inviate in modo sincrono tramite RMI, e all'arrivo di una notifica, essa
+  veniva gestita direttamente nel metodo chiamato attraverso RMI. Questo
+  significa che, ad esempio, quando una servlet chiamava con RMI un metodo
+  del tavolo, esso inviava le notifiche relative ed aspettava che fossero
+  gestite prima di restituire il controllo alla servlet.
+
+  Questa implementazione dava vari problemi: le servlet non potevano chiamare
+  metodi del tavolo durante la gestione di una notifica (perch\'e i metodi
+  del tavolo sono synchronized e si sarebbe creato un deadlock).
+  Inoltre, quando una servlet chiamava un metodo del tavolo, il tavolo non
+  poteva notificare la stessa servlet, perch\'e questo avrebbe causato
+  problemi di concorrenza all'interno della servlet.
+
+  Per risolvere questi problemi, \`e stata aggiunta una ActionQueue ai tavoli
+  e ai bot, per gestire rispettivamente le notifiche in uscita e in ingresso.
+
+  ActionQueue \`e una classe creata durante questa iterazione. Questa classe
+  supporta l'accodamento di azioni e le esegue in un secondo momento, in un
+  thread dedicato.
+
+  Ogni tavolo ora usa una ActionQueue per le notifiche in uscita:
+  al posto di inviare le notifiche alle servlet (o ai bot) direttamente, esse
+  vengono accodate nella ActionQueue ed eseguite dopo aver restituito il
+  controllo alla servlet (o al bot).
+
+  I bot usano anch'essi una ActionQueue, ma per le notifiche in entrata:
+  in questo modo, quando l'ActionQueue del tavolo invia le notifiche, non
+  deve aspettare che esse vengano gestite dai bot, cosa che potrebbe
+  comportare delle chiamate al tavolo da parte dei bot (ad esempio, quando
+  il bot deve giocare una carta).
 
 \section{Test del solo backend}
   La cartella cupiboBackendImpl/test contiene i file per i test automatici del backend. Sono stati eseguiti i seguenti cinque test automatici sul backend:
