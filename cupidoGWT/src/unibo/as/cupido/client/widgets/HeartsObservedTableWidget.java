@@ -216,7 +216,7 @@ public class HeartsObservedTableWidget extends AbsolutePanel {
 							return;
 						}
 						screenManager.displayMainMenuScreen(username);
-						Window.alert("L'creator ha lasciato il tavolo, e quindi la partita \350 stata annullata.");
+						Window.alert("Il creatore del tavolo \350 uscito dalla partita, quindi la partita \350 stata interrotta.");
 					}
 
 					@Override
