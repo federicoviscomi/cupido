@@ -25,6 +25,8 @@
 	      Aggiunta con chiave una interfaccia ltm.
 	   \item 
 	      Rimozione con chiave una interfaccia ltm.
+	   \item 
+	      Ricerca con chiave una interfaccia ltm.
 	   \item 	
 	      Scelta di un ltm con workload minimo.
 	\end{itemize}
@@ -59,17 +61,17 @@
 	  \item
 	    Rimozione usando come chiave un descrittore di tavolo.
 	  \item
-	    Reperire una lista di una parte dei tavoli.
+	    Reperire una parte dei tavoli.
 	\end{itemize}
-	Si e' scelto di memorizzare le informazioni dei tavoli in una tabella hash. L'hash e' calcolato sui campi del descrittore del tavolo. In particolare il descrittore del tavolo contiene: una stringa che identifica un ltm, un intero che identifica il tavolo all'interno dell'ltm. In questo modo le prime tre operazioni richiedono tempo costante. Se e' scelto di fornire un operazione per reperire una parte dei tavoli ma non di tutti i tavoli perche' il numero dei tavoli potrebbe essere troppo grande. Veiene restituita una quantita' di tavoli non superiore a
+	Si e' scelto di memorizzare le informazioni dei tavoli in una tabella hash. L'hash e' calcolato sui campi del descrittore del tavolo. In particolare il descrittore del tavolo contiene: una stringa che identifica un ltm, un intero che identifica il tavolo all'interno dell'ltm. In questo modo le prime tre operazioni richiedono tempo costante. La quarta operazione restituisce una quantita' di tavoli non superiore a
 	\begin{verbatim}
 	  GlobalTableManagerInterface.MAX_TABLE_LIST_SIZE
 	\end{verbatim}
-	I tavoli vengono copiati in una istanza di
+	I tavoli da restituire vengono copiati in una istanza di
 	\begin{verbatim}
 	  ArrayList<TableInfoForClient>
 	\end{verbatim}
-	e restituiti. Questa scelta non comporta un degradamento delle prestazioni perche': quando un utente vuole reperire la lista dei tavoli lo fa' con una chiamata di metodo remota quindi la lista dei tavoli viene serializzata ed inviata all'utente. La serializzazione della lista dei tavoli ha complessita' lineare nel numero dei tavoli al caso ottimo. Si sono prese in considerazione altre strategie ad esempio: un utente non puo' ottenere tutta la lista dei tavoli 
+	e vengono scelti in modo casuale. In questo modo la dimensione dei dati inviati al client e' costante. Al caso pessimo la complessita' in tempo di questa operazione e' lineare nel numero di tavoli perche' per scegliere una parte dei valori di una HashMap in modo uniformemente distribuito bisogna eventualmente iterare su tutti essi. Si e' scelto di non fornire una operazione per reperire tutti i tavoli perche' il numero dei tavoli potrebbe essere troppo grande e quindi anche il traffico di rete conseguente. Un'altra strategia presa in considerazione e' quella di un iteratore remoto ma e' stata scartata perche' genera troppe chiamate remote e perche' la lista dei tavoli puo' cambiare tra due chiamate.
     \end{description}
   Gtm e' usato attraverso RMI quindi il multithreading e' gestito in automatico dalla JVM. La mutua eclusione sul gtm e' gestita semplicemente usando metodi \begin{verbatim}
     synchronized
@@ -120,11 +122,10 @@
     \item
       gestisce i punteggi dei giocatori.
   \end{itemize}
-  Per il multithreading e la mutua esclusione dell'stm valgono le stesse considerazioni fatte per il gtm. Inoltre
+  
 
 \section{Local Bot}
-  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte, le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha. L'stm tratta i bot quasi come se fossero delle servlet. Come si vede dalla figura 1 la  componente LocalBotConsumer ha un proprio flusso di esecuzione. 
-
+  In questa iterazione e' stato implementato un bot, cioe' un giocatore automatico. Quando il bot riceve le carte, le ordina dalla piu' alta alla piu' bassa e poi in base al seme. Quando deve passare le carte sceglie le prime tre che ha. Quando deve giocare una carta sceglie la prima carta valida che ha.
 
 \section{Command line player}
   In questa iterazione e' stato implementato un interprete di comandi testuale per un utente di Cupido. L'interprete fornisce una ampia gamma di comandi: creare un tavolo, ottenere la lista di tutti i tavoli, unirsi ad una partita, vedere una partita e giocare una partita. Per una descrizione dei comandi si veda la documentazione della classe
@@ -132,6 +133,9 @@
     PlayerConsoleUI
   \end{verbatim}
   I comandi possono essere presi da console o da un file di input. Usando un file di input si puo' far giocare una partita a degli utenti in modo completamente automatico.
+
+\section{Ristrutturazione della comunicazione e della mutua esclusione}
+  
 
 \section{Test del solo backend}
   La cartella cupiboBackendImpl/test contiene i file per i test automatici del backend. Sono stati eseguiti i seguenti cinque test automatici sul backend:
@@ -178,3 +182,4 @@
 	./cupidoBackendImpl/test/test5
       \end{verbatim}
   \end{itemize}
+  Tutti i test sono andati a buon fine.

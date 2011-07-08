@@ -25,6 +25,8 @@
 	      Aggiunta con chiave una interfaccia ltm.
 	   \item 
 	      Rimozione con chiave una interfaccia ltm.
+	   \item 
+	      Modifica del numero di tavoli gestiti da un ltm.
 	   \item 	
 	      Scelta di un ltm con workload minimo.
 	\end{itemize}
@@ -32,14 +34,16 @@
 	\begin{verbatim}
 	  interfaccia ltm, numero di tavoli gestiti, numero di tavoli gestibili
 	\end{verbatim}
-	Tale lista viene mantenuta ordinata con workload crescente. Questa struttura dati minimizza il tempo di esecuzione dell'operazione piu' frequente cioe' la scelta di un ltm.  Sia n il numero di ltm allora le complessita' in tempo al caso pessimo delle operazioni dello swarm sono:
+	Tale lista viene mantenuta ordinata con workload decrescente. Questa struttura dati minimizza il tempo di esecuzione dell'operazione piu' frequente cioe' la scelta di un ltm.  Sia n il numero di ltm allora le complessita' in tempo al caso pessimo delle operazioni dello swarm sono:
 	\begin{description}
 	  \item[aggiunta]: 
-	    O(log(n)) in particolare si tratta di una ricerca binaria.
+	    O(n) perche' bisogna controllare che non ci siano due interfacce ltm uguali.
 	  \item[rimozione]
 	    O(n) perche' in questo caso non vengono confrontati i workload ma le interfacce.
+	  \item[modifica]
+	    O(n) perche' anche in questo caso non vengono confrontati i workload ma le interfacce.
 	  \item[scelta]
-	    O(1) perche' in questo caso basta scegliere il primo elemento della lista.
+	    O(log(n)) perche': per scegliere un ltm con carico minimo basta prendere l'ultimo elemento della lista pero' dopo bisogna incrementare il suo numero di tavoli gestiti e riordinare la lista.
 	\end{description}
       \item[tables]:
 	Mantenere alcune informazioni riguardo tutti i tavoli in Cupido. Tali informazioni sono tutte e sole quelle necessarie ad un giocatore che vuole unirsi ad una partita o che vuole vedere una partita e sono contenute nella classe 

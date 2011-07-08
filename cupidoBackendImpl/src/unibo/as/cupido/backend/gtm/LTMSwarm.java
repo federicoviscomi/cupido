@@ -24,8 +24,13 @@ import java.util.Iterator;
 
 import unibo.as.cupido.common.exception.AllLTMBusyException;
 import unibo.as.cupido.common.exception.NoSuchLTMException;
+import unibo.as.cupido.common.exception.NoSuchTableException;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 import unibo.as.cupido.common.interfaces.LocalTableManagerInterface;
+import unibo.as.cupido.common.interfaces.ServletNotificationsInterface;
+import unibo.as.cupido.common.interfaces.TableInterface;
+import unibo.as.cupido.common.structures.Pair;
+import unibo.as.cupido.common.structures.TableInfoForClient;
 
 /**
  * Manages a swarm of LTM.
@@ -99,16 +104,19 @@ public class LTMSwarm {
 	 * @see Comparable
 	 */
 	public static class Triple implements Comparable<Triple> {
+		public static Triple defaultTriple = new Triple(null, 0, 0);
+
 		public static Triple getDefault(LocalTableManagerInterface ltmi) {
-			return new Triple(ltmi, 0, 0);
+			defaultTriple.ltmi = ltmi;
+			return defaultTriple;
 		}
 
 		/** the LTM interface of this triple */
 		public LocalTableManagerInterface ltmi;
 		/** the maximum number of tables that <tt>ltmi</tt> can handle */
-		public int maximumTable;
+		public double maximumTable;
 		/** the number of tables that <tt>ltmi</tt> is currently handling */
-		public int tableCount;
+		public double tableCount;
 
 		/**
 		 * Create a new triple with specified LTM interfaces, current table
@@ -130,8 +138,7 @@ public class LTMSwarm {
 
 		@Override
 		public int compareTo(Triple o) {
-			return (this.tableCount / this.maximumTable)
-					- (o.tableCount / o.maximumTable);
+			return (int) (((o.tableCount / o.maximumTable)-(this.tableCount / this.maximumTable)) * 1e5);
 		}
 
 		@Override
@@ -148,6 +155,77 @@ public class LTMSwarm {
 		public String toString() {
 			return "[" + ltmi + ", " + tableCount + ", " + maximumTable + "]";
 		}
+	}
+
+	// just for test
+	private static final class LTM implements LocalTableManagerInterface {
+		public final String name;
+
+		public LTM(String name) {
+			this.name = name;
+
+		}
+
+		@Override
+		public Pair<TableInterface, TableInfoForClient> createTable(
+				String owner, ServletNotificationsInterface snf)
+				throws RemoteException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public TableInterface getTable(int tableId) throws RemoteException,
+				NoSuchTableException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void notifyGTMShutDown() throws RemoteException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void isAlive() throws RemoteException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyTableDestruction(int tableId) throws RemoteException,
+				NoSuchTableException {
+			// TODO Auto-generated method stub
+
+		}
+
+		public String toString() {
+			return String.format("%5.5s", name);
+		}
+	}
+
+	public static void main(String args[]) throws AllLTMBusyException,
+			NoSuchLTMException {
+		// just for test
+		LTMSwarm ltmSwarm = new LTMSwarm();
+		LocalTableManagerInterface mucca = new LTM("mucca");
+		ltmSwarm.addLTM(mucca, 100);
+		ltmSwarm.addLTM(new LTM("gatto"), 100);
+		ltmSwarm.addLTM(new LTM("cane"), 100);
+		for (int i = 0; i < 10; i++) {
+			System.out.println(ltmSwarm.swarm.toString());
+			ltmSwarm.chooseLTM();
+		}
+		System.out.println(ltmSwarm.swarm.toString());
+		ltmSwarm.decreaseTableCount(mucca);
+		System.out.println(ltmSwarm.swarm.toString());
+		ltmSwarm.decreaseTableCount(mucca);
+		System.out.println(ltmSwarm.swarm.toString());
+		ltmSwarm.decreaseTableCount(mucca);
+		System.out.println(ltmSwarm.swarm.toString());
+		ltmSwarm.decreaseTableCount(mucca);
+		System.out.println(ltmSwarm.swarm.toString());
 	}
 
 	/** a sequence of <tt>Triple</tt> kept sorted high workload first */
@@ -232,9 +310,15 @@ public class LTMSwarm {
 		synchronized (swarm) {
 			// works with equals
 			int index = swarm.indexOf(Triple.getDefault(ltmi));
-			if (index < 0)
+			if (index < 0) {
 				throw new NoSuchLTMException(ltmi.toString());
-			swarm.get(index).tableCount--;
+			}
+			Triple triple = swarm.remove(index);
+			if (triple.tableCount == 0) {
+				throw new IllegalArgumentException();
+			}
+			triple.tableCount--;
+			addTriple(triple);
 		}
 	}
 
@@ -250,7 +334,7 @@ public class LTMSwarm {
 	}
 
 	/**
-	 * Remote the LTM identified by <tt>ltmi</tt>
+	 * Remove the LTM identified by <tt>ltmi</tt>
 	 * 
 	 * @param ltmi
 	 *            the LTM to remove
