@@ -906,7 +906,7 @@ public class PlayersManager {
 	public int[] updateScore(int[] matchPoints) {
 		int min = matchPoints[0];
 		int zeroCount = 0;
-		for (int i = 1; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			if (matchPoints[i] < min) {
 				min = matchPoints[i];
 			}
