@@ -123,7 +123,7 @@ public class WaitingFirstLeadState implements ViewerState {
 
 		cardsGameWidget.revealCoveredCard(playerPosition, card);
 		cardsGameWidget.playCard(playerPosition, card);
-		cardsGameWidget.runPendingAnimations(2000,
+		cardsGameWidget.runPendingAnimations(500,
 				new AnimationCompletedListener() {
 					@Override
 					public void onComplete() {
