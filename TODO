@@ -1,14 +1,11 @@
 LAST UPDATE 7 Luglio 23:34 by Lorenzo
 
 Bug noti:
-1) come riprodurre: (Lorenzo)
-- deployato tutto sul mio pc con un vero server apache-tomcat 6.0.32. Ho creato due partite con 2 pc nella mia Lan locale.
-un terzo giocatore è entrato da un pc remoto, si è loggato (la chat funzionava) ha creato un tavolo, ma dopo aver aggiunto
-i tre bot non gli apparso nient'altro (in 10 secondi).; non gli sono apparse le carte. Nessun errore rilevato, nessuna eccezione.
-_non ancora riprodotto_
+- Problemi con PlayerReplaced
 
 TODO:  
 - rendere GlobalChat delpoyabile a parte
+- Scegliere come delpoyare davanti al prof e testarlo in anticipo
 - javadoc 
 - parte del documento master (controllare TODO all'interno del documento): 
   - come siamo arrivati alla nostra arch ed al nostro design
