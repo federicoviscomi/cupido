@@ -347,22 +347,34 @@ public class RegistrationScreen extends VerticalPanel implements Screen {
 						try {
 							throw caught;
 						} catch (DuplicateUserNameException e) {
+							// Remove the focus, so if the user dismisses the
+							// alert with Enter, it won't be fired again.
+							usernameBox.setFocus(false);
+							passwordBox.setFocus(false);
+							passwordConfirmBox.setFocus(false);
+							okButton.setFocus(false);
+
 							Window.alert("L'username che hai scelto non \350 pi\371 disponibile, scegline un altro.");
 							usernameBox.setEnabled(true);
 							passwordBox.setEnabled(true);
 							passwordConfirmBox.setEnabled(true);
 							okButton.setEnabled(false);
 							abortButton.setEnabled(true);
-							usernameBox.setFocus(true);
 							checkUsernameAvailabilityLabel.setText("");
 						} catch (IllegalArgumentException e) {
-							Window.alert("Password deve essere lunga da 3 a 8 caratteri. Username da 1 a 16 caratteri.");
+							// Remove the focus, so if the user dismisses the
+							// alert with Enter, it won't be fired again.
+							usernameBox.setFocus(false);
+							passwordBox.setFocus(false);
+							passwordConfirmBox.setFocus(false);
+							okButton.setFocus(false);
+
+							Window.alert("Il nome utente o la password inseriti non sono validi.\nLa password deve essere lunga da 3 a 8 caratteri.\nL'username da 1 a 16 caratteri.");
 							usernameBox.setEnabled(true);
 							passwordBox.setEnabled(true);
 							passwordConfirmBox.setEnabled(true);
 							okButton.setEnabled(false);
 							abortButton.setEnabled(true);
-							usernameBox.setFocus(true);
 							checkUsernameAvailabilityLabel.setText("");
 						} catch (Throwable e) {
 							screenManager.displayGeneralErrorScreen(e);
