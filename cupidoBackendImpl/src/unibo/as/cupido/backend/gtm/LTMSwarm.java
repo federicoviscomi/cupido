@@ -184,7 +184,7 @@ public class LTMSwarm {
 				throw new IllegalArgumentException(
 						"duplicate local table manager");
 			}
-			
+
 			addTriple(triple);
 		}
 	}
@@ -196,7 +196,7 @@ public class LTMSwarm {
 			swarm.add(-index - 1, triple);
 		} else {
 			swarm.add(index, triple);
-		}		
+		}
 	}
 
 	/**
@@ -210,8 +210,8 @@ public class LTMSwarm {
 			if (swarm.size() == 0)
 				throw new AllLTMBusyException(
 						"There are no LTMs associated with GTM");
-			
-			Triple triple = swarm.remove(swarm.size());
+
+			Triple triple = swarm.remove(swarm.size() - 1);
 			if (triple.tableCount == triple.maximumTable) {
 				throw new AllLTMBusyException();
 			}
