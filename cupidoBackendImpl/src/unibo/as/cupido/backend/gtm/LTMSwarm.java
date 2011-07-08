@@ -138,7 +138,7 @@ public class LTMSwarm {
 
 		@Override
 		public int compareTo(Triple o) {
-			return (int) (((o.tableCount / o.maximumTable)-(this.tableCount / this.maximumTable)) * 1e5);
+			return (int) (((o.tableCount / o.maximumTable) - (this.tableCount / this.maximumTable)) * 1e5);
 		}
 
 		@Override
