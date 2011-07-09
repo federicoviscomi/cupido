@@ -318,6 +318,9 @@ public class HeartsTableWidget extends AbsolutePanel {
 		remove(beforeGameWidget);
 		beforeGameWidget = null;
 
+		for (int i = 0; i < 3; i++)
+			scores[i + 1] = initialTableStatus.playerScores[i];
+		
 		stateManager = new PlayerStateManagerImpl(tableSize, screenManager,
 				initialTableStatus, scores, myCards, username, cupidoService);
 
