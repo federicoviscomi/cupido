@@ -202,8 +202,11 @@ public class ChatWidget extends AbsolutePanel {
 		for (ChatMessage entry : list)
 			message += constructMessageHtml(entry.userName, entry.message);
 
-		messageList.setHTML(message);
-		scrollPanel.scrollToBottom();
+		// Don't scroll if no changes occurred.
+		if (!messageList.getHTML().equals(message)) {
+			messageList.setHTML(message);
+			scrollPanel.scrollToBottom();
+		}
 	}
 
 	/**
