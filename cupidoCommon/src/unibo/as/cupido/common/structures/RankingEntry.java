@@ -20,21 +20,31 @@ package unibo.as.cupido.common.structures;
 import java.io.Serializable;
 
 /**
- * Used to convey ranking information for a user.
+ * Used to convey ranking information about a user.
  */
 public class RankingEntry implements Serializable {
 	private static final long serialVersionUID = 1L;
-	/**name of user*/
+	/** name of user */
 	public String username;
-	/**rank of user*/
+	/** rank of user */
 	public int rank;
-	/**score of user*/
+	/** score of user */
 	public int score;
 
+	/**
+	 * GWT needs this constructor.
+	 */
 	public RankingEntry() {
 		//
 	}
 
+	/**
+	 * Creates a new <code>RankingEntry</code> with specified values
+	 * 
+	 * @param username
+	 * @param rank
+	 * @param score
+	 */
 	public RankingEntry(String username, int rank, int score) {
 		this.username = username;
 		this.rank = rank;

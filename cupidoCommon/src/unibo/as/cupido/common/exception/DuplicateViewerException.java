@@ -27,10 +27,24 @@ public class DuplicateViewerException extends Exception implements Serializable 
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>EmptyTableException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public DuplicateViewerException(String viewerName) {
 		super(viewerName);
 	}
 	
+	/**
+	 * Constructs a <code>EmptyTableException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public DuplicateViewerException() {
 		//
 	}

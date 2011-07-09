@@ -24,10 +24,20 @@ import java.io.Serializable;
  */
 public class FullTableException extends Exception implements Serializable {
 
+	/**
+	 * Constructs a <code>FullTableException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public FullTableException(String message) {
 		super(message);
 	}
 
+	/**
+	 * Constructs a <code>FullTableException</code> with no detail message.
+	 */
 	public FullTableException() {
 		//
 	}

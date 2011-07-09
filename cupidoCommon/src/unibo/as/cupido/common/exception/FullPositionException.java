@@ -25,10 +25,20 @@ import java.io.Serializable;
  */
 public class FullPositionException extends Exception implements Serializable {
 
+	/**
+	 * Constructs a <code>FullPositionException</code> with the specified
+	 * position.
+	 * 
+	 * @param positon
+	 *            position which is full
+	 */
 	public FullPositionException(int position) {
 		super(Integer.toString(position));
 	}
 
+	/**
+	 * Constructs a <code>FullPositionException</code> with no detail message
+	 */
 	public FullPositionException() {
 		//
 	}

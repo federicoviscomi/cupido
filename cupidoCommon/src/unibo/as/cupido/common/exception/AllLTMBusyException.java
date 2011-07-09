@@ -25,10 +25,20 @@ import java.io.Serializable;
  */
 public class AllLTMBusyException extends Exception implements Serializable {
 
+	/**
+	 * Constructs an <code>AllLTMBusyException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public AllLTMBusyException(String string) {
 		super(string);
 	}
 
+	/**
+	 * Constructs an <code>AllLTMBusyException</code> with no detail message.
+	 */
 	public AllLTMBusyException() {
 		//
 	}

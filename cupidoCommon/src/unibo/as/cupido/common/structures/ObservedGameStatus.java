@@ -20,35 +20,51 @@ package unibo.as.cupido.common.structures;
 import java.io.Serializable;
 
 /**
- * 
  * Contains the information that an observer needs when he joins a table
- * 
  */
 public class ObservedGameStatus implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Stores status of every player in the table.
+	 * 
+	 * @see PlayerStatus
+	 */
 	public PlayerStatus[] playerStatus;
 
 	/**
-	 * The index of the first player that dealt a card in the current trick.
-	 * When this is 0, the bottom player led the trick, when it's 1 the trick
-	 * was led by the left player, and so on for other players, in clockwise
-	 * order.
+	 * Position of first player that dealt a card in current trick. When this
+	 * field is zero then the bottom player led the trick, when it is one then
+	 * the trick was led by the left player, and so on for other players, in
+	 * clockwise order.
 	 * 
 	 * If there is currently no trick, this is -1. This can happen in three
-	 * cases: when some players are still missing in the table, when players are
-	 * passing cards, when the players have passed cards but no-one has dealt
-	 * the two of clubs yet.
+	 * cases:
+	 * <ul>
+	 * <li>when some players are still missing in the table</li>
+	 * <li>when players are passing cards</li>
+	 * <li>when players have passed cards but nobody has dealt the two of clubs
+	 * yet</li>
+	 * </ul>
 	 */
 	public int firstDealerInTrick;
 
+	/**
+	 * Create an <code>ObservedGameStatus</code> with empty player status.
+	 */
 	public ObservedGameStatus() {
 		playerStatus = new PlayerStatus[4];
 	}
 
-	public ObservedGameStatus(PlayerStatus[] ogs, int firstDealerInTrick) {
-		this.playerStatus = ogs;
+	/**
+	 * Create an <code>ObservedGameStatus</code> with specified values.
+	 * 
+	 * @param playerStatus
+	 * @param firstDealerInTrick
+	 */
+	public ObservedGameStatus(PlayerStatus[] playerStatus, int firstDealerInTrick) {
+		this.playerStatus = playerStatus;
 		this.firstDealerInTrick = firstDealerInTrick;
 	}
 

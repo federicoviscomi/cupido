@@ -26,10 +26,20 @@ public class EmptyTableException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>EmptyTableException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public EmptyTableException(String string) {
 		super(string);
 	}
 
+	/**
+	 * Constructs a <code>EmptyTableException</code> with no detail message.
+	 */
 	public EmptyTableException() {
 		//
 	}

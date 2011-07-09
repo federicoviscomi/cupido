@@ -29,6 +29,9 @@ public class GameEndedException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>GameEndedException</code> with no detail message.
+	 */
 	public GameEndedException() {
 		//
 	}

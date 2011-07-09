@@ -21,37 +21,54 @@ import java.io.Serializable;
 
 /**
  * InitialTableStatus is the status of the game before the cards are dealt (may
- * have less than 4 player)
+ * have less than 4 player). When a player joins the table, he gets an instance
+ * of this class.
  */
 public class InitialTableStatus implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * opponents.length is 3. opponents[i] is the name of the opponent i
-	 * positions next to you in clockwise order. A <code>null</code> value
-	 * indicates that opponent does not exist yet
+	 * Stores opponents' name. <code>opponents.length</code> must be three.
+	 * <code>opponents[i]</code> is the name of the opponent i positions next to
+	 * you in clockwise order. A <code>null</code> value indicates that opponent
+	 * does not exist yet
 	 */
 	public String[] opponents;
 
 	/**
-	 * playerScores.length is 3. playerScores[i] is the score of the opponent i
-	 * positions next to you in clockwise order. If the opponent doesn't exist
-	 * yet, the value is unspecified.
+	 * Stores opponents' score. <code>playerScores.length</code> must be 3.
+	 * <code>playerScores[i]</code> is the score of the opponent i positions
+	 * next to you in clockwise order. If the opponent does not exist yet, the
+	 * value is unspecified.
 	 */
 	public int[] playerScores;
 
 	/**
-	 * whoIsBot.length is 3. whoIsBot[i] is the score of the opponent i
-	 * positions next to you in clockwise order. If the opponent doesn't exist
-	 * yet, the value is unspecified.
+	 * Stores opponents' bot flag. <code>whoIsBot.length</code> is 3.
+	 * <code>whoIsBot[i]</code> is the score of the opponent i positions next to
+	 * you in clockwise order. If the opponent does not exist yet, the value is
+	 * unspecified.
 	 */
 	public boolean[] whoIsBot;
 
+	/**
+	 * GWT requires this constructor.
+	 */
 	public InitialTableStatus() {
 		//
 	}
 
+	/**
+	 * Create an initial table status with specified values.
+	 * 
+	 * @param opponents
+	 *            names of opponents
+	 * @param playerScores
+	 *            scores of opponents
+	 * @param whoIsBot
+	 *            bot flag of opponents
+	 */
 	public InitialTableStatus(String[] opponents, int[] playerScores,
 			boolean[] whoIsBot) {
 		this.opponents = opponents;

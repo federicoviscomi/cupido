@@ -23,10 +23,21 @@ import java.io.Serializable;
  * Used to signal that a given table cannot be found in the GTM or in the LTM
  */
 public class NoSuchTableException extends Exception implements Serializable {
+
+	/**
+	 * Constructs a <code>NoSuchTableException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public NoSuchTableException(String message) {
 		super(message);
 	}
 
+	/**
+	 * Constructs a <code>NoSuchTableException</code> with no detail message.
+	 */
 	public NoSuchTableException() {
 		//
 	}

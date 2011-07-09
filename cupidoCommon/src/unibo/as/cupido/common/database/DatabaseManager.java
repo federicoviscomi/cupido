@@ -30,14 +30,27 @@ import unibo.as.cupido.common.interfaces.DatabaseInterface;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
+/**
+ * Manage the database for Cupido
+ */
 public class DatabaseManager implements DatabaseInterface {
 
+	/** mysql user name for cupido database */
 	private final String userDB = "root";
+	/** mysql password for cupido database */
 	private final String passDB = "cupido";
-
+	/** used to execute SQL statement */
 	private Statement statement;
+	/** connection to cupido database */
 	private Connection connection;
 
+	/**
+	 * Create a database manager for cupido database
+	 * 
+	 * @param host
+	 *            adders of mysql server
+	 * @throws SQLException
+	 */
 	public DatabaseManager(String host) throws SQLException {
 		try {
 			Class.forName("org.gjt.mm.mysql.Driver");
@@ -72,9 +85,17 @@ public class DatabaseManager implements DatabaseInterface {
 	}
 
 	@Override
-	public void close() throws SQLException {
-		statement.close();
-		connection.close();
+	public void close() {
+		try {
+			statement.close();
+		} catch (SQLException e) {
+			//
+		}
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			//
+		}
 	}
 
 	@Override

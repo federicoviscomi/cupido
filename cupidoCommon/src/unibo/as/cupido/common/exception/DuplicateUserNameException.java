@@ -32,10 +32,21 @@ public class DuplicateUserNameException extends Exception implements
 		Serializable {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>DuplicateUserNameException</code> with the specified
+	 * detail message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public DuplicateUserNameException(String userName) {
 		super(userName);
 	}
-	
+
+	/**
+	 * Constructs a <code>DuplicateUserNameException</code> with no detail
+	 * message.
+	 */
 	public DuplicateUserNameException() {
 		//
 	}

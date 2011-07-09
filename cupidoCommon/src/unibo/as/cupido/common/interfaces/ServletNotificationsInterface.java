@@ -27,11 +27,10 @@ import unibo.as.cupido.common.structures.ChatMessage;
 public interface ServletNotificationsInterface extends Remote {
 
 	/**
-	 * End of the game is notified to the servlet. Every players and every
-	 * viewers in the table get this notification. The game could end normally
-	 * or prematurely. The last happens when player creator leaves the table
-	 * before normal end of the game, in this case and only in this case all
-	 * arguments are <code>null</code>.
+	 * Every players and every viewers in the table get this notification. The
+	 * game could end normally or prematurely. The last happens when player
+	 * creator leaves the table before normal end of the game, in this case and
+	 * only in this case all arguments are <code>null</code>.
 	 * 
 	 * @param matchPoints
 	 *            score the player has taken during this hand
@@ -42,9 +41,9 @@ public interface ServletNotificationsInterface extends Remote {
 			throws RemoteException;
 
 	/**
-	 * Start of the game is notified to the servlet. When the game in a table
-	 * can start a player in the table gets exactly one of this notification and
-	 * from this notification he knows what his cards are.
+	 * When the game in a table can start every player in the table gets exactly
+	 * one of this notification and from this notification he knows what his
+	 * cards are.
 	 * 
 	 * @param cards
 	 *            the starting hand of the player
@@ -125,7 +124,8 @@ public interface ServletNotificationsInterface extends Remote {
 
 	/**
 	 * If a player left the table when game is already started, it's replaced
-	 * with a bot called {@link botName}.
+	 * with a bot called {@link botName} and every other player get this
+	 * notification.
 	 * 
 	 * @param position
 	 *            position of the player who has left
@@ -137,8 +137,8 @@ public interface ServletNotificationsInterface extends Remote {
 			throws RemoteException;
 
 	/**
-	 * When a player leaves the table BEFORE the game starts, every other
-	 * players and viewer get notified.
+	 * When a player leaves the table before the game starts, every other
+	 * players and viewer get this notification.
 	 * 
 	 * @param playerName
 	 *            the name of the player who left the table
