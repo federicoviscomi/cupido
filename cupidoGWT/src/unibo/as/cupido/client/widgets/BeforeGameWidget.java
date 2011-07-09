@@ -449,7 +449,7 @@ public class BeforeGameWidget extends AbsolutePanel {
 	private void addPlayer(String username, int points, int position) {
 
 		tableStatus.opponents[position] = username;
-		tableStatus.playerScores[position + 1] = points;
+		tableStatus.playerScores[position] = points;
 		tableStatus.whoIsBot[position] = false;
 
 		if (buttons.get(position) != null)
