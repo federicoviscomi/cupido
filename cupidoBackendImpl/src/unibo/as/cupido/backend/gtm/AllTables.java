@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -42,7 +43,7 @@ public class AllTables {
 	/** auto generated serial version uid */
 	private static final long serialVersionUID = 3079835750202226475L;
 	/** stores association between table descriptors and table infos */
-	private final Map<TableDescriptor, TableInfoForClient> tifc = new HashMap<TableDescriptor, TableInfoForClient>();
+	private final Map<TableDescriptor, TableInfoForClient> tifc = new LinkedHashMap<TableDescriptor, TableInfoForClient>();
 	/** stores association between ltm names and ltm interfaces */
 	private final Map<String, LocalTableManagerInterface> ltmMap = new HashMap<String, LocalTableManagerInterface>();
 

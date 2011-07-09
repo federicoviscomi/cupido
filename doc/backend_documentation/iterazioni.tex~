@@ -65,7 +65,11 @@
 	  \item
 	    Reperire una parte dei tavoli.
 	\end{itemize}
-	Si \`e scelto di memorizzare le informazioni dei tavoli in una tabella hash. L'hash \`e calcolato sui campi del descrittore del tavolo. In particolare il descrittore del tavolo contiene: una stringa che identifica un ltm, un intero che identifica il tavolo all'interno dell'ltm. In questo modo le prime tre operazioni richiedono tempo costante. La quarta operazione restituisce una quantit\'a di tavoli non superiore a
+	Si \`e scelto di memorizzare le informazioni dei tavoli in una 
+      	\begin{verbatim}
+	  LinkedHashMap<TableDescriptor, TableInfoForClient>
+	\end{verbatim}
+	L'hash \`e calcolato sui campi del descrittore del tavolo. In particolare il descrittore del tavolo contiene: una stringa che identifica un ltm, un intero che identifica il tavolo all'interno dell'ltm. In questo modo le prime tre operazioni richiedono tempo costante. La quarta operazione restituisce una quantit\'a di tavoli non superiore a
 	\begin{verbatim}
 	  GlobalTableManagerInterface.MAX_TABLE_LIST_SIZE
 	\end{verbatim}
@@ -175,7 +179,7 @@
     \includegraphics[scale=0.5]{backend_composit_structure.png}  
   \end{center}
   \caption{Struttura composita di stm}
-  \label{fig: struttura composita di stm}
+  \label{fig:struttura composita di stm}
 \end{figure}
 
 \section{Test del solo backend}

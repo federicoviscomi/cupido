@@ -65,7 +65,11 @@
 	  \item
 	    Reperire una parte dei tavoli.
 	\end{itemize}
-	Si \`e scelto di memorizzare le informazioni dei tavoli in una tabella hash. L'hash \`e calcolato sui campi del descrittore del tavolo. In particolare il descrittore del tavolo contiene: una stringa che identifica un ltm, un intero che identifica il tavolo all'interno dell'ltm. In questo modo le prime tre operazioni richiedono tempo costante. La quarta operazione restituisce una quantit\'a di tavoli non superiore a
+	Si \`e scelto di memorizzare le informazioni dei tavoli in una 
+      	\begin{verbatim}
+	  LinkedHashMap<TableDescriptor, TableInfoForClient>
+	\end{verbatim}
+	L'hash \`e calcolato sui campi del descrittore del tavolo. In particolare il descrittore del tavolo contiene: una stringa che identifica un ltm, un intero che identifica il tavolo all'interno dell'ltm. In questo modo le prime tre operazioni richiedono tempo costante. La quarta operazione restituisce una quantit\'a di tavoli non superiore a
 	\begin{verbatim}
 	  GlobalTableManagerInterface.MAX_TABLE_LIST_SIZE
 	\end{verbatim}
@@ -73,7 +77,7 @@
 	\begin{verbatim}
 	  ArrayList<TableInfoForClient>
 	\end{verbatim}
-	e vengono scelti in modo casuale. In questo modo la dimensione dei dati inviati al client \`e costante. Al caso pessimo la complessit\'a in tempo di questa operazione \`e lineare nel numero di tavoli perch\'e per scegliere una parte dei valori di una HashMap in modo uniformemente distribuito bisogna eventualmente iterare su tutti essi. Si \`e scelto di non fornire una operazione per reperire tutti i tavoli perch\'e il numero dei tavoli potrebbe essere troppo grande e quindi anche il traffico di rete conseguente. Un'altra strategia presa in considerazione \`e quella di un iteratore remoto ma \`e stata scartata perch\'e genera troppe chiamate remote e perch\'e la lista dei tavoli pu\'o cambiare tra due chiamate.
+	e vengono scelti in modo casuale. In questo modo la dimensione dei dati inviati al client \`e costante. Al caso pessimo la complessit\'a in tempo di questa operazione \`e lineare nel numero di tavoli perch\'e per scegliere una parte dei valori da una tabella hash in modo uniformemente distribuito bisogna eventualmente iterare su tutti essi. Si \`e scelto di non fornire una operazione per reperire tutti i tavoli perch\'e il numero dei tavoli potrebbe essere troppo grande e quindi anche il traffico di rete conseguente. Un'altra strategia presa in considerazione \`e quella di un iteratore remoto ma \`e stata scartata perch\'e genera troppe chiamate remote e perch\'e la lista dei tavoli pu\'o cambiare tra due chiamate.
     \end{description}
   Gtm \`e usato attraverso RMI quindi il multithreading \`e gestito in automatico dalla JVM. La mutua eclusione sul gtm \`e gestita semplicemente usando metodi \begin{verbatim}
     synchronized
