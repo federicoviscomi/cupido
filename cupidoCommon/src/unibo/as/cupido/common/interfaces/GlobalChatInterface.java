@@ -35,7 +35,7 @@ import unibo.as.cupido.common.structures.ChatMessage;
 public interface GlobalChatInterface extends Remote {
 
 	/** number of messages stored */
-	public static int MESSAGE_NUMBER = 10;
+	public static int MESSAGE_NUMBER = 30;
 
 	/** Max number of character in a message */
 	public static final int MAX_CHAT_MESSAGE_LENGTH = 200;
