@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo Removing stubs...
 find . -name '*_Stub.class' -delete
 
@@ -22,5 +24,3 @@ cp -R cupidoGWT/war/ .
 cp -R cupidoCommon/bin/unibo/as/cupido/common/ war/WEB-INF/classes/unibo/as/cupido/
 cp -R cupidoGWT/war/WEB-INF/classes/unibo/as/cupido/backend war/WEB-INF/classes/unibo/as/cupido/
 mv war/ cupido
-
-sleep 1
