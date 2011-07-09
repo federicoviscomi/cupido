@@ -1,0 +1,20 @@
+digraph states {
+  start_node [label="",shape="circle",width=0.2,style="filled",fillcolor="black"];
+  end_node [label="",shape="doublecircle",width=0.2,style="filled",fillcolor="black"];
+  start_node -> CardPassing;
+  CardPassing -> CardPassingWaiting;
+  CardPassingWaiting -> FirstDealer;
+  CardPassingWaiting -> WaitingFirstDeal;
+  FirstDealer -> WaitingDeal;
+  WaitingDeal -> WaitingDeal;
+  WaitingDeal -> EndOfTrick;
+  WaitingDeal -> YourTurn;
+  WaitingFirstDeal -> WaitingDeal;
+  WaitingFirstDeal -> YourTurn;
+  YourTurn -> WaitingDeal;
+  YourTurn -> EndOfTrick;
+  EndOfTrick -> WaitingDeal;
+  EndOfTrick -> YourTurn;
+  EndOfTrick -> GameEnded;
+  GameEnded -> end_node;
+}

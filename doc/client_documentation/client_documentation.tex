@@ -3,6 +3,7 @@
 \usepackage[italian]{babel}
 \usepackage{verbatim}
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 \begin{document}
 
@@ -54,6 +55,16 @@ Per la logica di gioco, \`e stato usato il pattern \emph{State}; per ogni
 stato del gioco \`e stata implementata una classe diversa, per poter gestire
 gli eventi in modi differenti, in base allo stato attuale.
 
+Il diagramma degli stati di gioco \`e in figura \ref{fig:stati di gioco}.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[scale=0.5]{states}
+  \end{center}
+  \caption{Il diagramma degli stati di gioco}
+  \label{fig:stati di gioco}
+\end{figure}
+
 In particolare, alla ricezione di una notifica Comet essa viene inoltrata
 alla classe che gestisce la schermata attuale.
 Molte schermate sono in grado di gestire direttamente questi eventi.
@@ -75,6 +86,7 @@ notifica viene mantenuta dal gestore degli stati, in una coda, e verr\`a
 notificata nuovamente alla prossima transizione di stato, finch\'e non sar\`a
 gestita.
 
+
 \section{Implementazione della logica di gioco e delle schermate rimanenti}
 
 Nel design di massima si \`e cercato di ridurre il carico computazionale
@@ -88,5 +100,6 @@ compresa appunto l'interazione con la servlet.
 
 Si \`e reso possibile anche lo sviluppo delle rimanenti schermate,
 caratterizzate da frequenti comunicazioni con la servlet.
+
 
 \end{document}
