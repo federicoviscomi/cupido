@@ -13,6 +13,14 @@ TODO:
     trattato gli errori trovati. Il file testcases per capirci. Parzialmente fatto ma da controllare 
     ed eventualmente ampliare.
 - ricontrollare il master_document perché non sono sicuro di come lo ho scritto (by Lorenzo)
+- Il file how_to_deploy non spiega come eseguire Tomcat sulla porta 80, e l'SRS dice che dovrebbe essere su questa porta.
+- SRS:
+  + RF1703 dice che ci aspettiamo che gli utenti facciano login in media 3 volte al giorno.
+    RF1704 dice che ci aspettiamo che il numero medio di partite terminate in ogni giorno
+    e` uguale al numero di giocatori. Io cambierei una delle due: direi che per ogni login
+    l'utente fara` in media piu` di 4/3 partite. Questo e` accentuato anche dal fatto che la presenza
+    di bot fa calare ancora di piu` questo valore. Se si modifica RF1704 probabilmente
+    bisogna cambiare anche RF1706. Comunque e` veramente il pelo nell'uovo, non e` molto importante.
 
 Cose già fatte e pronte da essere consegnate:
 - istruzioni di deployment
