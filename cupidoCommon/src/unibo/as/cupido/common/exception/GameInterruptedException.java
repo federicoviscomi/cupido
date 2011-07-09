@@ -29,6 +29,9 @@ public class GameInterruptedException extends Exception implements Serializable 
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>GameInterruptedException</code> with no detail message.
+	 */
 	public GameInterruptedException() {
 		//
 	}

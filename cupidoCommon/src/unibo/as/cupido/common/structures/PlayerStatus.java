@@ -19,6 +19,9 @@ package unibo.as.cupido.common.structures;
 
 import java.io.Serializable;
 
+/**
+ * Contains information about a player needed by a viewer.
+ */
 public class PlayerStatus implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -33,9 +36,15 @@ public class PlayerStatus implements Serializable {
 	public Card playedCard;
 	/** number of cards that this player owns */
 	public int numOfCardsInHand;
-	/** <tt>true</tt> if this player is a bot; <tt>false</tt> otherwise */
+	/**
+	 * bot flag of this player:<tt>true</tt> if this player is a bot;
+	 * <tt>false</tt> otherwise
+	 */
 	public boolean isBot;
 
+	/**
+	 * GWT needs this constructor
+	 */
 	public PlayerStatus() {
 		//
 	}

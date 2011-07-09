@@ -24,11 +24,21 @@ import java.io.Serializable;
  */
 public class NoSuchServerException extends Exception implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
+	/**
+	 * Constructs a <code>NoSuchServerException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public NoSuchServerException(String serverName) {
 		super(serverName);
 	}
-	
+
+	/**
+	 * Constructs a <code>NoSuchServerException</code> with no detail message.
+	 */
 	public NoSuchServerException() {
 		//
 	}

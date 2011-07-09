@@ -27,10 +27,20 @@ public class IllegalMoveException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>IllegalMoveException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public IllegalMoveException() {
 		//
 	}
 
+	/**
+	 * Constructs a <code>IllegalMoveException</code> with no detail message.
+	 */
 	public IllegalMoveException(String message) {
 		super(message);
 	}

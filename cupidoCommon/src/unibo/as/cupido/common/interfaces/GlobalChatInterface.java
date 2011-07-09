@@ -23,14 +23,9 @@ import java.rmi.RemoteException;
 import unibo.as.cupido.common.structures.ChatMessage;
 
 /**
- * This interface is used by the Servlet. The Servlet is not notified when a
- * message is sent to the global chat. Instead the Servlet pools the global chat
- * component.
- * <p>
- * The global chat component is a remote RMI object who is registered in the
+ * The global chat component is a remote RMI object which is registered in the
  * same remote registry of the GTM and is bounded to name
  * <code>GLOBAL_CHAT_RMI_NAME</code>
- * 
  */
 public interface GlobalChatInterface extends Remote {
 
@@ -39,10 +34,9 @@ public interface GlobalChatInterface extends Remote {
 
 	/** Max number of character in a message */
 	public static final int MAX_CHAT_MESSAGE_LENGTH = 200;
-	
+
 	/** rmi name for global chat remote object */
 	public static final String GLOBAL_CHAT_RMI_NAME = "globalChat";
-
 
 	/**
 	 * Return the last MESSAGE_NUMBER messages

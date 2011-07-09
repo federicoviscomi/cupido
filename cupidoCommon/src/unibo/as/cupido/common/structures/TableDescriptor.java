@@ -19,19 +19,35 @@ package unibo.as.cupido.common.structures;
 
 import java.io.Serializable;
 
+/**
+ * An istance of this identifies a table in Cupido.
+ */
 public class TableDescriptor implements Serializable {
 	private static final long serialVersionUID = 5666914154950723508L;
 
+	/** unique identifier of this table in his ltm */
 	public int id;
 
+	/** ltm who manages this table */
 	public String ltmId;
-	
+
+	/**
+	 * GWT needs this constructor.
+	 */
 	public TableDescriptor() {
 		//
 	}
 
-	public TableDescriptor(String server, int id) {
-		this.ltmId = server;
+	/**
+	 * Create a new <code>TableDescriptor</code> with specified arguments
+	 * 
+	 * @param ltmId
+	 *            identifier of ltm who manages this table
+	 * @param id
+	 *            identifier of this table in his ltm
+	 */
+	public TableDescriptor(String ltmId, int id) {
+		this.ltmId = ltmId;
 		this.id = id;
 	}
 

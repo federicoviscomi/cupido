@@ -26,11 +26,21 @@ import java.io.Serializable;
 public class NoSuchUserException extends Exception implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>NoSuchUserException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public NoSuchUserException(String userName) {
 		super(userName);
 	}
 
+	/**
+	 * Constructs a <code>NoSuchUserException</code> with no detail message.
+	 */
 	public NoSuchUserException() {
-	//
+		//
 	}
 }

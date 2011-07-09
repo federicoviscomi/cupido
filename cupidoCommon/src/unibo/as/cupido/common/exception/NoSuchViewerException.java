@@ -22,13 +22,23 @@ package unibo.as.cupido.common.exception;
  */
 public class NoSuchViewerException extends Exception {
 
+	/**
+	 * Constructs a <code>NoSuchViewerException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public NoSuchViewerException(String viewerName) {
 		super(viewerName);
 	}
 
+	/**
+	 * Constructs a <code>NoSuchViewerException</code> with no detail message.
+	 */
 	public NoSuchViewerException() {
 		//
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 }

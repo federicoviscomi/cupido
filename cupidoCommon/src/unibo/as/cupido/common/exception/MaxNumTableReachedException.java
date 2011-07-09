@@ -26,6 +26,10 @@ public class MaxNumTableReachedException extends Exception implements
 		Serializable {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>MaxNumTableReachedException</code> with no detail
+	 * message.
+	 */
 	public MaxNumTableReachedException() {
 		//
 	}

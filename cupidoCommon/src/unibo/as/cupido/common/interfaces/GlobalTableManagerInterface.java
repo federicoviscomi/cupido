@@ -43,6 +43,7 @@ public interface GlobalTableManagerInterface extends Remote {
 	/** delay of milliseconds that takes between each polling */
 	public static final long POLLING_DELAY = (long) 1e5;
 
+	/** number of tables returned by {@link #getTableList()} */
 	public static final int MAX_TABLE_LIST_SIZE = 30;
 
 	/**
@@ -63,7 +64,8 @@ public interface GlobalTableManagerInterface extends Remote {
 			AllLTMBusyException;
 
 	/**
-	 * Return a chunck of tables managed by this GTM.
+	 * Return a chunck of tables managed by this GTM. The chunck contains
+	 * {@link #MAX_TABLE_LIST_SIZE} tables and is chosen at random.
 	 * 
 	 * @return a chunck of tables managed by this GTM.
 	 * @throws RemoteException
@@ -160,6 +162,5 @@ public interface GlobalTableManagerInterface extends Remote {
 	 */
 	public LocalTableManagerInterface getLTMInterface(String ltmId)
 			throws RemoteException, NoSuchLTMException;
-
 
 }

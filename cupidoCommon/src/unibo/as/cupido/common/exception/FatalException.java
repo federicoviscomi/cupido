@@ -27,10 +27,20 @@ public class FatalException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>FatalException</code> with no detail message.
+	 */
 	public FatalException() {
 		//
 	}
 
+	/**
+	 * Constructs a <code>FatalException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public FatalException(String message) {
 		super(message);
 	}

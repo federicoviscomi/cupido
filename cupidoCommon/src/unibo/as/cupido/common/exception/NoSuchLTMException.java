@@ -23,13 +23,25 @@ import java.io.Serializable;
  * Used to signal that specified LTM cannot be found
  */
 public class NoSuchLTMException extends Exception implements Serializable {
+
+	/**
+	 * Constructs a <code>NoSuchLTMException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public NoSuchLTMException(String ltmId) {
 		super(ltmId);
 	}
-	
+
+	/**
+	 * Constructs a <code>NoSuchLTMException</code> with no detail message.
+	 */
 	public NoSuchLTMException() {
 		//
 	}
+
 	private static final long serialVersionUID = 1L;
 
 }

@@ -26,14 +26,31 @@ public class NoSuchPlayerException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>NoSuchPlayerException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public NoSuchPlayerException(String playerName) {
 		super("no such player named: " + playerName);
 	}
 
+	/**
+	 * Constructs a <code>NoSuchPlayerException</code> with the specified
+	 * position.
+	 * 
+	 * @param position
+	 *            empty position
+	 */
 	public NoSuchPlayerException(int position) {
 		super("there is no player in position: " + position);
 	}
 
+	/**
+	 * Constructs a <code>NoSuchPlayerException</code> with no detail message.
+	 */
 	public NoSuchPlayerException() {
 		//
 	}

@@ -35,14 +35,23 @@ public class Card implements Serializable {
 
 	/** suit of this card */
 	public Suit suit;
-	/** value range is [1-13] */
+	/** value of this card, range is [1-13] */
 	public int value;
 
+	/**
+	 * Create a card with specified value and suit
+	 * 
+	 * @param value
+	 * @param suit
+	 */
 	public Card(int value, Suit suit) {
 		this.value = value;
 		this.suit = suit;
 	}
 
+	/**
+	 * GWT requires this constructor.
+	 */
 	public Card() {
 		//
 	}

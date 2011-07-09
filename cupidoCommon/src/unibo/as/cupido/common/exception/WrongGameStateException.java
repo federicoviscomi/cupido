@@ -28,10 +28,20 @@ public class WrongGameStateException extends Exception implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>WrongGameStateException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public WrongGameStateException(String message) {
 		super(message);
 	}
-	
+
+	/**
+	 * Constructs a <code>WrongGameStateException</code> with no detail message.
+	 */
 	public WrongGameStateException() {
 		//
 	}

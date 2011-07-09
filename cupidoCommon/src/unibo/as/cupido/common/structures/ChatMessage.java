@@ -46,11 +46,10 @@ public class ChatMessage implements Serializable {
 	}
 
 	/**
-	 * Create a chat message with <tt>null</tt> values
+	 * GWT requires this constructor.
 	 */
 	public ChatMessage() {
-		this.userName = null;
-		this.message = null;
+		//
 	}
 
 	@Override

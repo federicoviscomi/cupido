@@ -22,7 +22,8 @@ import java.io.Serializable;
 import unibo.as.cupido.common.interfaces.GlobalTableManagerInterface;
 
 /**
- * Contains informations about a table. This is used by
+ * Contains informations about a table returned to a client who want to join or
+ * to view a game. This is used by
  * {@link GlobalTableManagerInterface#getTableList()}
  */
 public class TableInfoForClient implements Serializable {
@@ -34,10 +35,20 @@ public class TableInfoForClient implements Serializable {
 	/** identifier of the table */
 	public TableDescriptor tableDescriptor;
 
+	/**
+	 * GWT needs this constructor.
+	 */
 	public TableInfoForClient() {
 		//
 	}
 
+	/**
+	 * Create a <code>TableInfoForClient</code> with specified values
+	 * 
+	 * @param owner
+	 * @param freePosition
+	 * @param tableDescriptor
+	 */
 	public TableInfoForClient(String owner, int freePosition,
 			TableDescriptor tableDescriptor) {
 		if (owner == null || tableDescriptor == null || freePosition < 0

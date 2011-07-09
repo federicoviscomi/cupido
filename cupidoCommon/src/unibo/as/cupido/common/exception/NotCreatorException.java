@@ -26,10 +26,20 @@ import java.io.Serializable;
 public class NotCreatorException extends Exception implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs a <code>NotCreatorException</code> with the specified detail
+	 * message.
+	 * 
+	 * @param string
+	 *            the detail message.
+	 */
 	public NotCreatorException(String userName) {
 		super(userName);
 	}
 
+	/**
+	 * Constructs a <code>NotCreatorException</code> with no detail message.
+	 */
 	public NotCreatorException() {
 		//
 	}
