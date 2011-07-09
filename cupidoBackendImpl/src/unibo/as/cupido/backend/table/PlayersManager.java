@@ -301,7 +301,8 @@ public class PlayersManager {
 			}
 		}
 
-		LocalBot replacementBot = new LocalBot(playerName,
+		LocalBot replacementBot = new LocalBot(
+				SingleTableManager.botNames[position],
 				this.getInitialTableStatus(position));
 
 		players[position] = new PlayerInfo(playerName, score, sni,
@@ -889,10 +890,11 @@ public class PlayersManager {
 	 */
 	private int toRelativePosition(int absolutePosition1, int absolutePosition2) {
 		int res;
-		if (absolutePosition2 < absolutePosition1)
+		if (absolutePosition2 < absolutePosition1) {
 			res = (absolutePosition1 - absolutePosition2) - 1;
-		else
+		} else {
 			res = (4 - absolutePosition2) + absolutePosition1 - 1;
+		}
 		return res;
 	}
 

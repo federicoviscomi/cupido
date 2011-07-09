@@ -376,7 +376,7 @@ public class SingleTableManager implements TableInterface {
 			throw new WrongGameStateException(
 					GameStatus.PASSING_CARDS.toString());
 		/*
-		 * NOTE: playerName is name of the player who passes cards. Not name of
+		 * NOTE: userName is name of the player who passes cards. Not name of
 		 * the player who receives the cards!
 		 */
 		if (userName == null || cards == null || cards.length != 3)
