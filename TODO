@@ -7,12 +7,6 @@ TODO:
 - Il file how_to_deploy non spiega come eseguire Tomcat sulla porta 80, e l'SRS dice che dovrebbe essere su questa porta.
 - DNS: lo vogliamo fare? Per il deploy su 1 PC non e` necessario, ma i documenti ne parlano.
 - SRS:
-  + RF1703 dice che ci aspettiamo che gli utenti facciano login in media 3 volte al giorno.
-    RF1704 dice che ci aspettiamo che il numero medio di partite terminate in ogni giorno
-    e` uguale al numero di giocatori. Io cambierei una delle due: direi che per ogni login
-    l'utente fara` in media piu` di 4/3 partite. Questo e` accentuato anche dal fatto che la presenza
-    di bot fa calare ancora di piu` questo valore. Se si modifica RF1704 probabilmente
-    bisogna cambiare anche RF1706. Comunque e` veramente il pelo nell'uovo, non e` molto importante.
   + Spostare la lista dei tavoli all'esterno della finestra principale.
 - Documento architettura_e_design.odt (by Marco. Tutte queste cose sono da controllare, non sono necessariamente problemi):
   + "Architecture - Component Diagram" e "Architecture - Class Diagram", forse dovrebbero essere tradotti in italiano.
@@ -26,7 +20,6 @@ TODO:
 
 Cose già fatte e pronte da essere consegnate:
 - istruzioni di deployment
-- SRS
 - processo di sviluppo (integrato nel documento master)
 - architettura e design
 - client_documentation: ovvero la parte di marco
