@@ -1,20 +1,15 @@
-LAST UPDATE 9 Luglio 16:30 by Marco
+LAST UPDATE 9 Luglio 20:52 by Lorenzo
 
 TODO:  
 - parte del documento master (controllare TODO all'interno del documento): 
   + parlare anche delle architetture scartate e delle motivazioni. DA FARE!! Fatto solo parzialmente.
   + Il case testing è fatto ma da ricontrollare ed eventualmente ampliare poiché contiene pochi casi di test.
-- Il file how_to_deploy non spiega come eseguire Tomcat sulla porta 80, e l'SRS dice che dovrebbe essere su questa porta.
-- DNS: lo vogliamo fare? Per il deploy su 1 PC non e` necessario, ma i documenti ne parlano.
+- DNS: lo vogliamo fare? Per il deploy su 1 PC non e` necessario, ma i documenti ne parlano. (Lorenzo: direi che possiamo non farlo, e lasciarlo come
+	una cosa estendibile. Abiamo cmq previsto la possibilità di farlo, credo che a Rossi vada bene così.)
 - SRS:
-  + Interfaccia amministratore è tutta opzionale. Lasciamo così?
-- Documento architettura_e_design.odt (by Marco. Tutte queste cose sono da controllare, non sono necessariamente problemi):
-  + "Architecture - Component Diagram" e "Architecture - Class Diagram", forse dovrebbero essere tradotti in italiano.
-  + Il Class diagram dell'architettura e` parte in italiano e parte in inglese. "Any number of instance" dovrebbe diventare "Any number of instances" se rimane in inglese
-  + "in questo modo non occorrerà imparare l'utilizzo di javascript" e` brutto sia come forma sia come contenuto IMO.
-  + "I componenti Database, GlobalChat e GlobalTableManager potrebbero essere posizionati su nodi diversi della rete, ma noi li disporremo sulla medesima macchina." Attualmente non e` vero. registry, GTM e chat devono essere sullo stesso host per funzionare.
-  + Nel deployment view non c'e` il registry. E` voluto?
-  + I sequence diagram di Create e Join sembrano uguali
+  + Interfaccia amministratore è tutta opzionale. (Lorenzo: si nota che è messa opzionale in un secondo momento. Ma non mi sembra il caso di implementarla ora.
+	Io lascerei così oppure la toglierei proprio dal srs. Fra le due forse è meglio lasciarla. eventualmente diciamo a Rossi che abbiamo
+	l'interfaccia a righe fatta da Fede.)
 - Documento master:
   + "I Test Case sono sviluppati dopo l'implementazione" io direi piuttosto "durante". O no?
 
