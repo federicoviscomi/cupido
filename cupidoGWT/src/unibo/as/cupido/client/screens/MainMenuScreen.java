@@ -277,7 +277,7 @@ public class MainMenuScreen extends AbsolutePanel implements Screen {
 
 								waitingServletResponse = false;
 
-								chatWidget.setLastMessages(messages);
+								chatWidget.setMessages(messages);
 
 								if (!stoppedRefreshing) {
 									if (needRefresh)

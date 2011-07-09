@@ -190,7 +190,7 @@ public class ChatWidget extends AbsolutePanel {
 	 * @param list
 	 *            The list containing the messages to be displayed.
 	 */
-	public void setLastMessages(ChatMessage[] list) {
+	public void setMessages(ChatMessage[] list) {
 		if (frozen) {
 			System.out
 					.println("Client: notice: setLastMessages() was called while frozen, ignoring it.");
