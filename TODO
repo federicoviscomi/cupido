@@ -27,9 +27,7 @@ TODO:
   + "Ogni istanza di Web Server e Game Server sarà eseguita su un server fisico dedicato". Dal diagramma sembra che quelli siano i nomi dei server fisici. Io cambierei tipo in "Ogni istanza di Servlet e LTM [...]".
   + I sequence diagram di Create e Join sembrano uguali
 - Documento master:
-  + "L'analisi ed il design non sono ripetuti in più fasi." Sembra che si ripeta il lavoro. Io metterei "divisi" invece di "ripetuti".
   + "I Test Case sono sviluppati dopo l'implementazione" io direi piuttosto "durante". O no?
-  + 
 
 Cose già fatte e pronte da essere consegnate:
 - istruzioni di deployment
