@@ -1,13 +1,9 @@
 LAST UPDATE 9 Luglio 16:30 by Marco
 
-Bug noti:
-- Problemi con PlayerReplaced
-
 TODO:  
 - parte del documento master (controllare TODO all'interno del documento): 
   + parlare anche delle architetture scartate e delle motivazioni. DA FARE!! Fatto solo parzialmente.
   + Il case testing è fatto ma da ricontrollare ed eventualmente ampliare poiché contiene pochi casi di test.
-- ricontrollare il master_document perché non sono sicuro di come lo ho scritto (by Lorenzo)
 - Il file how_to_deploy non spiega come eseguire Tomcat sulla porta 80, e l'SRS dice che dovrebbe essere su questa porta.
 - DNS: lo vogliamo fare? Per il deploy su 1 PC non e` necessario, ma i documenti ne parlano.
 - SRS:
@@ -24,12 +20,9 @@ TODO:
   + "in questo modo non occorrerà imparare l'utilizzo di javascript" e` brutto sia come forma sia come contenuto IMO.
   + "I componenti Database, GlobalChat e GlobalTableManager potrebbero essere posizionati su nodi diversi della rete, ma noi li disporremo sulla medesima macchina." Attualmente non e` vero. registry, GTM e chat devono essere sullo stesso host per funzionare.
   + Nel deployment view non c'e` il registry. E` voluto?
-  + "Ogni istanza di Web Server e Game Server sarà eseguita su un server fisico dedicato". Dal diagramma sembra che quelli siano i nomi dei server fisici. Io cambierei tipo in "Ogni istanza di Servlet e LTM [...]".
   + I sequence diagram di Create e Join sembrano uguali
 - Documento master:
-  + "L'analisi ed il design non sono ripetuti in più fasi." Sembra che si ripeta il lavoro. Io metterei "divisi" invece di "ripetuti".
   + "I Test Case sono sviluppati dopo l'implementazione" io direi piuttosto "durante". O no?
-  + 
 
 Cose già fatte e pronte da essere consegnate:
 - istruzioni di deployment
