@@ -7,7 +7,6 @@ TODO:
 - Il file how_to_deploy non spiega come eseguire Tomcat sulla porta 80, e l'SRS dice che dovrebbe essere su questa porta.
 - DNS: lo vogliamo fare? Per il deploy su 1 PC non e` necessario, ma i documenti ne parlano.
 - SRS:
-  + Spostare la lista dei tavoli all'esterno della finestra principale.
   + Interfaccia amministratore è tutta opzionale. Lasciamo così?
 - Documento architettura_e_design.odt (by Marco. Tutte queste cose sono da controllare, non sono necessariamente problemi):
   + "Architecture - Component Diagram" e "Architecture - Class Diagram", forse dovrebbero essere tradotti in italiano.
@@ -20,8 +19,8 @@ TODO:
   + "I Test Case sono sviluppati dopo l'implementazione" io direi piuttosto "durante". O no?
 
 Cose già fatte e pronte da essere consegnate:
+- SRS
 - processo di sviluppo (integrato nel documento master)
-- architettura e design
 - client_documentation: ovvero la parte di marco
 - Servlet_documentation: ovvero la parte di lorenzo
 - i diagrammi sono già completi ed utilizzati nei vari file
