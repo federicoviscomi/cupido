@@ -4,14 +4,9 @@ Bug noti:
 - Problemi con PlayerReplaced
 
 TODO:  
-- javadoc 
 - parte del documento master (controllare TODO all'interno del documento): 
-  - come siamo arrivati alla nostra arch ed al nostro design
-  - parlare anche delle architetture scartate e delle motivazioni. DA FARE!! Fatto solo parzialmente.
-  - parlare del testing effettuato, in particolare come abbiamo svolto(?) le ultime due parti 
-    del processo di sviluppo; dire quali test abbiamo scelto, come si realizzano e come abbiamo 
-    trattato gli errori trovati. Il file testcases per capirci. Parzialmente fatto ma da controllare 
-    ed eventualmente ampliare.
+  + parlare anche delle architetture scartate e delle motivazioni. DA FARE!! Fatto solo parzialmente.
+  + Il case testing è fatto ma da ricontrollare ed eventualmente ampliare poiché contiene pochi casi di test.
 - ricontrollare il master_document perché non sono sicuro di come lo ho scritto (by Lorenzo)
 - Il file how_to_deploy non spiega come eseguire Tomcat sulla porta 80, e l'SRS dice che dovrebbe essere su questa porta.
 - SRS:
@@ -21,6 +16,7 @@ TODO:
     l'utente fara` in media piu` di 4/3 partite. Questo e` accentuato anche dal fatto che la presenza
     di bot fa calare ancora di piu` questo valore. Se si modifica RF1704 probabilmente
     bisogna cambiare anche RF1706. Comunque e` veramente il pelo nell'uovo, non e` molto importante.
+  + Spostare la lista dei tavoli all'esterno della finestra principale.
 
 Cose già fatte e pronte da essere consegnate:
 - istruzioni di deployment
@@ -29,6 +25,7 @@ Cose già fatte e pronte da essere consegnate:
 - architettura e design
 - client_documentation: ovvero la parte di marco
 - Servlet_documentation: ovvero la parte di lorenzo
-- i diagrammi sono fatti completi ed utilizzati nei vari file
+- i diagrammi sono già completi ed utilizzati nei vari file
 - Requirement Testing
 - log del processo di sviluppo di ognuno
+- javadoc
