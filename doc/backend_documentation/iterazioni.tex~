@@ -73,7 +73,7 @@
 	\begin{verbatim}
 	  ArrayList<TableInfoForClient>
 	\end{verbatim}
-	e vengono scelti in modo casuale. In questo modo la dimensione dei dati inviati al client \`e costante. Al caso pessimo la complessit\'a in tempo di questa operazione \`e lineare nel numero di tavoli perch\'e per scegliere una parte dei valori di una HashMap in modo uniformemente distribuito bisogna eventualmente iterare su tutti essi. Si \`e scelto di non fornire una operazione per reperire tutti i tavoli perch\'e il numero dei tavoli potrebbe essere troppo grande e quindi anche il traffico di rete conseguente. Un'altra strategia presa in considerazione \`e quella di un iteratore remoto ma \`e stata scartata perch\'e genera troppe chiamate remote e perch\'e la lista dei tavoli puo' cambiare tra due chiamate.
+	e vengono scelti in modo casuale. In questo modo la dimensione dei dati inviati al client \`e costante. Al caso pessimo la complessit\'a in tempo di questa operazione \`e lineare nel numero di tavoli perch\'e per scegliere una parte dei valori di una HashMap in modo uniformemente distribuito bisogna eventualmente iterare su tutti essi. Si \`e scelto di non fornire una operazione per reperire tutti i tavoli perch\'e il numero dei tavoli potrebbe essere troppo grande e quindi anche il traffico di rete conseguente. Un'altra strategia presa in considerazione \`e quella di un iteratore remoto ma \`e stata scartata perch\'e genera troppe chiamate remote e perch\'e la lista dei tavoli pu\'o cambiare tra due chiamate.
     \end{description}
   Gtm \`e usato attraverso RMI quindi il multithreading \`e gestito in automatico dalla JVM. La mutua eclusione sul gtm \`e gestita semplicemente usando metodi \begin{verbatim}
     synchronized
@@ -109,10 +109,6 @@
 
 
 \section{Single table manager e logica del gioco}
-  \begin{center}
-    \includegraphics{backend_composit_structure.png}  
-    % backend_composit_structure.png: 719x864 pixel, 96dpi, 19.02x22.86 cm, bb=0 0 539 648
-  \end{center}
   In questa iterazione \`e stato implementato stm. Stm si occupa di una singola partita. In particolare stm:
   \begin{itemize}
     \item 
@@ -134,7 +130,7 @@
   \begin{verbatim}
     PlayerConsoleUI
   \end{verbatim}
-  I comandi possono essere presi da console o da un file di input. Usando un file di input si puo' far giocare una partita a degli utenti in modo completamente automatico.
+  I comandi possono essere presi da console o da un file di input. Usando un file di input si pu\'o far giocare una partita a degli utenti in modo completamente automatico.
 
 \section{Ristrutturazione della comunicazione e della mutua esclusione}
   In questa iterazione \`e stata re-implementata la comunicazione fra le varie
@@ -171,6 +167,16 @@
   deve aspettare che esse vengano gestite dai bot, cosa che potrebbe
   comportare delle chiamate al tavolo da parte dei bot (ad esempio, quando
   il bot deve giocare una carta).
+  Il diagramma di struttura composita della parte del backend che gesiste una 
+  partita \`e in figura \ref{fig:struttura composita di stm}.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[scale=0.5]{backend_composit_structure.png}  
+  \end{center}
+  \caption{Struttura composita di stm}
+  \label{fig: struttura composita di stm}
+\end{figure}
 
 \section{Test del solo backend}
   La cartella cupiboBackendImpl/test contiene i file per i test automatici del backend. Sono stati eseguiti i seguenti cinque test automatici sul backend:

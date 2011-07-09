@@ -109,10 +109,6 @@
 
 
 \section{Single table manager e logica del gioco}
-  \begin{center}
-    \includegraphics{backend_composit_structure.png}  
-    % backend_composit_structure.png: 719x864 pixel, 96dpi, 19.02x22.86 cm, bb=0 0 539 648
-  \end{center}
   In questa iterazione \`e stato implementato stm. Stm si occupa di una singola partita. In particolare stm:
   \begin{itemize}
     \item 
@@ -171,6 +167,16 @@
   deve aspettare che esse vengano gestite dai bot, cosa che potrebbe
   comportare delle chiamate al tavolo da parte dei bot (ad esempio, quando
   il bot deve giocare una carta).
+  Il diagramma di struttura composita della parte del backend che gesiste una 
+  partita \`e in figura \ref{fig:struttura composita di stm}.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[scale=0.5]{backend_composit_structure.png}  
+  \end{center}
+  \caption{Struttura composita di stm}
+  \label{fig:struttura composita di stm}
+\end{figure}
 
 \section{Test del solo backend}
   La cartella cupiboBackendImpl/test contiene i file per i test automatici del backend. Sono stati eseguiti i seguenti cinque test automatici sul backend:
