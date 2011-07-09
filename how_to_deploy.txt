@@ -7,8 +7,7 @@ just execute:
 	./deploy.sh
 
 then deploy the servlet, and you have done.
-Cupio
-do can be reached at address http://localhost:8080/cupido
+Cupiodo can be reached at address http://127.0.0.1:8080/cupido
 
 ---------------------------------------------------------------------
 HOT TO DEPLOY SERVLET
@@ -20,9 +19,16 @@ then execute
 	sudo ./bin/startup.sh 
 from the directory apache-tomcat-6.0.32/
 
+Cupido is now reachable at http://127.0.0.1:8080/cupido
+
+to deploy cupido on a different port modify file
+	apache-tomcat-6.0.32/conf/server.xml
+find the line
+	 <Connector port="8080" protocol="HTTP/1.1" 
+and modify port number. Then restart apache.
+
 To stop apache-tomcat execute:
 	sudo ./bin/shutdown.sh 
-from the directory apache-tomcat-6.0.32/
 
 ---------------------------------------------------------------------
 HOW TO DEPLOY EVERYTHING
