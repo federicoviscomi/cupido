@@ -65,7 +65,7 @@ public class AboutScreen extends VerticalPanel implements Screen {
 				+ "<p>Questo progetto &egrave; open-source; i sorgenti "
 				+ "sono stati rilasciati sotto la licenza GPLv3+, e "
 				+ "sono disponibili all'indirizzo "
-				+ "<a href=\"http://gitorious.org/cupido\">"
+				+ "<a href=\"http://gitorious.org/cupido\" target=\"_blank\">"
 				+ "http://gitorious.org/cupido</a>.</p></big>";
 
 		add(new HTML(message));
