@@ -174,9 +174,4 @@ public interface DatabaseInterface {
 	 */
 	public int getPlayerScore(String userName) throws SQLException,
 			IllegalArgumentException, NoSuchUserException;
-
-	/**
-	 * Close the connection with database.
-	 */
-	public void close();
 }

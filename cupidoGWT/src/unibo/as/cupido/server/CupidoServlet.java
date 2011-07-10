@@ -186,14 +186,7 @@ public class CupidoServlet extends RemoteServiceServlet implements
 		}
 		getServletContext().setAttribute(GCI, gci);
 		getServletContext().setAttribute(GTMI, gtmi);
-		DatabaseInterface dbi = null;
-		try {
-			dbi = new DatabaseManager(DBHostname);
-		} catch (SQLException e1) {
-			System.out.println("Servlet: on init() catched SQLException ->");
-			e1.printStackTrace();
-			System.exit(1);
-		}
+		DatabaseInterface dbi = new DatabaseManager(DBHostname);
 		getServletContext().setAttribute(DBI, dbi);
 		getServletContext().setAttribute(SCL, new SessionClosedListener() {
 			@Override

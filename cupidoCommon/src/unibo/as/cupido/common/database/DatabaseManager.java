@@ -17,18 +17,17 @@
 
 package unibo.as.cupido.common.database;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import unibo.as.cupido.common.structures.RankingEntry;
 import unibo.as.cupido.common.exception.DuplicateUserNameException;
 import unibo.as.cupido.common.exception.NoSuchUserException;
 import unibo.as.cupido.common.interfaces.DatabaseInterface;
-
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.Statement;
 
 /**
  * Manage the database for Cupido
@@ -39,53 +38,37 @@ public class DatabaseManager implements DatabaseInterface {
 	private final String userDB = "root";
 	/** mysql password for cupido database */
 	private final String passDB = "cupido";
-	/** used to execute SQL statement */
-	private Statement statement;
-	/** connection to cupido database */
-	private Connection connection;
+	/** The host name of the DB server. */
+	private String host;
 
 	/**
 	 * Create a database manager for cupido database
 	 * 
 	 * @param host
 	 *            adders of mysql server
-	 * @throws SQLException
 	 */
-	public DatabaseManager(String host) throws SQLException {
-		try {
-			Class.forName("org.gjt.mm.mysql.Driver");
-			String url = "jdbc:mysql://" + host + "/" + database;
-			connection = (Connection) DriverManager.getConnection(url, userDB,
-					passDB);
-			System.out.println(" Database connection established to " + url
-					+ ".");
-			statement = (Statement) connection.createStatement();
-		} catch (ClassNotFoundException e) {
-			System.out
-					.println("DBManager: on DatabaseManager() catched ClassNotFoundException");
-			e.printStackTrace();
-		}
+	public DatabaseManager(String host) {
+		this.host = host;
 	}
-
-	@Override
-	public void addNewUser(String userName, String password)
-			throws SQLException, DuplicateUserNameException {
-		if (userName == null || password == null)
-			throw new IllegalArgumentException();
-		if (this.contains(userName))
-			throw new DuplicateUserNameException(userName);
-		if (!userName.matches("\\w{1,16}"))
-			throw new IllegalArgumentException("user name not valid: "
-					+ userName);
-		if (!password.matches("\\w{3,8}"))
-			throw new IllegalArgumentException("password not valid: "
-					+ password);
-		statement.executeUpdate("INSERT INTO User VALUE ('" + userName + "', '"
-				+ password + "', 0);");
+	
+	/**
+	 * Opens a connection to the DB.
+	 * 
+	 * @return The created connection.
+	 * @throws SQLException If a database access error occurs.
+	 */
+	private Connection createConnection() throws SQLException {
+		String url = "jdbc:mysql://" + host + "/" + database;
+		return DriverManager.getConnection(url, userDB, passDB);
 	}
-
-	@Override
-	public void close() {
+	
+	/**
+	 * Closes the specified connection and statement.
+	 * 
+	 * @param statement The statement that has to be closed.
+	 * @param connection The connection that has to be closed.
+	 */
+	private void close(Statement statement, Connection connection) {
 		try {
 			statement.close();
 		} catch (SQLException e) {
@@ -97,14 +80,46 @@ public class DatabaseManager implements DatabaseInterface {
 			//
 		}
 	}
+	
+	@Override
+	public void addNewUser(String userName, String password)
+			throws SQLException, DuplicateUserNameException {
+		
+		Connection connection = createConnection();
+		Statement statement = connection.createStatement();
+		
+		try {
+			if (userName == null || password == null)
+				throw new IllegalArgumentException();
+			if (this.contains(userName))
+				throw new DuplicateUserNameException(userName);
+			if (!userName.matches("\\w{1,16}"))
+				throw new IllegalArgumentException("user name not valid: "
+						+ userName);
+			if (!password.matches("\\w{3,8}"))
+				throw new IllegalArgumentException("password not valid: "
+						+ password);
+			statement.executeUpdate("INSERT INTO User VALUE ('" + userName + "', '"
+					+ password + "', 0);");
+		} finally {
+			close(statement, connection);
+		}
+	}
 
 	@Override
 	public boolean contains(String userName) throws SQLException {
-		return statement.executeQuery(
-				"SELECT name FROM User WHERE name = '" + userName + "'").next();
+		Connection connection = createConnection();
+		Statement statement = connection.createStatement();
+		
+		try {		
+			return statement.executeQuery(
+					"SELECT name FROM User WHERE name = '" + userName + "'").next();
+		} finally {
+			close(statement, connection);
+		}
 	}
 
-	/*
+	/**
 	 * Query is: select * from (SELECT @rank:=@rank+1 AS rank, name, score from
 	 * User USE INDEX (scoreIndex) ORDER BY score DESC)AS globalList limit 2,9
 	 * 
@@ -115,58 +130,79 @@ public class DatabaseManager implements DatabaseInterface {
 	@Override
 	public ArrayList<RankingEntry> getLocalRank(String userName)
 			throws SQLException, NoSuchUserException {
-		if (userName == null)
-			throw new IllegalArgumentException();
-		int userRank = getUserRank(userName).rank;
-		int from = (userRank - DatabaseInterface.LOCAL_RANK_ENTRIES_NUM / 2);
-		from = (from >= 0 ? from : 0);
-		statement.executeUpdate("SET @rank=0;");
-		ResultSet chunk = statement
-				.executeQuery("SELECT * FROM "
-						+ "(SELECT @rank:=@rank+1 AS rank, name, score from User USE INDEX (scoreIndex) ORDER BY score DESC)"
-						+ "AS globalList LIMIT " + from + ", "
-						+ DatabaseInterface.LOCAL_RANK_ENTRIES_NUM + " ;");
-
-		ArrayList<RankingEntry> rank = new ArrayList<RankingEntry>(10);
-		while (chunk.next()) {
-			rank.add(new RankingEntry(chunk.getString(2), chunk.getInt(1),
-					chunk.getInt(3)));
+		Connection connection = createConnection();
+		Statement statement = connection.createStatement();
+		
+		try {
+			if (userName == null)
+				throw new IllegalArgumentException();
+			int userRank = getUserRank(userName).rank;
+			int from = (userRank - DatabaseInterface.LOCAL_RANK_ENTRIES_NUM / 2);
+			from = (from >= 0 ? from : 0);
+			statement.executeUpdate("SET @rank=0;");
+			ResultSet chunk = statement
+					.executeQuery("SELECT * FROM "
+							+ "(SELECT @rank:=@rank+1 AS rank, name, score from User USE INDEX (scoreIndex) ORDER BY score DESC)"
+							+ "AS globalList LIMIT " + from + ", "
+							+ DatabaseInterface.LOCAL_RANK_ENTRIES_NUM + " ;");
+	
+			ArrayList<RankingEntry> rank = new ArrayList<RankingEntry>(10);
+			while (chunk.next()) {
+				rank.add(new RankingEntry(chunk.getString(2), chunk.getInt(1),
+						chunk.getInt(3)));
+			}
+			return rank;
+		} finally {
+			close(statement, connection);
 		}
-		return rank;
 	}
 
 	@Override
 	public int getPlayerScore(String userName) throws NoSuchUserException,
 			SQLException {
-		if (userName == null)
-			throw new IllegalArgumentException();
-		ResultSet res = statement
-				.executeQuery("SELECT score FROM User WHERE name = '"
-						+ userName + "' LIMIT 1;");
-		if (res.next())
-			return res.getInt(1);
-		throw new NoSuchUserException(userName);
+		Connection connection = createConnection();
+		Statement statement = connection.createStatement();
+		
+		try {
+			if (userName == null)
+				throw new IllegalArgumentException();
+			ResultSet res = statement
+					.executeQuery("SELECT score FROM User WHERE name = '"
+							+ userName + "' LIMIT 1;");
+			if (res.next())
+				return res.getInt(1);
+			throw new NoSuchUserException(userName);
+		} finally {
+			close(statement, connection);
+		}
 	}
 
 	@Override
 	public ArrayList<RankingEntry> getTopRank(int size) throws SQLException {
-		if (size <= 0)
-			throw new IllegalArgumentException();
-		statement.executeUpdate("SET @rank=0;");
-		ResultSet topChunk = statement
-				.executeQuery("SELECT @rank:=@rank+1 AS rank, name, score  "
-						+ " FROM User "
-						+ " USE INDEX (scoreIndex) ORDER BY score DESC LIMIT "
-						+ size + " ;");
-		ArrayList<RankingEntry> rank = new ArrayList<RankingEntry>(size);
-		while (topChunk.next()) {
-			rank.add(new RankingEntry(topChunk.getString(2),
-					topChunk.getInt(1), topChunk.getInt(3)));
+		Connection connection = createConnection();
+		Statement statement = connection.createStatement();
+		
+		try {
+			if (size <= 0)
+				throw new IllegalArgumentException();
+			statement.executeUpdate("SET @rank=0;");
+			ResultSet topChunk = statement
+					.executeQuery("SELECT @rank:=@rank+1 AS rank, name, score  "
+							+ " FROM User "
+							+ " USE INDEX (scoreIndex) ORDER BY score DESC LIMIT "
+							+ size + " ;");
+			ArrayList<RankingEntry> rank = new ArrayList<RankingEntry>(size);
+			while (topChunk.next()) {
+				rank.add(new RankingEntry(topChunk.getString(2),
+						topChunk.getInt(1), topChunk.getInt(3)));
+			}
+			return rank;
+		} finally {
+			close(statement, connection);
 		}
-		return rank;
 	}
 
-	/*
+	/**
 	 * Query is: SELECT * FROM (SELECT @rank:=@rank+1 AS rank, name, score FROM
 	 * User USE INDEX (scoreIndex) ORDER BY score DESC) AS ranking WHERE
 	 * name='echo';
@@ -174,26 +210,36 @@ public class DatabaseManager implements DatabaseInterface {
 	@Override
 	public RankingEntry getUserRank(String userName)
 			throws NoSuchUserException, SQLException {
-		if (userName == null)
-			throw new IllegalArgumentException();
-
-		if (!this.contains(userName))
-			throw new NoSuchUserException(userName);
-		statement.executeUpdate("SET @rank=0;");
-		ResultSet chunk = statement
-				.executeQuery("SELECT * FROM "
-						+ "(SELECT @rank:=@rank+1 AS rank, name, score FROM User USE INDEX (scoreIndex) ORDER BY score DESC)"
-						+ " AS ranking  where name='" + userName + "';");
-		chunk.next();
-		return new RankingEntry(userName, chunk.getInt(1), chunk.getInt(3));
+		Connection connection = createConnection();
+		Statement statement = connection.createStatement();
+		
+		try {
+			if (userName == null)
+				throw new IllegalArgumentException();
+	
+			if (!this.contains(userName))
+				throw new NoSuchUserException(userName);
+			statement.executeUpdate("SET @rank=0;");
+			ResultSet chunk = statement
+					.executeQuery("SELECT * FROM "
+							+ "(SELECT @rank:=@rank+1 AS rank, name, score FROM User USE INDEX (scoreIndex) ORDER BY score DESC)"
+							+ " AS ranking  where name='" + userName + "';");
+			chunk.next();
+			return new RankingEntry(userName, chunk.getInt(1), chunk.getInt(3));
+		} finally {
+			close(statement, connection);
+		}
 	}
 
 	@Override
 	public boolean login(String userName, String password)
-			throws NoSuchUserException {
-		if (userName == null || password == null)
-			throw new IllegalArgumentException();
+			throws NoSuchUserException, SQLException {
+		Connection connection = createConnection();
+		Statement statement = connection.createStatement();
+		
 		try {
+			if (userName == null || password == null)
+				throw new IllegalArgumentException();
 			if (!this.contains(userName))
 				throw new NoSuchUserException(userName);
 			ResultSet res = statement
@@ -201,20 +247,26 @@ public class DatabaseManager implements DatabaseInterface {
 							+ userName + "' AND password ='" + password
 							+ "' LIMIT 1;");
 			return res.next();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
+		} finally {
+			close(statement, connection);
 		}
 	}
 
 	@Override
 	public void updateScore(String userName, int score)
 			throws NoSuchUserException, SQLException {
-		if (userName == null)
-			throw new IllegalArgumentException();
-		if (!this.contains(userName))
-			throw new NoSuchUserException(userName);
-		statement.executeUpdate("UPDATE User SET score = " + score
-				+ " WHERE name = '" + userName + "';");
+		Connection connection = createConnection();
+		Statement statement = connection.createStatement();
+		
+		try {
+			if (userName == null)
+				throw new IllegalArgumentException();
+			if (!this.contains(userName))
+				throw new NoSuchUserException(userName);
+			statement.executeUpdate("UPDATE User SET score = " + score
+					+ " WHERE name = '" + userName + "';");
+		} finally {
+			close(statement, connection);
+		}
 	}
 }
