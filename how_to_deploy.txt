@@ -9,6 +9,10 @@ just execute:
 then deploy the servlet, and you have done.
 Cupiodo can be reached at address http://127.0.0.1:8080/cupido
 
+If you want to deploy everything on localhost in non-verbose mode
+execute instead:
+	./run_all_in_background.sh
+
 ---------------------------------------------------------------------
 HOT TO DEPLOY SERVLET
 To deploy servlet on apache-tomcat 6.0.32:
@@ -39,26 +43,34 @@ First of all execute
 then
 
 - To deploy the RMI registry execute:
-	./rmi_registry.sh
+	./run_rmiregistry.sh
 
 - To deploy the GlobalTableManager execute:
-	./deploy_gtm.sh
+	./run_gtm.sh
 
 - To deploy a LocalTableManager execute:
-	./deploy_ltm.sh
+	./run_ltm.sh
+
+- To deploy the GlobalChat execute:
+	./run_chat.sh
 
 Check configuration files to specify hostnames before executing ltm 
-and gtm.
+and gtm. (localTableManager.config)
 You can check also servlet configuration files 
 (cupidoGWT/war/servlet.config).
 
 Executing order:
-deploy_gtm.sh must be executed after rmi_registry.sh
-deploy_ltm.sh must be executed after deploy_gtm.sh
+rub_gtm.sh must be executed after run_rmiregistry.sh
+run_ltm.sh must be executed after run_gtm.sh
+run_chat.sh must be executed after run_rmiregistry.sh
+
+NOTE:
+apache-tomcat must be started after deployment of rmi_registry, ltm,
+gtm and chat.
 
 ---------------------------------------------------------------------
 HOW TO INSTALL THE DATABASE
-install MySQL 5.5 then execute
+install MySQL 5.1 then execute
 	./recreate_db.sh
 
 This should be executed exactly one time on the machine which host
@@ -96,5 +108,5 @@ Those lines must be replaced with the correct IP, like this:
 DOWNLOAD
 you can find apache-tomcat 6.0.32 here:
 http://tomcat.apache.org/download-60.cgi
-and MySQL 5.5 from
+and MySQL 5.1 from
 http://www.mysql.com/
