@@ -155,7 +155,7 @@ public class FirstLeaderState implements PlayerState {
 		stateManager.addPlayedCard(0, card);
 
 		cardsGameWidget.playCard(0, card);
-		cardsGameWidget.runPendingAnimations(2000,
+		cardsGameWidget.runPendingAnimations(500,
 				new AnimationCompletedListener() {
 					@Override
 					public void onComplete() {
