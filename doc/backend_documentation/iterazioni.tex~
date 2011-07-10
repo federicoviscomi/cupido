@@ -77,7 +77,7 @@
 	\begin{verbatim}
 	  ArrayList<TableInfoForClient>
 	\end{verbatim}
-	e vengono scelti in modo casuale. In questo modo la dimensione dei dati inviati al client \`e costante. Al caso pessimo la complessit\'a in tempo di questa operazione \`e lineare nel numero di tavoli perch\'e per scegliere una parte dei valori di una HashMap in modo uniformemente distribuito bisogna eventualmente iterare su tutti essi. Si \`e scelto di non fornire una operazione per reperire tutti i tavoli perch\'e il numero dei tavoli potrebbe essere troppo grande e quindi anche il traffico di rete conseguente. Un'altra strategia presa in considerazione \`e quella di un iteratore remoto ma \`e stata scartata perch\'e genera troppe chiamate remote e perch\'e la lista dei tavoli pu\'o cambiare tra due chiamate.
+	e vengono scelti in modo casuale. In questo modo la dimensione dei dati inviati al client \`e costante. Al caso pessimo la complessit\'a in tempo di questa operazione \`e lineare nel numero di tavoli perch\'e per scegliere una parte dei valori da una tabella hash in modo uniformemente distribuito bisogna eventualmente iterare su tutti essi. Si \`e scelto di non fornire una operazione per reperire tutti i tavoli perch\'e il numero dei tavoli potrebbe essere troppo grande e quindi anche il traffico di rete conseguente. Un'altra strategia presa in considerazione \`e quella di un iteratore remoto ma \`e stata scartata perch\'e genera troppe chiamate remote e perch\'e la lista dei tavoli pu\'o cambiare tra due chiamate.
     \end{description}
   Gtm \`e usato attraverso RMI quindi il multithreading \`e gestito in automatico dalla JVM. La mutua eclusione sul gtm \`e gestita semplicemente usando metodi \begin{verbatim}
     synchronized
@@ -96,7 +96,31 @@
       Cercare un stm quando un giocatore vuole unirsi ad una partita o guardare una partita.
   \end{itemize}
   Ltm mantiene in una tabella hash gli stm indicizzati da un intero che identifica l'stm in modo univoco nell'ltm. In questo modo le operazioni dell'ltm hanno complessit\'a in tempo costante.
-  Per quanto riguarda il multithreading e la mutua eclusione valgono le stesse cose dette per il gtm.
+  Per quanto riguarda il multithreading e la mutua eclusione valgono le stesse cose dette per il gtm. 
+  All'avvio l'ltm legge dal file di configurazione 
+  \begin{verbatim}
+    localTableManager.config
+  \end{verbatim}
+  le seguenti variabili:
+  \begin{itemize}
+    \item
+      MAX_TABLE: specifica il massimo numero di tavoli che questo ltm puo' gestire. Il valore di default \'e
+      \begin{verbatim}
+	LocalTableManagerInterface.DEFAULT_MAX_TABLE
+      \end{verbatim}
+    \item
+      RMI_REGISTRY_ADDRESS: specifica l'indirizzo del registro rmi sul quale cercare il gmt. Il valore di default \'e
+      \begin{verbatim}
+	LocalTableManagerInterface.DEFAULT_RMI_REGISTRY_ADDRESS
+      \end{verbatim}
+    \item
+      DATABASE_ADDRESS: specifica l'indirizzo del database. Il valore di default \'e
+      \begin{verbatim}
+	DatabaseInterface.DEFAULT_DATABASE_ADDRESS
+      \end{verbatim}
+ 
+  \end{itemize}
+
 
 \section{Gtm ed ltm console UI}
   In questa iterazione sono stati implementati due interpreti di comandi da console minimali per gtm ed ltm. I comandi forniti permettono di vedere lo stato interno del gtm e degli ltm. Quindi questi interpreti hanno una valenza per lo pi\'u in fase di debug e test. Potrebbero essere usati anche in un deploy reale per operazioni di manutenzione ma si \`e scelto di non farlo perch\'e non serve: in particolare non ci sono requisiti che vietano di riavviare il gtm o gli ltm in fase di esecuzione.
