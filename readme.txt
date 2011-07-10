@@ -1,7 +1,7 @@
 Il docente dovrebbe iniziare la lettura dal file doc/master_document.pdf
 
 build.sh
-ricrea gli stub e la cartella cupido.
+ricrea gli stub e la cartella cupido/.
 
 chech_copyright.sh
 check if all source files have copyright in.
@@ -19,9 +19,6 @@ cupido/
 serve per il deploy della servlet
 if this directory is not present don't worry, just run ./build.sh
 
-localTableManager.config
-è un file di configurazione usato dal progetto cupidoBackendImpl
-
 deploy.sh
 script per il deployment in locale di tutto il backend
 
@@ -37,9 +34,23 @@ contiene la documentazione su come è stato svolto tutto il lavoro del gruppo
 how_to_deploy.txt
 contains deploy instructions
 
-recreate_db.sh 
-crea ed inizializza il database (da utilizzare solo dopo aver installato mysql)
+localTableManager.config
+è un file di configurazione usato dal progetto cupidoBackendImpl
 
-rmi_registry.sh
-deploy_ltm.sh
-script per il deployment del rmi registry
+recreate_db.sh 
+crea ed inizializza il database. Vedi how_to_deploy.sh
+
+run_all_in_background.sh
+script der il deployment. Vedi how_to_deploy.sh
+
+run_chat.sh
+script der il deployment. Vedi how_to_deploy.sh
+
+run_gtm.sh
+script der il deployment. Vedi how_to_deploy.sh
+
+run_ltm.sh
+script der il deployment. Vedi how_to_deploy.sh
+
+run_rmiregistry.sh
+script der il deployment. Vedi how_to_deploy.sh
